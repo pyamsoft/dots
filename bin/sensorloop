@@ -1,0 +1,6 @@
+#!/bin/sh
+while :; do
+  nice -n 19 sensors
+  nice -n 19 sleep 5
+  clear
+done

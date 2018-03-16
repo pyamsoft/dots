@@ -1,0 +1,71 @@
+#!/bin/sh
+# Environment variables
+
+# IBUS setup
+# export GTK_IM_MODULE=ibus
+# export XMODIFIERS=@im=ibus
+# export QT_IM_MODULE=ibus
+
+# SDL Options
+# Use pulse audio for SDL audio
+SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+SDL_AUDIODRIVER=pulse
+
+# Fixes the issue where vdpau looks for a non existant driver
+VDPAU_DRIVER=va_gl
+
+# Use S3TC texture compression
+force_s3tc_enable=true
+
+# Use hierarchical Z on Gen6+
+hiz=true
+
+# enable Mesa threaded shader compiles
+multithread_glsl_compiler=1
+
+# Fix QT to use GTK theme
+QT_QPA_PLATFORMTHEME=gtk2
+QT_STYLE_OVERRIDE=gtk
+
+_JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
+
+# Export environment
+export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS
+export SDL_AUDIODRIVER
+export VDPAU_DRIVER
+export force_s3tc_enable
+export hiz
+export multithread_glsl_compiler
+export QT_QPA_PLATFORMTHEME
+export QT_STYLE_OVERRIDE
+export _JAVA_OPTIONS
+
+# Other
+# Disable the terminal bell noise
+xset -b
+
+# Clean source xrdb config
+if [ -f "${HOME}"/.Xresources ]; then
+  xrdb "${HOME}"/.Xresources
+fi
+
+if which xhost; then
+  xhost "+si:localuser:$(whoami)"
+fi
+
+# shellcheck disable=SC1091
+# Source /etc/bash.bashrc if the environment is not setup
+if [ -z "${PYAMSOFT_SYSTEM}" ]; then
+  [ -f /etc/bash.bashrc ] && . /etc/bash.bashrc
+fi
+# shellcheck disable=SC1090
+# Source bash_profile if the environment is not setup
+if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+fi
+
+# Bind DE agnostic keybinds
+xbindkeys
+
+# Turn on compositing
+toggle_compositing on

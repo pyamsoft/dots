@@ -1,0 +1,77 @@
+# Color man pages
+man()
+{
+  env \
+  LESS_TERMCAP_mb=$'\E[01;31m' \
+  LESS_TERMCAP_md=$'\E[01;38;5;74m' \
+  LESS_TERMCAP_me=$'\E[0m' \
+  LESS_TERMCAP_se=$'\E[0m' \
+  LESS_TERMCAP_so=$'\E[38;5;246m' \
+  LESS_TERMCAP_ue=$'\E[0m' \
+  LESS_TERMCAP_us=$'\E[04;38;5;146m' \
+  "$(which man)" "$@"
+}
+
+# Git
+alias gits="git status"
+alias gita="git add"
+alias gitc="git commit"
+alias gitd="git diff"
+alias gitm="git merge"
+alias gitck="git checkout"
+alias gitb="git branch"
+alias gitpl="git pull"
+alias gitf="git fetch"
+alias gitps="git push"
+
+alias gitl="git lg"
+# git lg setup:
+# git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+# Same syntax as mac, easier to handle, requires xclip
+alias pbcopy='xsel --clipboard --input'
+alias pbpaste='xsel --clipboard --output'
+
+# Allow sudo calls to receive the above alias support as well.
+alias sudo="sudo "
+
+# Colorized
+alias ls="ls -CHh --color=auto "
+alias dir="dir -CHAlh --color=auto "
+alias grep="grep -E --color=auto "
+
+# Quick ls
+alias ll="ls -CHhl --color=auto "
+alias la="ls -CHhA --color=auto "
+alias lla="ls -CHhAl --color=auto "
+alias lal="ls -CHhAl --color=auto "
+
+# Verbose
+alias rm="rm -iv "
+alias cp="cp -iv "
+alias mv="mv -iv "
+alias mkdir="mkdir -vp "
+alias iptables="iptables -v "
+alias paccache="paccache -v "
+
+# List mounts
+alias mounts="mount | column -t "
+
+# List ports in use
+alias ports="ss -tulanp "
+alias ports-netstat="netstat -tulanp "
+
+# Cleaner human output
+alias df="df -H "
+alias du="du -ch "
+
+# Quick ping, only ipv4
+alias ping="ping -4 "
+alias p8="ping 8.8.8.8 "
+alias pingg="ping www.google.com "
+
+# Always vim
+alias vim="nvim "
+alias vi="vim "
+
+# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

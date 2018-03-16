@@ -1,0 +1,79 @@
+#!/bin/sh
+
+is_compositing()
+{
+  # Compton
+  # This is not the best, but it *should* work
+  # compositing="$(running " compton " | wc -l)"
+  # if [ "${compositing}" != "0" ]; then
+
+  # MATE
+  compositing="$(gsettings get org.mate.Marco.general compositing-manager)"
+
+  # XFCE4
+  # compositing="$(xfconf-query -c xfwm4 -p /general/use_compositing)"
+
+  if [ "${compositing}" = "true" ]; then
+    printf -- "true"
+  else
+    printf -- "false"
+  fi
+}
+
+enable_compositing()
+{
+  printf -- 'Start compositing\n'
+  # Compton
+  # compton -b > /dev/null || return 1
+
+  # MATE
+  gsettings set org.mate.Marco.general compositing-manager true
+
+  # XFCE4
+  # xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s true
+}
+
+disable_compositing()
+{
+  printf -- 'Stop compositing\n'
+
+  # Compton
+  # killall compton || return 1
+
+  # MATE
+  gsettings set org.mate.Marco.general compositing-manager false
+
+  # XFCE4
+  # xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false
+}
+
+toggle_compositing()
+{
+  if [ "$(is_compositing)" = "true" ]; then
+    # Stop compositing
+    disable_compositing || return 1
+  else
+    # Start compositing
+    enable_compositing || return 1
+  fi
+}
+
+main()
+{
+
+  if [ -z "$1" ]; then
+    toggle_compositing || return 1
+  else
+    if [ "$1" = "on" ]; then
+      enable_compositing || return 1
+    elif [ "$1" = "off" ]; then
+      disable_compositing || return 1
+    else
+      toggle_compositing || return 1
+    fi
+  fi
+
+  return 0
+}
+
+main "$@" || exit 1

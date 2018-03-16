@@ -1,0 +1,199 @@
+# User bashrc
+
+# Strict umask
+umask 077
+
+# shellcheck disable=SC1090
+# Source bash_profile if the environment is not setup
+if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+fi
+
+# Get the git part of the prompt
+prompt_command_git()
+{
+  prompt=""
+  gprompt_path="/usr/share/git/completion/git-prompt.sh"
+  if [ -r "${gprompt_path}" ]; then
+    # shellcheck disable=SC1090
+    . "${gprompt_path}"
+    prompt="$(__git_ps1 '(%s)')"
+  fi
+
+  # Add a space to the prompt if it has content
+  if [[ "${prompt}" = "" ]]; then
+    printf -- '%s\n' "${prompt}"
+  else
+    printf -- '%s \n' "${prompt}"
+  fi
+
+  unset prompt
+  unset gprompt_path
+  return 0
+}
+
+prompt_color_ps1()
+{
+  # we have colors :-)
+  # shellcheck disable=SC1090
+  [ -r "${HOME}/.sh_colors" ] && . "${HOME}/.sh_colors"
+
+  user_color=""
+  if [ "$(id -u)" -eq 0 ]; then
+    # shellcheck disable=SC2154
+    user_color="${BcolorR}"
+  else
+    # shellcheck disable=SC2154
+    user_color="${BcolorG}"
+  fi
+
+  # Multiline PS1
+  # $1 git prompt
+
+  # shellcheck disable=SC2154
+  prompt_ps1 "$1" "\\[${colorOff}\\]" "\\[${colorY}\\]" "\\[${BcolorB}\\]" \
+    "\\[${BcolorP}\\]" "\\[${user_color}\\]"
+
+  unset user_color
+}
+
+## Create the PS1
+# $1 git prompt
+# $2 reset prompt color
+# $3 time/date color
+# $4 directory color
+# $5 prompt color
+# $6 user color
+prompt_ps1()
+{
+  is_ssh=""
+  if [ -n "${SSH_CLIENT}" ]; then
+    is_ssh="(ssh) "
+  fi
+
+  # Substitute all commands which take escape codes so we don't need to triple
+  # escape things like \u and \$
+  printf -- '%s%s %s %s%s%s%s%s\n' "$3" '\d' '\A' "$2" "$1" "$4" "${PWD}" "$2"
+  printf -- '%s%s@%s %s%s%s%s %s' "$5" '\u' '\h' "$2" "${is_ssh}" "$6" '\$' "$2"
+}
+
+# set the PS1
+prompt_command()
+{
+  # Clear the ps1
+  PS1=
+
+  # Git prompt command
+  git_prompt=$(prompt_command_git)
+
+  # Set the PS1 based on color availability
+  if [ "$(tput colors)" -ne 0 ]; then
+    PS1=$(prompt_color_ps1 "${git_prompt}")
+  else
+    PS1=$(prompt_ps1 "${git_prompt}")
+  fi
+  export PS1
+
+  # Unset local variables
+  unset git_prompt
+}
+
+set_stty_options()
+{
+  # Disable stopping the shell output with Ctrl+S
+  # Disable job sleep with Ctrl+Z
+  # stty options
+  stty -ixon
+  stty susp undef
+}
+
+set_shopt_options()
+{
+  # shopt options
+  shopt -s checkwinsize
+  shopt -s histappend
+  shopt -s autocd
+  shopt -s cdspell
+  shopt -s cmdhist
+  shopt -s dirspell
+  shopt -s extglob
+  shopt -s globstar
+  shopt -s no_empty_cmd_completion
+  shopt -s dotglob
+}
+
+set_env_vars()
+{
+  # Source the bash extras file
+  # shellcheck disable=SC1090
+  [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
+
+  # environment variables
+  # Export the PS1
+  PROMPT_COMMAND=prompt_command
+  export PROMPT_COMMAND
+
+  # Disable the bash_history file
+  HISTCONTROL=ignoreboth
+  export HISTCONTROL
+  unset HISTFILE
+
+  # dircolors outputs an export command
+  eval "$(dircolors -b "${HOME}/.dir_colors")"
+
+  EDITOR=vim
+  export EDITOR
+
+  SYSTEMD_EDITOR=vim
+  export SYSTEMD_EDITOR
+
+  SUDO_EDITOR=vim
+  export SUDO_EDITOR
+
+  CC=gcc
+  export CC
+
+  CXX=g++
+  export CXX
+}
+
+enable_bash_completion()
+{
+  # Enable bash completion
+  bcomp="/usr/share/bash-completion/bash_completion"
+  # shellcheck disable=SC1090
+  [ -r "${bcomp}" ] && . "${bcomp}"
+  unset bcomp
+}
+
+bashrc()
+{
+  set_stty_options
+  set_shopt_options
+  set_env_vars
+  enable_bash_completion
+}
+
+# Source the dircolors here
+bashrc
+
+# Do not export the functions
+unset bashrc
+unset enable_bash_completion
+unset set_env_vars
+unset set_stty_options
+unset set_shopt_options
+
+
+# Sometimes we get disconnected from gnome-keyring, even though its agent is
+# still running normally.
+if [ -z "${SSH_AUTH_SOCK}" ]; then
+  ssh_socket="/run/user/$(id -u)/keyring/ssh"
+  if [ -r "${ssh_socket}" ]; then
+    # Use gnome-keyring
+    SSH_AUTH_SOCK="${ssh_socket}"
+    export SSH_AUTH_SOCK
+  fi
+fi
+
+# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:

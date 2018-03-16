@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# Extracts youtube-dl contents into MP3 using best quality and ignoring errors
+
+exec youtube-dl -x --audio-format mp3 --audio-quality 0 -i "$@"

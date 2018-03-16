@@ -1,0 +1,12 @@
+#!/bin/sh
+
+while :; do
+  if [ -n "$1" ]; then
+    nice -n 19 sudo pstate-frequency -S -m "$1"
+  else
+    nice -n 19 pstate-frequency -G
+  fi
+  nice -n 19 pstate-frequency -Gr
+  nice -n 19 sleep 5
+  clear
+done
