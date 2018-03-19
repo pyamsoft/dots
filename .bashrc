@@ -51,8 +51,7 @@ prompt_color_ps1()
   # $1 git prompt
 
   # shellcheck disable=SC2154
-  prompt_ps1 "$1" "\\[${colorOff}\\]" "\\[${colorY}\\]" "\\[${BcolorB}\\]" \
-    "\\[${BcolorP}\\]" "\\[${user_color}\\]"
+  prompt_ps1 "$1" "\\[${colorOff}\\]" "\\[${BcolorP}\\]" "\\[${user_color}\\]"
 
   unset user_color
 }
@@ -60,21 +59,14 @@ prompt_color_ps1()
 ## Create the PS1
 # $1 git prompt
 # $2 reset prompt color
-# $3 time/date color
-# $4 directory color
-# $5 prompt color
-# $6 user color
+# $3 directory color
+# $4 user color
 prompt_ps1()
 {
-  is_ssh=""
-  if [ -n "${SSH_CLIENT}" ]; then
-    is_ssh="(ssh) "
-  fi
-
   # Substitute all commands which take escape codes so we don't need to triple
   # escape things like \u and \$
-  printf -- '%s%s %s %s%s%s%s%s\n' "$3" '\d' '\A' "$2" "$1" "$4" "${PWD}" "$2"
-  printf -- '%s%s@%s %s%s%s%s %s' "$5" '\u' '\h' "$2" "${is_ssh}" "$6" '\$' "$2"
+  printf -- '%s%s@%s %s%s %s%s\n' "$4" '\u' '\h' "$3" '\w' "$2" "$1"
+  printf -- '%s%s %s' "$4" '\$' "$2"
 }
 
 # set the PS1
