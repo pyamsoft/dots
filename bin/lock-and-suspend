@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Use systemd for DE agnostic lock and suspend
-loginctl lock-session && systemctl suspend -i
+loginctl lock-session && sleep 3 && systemctl suspend -i
