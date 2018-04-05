@@ -47,11 +47,3 @@
 "rofi -show run"
   Mod4+Return
 
-# Suspend session
-"lock-and-suspend"
-  Shift+Mod4+L
-
-# Lock Screen
-"loginctl lock-session"
-  Mod4+L
-
