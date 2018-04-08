@@ -8,37 +8,20 @@
 
 # SDL Options
 # Use pulse audio for SDL audio
-SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
-SDL_AUDIODRIVER=pulse
+export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+export SDL_AUDIODRIVER=pulse
 
 # Fixes the issue where vdpau looks for a non existant driver
-VDPAU_DRIVER=va_gl
+export VDPAU_DRIVER=va_gl
 
 # Use S3TC texture compression
-force_s3tc_enable=true
-
-# Use hierarchical Z on Gen6+
-hiz=true
-
-# enable Mesa threaded shader compiles
-multithread_glsl_compiler=1
+export force_s3tc_enable=true
 
 # Fix QT to use GTK theme
-QT_QPA_PLATFORMTHEME=gtk2
-QT_STYLE_OVERRIDE=gtk
+export QT_QPA_PLATFORMTHEME=gtk2
+export QT_STYLE_OVERRIDE=gtk
 
-_JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
-
-# Export environment
-export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS
-export SDL_AUDIODRIVER
-export VDPAU_DRIVER
-export force_s3tc_enable
-export hiz
-export multithread_glsl_compiler
-export QT_QPA_PLATFORMTHEME
-export QT_STYLE_OVERRIDE
-export _JAVA_OPTIONS
+export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
 
 # Other
 # Disable the terminal bell noise
