@@ -36,14 +36,12 @@
 "pycharm"
   Mod4+Y
 
-# flatpak
-"steam-native"
+"steam"
   Mod4+S
 
 "keepassxc"
   Mod4+X
 
-# launcher
 "rofi -show run"
   Mod4+Return
 
