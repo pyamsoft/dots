@@ -11,8 +11,13 @@
 export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
 export SDL_AUDIODRIVER=pulse
 
-# Fixes the issue where vdpau looks for a non existant driver
-export VDPAU_DRIVER=va_gl
+# Hardware Accel
+#
+# For Intel/Nvidia
+# export VDPAU_DRIVER=va_gl
+#
+# For AMD
+export LIBVA_DRIVER_NAME=radeonsi
 
 # Use S3TC texture compression
 export force_s3tc_enable=true
