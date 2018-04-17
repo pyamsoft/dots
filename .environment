@@ -1,24 +1,11 @@
-# Configure XDG_CONFIG_HOME
-XDG_CONFIG_HOME="$HOME/.config"
-
-XDG_CACHE_HOME="${HOME}/.cache"
-
-# Configure path to add Android sdk directories
 PATH="${HOME}/dev/sdk/android/platform-tools:${PATH}"
-
-# Configure path to add user's bin
 PATH="${HOME}/bin:${PATH}"
-
-# 32 bit or wine dies
-WINEARCH=win32
-WINEDEBUG=-all
-
-# Export path
-export XDG_CONFIG_HOME
-export XDG_CACHE_HOME
 export PATH
-export WINEARCH
-export WINEDEBUG
+
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="${HOME}/.cache"
+export WINEARCH=win32
+export WINEDEBUG=-all
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1
