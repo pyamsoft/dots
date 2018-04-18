@@ -1,6 +1,6 @@
 rofi.theme: /usr/share/rofi/themes/glue_pro_blue.rasi
 rofi.lines: 20
 rofi.width: 40
-rofi.terminal: mate-terminal
+rofi.terminal: xfce4-terminal
 rofi.hide-scrollbar: true
 rofi.font: Monospace 11
