@@ -216,6 +216,7 @@
         nnoremap <silent> <Leader>w :w<CR>
         nnoremap <silent> <Leader>q :q<CR>
         nnoremap <silent> <Leader>Q :q!<CR>
+        nnoremap <silent> <Leader>x :x<CR>
 " }}}
 " Sourcing the vimrc {{{
         noremap <silent> <Leader>r :source /etc/vimrc<CR>
