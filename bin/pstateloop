@@ -2,7 +2,7 @@
 
 while :; do
   if [ -n "$1" ]; then
-    nice -n 19 sudo pstate-frequency -S -m "$1"
+    nice -n 19 sudo pstate-frequency "$@"
   else
     nice -n 19 pstate-frequency -G
   fi
