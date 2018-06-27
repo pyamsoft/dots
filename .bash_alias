@@ -73,4 +73,20 @@ alias pingg="ping www.google.com "
 alias vim="nvim "
 alias vi="vim "
 
+# Complete dots command with git options
+_dots()
+{
+  local cur
+  local prev
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  if [ "${cur}" = "dots" ] || [ "${prev}" = "dots" ]; then
+    COMPREPLY=( $(compgen -W "$(git --list-cmds=builtins)" -- "${cur}") )
+  else
+    _filedir
+  fi
+}
+complete -F _dots dots
+
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
