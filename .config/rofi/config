@@ -1,4 +1,4 @@
-rofi.theme: /usr/share/rofi/themes/glue_pro_blue.rasi
+rofi.theme: /usr/share/rofi/themes/Adapta-Nokto.rasi
 rofi.lines: 20
 rofi.width: 40
 rofi.terminal: xfce4-terminal
