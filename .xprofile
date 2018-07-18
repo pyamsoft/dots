@@ -26,7 +26,11 @@ export force_s3tc_enable=true
 export QT_QPA_PLATFORMTHEME=gtk2
 export QT_STYLE_OVERRIDE=gtk
 
+# Java
 export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
+
+# Help with Pulse audio crackling in some programs
+export PULSE_LATENCY_MSEC=60
 
 # Other
 # Disable the terminal bell noise
@@ -37,7 +41,7 @@ if [ -f "${HOME}"/.Xresources ]; then
   xrdb "${HOME}"/.Xresources
 fi
 
-if which xhost; then
+if command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
 fi
 

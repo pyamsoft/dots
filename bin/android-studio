@@ -13,11 +13,11 @@ if [ -n "$1" ] && [ "$1" = "shell" ]; then
   shift
   exec bww \
     --forcename "android-studio" \
-    --nosession \
+    --shell \
     --nodev \
     --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
     --setenv PATH "/opt/android-studio/bin:/opt/android-studio/jre/bin:${PATH}" \
-    bash "$@"
+    android-studio "$@"
 else
   exec bww \
     --forcename "android-studio" \
