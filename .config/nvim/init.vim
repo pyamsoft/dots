@@ -21,11 +21,11 @@
         " }}}
         " General {{{
         if has('python3')
-		Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+          Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         endif
         Plug 'bronson/vim-trailing-whitespace'
         Plug 'Raimondi/delimitMate'
-        Plug 'airblade/vim-gitgutter'
+        Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
         Plug 'tpope/vim-repeat'
@@ -46,6 +46,8 @@
         Plug 'ervandew/supertab'
         Plug 'udalov/kotlin-vim'
         Plug 'davidhalter/jedi-vim'
+        Plug 'whiteinge/diffconflicts'
+        Plug 'metakirby5/codi.vim'
         " }}}
 
         call plug#end()
