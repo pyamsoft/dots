@@ -1,10 +1,16 @@
+# Add android-sdk to path and user bin
 PATH="${HOME}/dev/sdk/android/platform-tools:${PATH}"
 PATH="${HOME}/bin:${PATH}"
 export PATH
 
+# Define XDG directories
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="${HOME}/.cache"
+
+# Wine with esync
+# https://github.com/zfigura/wine/blob/esync/README.esync
 export WINEDEBUG=-all
+export WINEESYNC=1
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1
