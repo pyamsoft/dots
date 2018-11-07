@@ -42,9 +42,9 @@
 "keepassxc"
   Mod4+X
 
-"alacritty -e tmux -2u"
-  Mod4+T
-
 "rofi -show run"
   Mod4+Return
+
+"flameshot gui"
+  Mod4+Print
 
