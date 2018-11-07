@@ -1,5 +1,11 @@
 #!/bin/sh
 
+running()
+{
+  pgrep "$1" > /dev/null
+  return $?
+}
+
 is_compositing()
 {
   # Compton
@@ -8,10 +14,14 @@ is_compositing()
   # if [ "${compositing}" != "0" ]; then
 
   # MATE
-  # compositing="$(gsettings get org.mate.Marco.general compositing-manager)"
+  if running 'marco'; then
+    compositing="$(gsettings get org.mate.Marco.general compositing-manager)"
+  fi
 
   # XFCE4
-  compositing="$(xfconf-query -c xfwm4 -p /general/use_compositing)"
+  if running 'xfwm4'; then
+    compositing="$(xfconf-query -c xfwm4 -p /general/use_compositing)"
+  fi
 
   if [ "${compositing}" = "true" ]; then
     printf -- "true"
@@ -27,10 +37,14 @@ enable_compositing()
   # compton -b > /dev/null || return 1
 
   # MATE
-  # gsettings set org.mate.Marco.general compositing-manager true
+  if running 'marco'; then
+    gsettings set org.mate.Marco.general compositing-manager true
+  fi
 
   # XFCE4
-  xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s true
+  if running 'xfwm4'; then
+    xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s true
+  fi
 }
 
 disable_compositing()
@@ -41,10 +55,14 @@ disable_compositing()
   # killall compton || return 1
 
   # MATE
-  # gsettings set org.mate.Marco.general compositing-manager false
+  if running 'marco'; then
+    gsettings set org.mate.Marco.general compositing-manager false
+  fi
 
   # XFCE4
-  xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false
+  if running 'xfwm4'; then
+    xfconf-query -c xfwm4 -p /general/use_compositing -n -t bool -s false
+  fi
 }
 
 toggle_compositing()
