@@ -43,7 +43,7 @@
   Mod4+X
 
 "alacritty -e tmux -2u"
-  Mod4+BackSpace
+  Mod4+T
 
 "rofi -show run"
   Mod4+Return
