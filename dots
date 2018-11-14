@@ -1,0 +1,35 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+  printf -- 'dots: Must provide "install", "uninstall", or "test".\n'
+  exit 1
+fi
+
+if ! command -v 'stow' > /dev/null 2>&1; then
+  printf -- 'GNU stow must be installed.\n'
+  exit 1
+fi
+
+targets="fonts rofi scripts shell stow tmux vim xorg"
+
+case "$1" in
+  install)
+    # shellcheck disable=SC2086
+    stow -v -S ${targets}
+    exit 0
+    ;;
+  uninstall)
+    # shellcheck disable=SC2086
+    stow -v -D ${targets}
+    exit 0
+    ;;
+  test)
+    # shellcheck disable=SC2086
+    stow -v -n -S ${targets}
+    exit 0
+    ;;
+  *)
+    printf -- 'dots: Must provide "install", "uninstall", or "test".\n'
+    exit 1
+    ;;
+esac

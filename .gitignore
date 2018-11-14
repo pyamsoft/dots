@@ -1,0 +1,7 @@
+# Ignore vim setup specific files
+/vim/.config/nvim/autoload
+/vim/.config/nvim/plugged
+/vim/.config/nvim/swp
+
+# Ignore tmux setup specific files
+/tmux/.tmux/plugins
