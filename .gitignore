@@ -2,6 +2,7 @@
 /vim/.config/nvim/autoload
 /vim/.config/nvim/plugged
 /vim/.config/nvim/swp
+/vim/.config/nvim/.*
 
 # Ignore tmux setup specific files
 /tmux/.tmux/plugins
