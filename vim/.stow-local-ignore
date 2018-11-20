@@ -1,11 +1,5 @@
-# Ignore the Git directory
-\.git
-\.gitignore
-
-# Ignore tmux plugins
-\.tmux/plugins
-
 # Ignore vim plugins
 \.config/nvim/autoload
 \.config/nvim/plugged
 \.config/nvim/swp
+

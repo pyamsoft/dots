@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-  printf -- 'dots: Must provide "install", "uninstall", or "test".\n'
+    printf -- 'dots: Must provide "install", "uninstall", "test-install", or "test-uninstall".\n'
   exit 1
 fi
 
@@ -10,7 +10,7 @@ if ! command -v 'stow' > /dev/null 2>&1; then
   exit 1
 fi
 
-targets="fonts rofi scripts shell stow tmux vim xorg"
+targets="fonts rofi scripts shell stow tmux vim xorg xfce4"
 
 case "$1" in
   install)
@@ -23,13 +23,18 @@ case "$1" in
     stow -v -D ${targets}
     exit 0
     ;;
-  test)
+  test-install)
     # shellcheck disable=SC2086
     stow -v -n -S ${targets}
     exit 0
     ;;
+  test-uninstall)
+    # shellcheck disable=SC2086
+    stow -v -n -D ${targets}
+    exit 0
+    ;;
   *)
-    printf -- 'dots: Must provide "install", "uninstall", or "test".\n'
+    printf -- 'dots: Must provide "install", "uninstall", "test-install", or "test-uninstall".\n'
     exit 1
     ;;
 esac

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=960;y=456"/>
+      <property name="output-name" type="string" value="Primary"/>
+      <property name="size" type="uint" value="28"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="6"/>
+        <value type="int" value="7"/>
+        <value type="int" value="5"/>
+        <value type="int" value="3"/>
+        <value type="int" value="2"/>
+        <value type="int" value="4"/>
+      </property>
+      <property name="disable-struts" type="bool" value="false"/>
+      <property name="background-style" type="uint" value="0"/>
+      <property name="background-color" type="array">
+        <value type="uint" value="8481"/>
+        <value type="uint" value="8481"/>
+        <value type="uint" value="8481"/>
+        <value type="uint" value="65535"/>
+      </property>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <property name="plugin-2" type="string" value="systray">
+      <property name="names-visible" type="array">
+        <value type="string" value="obs"/>
+        <value type="string" value="vlc"/>
+        <value type="string" value="redshift-gtk"/>
+        <value type="string" value="thunar"/>
+        <value type="string" value="streamlink-twitch-gui"/>
+        <value type="string" value="indicator-kdeconnect"/>
+        <value type="string" value="networkmanager applet"/>
+        <value type="string" value="steam"/>
+        <value type="string" value="xfce terminal"/>
+        <value type="string" value="blueman-applet"/>
+        <value type="string" value="xfce4-power-manager"/>
+        <value type="string" value="gpick"/>
+        <value type="string" value="scp-dbus-service.py"/>
+        <value type="string" value="flameshot"/>
+      </property>
+      <property name="show-frame" type="bool" value="false"/>
+    </property>
+    <property name="plugin-5" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <property name="plugin-6" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+      <property name="expand" type="bool" value="true"/>
+    </property>
+    <property name="plugin-7" type="string" value="tasklist">
+      <property name="show-handle" type="bool" value="false"/>
+      <property name="show-labels" type="bool" value="false"/>
+      <property name="flat-buttons" type="bool" value="true"/>
+      <property name="sort-order" type="uint" value="4"/>
+      <property name="show-only-minimized" type="bool" value="false"/>
+      <property name="include-all-workspaces" type="bool" value="true"/>
+    </property>
+    <property name="plugin-3" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="mpris-players" type="string" value="Lollypop"/>
+    </property>
+    <property name="plugin-4" type="string" value="datetime"/>
+  </property>
+</channel>
