@@ -6,6 +6,11 @@ export PATH
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="${HOME}/.cache"
 
+# libstrangle
+# Set fps_max and threaded optimizations
+export FPS=100
+export TOPT=1
+
 # Wine with esync
 # https://github.com/zfigura/wine/blob/esync/README.esync
 export WINEDEBUG=-all
