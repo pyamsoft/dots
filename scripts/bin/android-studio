@@ -17,7 +17,7 @@ if [ -n "$1" ] && [ "$1" = "shell" ]; then
     --nodev \
     --bind-if-exists=/storage/pyamsoft/devel/android \
     --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
-    --setenv PATH "/opt/android-studio/bin:/opt/android-studio/jre/bin:${PATH}" \
+    --setenv PATH "/storage/pyamsoft/devel/android/sdk/platform-tools:/opt/android-studio/bin:/opt/android-studio/jre/bin:${PATH}" \
     android-studio "$@"
 else
   exec bww \
@@ -25,7 +25,7 @@ else
     --nodev \
     --bind-if-exists=/storage/pyamsoft/devel/android \
     --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
-    --setenv PATH "/opt/android-studio/bin:/opt/android-studio/jre/bin:${PATH}" \
+    --setenv PATH "/storage/pyamsoft/devel/android/sdk/platform-tools:/opt/android-studio/bin:/opt/android-studio/jre/bin:${PATH}" \
     android-studio "$@"
 fi
 

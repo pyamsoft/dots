@@ -16,7 +16,7 @@ man()
 # Usage: codi [filetype] [filename]
 codi() {
   shift
-  vim -c \
+  nvim -c \
     "let g:startify_disable_at_vimenter = 1 |\
     set bt=nofile ls=0 noru nonu nornu |\
     hi ColorColumn ctermbg=NONE |\
@@ -81,25 +81,5 @@ alias du="du -ch "
 # Quick ping, only ipv4
 alias p8="ping 8.8.8.8 "
 alias pingg="ping www.google.com "
-
-# Always vim
-alias vim="nvim "
-alias vi="vim "
-
-# Complete dots command with git options
-_dots()
-{
-  local cur
-  local prev
-  cur="${COMP_WORDS[COMP_CWORD]}"
-  prev="${COMP_WORDS[COMP_CWORD-1]}"
-
-  if [ "${cur}" = "dots" ] || [ "${prev}" = "dots" ]; then
-    COMPREPLY=( $(compgen -W "$(git --list-cmds=builtins)" -- "${cur}") )
-  else
-    _filedir
-  fi
-}
-complete -F _dots dots
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

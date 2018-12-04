@@ -1,5 +1,4 @@
 # Add android-sdk to path and user bin
-PATH="${HOME}/dev/sdk/android/platform-tools:${PATH}"
 PATH="${HOME}/bin:${PATH}"
 export PATH
 
