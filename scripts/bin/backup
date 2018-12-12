@@ -40,7 +40,7 @@ fi
 backup "${backup_options}" "${HOME}/.crypto/" "$1/crypto"
 backup "${backup_options}" "${HOME}/.keepass/" "$1/keepassx"
 backup "${backup_options}" "${HOME}/music/" "$1/music"
-backup "${backup_options}" "${HOME}/games/" "$1/games"
+backup "${backup_options}" "/storage/pyamsoft/games/dolphin" "$1/dolphin-emu"
 backup "${backup_options}" "${HOME}/documents/" "$1/documents"
 backup "${backup_options}" "${HOME}/.config/git-ssh/keys/" "$1/ssh_keys"
 
