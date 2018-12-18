@@ -8,7 +8,7 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 
 # libstrangle
 # Set fps_max and threaded optimizations
-export FPS=100
+export FPS=90
 export TOPT=1
 
 # Wine with esync
