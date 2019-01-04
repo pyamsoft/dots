@@ -38,6 +38,7 @@
         Plug 'tpope/vim-repeat'
         Plug 'tpope/vim-surround'
         Plug 'tpope/vim-vinegar'
+        Plug 'tpope/vim-unimpaired'
         Plug 'junegunn/vim-peekaboo'
         Plug 'tmux-plugins/vim-tmux'
         Plug 'tmux-plugins/vim-tmux-focus-events'
