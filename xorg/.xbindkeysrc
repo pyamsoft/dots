@@ -39,6 +39,12 @@
 "keepassxc"
   Mod4+X
 
+"pycharm"
+  Mod4+Y
+
+"slippi"
+  Mod4+P
+
 "rofi -show run"
   Mod4+Return
 
