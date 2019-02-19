@@ -6,5 +6,5 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec bww --nodev --nouser --noipc --nopid --nouts --forcename="proton" --bind-if-exists /storage/pyamsoft/games/proton lsi-steam "$@"
+exec bww --nodev --nouser --noipc --nopid --nouts --forcename="lutris" --bind-if-exists /storage/pyamsoft/games/lutris lutris "$@"
 
