@@ -1,6 +1,6 @@
 # Add android-sdk to path and user bin
-PATH="${HOME}/bin:${PATH}"
-export PATH
+export SYSTEM_DEFAULT_PATH="${PATH}"
+export PATH="${HOME}/bin:${PATH}"
 
 # Define XDG directories
 export XDG_CONFIG_HOME="$HOME/.config"
