@@ -23,12 +23,12 @@ export LIBVA_DRIVER_NAME=radeonsi
 export force_s3tc_enable=true
 
 # Fix QT to use GTK theme
-if command -v qt5ct > /dev/null; then
-  export QT_QPA_PLATFORMTHEME=qt5ct
-else
-  export QT_QPA_PLATFORMTHEME=gtk2
-  export QT_STYLE_OVERRIDE=gtk
-fi
+# if command -v qt5ct > /dev/null; then
+#   export QT_QPA_PLATFORMTHEME=qt5ct
+# else
+#   export QT_QPA_PLATFORMTHEME=gtk2
+#   export QT_STYLE_OVERRIDE=gtk
+# fi
 
 # Java
 export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
