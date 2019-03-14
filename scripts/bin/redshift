@@ -6,4 +6,4 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec sudo -g restricted -E -n bww --unshare-net --noipc redshift -t 3600:3600 -l 0:0 -l manual -m randr "$@"
+exec sudo -g restricted -E -n bww --unshare-net --noipc redshift "$@"
