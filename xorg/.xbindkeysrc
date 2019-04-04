@@ -45,7 +45,7 @@
 "slippi"
   Mod4+P
 
-"rofi -show run"
+"rofi -modi 'drun,run'-show drun"
   Mod4+Return
 
 "flameshot gui"
