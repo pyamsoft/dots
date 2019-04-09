@@ -1,4 +1,4 @@
-# Add android-sdk to path and user bin
+# Add user bin to path
 export SYSTEM_DEFAULT_PATH="${PATH}"
 export PATH="${HOME}/bin:${PATH}"
 
@@ -15,11 +15,6 @@ export TOPT=1
 # https://github.com/zfigura/wine/blob/esync/README.esync
 export WINEDEBUG=-all
 export WINEESYNC=1
-
-# SSH agent
-if [ -z "${SSH_AUTH_SOCK}" ]; then
-  eval $(ssh-agent -s)
-fi
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1
