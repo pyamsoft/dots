@@ -1,9 +1,0 @@
-#!/bin/sh
-
-landscape="DisplayPort-1"
-portrait="HDMI-A-0"
-
-exec xrandr \
-  --output "${landscape}" --auto --pos 0x375 --rotate normal --primary \
-  --output "${portrait}" --auto --rotate right --pos 1920x0
-
