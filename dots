@@ -10,7 +10,7 @@ if ! command -v 'stow' > /dev/null 2>&1; then
   exit 1
 fi
 
-targets="fonts rofi scripts shell stow systemd tmux vim xorg"
+targets="fonts rofi scripts shell stow systemd tilda tmux vim xorg"
 
 case "$1" in
   install)
