@@ -30,16 +30,16 @@
 "firefox"
   Mod4+W
 
-"android-studio"
+"flatpak run com.google.AndroidStudio"
   Mod4+I
 
-"lsi-steam"
+"flatpak run com.valvesoftware.Steam"
   Mod4+S
 
-"keepassxc"
+"flatpak run org.keepassxc.KeePassXC"
   Mod4+X
 
-"pycharm"
+"flatpak run com.jetbrains.PyCharm-Community"
   Mod4+Y
 
 "slippi"
