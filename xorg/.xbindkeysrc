@@ -33,17 +33,11 @@
 "com.google.AndroidStudio"
   Mod4+I
 
-"com.valvesoftware.Steam"
-  Mod4+S
-
 "org.keepassxc.KeePassXC"
   Mod4+X
 
 "com.jetbrains.PyCharm-Community"
   Mod4+Y
-
-"slippi"
-  Mod4+P
 
 "rofi -modi 'run' -show run"
   Mod4+Return
