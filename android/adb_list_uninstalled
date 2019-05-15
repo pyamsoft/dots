@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# List package names of any uninstalled packages that still live on the device
+# Basically, show a list of any uninstalled system packages
+
+uninstalled="$(pm list packages -u)"
+installed="$(pm list packages)"
+
+printf '%s\n%s' "${uninstalled}" "${installed}" | sort | uniq -u

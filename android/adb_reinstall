@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Re-install a package that was uninstalled for a single user via:
+#
+# adb uninstall --user 0 package-name
+cmd package install-existing "$1"
