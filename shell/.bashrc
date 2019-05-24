@@ -120,11 +120,6 @@ set_env_vars()
   # shellcheck disable=SC1090
   [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
 
-  # environment variables
-  # Export the PS1
-  PROMPT_COMMAND=prompt_command
-  export PROMPT_COMMAND
-
   # Disable the bash_history file
   HISTCONTROL=ignoreboth
   export HISTCONTROL
@@ -164,6 +159,7 @@ bashrc()
   set_shopt_options
   set_env_vars
   enable_bash_completion
+  prompt_command
 }
 
 # Source the dircolors here
