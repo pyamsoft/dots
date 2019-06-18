@@ -9,4 +9,5 @@
 exec bww \
   --bind-if-exists="${HOME}/downloads" \
   --setenv MOZ_USE_XINPUT2 1 \
+  --nodev \
   firefox "$@"
