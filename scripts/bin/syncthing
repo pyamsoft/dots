@@ -11,4 +11,5 @@ exec bww \
   --bind-if-exists=/storage/pyamsoft/games/dolphin \
   --bind-if-exists=/home/pyamsoft/pictures/wallpapers \
   --bind-if-exists=/home/pyamsoft/.keepass \
+  --bind-if-exists=/home/pyamsoft/videos \
   syncthing "$@"
