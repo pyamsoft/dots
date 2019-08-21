@@ -31,31 +31,28 @@
           Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         endif
         Plug 'bronson/vim-trailing-whitespace'
-        Plug 'Raimondi/delimitMate'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
         Plug 'tpope/vim-repeat'
         Plug 'tpope/vim-surround'
+        Plug 'tpope/vim-apathy'
         Plug 'tpope/vim-vinegar'
+        Plug 'tpope/vim-sensible'
+        Plug 'tpope/vim-fugitive'
         Plug 'tpope/vim-unimpaired'
         Plug 'junegunn/vim-peekaboo'
         Plug 'tmux-plugins/vim-tmux'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
         Plug 'sjl/gundo.vim'
-        " }}}
-        " Programming Related {{{
         Plug 'vim-syntastic/syntastic'
-        Plug 'xolox/vim-misc'
-        Plug 'xolox/vim-easytags'
-        Plug 'majutsushi/tagbar'
         Plug 'rstacruz/vim-closer'
-        Plug 'ervandew/supertab'
         Plug 'udalov/kotlin-vim'
         Plug 'davidhalter/jedi-vim'
         Plug 'whiteinge/diffconflicts'
         Plug 'metakirby5/codi.vim'
+        Plug 'WolfgangMehner/bash-support'
         " }}}
 
         call plug#end()
