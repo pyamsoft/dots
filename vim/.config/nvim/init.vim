@@ -53,6 +53,7 @@
         Plug 'whiteinge/diffconflicts'
         Plug 'metakirby5/codi.vim'
         Plug 'WolfgangMehner/bash-support'
+        Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
         " }}}
 
         call plug#end()
@@ -217,6 +218,9 @@
         " (1 second or so) and then type the second j.
         inoremap <silent> jj <Esc>
         inoremap <silent> jk <Esc>
+" }}}
+" NERDTree instead of netrw {{{
+        nnoremap <silent> - :NERDTreeToggle<CR>
 " }}}
 " License {{{
         " GPL2 License
