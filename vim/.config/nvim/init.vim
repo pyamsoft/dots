@@ -77,55 +77,15 @@
 " deoplete {{{
 	let g:deoplete#enable_at_startup = 1
 " }}}
-" FixWhitespace {{{
-        " Generally, like to keep the whitespace marker so that I know which lines
-        " have the ending double space to create a line break in display.
-        " let g:extra_whitespace_ignored_filetypes = ['mkd', 'markdown', 'md']
-" }}}
 " syntastic {{{
-" General {{{
         let g:syntastic_always_populate_loc_list = 1
         let g:syntastic_auto_loc_list = 1
         let g:syntastic_check_on_open = 1
         let g:syntastic_check_on_wq = 0
 " }}}
-" C {{{
-        let g:syntastic_c_check_header = 1
-        let g:syntastic_c_auto_refresh_includes = 1
-        let g:syntastic_c_compiler_options='-std=c99 -Wall -Wextra
-                                \ -Wmissing-prototypes -Wunreachable-code
-                                \ -Werror
-                                \'
-" }}}
-" C++ {{{
-        let g:syntastic_cpp_check_header = 1
-        let g:syntastic_cpp_auto_refresh_includes = 1
-        let g:syntastic_cpp_compiler_options='-std=c++11 -Wall -Wextra
-                                \ -Wpedantic -Wmissing-declarations
-                                \ -Wunreachable-code -Werror
-                                \'
-" }}}
-" }}}
-" vim-easytags {{{
-        set tags=~/.vimtags
-        " Sensible defaults
-        let g:easytags_events = ['BufReadPost', 'BufWritePost']
-        let g:easytags_async = 1
-        let g:easytags_dynamic_files = 2
-        let g:easytags_resolve_links = 1
-        let g:easytags_suppress_ctags_warning = 1
-" }}}
-" tagbar {{{
-" Open/close tagbar with <F3>
-        nmap <silent> <F3> :TagbarToggle<CR>
-" }}}
-" molokai {{{
-        let g:molokai_original = 1
-        let g:rehash256 = 0
-" }}}
 " rainbow_parentheses.vim {{{
-        let g:rainbow#max_level = 16
-        let g:rainbow#pairs = [['(', ')'], ['[', ']']]
+        let g:rainbow#max_level = 12
+        let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 " }}}
 " }}}
 " General Options {{{
