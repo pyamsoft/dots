@@ -30,6 +30,10 @@
         if has('python3')
           Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         endif
+        if !has('nvim')
+          Plug 'tpope/vim-sensible'
+        endif
+        Plug 'ycm-core/YouCompleteMe', { 'do': 'python3 ./install.py --ts-completer --clang-completer' }
         Plug 'bronson/vim-trailing-whitespace'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
@@ -37,8 +41,6 @@
         Plug 'tpope/vim-repeat'
         Plug 'tpope/vim-surround'
         Plug 'tpope/vim-apathy'
-        Plug 'tpope/vim-vinegar'
-        Plug 'tpope/vim-sensible'
         Plug 'tpope/vim-fugitive'
         Plug 'tpope/vim-unimpaired'
         Plug 'junegunn/vim-peekaboo'
@@ -49,11 +51,11 @@
         Plug 'vim-syntastic/syntastic'
         Plug 'rstacruz/vim-closer'
         Plug 'udalov/kotlin-vim'
-        Plug 'davidhalter/jedi-vim'
         Plug 'whiteinge/diffconflicts'
         Plug 'metakirby5/codi.vim'
         Plug 'WolfgangMehner/bash-support'
-        Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+        Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+        Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
         " }}}
 
         call plug#end()
