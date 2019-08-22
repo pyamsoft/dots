@@ -33,7 +33,6 @@
         if !has('nvim')
           Plug 'tpope/vim-sensible'
         endif
-        Plug 'ycm-core/YouCompleteMe', { 'do': 'python3 ./install.py --ts-completer --clang-completer' }
         Plug 'bronson/vim-trailing-whitespace'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
