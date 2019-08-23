@@ -25,6 +25,7 @@
         Plug 'bling/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
         Plug 'junegunn/rainbow_parentheses.vim'
+        Plug 'bronson/vim-trailing-whitespace'
         " }}}
         " General {{{
         if has('python3')
