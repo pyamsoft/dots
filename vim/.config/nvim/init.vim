@@ -27,12 +27,8 @@
         Plug 'junegunn/rainbow_parentheses.vim'
         " }}}
         " General {{{
-        if has('python3')
-          Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-        endif
-        if !has('nvim')
-          Plug 'tpope/vim-sensible'
-        endif
+        Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+        Plug 'hsanson/vim-android'
         Plug 'bronson/vim-trailing-whitespace'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
@@ -47,7 +43,6 @@
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
         Plug 'sjl/gundo.vim'
-        Plug 'vim-syntastic/syntastic'
         Plug 'rstacruz/vim-closer'
         Plug 'udalov/kotlin-vim'
         Plug 'whiteinge/diffconflicts'
@@ -60,6 +55,59 @@
         call plug#end()
 " }}}
 " Plugins Configuration {{{
+" coc.nvim {{{
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nnoremap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xnoremap <leader>f  <Plug>(coc-format-selected)
+nnoremap <leader>f  <Plug>(coc-format-selected)
+
+" Use `:Format` to format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` to fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" }}}
 " vim-airline {{{
         let g:airline_theme='tomorrow'
         let g:airline_powerline_font = 0
@@ -76,15 +124,6 @@
 " Gundo {{{
         nnoremap <F5> :GundoToggle<CR>
 " }}}
-" deoplete {{{
-	let g:deoplete#enable_at_startup = 1
-" }}}
-" syntastic {{{
-        let g:syntastic_always_populate_loc_list = 1
-        let g:syntastic_auto_loc_list = 1
-        let g:syntastic_check_on_open = 1
-        let g:syntastic_check_on_wq = 0
-" }}}
 " rainbow_parentheses.vim {{{
         let g:rainbow#max_level = 12
         let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
@@ -97,7 +136,7 @@
         set background=dark             " light backgrounds
         colorscheme Tomorrow-Night      " colorscheme
         set showmode                    " display the current mode
-        set cmdheight=1                 " cmdline is 1 row tall
+        set cmdheight=2                 " cmdline is 2 row tall
         set cc=80                       " color the 80th column
         set ff=unix                     " files are unix line ending
         set encoding=utf8               " UTF-8 encoding for files
@@ -126,6 +165,9 @@
         set undolevels=1000             " undo up to 1000 times
         set updatecount=100             " after writing number of characters
                                         " the swap file will be written to disk
+        set updatetime=300              " You will have bad experience for
+                                        " diagnostics when it's default 4000.
+
         set complete=.,w,b,u,U,t,i,d    " Completion options for CTRL-P/N
                                         " w - scan buffers from all windows
                                         " b - scan other loaded buffers in list
@@ -152,7 +194,10 @@
         set ttimeoutlen=50              " millisecond time to wait for keycode
                                         " to complete
         set directory=~/.vim/swp        " dir for swp files, must exist
+
         set nobackup                    " do not create backups
+        set nowritebackup
+
         set wrap                        " wrap lines longer than window width
         set magic                       " always keep on
         set fdm=marker                  " fold by markers
@@ -162,8 +207,9 @@
 
         set t_ut=                       " To stop background overriding
 
-                                        " set statusline
-        set statusline+=%#warningmsg#
+        set shortmess+=c                " don't give |ins-completion-menu| messages.
+
+        set statusline+=%#warningmsg#   " set statusline
         set statusline+=%{SyntasticStatuslineFlag()}
         set statusline+=%*
 " }}}
