@@ -27,9 +27,18 @@
         Plug 'junegunn/rainbow_parentheses.vim'
         " }}}
         " General {{{
-        Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+        if has('python3')
+          if has('nvim')
+            Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+          else
+            Plug 'Shougo/deoplete.nvim'
+            Plug 'roxma/nvim-yarp'
+            Plug 'roxma/vim-hug-neovim-rpc'
+          endif
+        endif
+
+        Plug 'dense-analysis/ale'
         Plug 'hsanson/vim-android'
-        Plug 'bronson/vim-trailing-whitespace'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
@@ -55,25 +64,8 @@
         call plug#end()
 " }}}
 " Plugins Configuration {{{
-" coc.nvim {{{
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
-
-" use `:OR` for organize import of current buffer
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-
+" deoplete {{{
+        let g:deoplete#enable_at_startup = 1
 " }}}
 " vim-airline {{{
         let g:airline_theme='tomorrow'
@@ -94,6 +86,19 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 " rainbow_parentheses.vim {{{
         let g:rainbow#max_level = 12
         let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" }}}
+" ale {{{
+        let g:ale_fixers = {
+        \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+        \   'markdown': ['remove_trailing_lines'],
+        \   'javascript': ['prettier', 'eslint'],
+        \}
+
+        " Set this variable to 1 to fix files when you save them.
+        let g:ale_fix_on_save = 1
+
+        " Use ALE and also some plugin 'foobar' as completion sources for all code.
+        call deoplete#custom#option('sources', { '_': ['ale'] })
 " }}}
 " }}}
 " General Options {{{
@@ -232,35 +237,6 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
 " NERDTree instead of netrw {{{
         nnoremap <silent> - :NERDTreeToggle<CR>
 " }}}
-" coc.nvim {{{
-  " Use tab for trigger completion with characters ahead and navigate.
-  " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-  inoremap <silent><expr> <TAB>
-        \ pumvisible() ? "\<C-n>" :
-        \ <SID>check_back_space() ? "\<TAB>" :
-        \ coc#refresh()
-  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
-
-  " Use <c-space> to trigger completion.
-  inoremap <silent><expr> <c-space> coc#refresh()
-
-  " Use K to show documentation in preview window
-  nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-  " Format document
-  nnoremap <silent> <Leader>f  :Format<CR>
-  xnoremap <silent> <Leader>f  :Format<CR>
-
-  " Organize document
-  nnoremap <silent> <Leader>o  :OR<CR>
-  xnoremap <silent> <Leader>o  :OR<CR>
-
-" }}}
 " License {{{
         " GPL2 License
         map :gpl2 :0r ~/.vim/licenses/gpl2<CR>
@@ -288,16 +264,5 @@ command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport
                 " Rainbow Parenthesis
                 autocmd BufEnter * RainbowParentheses
                 autocmd BufLeave * RainbowParentheses!
-
-                " Strip Trailing space on save
-                fun! StripTrailingWhitespace()
-                        " Don't strip on these filetypes
-                        if &ft =~ 'markdown'
-                                return
-                        endif
-                        FixWhitespace
-                endfun
-                autocmd BufWritePre * call StripTrailingWhitespace()
         endif
 " }}}
-
