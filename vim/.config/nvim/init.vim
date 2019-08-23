@@ -57,25 +57,6 @@
 " Plugins Configuration {{{
 " coc.nvim {{{
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
     execute 'h '.expand('<cword>')
@@ -87,21 +68,11 @@ endfunction
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Remap for rename current word
-nnoremap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-xnoremap <leader>f  <Plug>(coc-format-selected)
-nnoremap <leader>f  <Plug>(coc-format-selected)
-
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
 
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
 " use `:OR` for organize import of current buffer
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " }}}
 " vim-airline {{{
@@ -204,10 +175,6 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
         set t_ut=                       " To stop background overriding
 
         set shortmess+=c                " don't give |ins-completion-menu| messages.
-
-        set statusline+=%#warningmsg#   " set statusline
-        set statusline+=%{SyntasticStatuslineFlag()}
-        set statusline+=%*
 " }}}
 " Keybinds {{{
 " Leader {{{
@@ -230,7 +197,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
         nnoremap <silent> <Leader>x :x<CR>
 " }}}
 " Sourcing the vimrc {{{
-        noremap <silent> <Leader>r :source /etc/vimrc<CR>
+        noremap <silent> <Leader>r :source ~/.vimrc<CR>
         noremap <silent> <Leader>R :source /etc/vimrc<CR>
 " }}}
 " Buffer Navigation {{{
@@ -264,6 +231,35 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " }}}
 " NERDTree instead of netrw {{{
         nnoremap <silent> - :NERDTreeToggle<CR>
+" }}}
+" coc.nvim {{{
+  " Use tab for trigger completion with characters ahead and navigate.
+  " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+  inoremap <silent><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ <SID>check_back_space() ? "\<TAB>" :
+        \ coc#refresh()
+  inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+  endfunction
+
+  " Use <c-space> to trigger completion.
+  inoremap <silent><expr> <c-space> coc#refresh()
+
+  " Use K to show documentation in preview window
+  nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+  " Format document
+  nnoremap <silent> <Leader>f  :Format<CR>
+  xnoremap <silent> <Leader>f  :Format<CR>
+
+  " Organize document
+  nnoremap <silent> <Leader>o  :OR<CR>
+  xnoremap <silent> <Leader>o  :OR<CR>
+
 " }}}
 " License {{{
         " GPL2 License
