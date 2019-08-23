@@ -90,12 +90,6 @@
         let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 " }}}
 " ale {{{
-        let g:ale_fixers = {
-        \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-        \   'markdown': ['remove_trailing_lines'],
-        \   'javascript': ['prettier', 'eslint'],
-        \}
-
         " Set this variable to 1 to fix files when you save them.
         let g:ale_fix_on_save = 1
 
