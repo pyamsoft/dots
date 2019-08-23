@@ -80,6 +80,7 @@
         let g:airline#extensions#hunks#non_zero_only = 1
         let g:airline#extensions#tabline#buffer_nr_show=1
         let g:airline#extensions#tmuxline#enabled = 0
+        let g:airline#extensions#ale#enabled = 1
 " }}}
 " Gundo {{{
         nnoremap <F5> :GundoToggle<CR>
@@ -100,6 +101,12 @@
 
         " Use ALE and also some plugin 'foobar' as completion sources for all code.
         call deoplete#custom#option('sources', { '_': ['ale'] })
+
+        " Use ALE omnifunc
+        set omnifunc=ale#completion#OmniFunc
+
+        " Always show sign gutter
+        let g:ale_sign_column_always = 1
 " }}}
 " }}}
 " General Options {{{
