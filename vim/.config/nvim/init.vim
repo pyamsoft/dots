@@ -239,6 +239,10 @@
 " NERDTree instead of netrw {{{
         nnoremap <silent> - :NERDTreeToggle<CR>
 " }}}
+" ALE keybinds {{{
+        nnoremap <silent> <leader>f :ALEFix<CR>
+        xnoremap <silent> <leader>f :ALEFix<CR>
+" }}}
 " License {{{
         " GPL2 License
         map :gpl2 :0r ~/.vim/licenses/gpl2<CR>
