@@ -1,13 +1,13 @@
 #!/bin/sh
 
 if [ -z "$1" ]; then
-    printf -- 'dots: Must provide "install", "uninstall", "test-install", or "test-uninstall".\n'
+  printf -- 'dots: Must provide "install", "uninstall", "test-install", or "test-uninstall".\n'
   exit 1
 fi
 
 if ! command -v 'stow' > /dev/null 2>&1; then
   printf -- 'GNU stow must be installed.\n'
-  exit 1
+  exit 2
 fi
 
 targets="fonts rofi scripts shell stow systemd tmux vim xorg"
