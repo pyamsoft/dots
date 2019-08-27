@@ -94,13 +94,17 @@
         " let g:ale_fix_on_save = 1
 
         " Use ALE and also some plugin 'foobar' as completion sources for all code.
-        call deoplete#custom#option('sources', { '_': ['ale'] })
+        call deoplete#custom#option('sources', { '_': ['ale', 'buffer', 'file', 'around'] })
 
         " Use ALE omnifunc
         set omnifunc=ale#completion#OmniFunc
 
         " Always show sign gutter
         let g:ale_sign_column_always = 1
+" }}}
+" vim-android {{{
+        " Path to SDK
+        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk/'
 " }}}
 " }}}
 " General Options {{{
