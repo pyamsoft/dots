@@ -11,6 +11,46 @@
           autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
         endif
 " }}}
+" Plugins Configuration {{{
+" vim-android {{{
+        " Path to SDK
+        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk/'
+" }}}
+" deoplete {{{
+        let g:deoplete#enable_at_startup = 1
+" }}}
+" vim-airline {{{
+        let g:airline_theme='tomorrow'
+        let g:airline_powerline_font = 0
+        let g:airline#extensions#tabline#enabled=1
+        let g:airline#extensions#tabline#fnamemod=':t'
+        let g:airline#extensions#tabline#left_sep=' '
+        let g:airline#extensions#tabline#left_alt_sep='|'
+        let g:airline#extensions#tabline#right_sep=' '
+        let g:airline#extensions#tabline#right_alt_sep='|'
+        let g:airline#extensions#hunks#non_zero_only = 1
+        let g:airline#extensions#tabline#buffer_nr_show=1
+        let g:airline#extensions#tmuxline#enabled = 0
+        let g:airline#extensions#ale#enabled = 1
+" }}}
+" Gundo {{{
+        nnoremap <F5> :GundoToggle<CR>
+" }}}
+" rainbow_parentheses.vim {{{
+        let g:rainbow#max_level = 12
+        let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+" }}}
+" ale {{{
+        " Set this variable to 1 to fix files when you save them.
+        " let g:ale_fix_on_save = 1
+
+        " Use ALE omnifunc
+        set omnifunc=ale#completion#OmniFunc
+
+        " Always show sign gutter
+        let g:ale_sign_column_always = 1
+" }}}
+" }}}
 " Plugins Loading {{{
 
         " Need the vim-plug plugin from junegunn's GitHub repository
@@ -64,48 +104,9 @@
 
         call plug#end()
 " }}}
-" Plugins Configuration {{{
-" deoplete {{{
-        let g:deoplete#enable_at_startup = 1
-" }}}
-" vim-airline {{{
-        let g:airline_theme='tomorrow'
-        let g:airline_powerline_font = 0
-        let g:airline#extensions#tabline#enabled=1
-        let g:airline#extensions#tabline#fnamemod=':t'
-        let g:airline#extensions#tabline#left_sep=' '
-        let g:airline#extensions#tabline#left_alt_sep='|'
-        let g:airline#extensions#tabline#right_sep=' '
-        let g:airline#extensions#tabline#right_alt_sep='|'
-        let g:airline#extensions#hunks#non_zero_only = 1
-        let g:airline#extensions#tabline#buffer_nr_show=1
-        let g:airline#extensions#tmuxline#enabled = 0
-        let g:airline#extensions#ale#enabled = 1
-" }}}
-" Gundo {{{
-        nnoremap <F5> :GundoToggle<CR>
-" }}}
-" rainbow_parentheses.vim {{{
-        let g:rainbow#max_level = 12
-        let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
-" }}}
-" ale {{{
-        " Set this variable to 1 to fix files when you save them.
-        " let g:ale_fix_on_save = 1
-
+" Plugin Initialization {{{
         " Use ALE and also some plugin 'foobar' as completion sources for all code.
         call deoplete#custom#option('sources', { '_': ['ale', 'buffer', 'file', 'around'] })
-
-        " Use ALE omnifunc
-        set omnifunc=ale#completion#OmniFunc
-
-        " Always show sign gutter
-        let g:ale_sign_column_always = 1
-" }}}
-" vim-android {{{
-        " Path to SDK
-        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk/'
-" }}}
 " }}}
 " General Options {{{
         scriptencoding utf-8            " UTF-8 for scripts
