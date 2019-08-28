@@ -1,3 +1,8 @@
+# If we have already been sourced, exit out
+if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
+  exit 0
+fi
+
 # Add user bin to path
 export SYSTEM_DEFAULT_PATH="${PATH}"
 export PATH="${HOME}/bin:${PATH}"
@@ -16,6 +21,12 @@ export TOPT=1
 # https://github.com/zfigura/wine/blob/esync/README.esync
 export WINEDEBUG=-all
 export WINEESYNC=1
+
+# Launch an ssh-agent the entire user session
+# Your DE may launch ssh agents for you - be sure you are not doubling up!
+if [ -z "${SSH_AUTH_SOCK}" ]; then
+  eval "$(ssh-agent -s)"
+fi
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1

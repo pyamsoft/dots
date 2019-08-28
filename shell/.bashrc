@@ -173,15 +173,10 @@ unset set_stty_options
 unset set_shopt_options
 
 
-# Sometimes we get disconnected from gnome-keyring, even though its agent is
-# still running normally.
+# Launch an ssh-agent at least for this shell - see .environment
+# for an agent for an entire session - normally this line will not be used.
 if [ -z "${SSH_AUTH_SOCK}" ]; then
-  ssh_socket="/run/user/$(id -u)/keyring/ssh"
-  if [ -r "${ssh_socket}" ]; then
-    # Use gnome-keyring
-    SSH_AUTH_SOCK="${ssh_socket}"
-    export SSH_AUTH_SOCK
-  fi
+  eval "$(ssh-agent -s)"
 fi
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
