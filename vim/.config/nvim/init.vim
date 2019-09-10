@@ -107,6 +107,9 @@
 " Plugin Initialization {{{
         " Use ALE and also some plugin 'foobar' as completion sources for all code.
         call deoplete#custom#option('sources', { '_': ['ale', 'buffer', 'file', 'around'] })
+
+        " Fix completion bug -> :h ale-completion-completeopt-bug
+        set completeopt=menu,menuone,preview,noselect,noinsert
 " }}}
 " General Options {{{
         scriptencoding utf-8            " UTF-8 for scripts
@@ -147,15 +150,6 @@
         set updatetime=300              " You will have bad experience for
                                         " diagnostics when it's default 4000.
 
-        set complete=.,w,b,u,U,t,i,d    " Completion options for CTRL-P/N
-                                        " w - scan buffers from all windows
-                                        " b - scan other loaded buffers in list
-                                        " u - scan unloaded buffers in list
-                                        " U - scan all buffers not in list
-                                        " t - tag completion
-                                        " i - scan current and included files
-                                        " d - scan current and included for
-                                        " defined name or macro
         set noerrorbells                " no bell on error
         set backspace=2                 " fix backspace key in insert mode
         set showmatch                   " show matches
