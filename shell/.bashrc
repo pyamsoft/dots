@@ -160,7 +160,7 @@ bashrc()
   set_env_vars
   enable_bash_completion
 
-  readonly PROMPT_COMMAND=prompt_command
+  PROMPT_COMMAND=prompt_command
   export PROMPT_COMMAND
 }
 
