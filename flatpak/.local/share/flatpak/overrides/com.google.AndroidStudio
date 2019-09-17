@@ -1,0 +1,8 @@
+[Context]
+devices=all;kvm;
+features=devel;multiarch;
+filesystems=/storage/pyamsoft/devel/android;
+
+[Environment]
+PATH=/app/bin:/usr/bin:/app/extra/bin:/app/extra/jre/bin:/storage/pyamsoft/devel/android/sdk/emulator:/storage/pyamsoft/devel/android/sdk/tools:/storage/pyamsoft/devel/android/sdk/platform-tools
+_JAVA_OPTIONS=-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true
