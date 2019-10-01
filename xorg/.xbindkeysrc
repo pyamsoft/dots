@@ -30,17 +30,20 @@
 "firefox"
   Mod4+W
 
-"com.google.AndroidStudio"
+"android-studio"
   Mod4+I
 
-"org.keepassxc.KeePassXC"
+"keepassxc"
   Mod4+X
 
-"com.jetbrains.PyCharm-Community"
+"pycharm"
   Mod4+Y
 
 "rofi -modi 'run' -show run"
   Mod4+Return
+
+"rofi -modi 'run' -show run"
+  Mod4+R
 
 "flameshot gui"
   Mod4+Print
