@@ -5,8 +5,11 @@ fi
 
 # Add user bin to path
 export SYSTEM_DEFAULT_PATH="${PATH}"
-export PATH="${HOME}/bin:${HOME}/.local/bin:${HOME}/.bww/bin:${PATH}"
-export JDK_HOME=$(readlink -f /usr/bin/javac | sed "s:/bin/javac::")
+
+# Add user path, wrap bin priority over local bin over home bin
+export PATH="${HOME}/bin:${PATH}"
+export PATH="${HOME}/.local/bin:${PATH}"
+export PATH="${HOME}/.bww/bin:${PATH}"
 
 # Define XDG directories
 export XDG_CONFIG_HOME="$HOME/.config"

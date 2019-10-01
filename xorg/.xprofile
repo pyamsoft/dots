@@ -44,11 +44,6 @@ if command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
 fi
 
-# shellcheck disable=SC1091
-# Source /etc/bash.bashrc if the environment is not setup
-if [ -z "${PYAMSOFT_SYSTEM}" ]; then
-  [ -f /etc/bash.bashrc ] && . /etc/bash.bashrc
-fi
 # shellcheck disable=SC1090
 # Source bash_profile if the environment is not setup
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
@@ -57,6 +52,3 @@ fi
 
 # Bind DE agnostic keybinds
 xbindkeys
-
-# Turn on compositing
-toggle_compositing on
