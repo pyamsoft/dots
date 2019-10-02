@@ -6,4 +6,16 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec bww --nodev --bind-if-exists="/storage/pyamsoft/devel/android/" android-studio "$@"
+readonly arguments=" \
+  --nodev \
+  --bind-if-exists=/storage/pyamsoft/devel/android \
+  --setenv PATH /storage/pyamsoft/devel/android/sdk/platform-tools:/storage/pyamsoft/devel/android/sdk/tools:${PATH} \
+  "
+
+if [ "$1" = "shell" ]; then
+  # shellcheck disable=SC2086
+  exec bww $arguments --shell android-studio "$@"
+else
+  # shellcheck disable=SC2086
+  exec bww $arguments android-studio "$@"
+fi
