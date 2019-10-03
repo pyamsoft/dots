@@ -1,0 +1,9 @@
+#!/bin/sh
+
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+
+# shellcheck disable=SC1090
+[ -f "${HOME}"/.xprofile ] && . "${HOME}"/.xprofile
+
+exec startxfce4
