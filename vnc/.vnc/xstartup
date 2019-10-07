@@ -1,9 +1,13 @@
 #!/bin/sh
 
+# shellcheck disable=SC1090
+[ -f "${HOME}"/.xprofile ] && . "${HOME}"/.xprofile
+
+# These must be unset to have dbus launch
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 
-# shellcheck disable=SC1090
-[ -f "${HOME}"/.xprofile ] && . "${HOME}"/.xprofile
+# Make QT apps play nice with VNC client
+export QT_QPA_PLATFORM=vnc
 
 exec startxfce4
