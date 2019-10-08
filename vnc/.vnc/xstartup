@@ -7,7 +7,8 @@
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 
-# Make QT apps play nice with VNC client
-export QT_QPA_PLATFORM=vnc
+# Do not attempt hardware rendering since we don't have hardware access
+export LIBGL_ALWAYS_SOFTWARE=1
+
 
 exec startxfce4
