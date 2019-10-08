@@ -12,11 +12,13 @@
       </property>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Delete" type="empty"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;l" type="empty"/>
+      <property name="&lt;Primary&gt;&lt;Alt&gt;t" type="empty"/>
       <property name="XF86Display" type="empty"/>
       <property name="&lt;Super&gt;p" type="empty"/>
       <property name="&lt;Primary&gt;Escape" type="empty"/>
       <property name="XF86WWW" type="empty"/>
       <property name="XF86Mail" type="empty"/>
+      <property name="Print" type="empty"/>
     </property>
     <property name="custom" type="empty">
       <property name="&lt;Alt&gt;F3" type="empty">
@@ -26,7 +28,8 @@
         <property name="startup-notify" type="bool" value="true"/>
       </property>
       <property name="override" type="bool" value="true"/>
-      <property name="&lt;Super&gt;l" type="string" value="xflock4">
+      <property name="&lt;Super&gt;l" type="string" value="xflock4"/>
+      <property name="&lt;Super&gt;e" type="string" value="thunar">
         <property name="startup-notify" type="bool" value="true"/>
       </property>
       <property name="&lt;Super&gt;t" type="string" value="xfce4-terminal -e &apos;tmux -2u&apos;">
@@ -36,9 +39,6 @@
         <property name="startup-notify" type="bool" value="true"/>
       </property>
       <property name="&lt;Shift&gt;&lt;Super&gt;q" type="string" value="xfce4-session-logout">
-        <property name="startup-notify" type="bool" value="true"/>
-      </property>
-      <property name="&lt;Super&gt;e" type="string" value="thunar">
         <property name="startup-notify" type="bool" value="true"/>
       </property>
     </property>
@@ -124,7 +124,7 @@
     </property>
   </property>
   <property name="providers" type="array">
-    <value type="string" value="commands"/>
     <value type="string" value="xfwm4"/>
+    <value type="string" value="commands"/>
   </property>
 </channel>
