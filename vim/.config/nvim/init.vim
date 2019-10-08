@@ -59,7 +59,7 @@
         call plug#begin()
 
         " Colorschemes {{{
-        Plug 'chriskempson/vim-tomorrow-theme'
+        Plug 'dylanaraps/wal.vim'
         " }}}
         " Visual {{{
         Plug 'bling/vim-airline'
@@ -116,7 +116,7 @@
         filetype plugin indent on       " Turn on filetype plugins
         syntax on                       " syntax highlighting
         set background=dark             " light backgrounds
-        colorscheme Tomorrow-Night      " colorscheme
+        colorscheme wal                 " colorscheme
         set showmode                    " display the current mode
         set cmdheight=2                 " cmdline is 2 row tall
         set cc=80                       " color the 80th column
