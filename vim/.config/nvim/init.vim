@@ -115,7 +115,6 @@
         scriptencoding utf-8            " UTF-8 for scripts
         filetype plugin indent on       " Turn on filetype plugins
         syntax on                       " syntax highlighting
-        set background=dark             " light backgrounds
         colorscheme wal                 " colorscheme
         set showmode                    " display the current mode
         set cmdheight=2                 " cmdline is 2 row tall
@@ -257,14 +256,6 @@
         if has("autocmd")
                 " Set some format options
                 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-                " CursorLine bolds the current line in the active buffer
-                hi CursorLine ctermbg=none cterm=bold
-                autocmd BufEnter * set cul
-                autocmd BufLeave * set nocul
-
-                " Italic comments in terminals that support
-                hi Comment ctermbg=none cterm=italic
 
                 " Rainbow Parenthesis
                 autocmd BufEnter * RainbowParentheses
