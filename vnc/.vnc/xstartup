@@ -7,8 +7,7 @@
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 
-# Do not attempt hardware rendering since we don't have hardware access
-export LIBGL_ALWAYS_SOFTWARE=1
-
+# Fix to make GNOME work
+export XKL_XMODMAP_DISABLE=1
 
 exec startxfce4

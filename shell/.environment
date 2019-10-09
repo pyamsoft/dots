@@ -12,6 +12,12 @@ PATH="${HOME}/.local/bin:${PATH}"
 PATH="${HOME}/.bww/bin:${PATH}"
 export PATH
 
+# On VNC sessions, PATH is sometimes re-written. How weird.
+# See .bashrc for application of PYAMSOFT_PATH
+if [ -z "${PYAMSOFT_PATH}" ]; then
+  export PYAMSOFT_PATH="${PATH}"
+fi
+
 # Define XDG directories
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="${HOME}/.cache"

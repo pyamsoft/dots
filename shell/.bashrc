@@ -142,6 +142,21 @@ set_env_vars()
 
   CXX=g++
   export CXX
+
+  # Incase LANG is not defined since Java and other tools nolikey POSIX
+  # May be UserLand related on Android
+  if [ -z "${LANG}" ]; then
+    export LANG="en_US.UTF-8"
+    export LANGUAGE="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+  fi
+
+  # May be UserLand related on Android
+  # On VNC sessions, PATH is sometimes re-written. How weird.
+  if [ -n "${PYAMSOFT_PATH}" ]; then
+    PATH="${PYAMSOFT_PATH}"
+    export PATH
+  fi
 }
 
 enable_bash_completion()
