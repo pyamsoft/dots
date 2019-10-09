@@ -10,7 +10,4 @@ unset DBUS_SESSION_BUS_ADDRESS
 # Fix to make GNOME work
 export XKL_XMODMAP_DISABLE=1
 
-# We can use device in some cases
-export LIBGL_ALWAYS_SOFTWARE=0
-
 startxfce4 &
