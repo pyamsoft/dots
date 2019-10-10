@@ -1,0 +1,17 @@
+#!/bin/sh
+
+xsrv="51"
+display=":${xsrv}"
+
+if [ -n "$1" ] && [ "$1" = "phone" ]; then
+  # FHD+
+  geometry="2140x1080"
+else
+  # FHD
+  # geometry="1920x1080"
+  #
+  # HD+
+  geometry="1600x900"
+fi
+
+exec tightvncserver "${display}" -localhost -geometry "${geometry}" -lazytight -economictranslate
