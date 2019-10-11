@@ -2,6 +2,7 @@
 
 xsrv="51"
 display=":${xsrv}"
+geometry=""
 
 if [ -n "$1" ] && [ "$1" = "phone" ]; then
   # FHD+
@@ -14,4 +15,5 @@ else
   geometry="1600x900"
 fi
 
-exec tightvncserver "${display}" -localhost -geometry "${geometry}" -lazytight -economictranslate
+printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
+exec vncserver "${display}" -localhost -geometry "${geometry}" -comparefb 0 -improvedhextile 0

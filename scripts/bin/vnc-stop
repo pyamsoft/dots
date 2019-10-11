@@ -3,6 +3,6 @@
 xsrv="51"
 display=":${xsrv}"
 
-tightvncserver -kill "${display}" > /dev/null 2>&1
+vncserver -kill "${display}" > /dev/null 2>&1
 rm -f "/tmp/.X${xsrv}-lock"
 rm -f "/tmp/.X11-unix/X${xsrv}"
