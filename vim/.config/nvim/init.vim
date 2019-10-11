@@ -14,7 +14,7 @@
 " Plugins Configuration {{{
 " vim-android {{{
         " Path to SDK
-        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk/'
+        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk'
 " }}}
 " deoplete {{{
         let g:deoplete#enable_at_startup = 1
@@ -36,10 +36,6 @@
 " Gundo {{{
         nnoremap <F5> :GundoToggle<CR>
 " }}}
-" rainbow_parentheses.vim {{{
-        let g:rainbow#max_level = 12
-        let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
-" }}}
 " ale {{{
         " Set this variable to 1 to fix files when you save them.
         " let g:ale_fix_on_save = 1
@@ -49,6 +45,12 @@
 
         " Always show sign gutter
         let g:ale_sign_column_always = 1
+
+        " Java LSP
+        let g:ale_java_javalsp_executable = '~/.vim/plugged/java-language-server/dist/launch_linux.sh'
+
+        " Kotlin LSP
+        let g:ale_kotlin_languageserver_executable = '~/.vim/plugged/kotlin-language-server/server/build/install/server/bin/kotlin-language-server'
 " }}}
 " }}}
 " Plugins Loading {{{
@@ -62,9 +64,8 @@
         Plug 'dylanaraps/wal.vim'
         " }}}
         " Visual {{{
-        Plug 'bling/vim-airline'
+        Plug 'vim-airline/vim-airline'
         Plug 'vim-airline/vim-airline-themes'
-        Plug 'junegunn/rainbow_parentheses.vim'
         Plug 'bronson/vim-trailing-whitespace'
         " }}}
         " General {{{
@@ -92,11 +93,11 @@
         Plug 'tmux-plugins/vim-tmux'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
+        Plug 'georgewfraser/java-language-server'
+        Plug 'fwcd/kotlin-language-server'
         Plug 'sjl/gundo.vim'
         Plug 'rstacruz/vim-closer'
         Plug 'udalov/kotlin-vim'
-        Plug 'whiteinge/diffconflicts'
-        Plug 'metakirby5/codi.vim'
         Plug 'WolfgangMehner/bash-support'
         Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
         Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
@@ -252,13 +253,10 @@
         map :mit :0r ~/.vim/licenses/mit<CR>
 " }}}
 "}}}
+" }}}
 " Autocmds {{{
-        if has("autocmd")
-                " Set some format options
-                autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-                " Rainbow Parenthesis
-                autocmd BufEnter * RainbowParentheses
-                autocmd BufLeave * RainbowParentheses!
-        endif
+    if has("autocmd")
+      " Set some format options
+      autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+    endif
 " }}}
