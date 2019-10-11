@@ -45,12 +45,6 @@
 
         " Always show sign gutter
         let g:ale_sign_column_always = 1
-
-        " Java LSP
-        let g:ale_java_javalsp_executable = '~/.vim/plugged/java-language-server/dist/launch_linux.sh'
-
-        " Kotlin LSP
-        let g:ale_kotlin_languageserver_executable = '~/.vim/plugged/kotlin-language-server/server/build/install/server/bin/kotlin-language-server'
 " }}}
 " }}}
 " Plugins Loading {{{
@@ -86,15 +80,10 @@
         Plug 'tpope/vim-endwise'
         Plug 'tpope/vim-repeat'
         Plug 'tpope/vim-surround'
-        Plug 'tpope/vim-apathy'
-        Plug 'tpope/vim-fugitive'
-        Plug 'tpope/vim-unimpaired'
         Plug 'junegunn/vim-peekaboo'
         Plug 'tmux-plugins/vim-tmux'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
-        Plug 'georgewfraser/java-language-server'
-        Plug 'fwcd/kotlin-language-server'
         Plug 'sjl/gundo.vim'
         Plug 'rstacruz/vim-closer'
         Plug 'udalov/kotlin-vim'
