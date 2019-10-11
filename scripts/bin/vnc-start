@@ -16,4 +16,4 @@ else
 fi
 
 printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
-exec vncserver "${display}" -localhost -geometry "${geometry}" -comparefb 0 -improvedhextile 0
+exec vncserver "${display}" -localhost -geometry "${geometry}" -comparefb=0 -improvedhextile=0
