@@ -1,8 +1,0 @@
-#!/usr/bin/pulseaudio -nF
-
-# Null sink and source
-load-module module-null-sink
-load-module module-null-source
-
-# Echo cancellation
-# load-module module-echo-cancel
