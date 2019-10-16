@@ -3,9 +3,16 @@
 <channel name="xfce4-notifyd" version="1.0">
   <property name="applications" type="empty">
     <property name="known_applications" type="array">
+      <value type="string" value="Electron"/>
       <value type="string" value="firewall-applet"/>
       <value type="string" value="nm-applet"/>
+      <value type="string" value="notify-send"/>
+      <value type="string" value="org.gnome.Lollypop"/>
+      <value type="string" value="org.kde.org.kde.kdeconnect.daemon"/>
+      <value type="string" value="Studio"/>
+      <value type="string" value="Xfce volume control"/>
       <value type="string" value="Xfce4-notifyd settings"/>
+      <value type="string" value="xfce4-settings-helper"/>
     </property>
   </property>
   <property name="primary-monitor" type="uint" value="0"/>

@@ -9,16 +9,17 @@
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
       <property name="icon-size" type="uint" value="0"/>
-      <property name="size" type="uint" value="26"/>
+      <property name="size" type="uint" value="28"/>
       <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="6"/>
+        <value type="int" value="8"/>
         <value type="int" value="3"/>
         <value type="int" value="2"/>
         <value type="int" value="5"/>
-        <value type="int" value="8"/>
-        <value type="int" value="6"/>
-        <value type="int" value="1"/>
-        <value type="int" value="12"/>
+        <value type="int" value="4"/>
       </property>
+      <property name="mode" type="uint" value="2"/>
     </property>
   </property>
   <property name="plugins" type="empty">
@@ -41,6 +42,9 @@
       <property name="show-frame" type="bool" value="false"/>
       <property name="square-icons" type="bool" value="true"/>
       <property name="names-ordered" type="array">
+        <value type="string" value="steam"/>
+        <value type="string" value="electron4"/>
+        <value type="string" value="blueman"/>
         <value type="string" value="xfce4-power-manager"/>
         <value type="string" value="xfce terminal"/>
         <value type="string" value="firewall-applet"/>
@@ -57,10 +61,9 @@
     <property name="plugin-8" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
       <property name="show-notifications" type="bool" value="true"/>
-    </property>
-    <property name="plugin-12" type="string" value="clock">
-      <property name="timezone" type="string" value="US/Pacific"/>
+      <property name="mpris-players" type="string" value="Lollypop"/>
     </property>
     <property name="plugin-1" type="string" value="weather"/>
+    <property name="plugin-4" type="string" value="whiskermenu"/>
   </property>
 </channel>
