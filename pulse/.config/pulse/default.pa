@@ -95,13 +95,6 @@ load-module module-gsettings
 .fail
 .endif
 
-
-# Load these first since they may be the default
-#
-# Null source and sink
-load-module module-null-sink
-load-module module-null-source
-
 ### Automatically restore the default sink/source when changed by the user
 ### during runtime
 ### NOTE: This should be loaded as early as possible so that subsequent modules
