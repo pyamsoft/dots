@@ -9,8 +9,9 @@
 readonly arguments=" \
   --nodev \
   --bind-if-exists=/storage/pyamsoft/devel/android \
-  --setenv PATH /storage/pyamsoft/devel/android/sdk/platform-tools:/storage/pyamsoft/devel/android/sdk/tools:${PATH} \
+  --setenv PATH /storage/pyamsoft/devel/android/sdk/platform-tools:/storage/pyamsoft/devel/android/sdk/tools:/opt/android-studio/jre/bin:/opt/android-studio/jre/jre/bin:${PATH} \
   "
+
 
 if [ "$1" = "shell" ]; then
   # shellcheck disable=SC2086
