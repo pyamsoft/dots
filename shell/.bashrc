@@ -172,7 +172,7 @@ enable_wal()
 {
   if command -v wal > /dev/null; then
     if [ -r "${HOME}/.cache/wal/colors.json" ]; then
-      (wal -R > /dev/null 2>&1 &)
+      (wal -q -R > /dev/null 2>&1 &)
     fi
   fi
 }
