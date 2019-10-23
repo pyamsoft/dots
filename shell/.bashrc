@@ -168,12 +168,22 @@ enable_bash_completion()
   unset bcomp
 }
 
+enable_wal()
+{
+  if command -v wal > /dev/null; then
+    if [ -r "${HOME}/.cache/wal/colors.json" ]; then
+      (wal -R > /dev/null 2>&1 &)
+    fi
+  fi
+}
+
 bashrc()
 {
   set_stty_options
   set_shopt_options
   set_env_vars
   enable_bash_completion
+  enable_wal
 
   PROMPT_COMMAND=prompt_command
   export PROMPT_COMMAND
@@ -188,6 +198,7 @@ unset enable_bash_completion
 unset set_env_vars
 unset set_stty_options
 unset set_shopt_options
+unset enable_wal
 
 
 # Launch an ssh-agent at least for this shell - see .environment
