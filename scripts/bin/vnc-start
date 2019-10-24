@@ -6,5 +6,5 @@ geometry="1366x768"
 # geometry="1600x900"
 # geometry="1920x1080"
 
-  printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
-  exec vncserver "${display}" --localhost=1 --geometry="${geometry}" --comparefb=0 --improvedhextile=0 -tst -xinerama -noclipboard --zliblevel=0 --deferupdate=0 "$@"
+printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
+exec vncserver "${display}" --localhost=1 -geometry "${geometry}" --comparefb=0 --improvedhextile=0 -tst -xinerama -noclipboard --zliblevel=0 "$@"
