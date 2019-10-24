@@ -2,18 +2,9 @@
 
 xsrv="51"
 display=":${xsrv}"
-geometry=""
+geometry="1366x768"
+# geometry="1600x900"
+# geometry="1920x1080"
 
-if [ -n "$1" ] && [ "$1" = "phone" ]; then
-  # FHD+
-  geometry="2140x1080"
-else
-  # FHD
-  # geometry="1920x1080"
-  #
-  # HD+
-  geometry="1600x900"
-fi
-
-printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
-exec vncserver "${display}" -localhost -geometry "${geometry}" -comparefb=0 -improvedhextile=0
+  printf -- 'Starting tigervnc with geometry:%s\n' "${geometry}"
+  exec vncserver "${display}" --localhost=1 --geometry="${geometry}" --comparefb=0 --improvedhextile=0 -tst -xinerama -noclipboard --zliblevel=0 --deferupdate=0 "$@"
