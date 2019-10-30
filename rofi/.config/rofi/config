@@ -1,4 +1,4 @@
-rofi.theme: /usr/share/rofi/themes/Monokai.rasi
+rofi.theme: ./themes/base16-default-dark.rasi
 rofi.lines: 20
 rofi.width: 40
 rofi.terminal: xfce4-terminal
