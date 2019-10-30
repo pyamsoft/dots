@@ -178,22 +178,12 @@ enable_bash_completion()
   unset bcomp
 }
 
-enable_wal()
-{
-  if command -v wal > /dev/null; then
-    if [ -r "${HOME}/.cache/wal/colors.json" ]; then
-      (wal -q -R > /dev/null 2>&1 &)
-    fi
-  fi
-}
-
 bashrc()
 {
   set_stty_options
   set_shopt_options
   set_env_vars
   enable_bash_completion
-  enable_wal
 
   PROMPT_COMMAND=prompt_command
   export PROMPT_COMMAND

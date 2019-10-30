@@ -105,7 +105,7 @@
         scriptencoding utf-8            " UTF-8 for scripts
         filetype plugin indent on       " Turn on filetype plugins
         syntax on                       " syntax highlighting
-        colorscheme base16-default-dark " colorscheme
+        colorscheme base16-monokai      " colorscheme
         set showmode                    " display the current mode
         set cmdheight=2                 " cmdline is 2 row tall
         set cc=80                       " color the 80th column
