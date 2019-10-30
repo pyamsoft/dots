@@ -3,5 +3,5 @@ rofi.lines: 20
 rofi.width: 40
 rofi.terminal: xfce4-terminal
 rofi.hide-scrollbar: true
-rofi.font: Fira Mono 12
+rofi.font: Source Code Pro 12
 rofi.show-icons: true
