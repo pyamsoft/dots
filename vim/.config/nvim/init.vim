@@ -20,7 +20,7 @@
         let g:deoplete#enable_at_startup = 1
 " }}}
 " vim-airline {{{
-        let g:airline_theme='tomorrow'
+        let g:airline_theme='base16_default'
         let g:airline_powerline_font = 0
         let g:airline#extensions#tabline#enabled=1
         let g:airline#extensions#tabline#fnamemod=':t'
@@ -102,74 +102,74 @@
         set completeopt=menu,menuone,preview,noselect,noinsert
 " }}}
 " General Options {{{
-        scriptencoding utf-8            " UTF-8 for scripts
-        filetype plugin indent on       " Turn on filetype plugins
-        syntax on                       " syntax highlighting
-        colorscheme base16-monokai      " colorscheme
-        set showmode                    " display the current mode
-        set cmdheight=2                 " cmdline is 2 row tall
-        set cc=80                       " color the 80th column
-        set ff=unix                     " files are unix line ending
-        set encoding=utf8               " UTF-8 encoding for files
-        set ls=2                        " always have statuslines
-        set autoindent                  " autoindent
-        set smartindent                 " smart indents
-        set tabstop=2                   " number of spaces per TAB
-        set softtabstop=2               " number of spaces in TAB during edits
-        set shiftwidth=2                " number of spaces to use in autoindent
-        set shiftround                  " round indents to a multiple of
-                                        " shitwidth
-        set expandtab                   " TABS made of spaces
-        set number                      " line numbers
-        set hidden                      " allow switching buffers without save
-        set ruler                       " show line and column of cursor
-        set smartcase                   " smart case
-        set ignorecase                  " ignore case
-        set autoread                    " auto read files that have changed
-                                        " outside of vim
-        set lazyredraw                  " dont redraw during macros
-        set noautochdir                 " dont auto cd to the current file
-        set eol                         " always write an EOL
-        set scrolloff=6                 " keep atleast 6 rows on screen
-        set sidescrolloff=6             " keep atleast 6 columns on screen
-        set history=500                 " remember last 500 commands
-        set undolevels=1000             " undo up to 1000 times
-        set updatecount=100             " after writing number of characters
-                                        " the swap file will be written to disk
-        set updatetime=300              " You will have bad experience for
-                                        " diagnostics when it's default 4000.
+        scriptencoding utf-8              " UTF-8 for scripts
+        filetype plugin indent on         " Turn on filetype plugins
+        syntax on                         " syntax highlighting
+        colorscheme base16-default-dark "colorscheme
+        set showmode                      " display the current mode
+        set cmdheight=2                   " cmdline is 2 row tall
+        set cc=80                         " color the 80th column
+        set ff=unix                       " files are unix line ending
+        set encoding=utf8                 " UTF-8 encoding for files
+        set ls=2                          " always have statuslines
+        set autoindent                    " autoindent
+        set smartindent                   " smart indents
+        set tabstop=2                     " number of spaces per TAB
+        set softtabstop=2                 " number of spaces in TAB during edits
+        set shiftwidth=2                  " number of spaces to use in autoindent
+        set shiftround                    " round indents to a multiple of
+                                          " shitwidth
+        set expandtab                     " TABS made of spaces
+        set number                        " line numbers
+        set hidden                        " allow switching buffers without save
+        set ruler                         " show line and column of cursor
+        set smartcase                     " smart case
+        set ignorecase                    " ignore case
+        set autoread                      " auto read files that have changed
+                                          " outside of vim
+        set lazyredraw                    " dont redraw during macros
+        set noautochdir                   " dont auto cd to the current file
+        set eol                           " always write an EOL
+        set scrolloff=6                   " keep atleast 6 rows on screen
+        set sidescrolloff=6               " keep atleast 6 columns on screen
+        set history=500                   " remember last 500 commands
+        set undolevels=1000               " undo up to 1000 times
+        set updatecount=100               " after writing number of characters
+                                          " the swap file will be written to disk
+        set updatetime=300                " You will have bad experience for
+                                          " diagnostics when it's default 4000.
 
-        set noerrorbells                " no bell on error
-        set backspace=2                 " fix backspace key in insert mode
-        set showmatch                   " show matches
-        set formatoptions=l,q           " formatting options
-                                        " l - long lines are not broken
-                                        " q - allow formatting comments with gq
-        set incsearch                   " incremental search
-        set hlsearch                    " highlight search results
-        set diffopt=filler,iwhite       " settings for diff mode
-                                        " show filler lines
-                                        " ignore changes to whitespace
-        set wildmenu                    " enhanced completion
-        set wildmode=list:longest,full  " complete tille longest common, or
-                                        " full match
-        set ttimeoutlen=50              " millisecond time to wait for keycode
-                                        " to complete
-        set directory=~/.vim/swp        " dir for swp files, must exist
+        set noerrorbells                  " no bell on error
+        set backspace=2                   " fix backspace key in insert mode
+        set showmatch                     " show matches
+        set formatoptions=l,q             " formatting options
+                                          " l - long lines are not broken
+                                          " q - allow formatting comments with gq
+        set incsearch                     " incremental search
+        set hlsearch                      " highlight search results
+        set diffopt=filler,iwhite         " settings for diff mode
+                                          " show filler lines
+                                          " ignore changes to whitespace
+        set wildmenu                      " enhanced completion
+        set wildmode=list:longest,full    " complete tille longest common, or
+                                          " full match
+        set ttimeoutlen=50                " millisecond time to wait for keycode
+                                          " to complete
+        set directory=~/.vim/swp          " dir for swp files, must exist
 
-        set nobackup                    " do not create backups
+        set nobackup                      " do not create backups
         set nowritebackup
 
-        set wrap                        " wrap lines longer than window width
-        set magic                       " always keep on
-        set fdm=marker                  " fold by markers
+        set wrap                          " wrap lines longer than window width
+        set magic                         " always keep on
+        set fdm=marker                    " fold by markers
         if !has('nvim')
-                set ttyfast             " fast terminal connection
+                set ttyfast               " fast terminal connection
         endif
 
-        set t_ut=                       " To stop background overriding
+        set t_ut=                         " To stop background overriding
 
-        set shortmess+=c                " don't give |ins-completion-menu| messages.
+        set shortmess+=c                  " don't give |ins-completion-menu| messages.
 " }}}
 " Keybinds {{{
 " Leader {{{
