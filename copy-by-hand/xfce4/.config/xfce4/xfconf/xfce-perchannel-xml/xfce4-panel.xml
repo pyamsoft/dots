@@ -8,8 +8,8 @@
       <property name="position" type="string" value="p=6;x=0;y=0"/>
       <property name="length" type="uint" value="100"/>
       <property name="position-locked" type="bool" value="true"/>
-      <property name="icon-size" type="uint" value="0"/>
-      <property name="size" type="uint" value="32"/>
+      <property name="icon-size" type="uint" value="22"/>
+      <property name="size" type="uint" value="40"/>
       <property name="plugin-ids" type="array">
         <value type="int" value="1"/>
         <value type="int" value="6"/>
@@ -20,6 +20,7 @@
         <value type="int" value="4"/>
       </property>
       <property name="mode" type="uint" value="2"/>
+      <property name="autohide-behavior" type="uint" value="2"/>
     </property>
   </property>
   <property name="plugins" type="empty">
@@ -40,8 +41,12 @@
     </property>
     <property name="plugin-6" type="string" value="systray">
       <property name="show-frame" type="bool" value="false"/>
-      <property name="square-icons" type="bool" value="true"/>
+      <property name="square-icons" type="bool" value="false"/>
       <property name="names-ordered" type="array">
+        <value type="string" value="vlc"/>
+        <value type="string" value="keepassxc"/>
+        <value type="string" value="system-config-printer"/>
+        <value type="string" value="flameshot"/>
         <value type="string" value="steam"/>
         <value type="string" value="electron4"/>
         <value type="string" value="blueman"/>
@@ -53,6 +58,7 @@
         <value type="string" value="networkmanager applet"/>
         <value type="string" value="kde connect indicator"/>
       </property>
+      <property name="size-max" type="uint" value="22"/>
     </property>
     <property name="plugin-7" type="string" value="statusnotifier">
       <property name="square-icons" type="bool" value="true"/>
@@ -61,7 +67,7 @@
     <property name="plugin-8" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
       <property name="show-notifications" type="bool" value="true"/>
-      <property name="mpris-players" type="string" value="Lollypop"/>
+      <property name="mpris-players" type="string" value="Lollypop;vlc"/>
     </property>
     <property name="plugin-1" type="string" value="weather"/>
     <property name="plugin-4" type="string" value="whiskermenu"/>
