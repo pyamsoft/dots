@@ -108,7 +108,6 @@
         colorscheme base16-default-dark "colorscheme
         set showmode                      " display the current mode
         set cmdheight=2                   " cmdline is 2 row tall
-        set cc=80                         " color the 80th column
         set ff=unix                       " files are unix line ending
         set encoding=utf8                 " UTF-8 encoding for files
         set ls=2                          " always have statuslines
