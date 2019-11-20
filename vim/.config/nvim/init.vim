@@ -12,10 +12,6 @@
         endif
 " }}}
 " Plugins Configuration {{{
-" vim-android {{{
-        " Path to SDK
-        let g:android_sdk_path = '/storage/pyamsoft/devel/android/sdk'
-" }}}
 " deoplete {{{
         let g:deoplete#enable_at_startup = 1
 " }}}
@@ -34,6 +30,16 @@
 " }}}
 " Gundo {{{
         nnoremap <F5> :GundoToggle<CR>
+" }}}
+" syntastic {{{
+        set statusline+=%#warningmsg#
+        set statusline+=%{SyntasticStatuslineFlag()}
+        set statusline+=%*
+
+        let g:syntastic_always_populate_loc_list = 1
+        let g:syntastic_auto_loc_list = 1
+        let g:syntastic_check_on_open = 1
+        let g:syntastic_check_on_wq = 0
 " }}}
 " }}}
 " Plugins Loading {{{
