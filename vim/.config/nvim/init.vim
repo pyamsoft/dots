@@ -31,20 +31,9 @@
         let g:airline#extensions#hunks#non_zero_only = 1
         let g:airline#extensions#tabline#buffer_nr_show=1
         let g:airline#extensions#tmuxline#enabled = 0
-        let g:airline#extensions#ale#enabled = 1
 " }}}
 " Gundo {{{
         nnoremap <F5> :GundoToggle<CR>
-" }}}
-" ale {{{
-        " Set this variable to 1 to fix files when you save them.
-        " let g:ale_fix_on_save = 1
-
-        " Use ALE omnifunc
-        set omnifunc=ale#completion#OmniFunc
-
-        " Always show sign gutter
-        let g:ale_sign_column_always = 1
 " }}}
 " }}}
 " Plugins Loading {{{
@@ -64,17 +53,10 @@
         " }}}
         " General {{{
         if has('python3')
-          if has('nvim')
-            Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-          else
-            Plug 'Shougo/deoplete.nvim'
-            Plug 'roxma/nvim-yarp'
-            Plug 'roxma/vim-hug-neovim-rpc'
-          endif
+          Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         endif
 
-        Plug 'dense-analysis/ale'
-        Plug 'hsanson/vim-android'
+        Plug 'vim-syntastic/syntastic'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
@@ -87,19 +69,9 @@
         Plug 'sjl/gundo.vim'
         Plug 'rstacruz/vim-closer'
         Plug 'udalov/kotlin-vim'
-        Plug 'WolfgangMehner/bash-support'
-        Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-        Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
         " }}}
 
         call plug#end()
-" }}}
-" Plugin Initialization {{{
-        " Use ALE and also some plugin 'foobar' as completion sources for all code.
-        call deoplete#custom#option('sources', { '_': ['ale', 'buffer', 'file', 'around'] })
-
-        " Fix completion bug -> :h ale-completion-completeopt-bug
-        set completeopt=menu,menuone,preview,noselect,noinsert
 " }}}
 " General Options {{{
         scriptencoding utf-8              " UTF-8 for scripts
@@ -225,10 +197,6 @@
 " }}}
 " NERDTree instead of netrw {{{
         nnoremap <silent> - :NERDTreeToggle<CR>
-" }}}
-" ALE keybinds {{{
-        nnoremap <silent> <leader>f :ALEFix<CR>
-        xnoremap <silent> <leader>f :ALEFix<CR>
 " }}}
 " License {{{
         " GPL2 License
