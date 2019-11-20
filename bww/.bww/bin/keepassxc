@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec sudo -g restricted -E bww \
+exec bww \
   --bind-if-exists="${HOME}/.keepass" \
   --unshare-net \
   --noipc \
