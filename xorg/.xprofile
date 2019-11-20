@@ -56,4 +56,4 @@ xbindkeys
 # Start flameshot daemon
 # Starting flameshot ondemand with 'flameshot gui' somehow breaks out of the jail
 # because it forks and starts a different process
-flameshot
+flameshot &
