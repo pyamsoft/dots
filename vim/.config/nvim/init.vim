@@ -49,19 +49,15 @@
 
         call plug#begin()
 
-        " Colorschemes {{{
-        Plug 'chriskempson/base16-vim'
-        " }}}
-        " Visual {{{
-        Plug 'vim-airline/vim-airline'
-        Plug 'vim-airline/vim-airline-themes'
-        Plug 'bronson/vim-trailing-whitespace'
-        " }}}
-        " General {{{
         if has('python3')
           Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
         endif
 
+        Plug 'chriskempson/base16-vim'
+        Plug 'vim-airline/vim-airline'
+        Plug 'vim-airline/vim-airline-themes'
+        Plug 'bronson/vim-trailing-whitespace'
+        Plug 'sheerun/vim-polyglot'
         Plug 'vim-syntastic/syntastic'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
@@ -69,13 +65,10 @@
         Plug 'tpope/vim-repeat'
         Plug 'tpope/vim-surround'
         Plug 'junegunn/vim-peekaboo'
-        Plug 'tmux-plugins/vim-tmux'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
         Plug 'sjl/gundo.vim'
         Plug 'rstacruz/vim-closer'
-        Plug 'udalov/kotlin-vim'
-        " }}}
 
         call plug#end()
 " }}}
