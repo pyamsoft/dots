@@ -7,7 +7,6 @@
 # on the $PATH. It will fail if the situation proves otherwise.
 
 exec bww \
-  --nodev \
   --bind-if-exists=/etc/drirc.d \
   --bind-if-exists=/usr/share/drirc.d \
   adriconf "$@"
