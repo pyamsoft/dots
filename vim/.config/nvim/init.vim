@@ -63,6 +63,7 @@
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
         Plug 'tpope/vim-repeat'
+        Plug 'tpope/vim-vinegar'
         Plug 'tpope/vim-surround'
         Plug 'junegunn/vim-peekaboo'
         Plug 'tmux-plugins/vim-tmux-focus-events'
@@ -193,9 +194,6 @@
         " (1 second or so) and then type the second j.
         inoremap <silent> jj <Esc>
         inoremap <silent> jk <Esc>
-" }}}
-" NERDTree instead of netrw {{{
-        nnoremap <silent> - :NERDTreeToggle<CR>
 " }}}
 " License {{{
         " GPL2 License
