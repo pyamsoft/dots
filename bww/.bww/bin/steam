@@ -8,6 +8,8 @@
 
 exec bww \
   --nopid \
+  --noipc \
+  --v4l \
   --forcename="steam" \
   --bind-if-exists="/storage/pyamsoft/games/steam" \
-  steam "$@"
+  steam-native "$@"

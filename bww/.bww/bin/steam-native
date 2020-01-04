@@ -6,4 +6,10 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec bww --bind-if-exists="${HOME}/downloads/" --bind-if-exists="${HOME}/videos/" vlc "$@"
+exec bww \
+  --nopid \
+  --noipc \
+  --v4l \
+  --forcename="steam" \
+  --bind-if-exists="/storage/pyamsoft/games/steam" \
+  steam-native "$@"
