@@ -117,10 +117,10 @@
       <property name="&lt;Super&gt;minus" type="string" value="hide_window_key"/>
       <property name="&lt;Super&gt;o" type="string" value="above_key"/>
       <property name="&lt;Super&gt;f" type="string" value="fullscreen_key"/>
-      <property name="&lt;Super&gt;semicolon" type="string" value="tile_up_key"/>
-      <property name="&lt;Super&gt;apostrophe" type="string" value="tile_down_key"/>
-      <property name="&lt;Super&gt;bracketleft" type="string" value="tile_left_key"/>
-      <property name="&lt;Super&gt;bracketright" type="string" value="tile_right_key"/>
+      <property name="&lt;Super&gt;Up" type="string" value="tile_up_key"/>
+      <property name="&lt;Super&gt;Down" type="string" value="tile_down_key"/>
+      <property name="&lt;Super&gt;Left" type="string" value="tile_left_key"/>
+      <property name="&lt;Super&gt;Right" type="string" value="tile_right_key"/>
     </property>
   </property>
   <property name="providers" type="array">

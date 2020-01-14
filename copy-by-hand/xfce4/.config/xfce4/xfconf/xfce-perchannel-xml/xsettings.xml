@@ -15,7 +15,7 @@
   </property>
   <property name="Xft" type="empty">
     <property name="DPI" type="empty"/>
-    <property name="Antialias" type="empty"/>
+    <property name="Antialias" type="int" value="1"/>
     <property name="Hinting" type="int" value="1"/>
     <property name="HintStyle" type="string" value="hintslight"/>
     <property name="RGBA" type="string" value="rgb"/>
@@ -23,8 +23,8 @@
   <property name="Gtk" type="empty">
     <property name="CanChangeAccels" type="empty"/>
     <property name="ColorPalette" type="empty"/>
-    <property name="FontName" type="string" value="Lato 12"/>
-    <property name="MonospaceFontName" type="string" value="Fira Mono 12"/>
+    <property name="FontName" type="string" value="Sans 11"/>
+    <property name="MonospaceFontName" type="string" value="Monospace 11"/>
     <property name="IconSizes" type="empty"/>
     <property name="KeyThemeName" type="empty"/>
     <property name="ToolbarStyle" type="empty"/>
@@ -35,5 +35,8 @@
     <property name="CursorThemeName" type="string" value="Adwaita"/>
     <property name="CursorThemeSize" type="empty"/>
     <property name="DecorationLayout" type="string" value="menu:close"/>
+  </property>
+  <property name="Gdk" type="empty">
+    <property name="WindowScalingFactor" type="int" value="1"/>
   </property>
 </channel>
