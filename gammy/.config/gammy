@@ -1,0 +1,19 @@
+{
+    "auto_br": true,
+    "auto_temp": false,
+    "brightness": 255,
+    "extend_br": false,
+    "log_lvl": 0,
+    "max_br": 255,
+    "min_br": 154,
+    "offset": 78,
+    "polling_rate": 500,
+    "speed": 2,
+    "temp_high": 6500,
+    "temp_low": 3400,
+    "temp_state": 0,
+    "temp_step": 104,
+    "threshold": 32,
+    "time_end": "06:00:00",
+    "time_start": "17:00:00"
+}
