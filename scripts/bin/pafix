@@ -4,5 +4,5 @@
 # is not plugged in on this system.
 # Fix it back to a working, plugged in profile
 
-pactl set-card-profile 0 output:hdmi-stereo-extra3
+pactl set-card-profile 0 output:hdmi-stereo-extra5
 pactl set-card-profile 1 output:analog-stereo+input:analog-stereo
