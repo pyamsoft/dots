@@ -18,6 +18,7 @@
         <value type="int" value="8"/>
         <value type="int" value="6"/>
         <value type="int" value="1"/>
+        <value type="int" value="7"/>
       </property>
       <property name="mode" type="uint" value="0"/>
       <property name="autohide-behavior" type="uint" value="0"/>
@@ -66,10 +67,6 @@
       </property>
       <property name="size-max" type="uint" value="22"/>
     </property>
-    <property name="plugin-7" type="string" value="statusnotifier">
-      <property name="square-icons" type="bool" value="true"/>
-      <property name="symbolic-icons" type="bool" value="true"/>
-    </property>
     <property name="plugin-8" type="string" value="pulseaudio">
       <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
       <property name="show-notifications" type="bool" value="true"/>
@@ -77,5 +74,8 @@
     </property>
     <property name="plugin-1" type="string" value="weather"/>
     <property name="plugin-4" type="string" value="whiskermenu"/>
+    <property name="plugin-7" type="string" value="clock">
+      <property name="timezone" type="string" value="US/Pacific"/>
+    </property>
   </property>
 </channel>
