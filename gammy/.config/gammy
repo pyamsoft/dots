@@ -1,7 +1,7 @@
 {
-    "auto_br": true,
+    "auto_br": false,
     "auto_temp": false,
-    "brightness": 447,
+    "brightness": 500,
     "extend_br": false,
     "log_lvl": 0,
     "max_br": 500,
