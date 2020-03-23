@@ -13,3 +13,4 @@ exec bww \
   --forcename="steam" \
   --bind-if-exists="/storage/pyamsoft/games/steam" \
   steam-native "$@"
+
