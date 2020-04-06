@@ -22,9 +22,6 @@ export LIBVA_DRIVER_NAME=radeonsi
 # Use S3TC texture compression
 export force_s3tc_enable=true
 
-# Fix QT to use GTK theme
-export QT_QPA_PLATFORMTHEME=gtk2
-
 # Java
 export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true"
 
