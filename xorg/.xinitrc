@@ -13,7 +13,7 @@ fi
 # Source .xprofile
 #
 # shellcheck disable=SC1090
-[ -f "${HOME}/.xprofile" ] && . "${HOME}/.xprofile"
+[ -f "${HOME}/.xprofile" ] && . "${HOME}/.xprofile" kde
 
 # For GTK desktops
 # So that wifi passwords work

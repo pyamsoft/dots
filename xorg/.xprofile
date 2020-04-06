@@ -47,6 +47,11 @@ if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 fi
 
+if [ -n "$1" ] && [ "$1" = "kde" ]; then
+  export KDE_FULL_SESSION=true
+  export XDG_CURRENT_DESKTOP=KDE
+fi
+
 # Bind DE agnostic keybinds
 xbindkeys
 

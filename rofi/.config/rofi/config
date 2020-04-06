@@ -1,7 +1,7 @@
 rofi.theme: ./themes/base16-default-dark.rasi
 rofi.lines: 20
 rofi.width: 40
-rofi.terminal: xfce4-terminal
+rofi.terminal: konsole
 rofi.hide-scrollbar: true
 rofi.font: Monospace 12
 rofi.show-icons: true
