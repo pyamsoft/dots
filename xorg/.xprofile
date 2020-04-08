@@ -47,10 +47,13 @@ if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 fi
 
-if [ -n "$1" ] && [ "$1" = "kde" ]; then
-  export KDE_FULL_SESSION=true
-  export XDG_CURRENT_DESKTOP=KDE
-fi
+# We need to do this before Xbindkeys so that everything launched with Xbindkeys
+# can pick up that we are in a KDE environment.
+#
+# No idea if this is kosher but this is what worked to fix the rofi theme problem.
+# Without these lines using rofi to launch systemsettings resulted in unthemed systemsettings
+export KDE_FULL_SESSION=true
+export XDG_CURRENT_DESKTOP=KDE
 
 # Bind DE agnostic keybinds
 xbindkeys
