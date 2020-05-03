@@ -12,3 +12,6 @@
 
 # Ignore tmux setup specific files
 /tmux/.tmux/plugins
+
+/flatpak/
+!/flatpak/.local/share/flatpak/overrides
