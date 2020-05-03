@@ -3,4 +3,5 @@ devices=dri;!all;
 features=!devel;!multiarch;!bluetooth;!canbus;
 filesystems=!xdg-templates;!/tmp;!xdg-music;!xdg-pictures;!xdg-videos;xdg-config/dconf:ro;!xdg-download;!home;xdg-run/dconf;!xdg-documents;~/.drirc:ro;!host;!xdg-desktop;xdg-config/kdeglobals:ro;~/.cache/mesa_shader_cache;
 persistent=.;
-sockets=!pcsc;
+shared=!ipc;
+sockets=!pcsc;!ssh-auth;!wayland;!fallback-x11
