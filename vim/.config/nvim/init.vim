@@ -77,7 +77,7 @@
         scriptencoding utf-8              " UTF-8 for scripts
         filetype plugin indent on         " Turn on filetype plugins
         syntax on                         " syntax highlighting
-        colorscheme base16-default-dark "colorscheme
+        colorscheme base16-default-dark   "colorscheme
         set showmode                      " display the current mode
         set cmdheight=2                   " cmdline is 2 row tall
         set ff=unix                       " files are unix line ending
