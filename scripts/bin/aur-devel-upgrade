@@ -1,9 +1,0 @@
-#!/bin/sh
-
-packages="$(aur repo --list | awk '{print $1}' | aur vercmp-devel | awk '{ print $1 }' | tr ':' ' ')"
-
-if [ -n "${packages}" ]; then
-  # Intentionally expand spaces
-  # shellcheck disable=SC2086
-  aur sync --rebuild ${packages}
-fi
