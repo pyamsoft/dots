@@ -10,4 +10,4 @@ exec bww \
   --unshare-net \
   --forcename="redshift" \
   --bind-if-exists="${HOME}/.config/redshift.conf" \
-  redshift-gtk "$@"
+  redshift "$@"
