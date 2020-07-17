@@ -59,7 +59,10 @@ fi
 # export XDG_CURRENT_DESKTOP=KDE
 
 # Bind DE agnostic keybinds
-xbindkeys
+xbindkeys &
+
+# Cadmus mic noise suppression
+cadmus &
 
 # Start flameshot daemon
 # Starting flameshot ondemand with 'flameshot gui' somehow breaks out of the jail
