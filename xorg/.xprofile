@@ -61,9 +61,6 @@ fi
 # Bind DE agnostic keybinds
 xbindkeys &
 
-# Cadmus mic noise suppression
-cadmus &
-
 # Start flameshot daemon
 # Starting flameshot ondemand with 'flameshot gui' somehow breaks out of the jail
 # because it forks and starts a different process
