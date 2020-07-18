@@ -9,5 +9,6 @@
 exec bww \
   --bind-if-exists=/etc/drirc.d \
   --bind-if-exists=/usr/share/drirc.d \
+  --bind-if-exists="${HOME}/.drirc" \
   adriconf "$@"
 
