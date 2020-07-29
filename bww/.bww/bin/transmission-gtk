@@ -6,10 +6,4 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec bww \
-  --nodev \
-  --nopid \
-  --bind-if-exists=/storage/pyamsoft/devel/android \
-  --bind-if-exists=/storage/pyamsoft/devel/shell \
-  --bind-if-exists=/storage/pyamsoft/devel/python \
-  code "$@"
+exec bww transmission-gtk "$@"

@@ -6,4 +6,4 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-exec bww corectrl "$@"
+exec bww --nodev corectrl "$@"
