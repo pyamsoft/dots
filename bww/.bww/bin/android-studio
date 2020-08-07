@@ -16,6 +16,7 @@ readonly arguments=" \
 
 if [ "$1" = "shell" ]; then
   # shellcheck disable=SC2086
+  shift
   exec bww $arguments --shell android-studio "$@"
 else
   # shellcheck disable=SC2086
