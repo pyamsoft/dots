@@ -27,7 +27,7 @@
 #keystate_capslock = enable
 #keystate_scrolllock= enable
 
-"firefox"
+"brave"
   Mod4+W
 
 "android-studio"
