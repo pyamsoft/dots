@@ -1,9 +1,12 @@
 #!/bin/sh
 
-gradle_pid="$(ps aux | grep -v 'grep' | grep -E "GradleDaemon" | awk '{ print $2 }')"
+gradle_pid="$(pgrep -f 'GradleDaemon')"
 if [ -n "${gradle_pid}" ]; then
   printf -- 'Killing Gradle Daemon process %s\n' "${gradle_pid}"
-  kill "${gradle_pid}"
+
+  # Don't quote so that multiple PIDs can be killed
+  # shellcheck disable=SC2086
+  kill ${gradle_pid}
 else
   printf -- 'Gradle Daemon not running.\n'
 fi
