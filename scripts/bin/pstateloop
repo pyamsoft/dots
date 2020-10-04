@@ -7,6 +7,6 @@ while :; do
     nice -n 19 pstate-frequency -G
   fi
   nice -n 19 pstate-frequency -Gr
-  nice -n 19 sleep 5
+  nice -n 19 sleep 0.5s
   clear
 done
