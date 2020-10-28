@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--bind-if-exists=/etc/drirc.d --bind-if-exists=/usr/share/drirc.d --bind-if-exists=/home/pyamsoft/.drirc"
+readonly arguments="--bind-if-exists=/etc/drirc.d --bind-if-exists=/usr/share/drirc.d --bind-if-exists=/home/pyamsoft/.drirc --private"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")
