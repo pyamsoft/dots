@@ -1,0 +1,18 @@
+#!/bin/sh
+
+for adir in ./*/; do
+  cd "${adir}" || {
+    printf -- 'Failed to cd into %s\n' "${adir}"
+    exit 1
+  }
+
+  eval "$*" || {
+    printf -- 'Eval of command failed\n'
+    exit 2
+  }
+
+  cd .. || {
+    printf -- 'Failed to cd out of %s\n' "${adir}"
+    exit 1
+  }
+done
