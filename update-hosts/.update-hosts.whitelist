@@ -1,0 +1,27 @@
+# CDN
+.*-a\.akamaihd\.net$
+.*\.akamai\.net$
+.*\.cdn\.cloudflare\.net$
+.*\.googlehosted\.com$
+
+# For google icons
+^googlehosted\.l\.googleusercontent\.com$
+
+# For steam
+^store\.steampowered\.com$
+^store\.cloudflare\.steamstatic\.com$
+^cdn\.cloudflare\.steamstatic\.com$
+^community\.cloudflare\.steamstatic\.com$
+
+# For sites using squarespace
+^assets\.squarespace\.com$
+^static\.squarespace\.com$
+^static1\.squarespace\.com$
+
+# For nintendo
+^cdn\.accounts\.nintendo\.com$
+^star\.accounts\.nintendo\.com\.edgekey\.net$
+
+# Twitter
+^abs\.twimg\.com$
+^cs510\.wpc\.edgecastcdn\.net$
