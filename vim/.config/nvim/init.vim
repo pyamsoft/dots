@@ -122,7 +122,6 @@
                                           " q - allow formatting comments with gq
         set incsearch                     " incremental search
         set hlsearch                      " highlight search results
-        set diffopt=filler,iwhite         " settings for diff mode
                                           " show filler lines
                                           " ignore changes to whitespace
         set wildmenu                      " enhanced completion
