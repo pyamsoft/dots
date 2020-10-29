@@ -3,6 +3,7 @@
 .*\.akamai\.net$
 .*\.cdn\.cloudflare\.net$
 .*\.googlehosted\.com$
+.*\.wpc\.edgecastcdn\.net$
 
 # For google icons
 ^googlehosted\.l\.googleusercontent\.com$
@@ -24,4 +25,3 @@
 
 # Twitter
 ^abs\.twimg\.com$
-^cs510\.wpc\.edgecastcdn\.net$
