@@ -25,3 +25,6 @@
 
 # Twitter
 ^abs\.twimg\.com$
+
+ # TikTok -_-
+.*-scmcdn-va\.ibytedtos\.com$
