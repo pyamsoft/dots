@@ -1,9 +1,24 @@
-# CDN
+# CDNs
+# ==========
+# Akamai
 .*-a\.akamaihd\.net$
 .*\.akamai\.net$
+
+# Cloudflare
 .*\.cdn\.cloudflare\.net$
-.*\.googlehosted\.com$
+
+# EdgeCast CDN
 .*\.wpc\.edgecastcdn\.net$
+
+# Google CDN
+.*\.googlehosted\.com$
+
+# Anything that is named SOMETHING-cdn
+.*cdn\..*
+
+# EdgeKey CDN
+.*\.edgekey\.net$
+# ==========
 
 # For google icons
 ^googlehosted\.l\.googleusercontent\.com$
