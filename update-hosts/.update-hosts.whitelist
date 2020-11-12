@@ -16,6 +16,9 @@
 # Anything that is named SOMETHING-cdn
 .*cdn\..*
 
+# Anything that is named SOMETHING-static
+.*static\..*
+
 # EdgeKey CDN
 .*\.edgekey\.net$
 # ==========
