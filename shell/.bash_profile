@@ -32,14 +32,6 @@ set_shopt_options()
 
 set_env_vars()
 {
-  # Source the bash extras file
-  # shellcheck disable=SC1090
-  [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
-
-  # we have colors :-)
-  # shellcheck disable=SC1090
-  [ -r "${HOME}/.sh_colors" ] && . "${HOME}/.sh_colors"
-
   # Disable the bash_history file
   HISTCONTROL=ignoreboth
   export HISTCONTROL

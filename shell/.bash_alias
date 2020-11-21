@@ -51,7 +51,6 @@ alias rm="rm -iv "
 alias cp="cp -iv "
 alias mv="mv -iv "
 alias mkdir="mkdir -vp "
-alias iptables="iptables -v "
 alias paccache="paccache -v "
 
 # List mounts
@@ -66,7 +65,7 @@ alias df="df -H "
 alias du="du -ch "
 
 # Quick ping, only ipv4
-alias p8="ping 8.8.8.8 "
-alias pingg="ping www.google.com "
+alias p8="ping -4 8.8.8.8 "
+alias pingg="ping -4 www.google.com "
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
