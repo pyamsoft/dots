@@ -1,6 +1,0 @@
-# Ignore vim plugins
-\.config/nvim/autoload
-\.config/nvim/plugged
-\.config/nvim/swp
-\.config/nvim/.*
-
