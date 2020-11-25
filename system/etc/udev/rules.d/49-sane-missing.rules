@@ -1,0 +1,1 @@
+ATTRS{idVendor}=="03f0", ATTRS{idProduct}=="6412", MODE="0664", GROUP="scanner", ENV{libsane_matched}="yes"

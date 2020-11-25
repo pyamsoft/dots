@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = kdeconnect
+
+[Action]
+Description = Restore kdeconnectd script
+When = PostTransaction
+Exec = /bin/sh -c 'mv "/usr/lib/kdeconnectd" "/usr/lib/kdeconnectd-real"; if [ -f "/usr/lib/kdeconnectd.bak" ]; then mv "/usr/lib/kdeconnectd.bak" "/usr/lib/kdeconnectd"; fi'

@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = kdeconnect
+
+[Action]
+Description = Backup kdeconnectd script
+When = PreTransaction
+Exec = /bin/sh -c 'if [ -f "/usr/lib/kdeconnectd-real" ]; then mv "/usr/lib/kdeconnectd" "/usr/lib/kdeconnectd.bak"; fi'

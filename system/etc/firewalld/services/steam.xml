@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0.0">
+  <short>steam</short>
+  <description>Steam</description>
+  <port port="27014-27050" protocol="tcp"/>
+  <port port="4380" protocol="udp"/>
+  <port port="27000-27037" protocol="udp"/>
+  <port port="28015-28075" protocol="udp"/>
+</service>

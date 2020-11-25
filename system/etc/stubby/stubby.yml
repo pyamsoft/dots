@@ -1,0 +1,126 @@
+################################################################################
+######################## STUBBY YAML CONFIG FILE ###############################
+################################################################################
+# This is a yaml version of the stubby configuration file (it replaces the
+# json based stubby.conf file used in earlier versions of getdns/stubby).
+#
+# For more information see
+# https://dnsprivacy.org/wiki/display/DP/Configuring+Stubby
+#
+# This format does not fully support all yaml features - the restrictions are:
+#   - the outer-most data structure must be a yaml mapping
+#   - mapping keys must be yaml scalars
+#   - plain scalars will be converted to json unchanged
+#   - non-plain scalars (quoted, double-quoted, wrapped) will be interpreted
+#     as json strings, i.e. double quoted.
+#   - yaml tags are not supported
+#   - IPv6 addresses ending in :: are not yet supported (use ::0)
+#
+# Also beware that yaml is sensitive to the indentation at the start of each
+# line so if you encounter errors when parsing the config file then please check
+# that. We will add better checking but a useful online tool to check yaml
+# format is here (it also converts yaml to json)
+# https://yaml-online-parser.appspot.com/
+#
+# Note that we plan to introduce a more compact format for defining upstreams
+# in future: https://github.com/getdnsapi/stubby/issues/79
+
+################################### LOGGING ####################################
+# Logging is currently configured at runtime using command line arguments. See
+# > stubby -h
+# for details.
+
+########################## BASIC & PRIVACY SETTINGS ############################
+# Specifies whether to run as a recursive or stub resolver
+# For stubby this MUST be set to GETDNS_RESOLUTION_STUB
+resolution_type: GETDNS_RESOLUTION_STUB
+
+# Ordered list composed of one or more transport protocols:
+# GETDNS_TRANSPORT_UDP, GETDNS_TRANSPORT_TCP or GETDNS_TRANSPORT_TLS
+# If only one transport value is specified it will be the only transport used.
+# Should it not be available basic resolution will fail.
+# Fallback transport options are specified by including multiple values in the
+# list.  Strict mode (see below) should use only GETDNS_TRANSPORT_TLS.
+dns_transport_list:
+  - GETDNS_TRANSPORT_TLS
+
+# Selects Strict or Opportunistic Usage profile as described in
+# https://datatracker.ietf.org/doc/draft-ietf-dprive-dtls-and-tls-profiles/
+# Strict mode requires that authentication information for the upstreams is
+# specified below. Opportunistic may fallback to clear text DNS if UDP or TCP
+# is included in the transport list above.
+# For Strict use        GETDNS_AUTHENTICATION_REQUIRED
+# For Opportunistic use GETDNS_AUTHENTICATION_NONE
+tls_authentication: GETDNS_AUTHENTICATION_REQUIRED
+
+# EDNS0 option to pad the size of the DNS query to the given blocksize
+# 128 is currently recommended by
+# https://tools.ietf.org/html/draft-ietf-dprive-padding-policy-03
+tls_query_padding_blocksize: 128
+
+# EDNS0 option for ECS client privacy as described in Section 7.1.2 of
+# https://tools.ietf.org/html/rfc7871
+edns_client_subnet_private : 1
+
+############################# CONNECTION SETTINGS ##############################
+# Set to 1 to instruct stubby to distribute queries across all available name
+# servers - this will use multiple simultaneous connections which can give
+# better performance in most (but not all) cases.
+# Set to 0 to treat the upstreams below as an ordered list and use a single
+# upstream until it becomes unavailable, then use the next one.
+round_robin_upstreams: 1
+
+# EDNS0 option for keepalive idle timeout in milliseconds as specified in
+# https://tools.ietf.org/html/rfc7828
+# This keeps idle TLS connections open to avoid the overhead of opening a new
+# connection for every query. Note that if a given server doesn't implement 
+# EDNS0 keepalive and uses an idle timeout shorter than this stubby will backoff
+# from using that server because the server is always closing the connection.
+# This can degrade performance for certain configurations so reducing the
+# idle_timeout to below that of that lowest server value is recommended.
+idle_timeout: 9000
+
+################################ LISTEN ADDRESS ################################
+# Set the listen addresses for the stubby DAEMON. This specifies localhost IPv4
+# and IPv6. It will listen on port 53 by default. Use <IP_address>@<port> to
+# specify a different port
+listen_addresses:
+  - 127.0.0.1@5353
+
+############################### DNSSEC SETTINGS ################################
+# Require DNSSEC validation. This will withhold answers with BOGUS DNSSEC
+# status and answers that could not be validated (i.e. with DNSSEC status
+# INDETERMINATE). Beware that if no DNSSEC trust-anchor is provided, or if
+# stubby is not able to fetch and validate the DNSSEC trust-anchor itself,
+# (using Zero configuration DNSSEC) stubby will not return answers at all.
+# If DNSSEC validation is required, a trust-anchor is also required.
+dnssec: GETDNS_EXTENSION_TRUE
+
+# Stubby tries to fetch and validate the DNSSEC root trust anchor on the fly
+# when needed (Zero configuration DNSSEC), but only if it can store then
+# somewhere.  The default location to store these files is the ".getdns"
+# subdirectory in the user's home directory on Unixes, and the %appdata%\getdns
+# directory on Windows. If there is no home directory, or
+# the required subdirectory could not be created (or is not present), Stubby
+# will fall back to the current working directory to try to store the
+# trust-anchor files.
+#
+# When stubby runs as a special system-level user without a home directory
+# however (such as in setups using systemd), it is recommended that an explicit
+# location for storing the trust-anchor files is provided that is writable (and
+# readable) by that special system user.
+appdata_dir: "/var/cache/stubby"
+
+
+upstream_recursive_servers:
+## Cloudflare 1.1.1.1 and 1.0.0.1
+## (NOTE: recommend reducing idle_timeout to 9000 if using Coudflare)
+  - address_data: 1.1.1.1
+    tls_auth_name: "cloudflare-dns.com"
+  - address_data: 1.0.0.1
+    tls_auth_name: "cloudflare-dns.com"
+## Google
+  - address_data: 8.8.8.8
+    tls_auth_name: "dns.google"
+  - address_data: 8.8.4.4
+    tls_auth_name: "dns.google"

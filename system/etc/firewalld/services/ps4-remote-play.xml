@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0.0">
+  <short>ps4 remote play</short>
+  <description>PS4 Remote Play</description>
+  <port port="9295" protocol="tcp"/>
+  <port port="9295-9297" protocol="udp"/>
+  <port port="9304" protocol="udp"/>
+</service>

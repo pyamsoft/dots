@@ -1,0 +1,81 @@
+#!/bin/sh
+
+# Create 8 zram devices and mount them on boot
+
+create()
+{
+  modprobe zram || return 1
+
+  for dev in $(seq 0 $((max_num - 1))); do
+    zramctl -a lz4 -s "${swapsize}" "/dev/zram${dev}" || return 1
+    mkswap --label "zram${dev}" "/dev/zram${dev}" || return 1
+    swapon --priority $((dev + 1)) "/dev/zram${dev}" || return 1
+  done
+
+  return 0
+}
+
+destroy()
+{
+  for dev in $(seq 0 $((max_num - 1))); do
+    swapoff "/dev/zram${dev}" || return 1
+  done
+
+  modprobe -r zram || return 1
+
+  return 0
+}
+
+check_for_binary() {
+  if ! which "$1" > /dev/null 2>&1; then
+    printf -- 'The '%s' binary is required to use this script.\n' "$1"
+    printf -- 'Please install '%s' onto your system.\n' "$1"
+    exit 1
+  fi
+}
+
+print_help()
+{
+  echo "usage:"
+  echo "  on  | create  | 1 - Creates zram disks"
+  echo "  off | destroy | 0 - Destroys zram disks"
+  echo
+  echo "NOTE: It is recommended to disable zram-setup@.service as it will"
+  echo "      duplicate the actions in this file."
+}
+
+# User changeable variables
+
+check_for_binary modprobe
+check_for_binary zramctl
+check_for_binary swapon
+check_for_binary mkswap
+check_for_binary swapoff
+
+if [ "$#" -eq 0 ]; then
+  echo "Missing argument..."
+  print_help
+  exit 1
+fi
+
+readonly max_num=$(awk -F '=' '{ if (/num_devices=/) { print $2} }' \
+  '/etc/modprobe.d/zram.conf')
+readonly swapsize="2048M"
+
+case "$1" in
+  "on"|"create"|"1")
+    create
+    ;;
+  "off"|"destroy"|"0")
+    destroy
+    ;;
+  *)
+    echo "Bad argument..."
+    print_help
+    exit 2
+    ;;
+esac
+
+exit 0
+
+# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

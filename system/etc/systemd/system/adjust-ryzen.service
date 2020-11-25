@@ -1,0 +1,10 @@
+[Unit]
+Description=Adjust Ryzen CPU
+After=default.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/adjust-ryzen
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+# Check if process is running
+# shellcheck disable=SC2009
+ps aux | grep -v 'grep' | grep -v 'running' | grep -E --color=auto "$1"
+
+# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

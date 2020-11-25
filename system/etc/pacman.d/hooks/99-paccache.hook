@@ -1,0 +1,9 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target = *
+
+[Action]
+Description = Removing outdated packages from package cache
+When = PostTransaction
+Exec = /bin/sh -c '/usr/bin/paccache -vr && /usr/bin/paccache -vruk0'
