@@ -1,17 +1,17 @@
 # Ignore vim setup specific files
-/vim/.config/nvim/autoload
-/vim/.config/nvim/plugged
-/vim/.config/nvim/swp
-/vim/.config/nvim/sessions
-/vim/.config/nvim/.*
+/automatic/.config/nvim/autoload
+/automatic/.config/nvim/plugged
+/automatic/.config/nvim/swp
+/automatic/.config/nvim/sessions
+/automatic/.config/nvim/.*
 
-/vim/.config/coc/*
-!/vim/.config/coc/extensions
-/vim/.config/coc/extensions/*
-!/vim/.config/coc/extensions/package.json
+/automatic/.config/coc/*
+!/automatic/.config/coc/extensions
+/automatic/.config/coc/extensions/*
+!/automatic/.config/coc/extensions/package.json
 
 # Ignore tmux setup specific files
-/tmux/.tmux/plugins
+/automatic/.tmux/plugins
 
-/flatpak/
-!/flatpak/.local/share/flatpak/overrides
+/automatic/flatpak/
+!/automatic/flatpak/.local/share/flatpak/overrides
