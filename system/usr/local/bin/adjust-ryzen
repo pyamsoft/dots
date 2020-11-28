@@ -114,8 +114,9 @@ main()
 
   python3 "${script}" --no-gui --c6-disable || return 1
 
-  # Apply p-state 0 undervolt from 1.23750V to 1.20625
-  python3 "${script}" --no-gui -p 0 -v 37
+  # Offset -50mv applied via mobo
+  # Apply p-state 0 undervolt from 1.23750 to 1.22500
+  python3 "${script}" --no-gui -p 0 -v 34
   return 0
 }
 
