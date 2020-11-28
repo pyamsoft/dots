@@ -6,8 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--nopid \
---nodev \
+readonly arguments="--nodev \
 --bind-if-exists=/storage/pyamsoft/devel/android \
 --setenv PATH /storage/pyamsoft/devel/android/sdk/platform-tools:/storage/pyamsoft/devel/android/sdk/cmdline-tools/latest/bin:/opt/android-studio/jre/bin:/opt/android-studio/jre/jre/bin:${PATH} \
 --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1"
