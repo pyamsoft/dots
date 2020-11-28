@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# We hold the android-sdk at /storage/pyamsoft/devel/android/sdk not /opt/android-sdk
+# Remove some files which expect these paths
+
+remove_if_exists()
+{
+  if [ -e "$1" ]; then
+    printf -- 'Remove file: "%s"\n' "$1"
+    sudo rm -f "$1" || {
+      printf -- 'Failed to remove file: "%s"\n' "$1"
+      return 1
+    }
+  fi
+
+  return 0
+}
+
+remove_if_exists "/etc/profile.d/android-sdk-platform-tools.sh" || exit 1
+remove_if_exists "/etc/profile.d/android-sdk-platform-tools.csh" || exit 1
+
+remove_if_exists "/etc/profile.d/android-sdk.csh" || exit 1
+remove_if_exists "/etc/profile.d/android-sdk.sh" || exit 1
+
+remove_if_exists "/etc/profile.d/android-emulator.csh" || exit 1
+remove_if_exists "/etc/profile.d/android-emulator.sh" || exit 1
+
+remove_if_exists "/etc/ld.so.conf.d/android-sdk.conf" || exit 1
+
+exit 0
