@@ -6,10 +6,14 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--nodev \
---bind-if-exists=/storage/pyamsoft/devel/android \
---setenv PATH /storage/pyamsoft/devel/android/sdk/platform-tools:/storage/pyamsoft/devel/android/sdk/cmdline-tools/latest/bin:/opt/android-studio/jre/bin:/opt/android-studio/jre/jre/bin:${PATH} \
---setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1"
+android_home="/storage/pyamsoft/devel/android"
+android_sdk_home="${android_home}/sdk"
+
+readonly arguments="  --nodev \
+  --bind-if-exists=${android_home} \
+  --setenv ANDROID_SDK_HOME ${android_sdk_home} \
+  --setenv PATH ${android_sdk_home}/platform-tools:${android_sdk_home}/cmdline-tools/latest/bin:/opt/android-studio/jre/bin:/opt/android-studio/jre/jre/bin:${PATH} \
+  --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")
