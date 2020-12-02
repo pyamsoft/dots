@@ -116,7 +116,7 @@ main()
 
   # Offset -50mv applied via mobo
   # Apply p-state 0 undervolt from 1.23750 to 1.22500
-  python3 "${script}" --no-gui -p 0 -v 34
+  # python3 "${script}" --no-gui -p 0 -v 34
   return 0
 }
 
