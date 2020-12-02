@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--bind-if-exists /home/pyamsoft/pictures --bind-if-exists /home/pyamsoft/downloads --private"
+readonly arguments="--bind-if-exists /home/pyamsoft/pictures --bind-if-exists /home/pyamsoft/downloads --private --unshare-net"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")

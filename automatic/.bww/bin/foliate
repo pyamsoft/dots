@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--bind-if-exists /home/pyamsoft/books/"
+readonly arguments="--bind-if-exists /home/pyamsoft/books/ --unshare-net"
 readonly command_name="foliate"
 
 if [ "$1" = "--" ]; then
