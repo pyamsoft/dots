@@ -7,7 +7,7 @@ StopWhenUnneeded=yes
 Type=simple
 RemainAfterExit=yes
 ExecStart=/bin/true
-ExecStop=/usr/local/bin/adjust-ryzen
+ExecStop=/usr/local/bin/adjust-ryzen enable
 
 [Install]
 WantedBy=sleep.target

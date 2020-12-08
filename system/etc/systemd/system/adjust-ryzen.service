@@ -3,8 +3,10 @@ Description=Adjust Ryzen CPU
 After=default.target
 
 [Service]
-Type=oneshot
-ExecStart=/usr/local/bin/adjust-ryzen
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/adjust-ryzen enable
+ExecStop=/usr/local/bin/adjust-ryzen disable
 
 [Install]
 WantedBy=default.target

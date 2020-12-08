@@ -99,6 +99,7 @@ load_kernel_modules()
 
 main()
 {
+  enable="$1"
   # Pre-req user
   require_root || return 1
 
@@ -114,10 +115,18 @@ main()
 
   python3 "${script}" --no-gui --c6-disable || return 1
 
-  # Offset -50mv applied via mobo
-  # Apply p-state 0 undervolt from 1.23750 to 1.22500
-  python3 "${script}" --no-gui -p 0 -v 3E
-  return 0
+  if [ "${enable}" = "list" ]; then
+    exec python3 "${script}" --no-gui -l || return 1
+  elif [ "${enable}" = "enable" ]; then
+    # Apply p-state undervolt to 1.16875
+    exec python3 "${script}" --no-gui -p 0 -v 3D || return 1
+  elif [ "${enable}" = "disable" ]; then
+    # Restore default p-state 0 of 1.23750
+    exec python3 "${script}" --no-gui -p 0 -v 32 || return 1
+  else
+    printf -- 'Call with "list" "enable" "disable"\n'
+    return 1
+  fi
 }
 
 main "$@" || exit 1
