@@ -117,6 +117,8 @@ main()
 
   if [ "${enable}" = "list" ]; then
     exec python3 "${script}" --no-gui -l || return 1
+  elif [ "${enable}" = "gui" ]; then
+    exec python3 "${script}" || return 1
   elif [ "${enable}" = "enable" ]; then
     # Apply p-state undervolt to 1.16875
     exec python3 "${script}" --no-gui -p 0 -v 3D || return 1
@@ -124,7 +126,7 @@ main()
     # Restore default p-state 0 of 1.23750
     exec python3 "${script}" --no-gui -p 0 -v 32 || return 1
   else
-    printf -- 'Call with "list" "enable" "disable"\n'
+    printf -- 'Call with "list" "gui" "enable" "disable"\n'
     return 1
   fi
 }
