@@ -11,7 +11,6 @@ android_sdk_home="${android_home}/sdk"
 
 readonly arguments="  --nodev \
   --bind-if-exists=${android_home} \
-  --setenv ANDROID_SDK_HOME ${android_sdk_home} \
   --setenv PATH ${android_sdk_home}/platform-tools:${android_sdk_home}/cmdline-tools/latest/bin:/opt/android-studio/jre/bin:/opt/android-studio/jre/jre/bin:${PATH} \
   --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1"
 
