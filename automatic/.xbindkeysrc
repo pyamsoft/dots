@@ -27,7 +27,7 @@
 #keystate_capslock = enable
 #keystate_scrolllock= enable
 
-"chromium"
+"firefox"
   Mod4+W
 
 "thunderbird"
