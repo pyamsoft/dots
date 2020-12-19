@@ -1,8 +1,0 @@
-#!/bin/sh
-
-kernel_version="$1"
-module_path="$2"
-
-printf -- 'Sign %s for %s\n\n' "${module_path}" "${kernel_version}"
-/usr/src/linux-lts/scripts/sign-file sha256 /etc/dkms/sign/MOK.priv /etc/dkms/sign/MOK.der "${module_path}" || exit 1
-exit 0
