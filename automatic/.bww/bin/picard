@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--private --bind-if-exists /home/pyamsoft/music --bind-if-exists=/home/pyamsoft/.config/Picard --bind-if-exists=/home/pyamsoft/.config/Picard.ini"
+readonly arguments="--private --bind-if-exists /home/pyamsoft/music --bind-if-exists=/home/pyamsoft/.config/MusicBrainz"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")
