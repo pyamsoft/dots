@@ -30,11 +30,17 @@
 "firefox"
   Mod4+W
 
-"thunderbird"
+"ferdi"
   Mod4+U
+
+"code"
+  Mod4+C
 
 "android-studio"
   Mod4+I
+
+"steam"
+  Mod4+C
 
 "keepassxc"
   Mod4+X

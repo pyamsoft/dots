@@ -6,8 +6,8 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--nodev"
-readonly command_name="discord"
+readonly arguments="--nodev --bind-if-exists /home/pyamsoft/downloads"
+readonly command_name="ferdi"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")
