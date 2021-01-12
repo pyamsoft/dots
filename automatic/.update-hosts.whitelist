@@ -50,3 +50,6 @@
 # Medium
 miro\.medium\.com$
 cdn\-client\.medium\.com$
+
+# Facebook
+^facebook\.com$
