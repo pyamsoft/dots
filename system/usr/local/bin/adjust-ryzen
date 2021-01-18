@@ -101,9 +101,9 @@ main()
     # shellcheck disable=SC2086
     exec ${gui_command} || return 1
   elif [ "${enable}" = "enable" ]; then
-    # Apply p-state undervolt to 1.16875
+    # Apply p-state undervolt to 1.18750
     # shellcheck disable=SC2086
-    exec ${command} -p 0 -v 3D || return 1
+    exec ${command} -p 0 -v 3A || return 1
   elif [ "${enable}" = "disable" ]; then
     # Restore default p-state 0 of 1.23750
     # shellcheck disable=SC2086
