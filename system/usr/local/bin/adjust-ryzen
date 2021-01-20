@@ -41,18 +41,6 @@ require()
   return 0
 }
 
-require_python()
-{
-  require 'python3' || return 1
-  return 0
-}
-
-require_git()
-{
-  require 'git' || return 1
-  return 0
-}
-
 require_root()
 {
   if [ "$(id -u)" -ne 0 ]; then
@@ -81,12 +69,13 @@ load_kernel_modules()
 main()
 {
   enable="$1"
+
   # Pre-req user
   require_root || return 1
 
   # Pre-req software
-  require_git || return 1
-  require_python || return 1
+  require 'git' || return 1
+  require 'python3' || return 1
 
   # Pre-req script location
   check_zenstates || return 1
