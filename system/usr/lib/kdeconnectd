@@ -19,5 +19,6 @@ fi
   --forcename="kdeconnectd" \
   --bind-if-exists "${HOME}/downloads" \
   --bind-if-exists "${HOME}/.config/kdeconnect" \
-  --systemd --nopid \
+  --systemd \
+  --nopid \
   /usr/lib/kdeconnectd-real "$@"
