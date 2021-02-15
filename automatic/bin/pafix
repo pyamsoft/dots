@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Sometimes PulseAudio gets set to use a profile that, while available,
-# is not plugged in on this system.
-# Fix it back to a working, plugged in profile
-
-pactl set-card-profile 0 output:hdmi-stereo-extra1 > /dev/null 2>&1
-pactl set-card-profile 1 output:analog-stereo > /dev/null 2>&1
-pactl set-card-profile 2 output:analog-stereo > /dev/null 2>&1
