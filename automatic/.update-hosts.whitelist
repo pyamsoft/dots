@@ -56,3 +56,7 @@ cdn\-client\.medium\.com$
 
 # Spotify
 ^open\.spotify\.com$
+
+# Microsoft
+^login\.microsoftonline.com$
+^c\.s\-microsoft\.com$
