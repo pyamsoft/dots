@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cancel() {
+  killall rsync
+  exit 1
+}
+
+trap cancel INT TERM
+
+pids=""
+for d in */; do
+  sshpass -f ~/.sshpass rsync -av "${d}" nerd@nerd2:/media/storage/Movies &
+  pids="$! ${pids}"
+done
+
+# shellcheck disable=SC2086
+wait ${pids}
+
+exit 0

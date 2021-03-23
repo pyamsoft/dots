@@ -53,3 +53,6 @@ cdn\-client\.medium\.com$
 
 # Facebook
 ^facebook\.com$
+
+# Spotify
+^open\.spotify\.com$
