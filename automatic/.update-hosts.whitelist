@@ -60,3 +60,6 @@ cdn\-client\.medium\.com$
 # Microsoft
 ^login\.microsoftonline.com$
 ^c\.s\-microsoft\.com$
+
+# Youtube images
+ggpht\.com$
