@@ -45,9 +45,6 @@
 "keepassxc"
   Mod4+X
 
-"pycharm"
-  Mod4+Y
-
 "rofi -modi 'run' -show run"
   Mod4+Return
 
