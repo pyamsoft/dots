@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--nopid --noipc --v4l --forcename=steam --bind-if-exists=/home/pyamsoft/games/steam"
+readonly arguments="--nopid --noipc --v4l --forcename=steam --bind-if-exists=/home/pyamsoft/games/steam --bind-if-exists=/tmp/.X11-unix"
 
 if [ "$1" = "--" ]; then
   # Stop bww argument parsing (in case the command you want to run is actually called "shell")
