@@ -6,7 +6,7 @@
 # This script expects the 'bww' script to be available to the user somewhere
 # on the $PATH. It will fail if the situation proves otherwise.
 
-readonly arguments="--nodie --bind-if-exists /storage/pyamsoft/devel/js/ --bind-if-exists /storage/pyamsoft/devel/misc/ --bind-if-exists /storage/pyamsoft/devel/shell/"
+readonly arguments="--forcename code --nodie --bind-if-exists /storage/pyamsoft/devel/js/ --bind-if-exists /storage/pyamsoft/devel/misc/ --bind-if-exists /storage/pyamsoft/devel/shell/"
 readonly command_name="code"
 
 if [ "$1" = "--" ]; then
