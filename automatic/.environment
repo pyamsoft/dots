@@ -10,6 +10,7 @@ export SYSTEM_DEFAULT_PATH="${PATH}"
 PATH="${HOME}/bin:${PATH}"
 PATH="${HOME}/.local/bin:${PATH}"
 PATH="${HOME}/.bww/bin:${PATH}"
+PATH="${HOME}/.flatpak/bin:${PATH}"
 export PATH
 
 # On VNC sessions, PATH is sometimes re-written. How weird.
