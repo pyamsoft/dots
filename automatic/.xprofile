@@ -54,11 +54,3 @@ fi
 # Without these lines using rofi to launch systemsettings resulted in unthemed systemsettings
 # export KDE_FULL_SESSION=true
 # export XDG_CURRENT_DESKTOP=KDE
-
-# Bind DE agnostic keybinds
-xbindkeys &
-
-# Start flameshot daemon
-# Starting flameshot ondemand with 'flameshot gui' somehow breaks out of the jail
-# because it forks and starts a different process
-flameshot &
