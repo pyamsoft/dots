@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec flatpak run org.gnome.Lollypop
+exec flatpak run org.gnome.Lollypop "$@"

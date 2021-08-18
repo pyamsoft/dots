@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec flatpak run org.musicbrainz.Picard
+exec flatpak run org.musicbrainz.Picard "$@"

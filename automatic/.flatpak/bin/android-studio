@@ -1,5 +1,3 @@
 #!/bin/sh
 
-#!/bin/sh
-
-exec flatpak run com.google.AndroidStudio
+exec flatpak run com.google.AndroidStudio "$@"
