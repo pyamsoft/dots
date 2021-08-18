@@ -15,6 +15,7 @@ targets="automatic"
 case "$1" in
   install)
     # shellcheck disable=SC2086
+    mkdir -p "${HOME}/.local/share/flatpak"
     stow -v -S ${targets}
     exit 0
     ;;
