@@ -1,3 +1,9 @@
 #!/bin/sh
 
+# We must remove the dead symlink
+rm -rf "${HOME}"/.var/app/org.musicbrainz.Picard/.config/MusicBrainz || {
+  printf -- 'Failed to remove MusicBrainz dead config\n'
+  exit 1
+}
+
 exec flatpak run org.musicbrainz.Picard "$@"

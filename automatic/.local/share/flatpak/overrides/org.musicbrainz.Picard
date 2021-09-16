@@ -1,2 +1,2 @@
 [Context]
-filesystems=xdg-music;
+filesystems=xdg-music;xdg-config/MusicBrainz;
