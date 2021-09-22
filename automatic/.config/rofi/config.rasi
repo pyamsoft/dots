@@ -1,0 +1,15 @@
+configuration {
+  font: "mono 12";
+  show-icons: true;
+  terminal: "xfce4-terminal";
+  theme: "/usr/share/rofi/themes/Arc-Dark.rasi";
+
+  timeout {
+      action: "kb-cancel";
+      delay:  0;
+  }
+  filebrowser {
+      directories-first: true;
+      sorting-method:    "name";
+  }
+}
