@@ -33,14 +33,8 @@
 "ferdi"
   Mod4+U
 
-"code"
-  Mod4+C
-
 "android-studio"
   Mod4+I
-
-"steam"
-  Mod4+S
 
 "keepassxc"
   Mod4+X
@@ -50,9 +44,6 @@
 
 "rofi -modi 'run' -show run"
   Mod4+R
-
-"flameshot gui"
-  Mod4+Print
 
 "flameshot gui"
   Mod4+P
