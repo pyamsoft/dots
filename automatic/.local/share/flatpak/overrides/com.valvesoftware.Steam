@@ -1,4 +1,4 @@
 [Context]
 devices=all;
 features=devel;multiarch;
-filesystems=/storage/pyamsoft/games/steam;
+filesystems=/storage/pyamsoft/games/steam;/storage/pyamsoft/games/openrct2;
