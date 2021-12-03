@@ -11,37 +11,6 @@
           autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
         endif
 " }}}
-" Plugins Configuration {{{
-" deoplete {{{
-        let g:deoplete#enable_at_startup = 1
-" }}}
-" vim-airline {{{
-        let g:airline_theme='base16_default'
-        let g:airline_powerline_font = 0
-        let g:airline#extensions#tabline#enabled=1
-        let g:airline#extensions#tabline#fnamemod=':t'
-        let g:airline#extensions#tabline#left_sep=' '
-        let g:airline#extensions#tabline#left_alt_sep='|'
-        let g:airline#extensions#tabline#right_sep=' '
-        let g:airline#extensions#tabline#right_alt_sep='|'
-        let g:airline#extensions#hunks#non_zero_only = 1
-        let g:airline#extensions#tabline#buffer_nr_show=1
-        let g:airline#extensions#tmuxline#enabled = 0
-" }}}
-" Gundo {{{
-        nnoremap <F5> :GundoToggle<CR>
-" }}}
-" syntastic {{{
-        set statusline+=%#warningmsg#
-        set statusline+=%{SyntasticStatuslineFlag()}
-        set statusline+=%*
-
-        let g:syntastic_always_populate_loc_list = 1
-        let g:syntastic_auto_loc_list = 1
-        let g:syntastic_check_on_open = 1
-        let g:syntastic_check_on_wq = 0
-" }}}
-" }}}
 " Plugins Loading {{{
 
         " Need the vim-plug plugin from junegunn's GitHub repository
@@ -50,19 +19,12 @@
         call plug#begin()
 
         if has('nvim')
-          Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-        else
-          Plug 'Shougo/deoplete.nvim'
-          Plug 'roxma/nvim-yarp'
-          Plug 'roxma/vim-hug-neovim-rpc'
+          Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+          Plug 'neovim/nvim-lspconfig'
+          Plug 'nvim-lualine/lualine.nvim'
         endif
 
-        Plug 'chriskempson/base16-vim'
-        Plug 'vim-airline/vim-airline'
-        Plug 'vim-airline/vim-airline-themes'
         Plug 'bronson/vim-trailing-whitespace'
-        Plug 'sheerun/vim-polyglot'
-        Plug 'vim-syntastic/syntastic'
         Plug 'mhinz/vim-signify'
         Plug 'tpope/vim-commentary'
         Plug 'tpope/vim-endwise'
@@ -72,16 +34,35 @@
         Plug 'junegunn/vim-peekaboo'
         Plug 'tmux-plugins/vim-tmux-focus-events'
         Plug 'Konfekt/FastFold'
-        Plug 'sjl/gundo.vim'
         Plug 'rstacruz/vim-closer'
 
         call plug#end()
+" }}}
+" NVIM Treesitter{{{
+        if has('nvim')
+                lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    disable = {},
+  },
+  indent = {
+    enable = false,
+    disable = {},
+  },
+  ensure_installed = {
+    "bash",
+    "json",
+    "vim",
+  },
+}
+EOF
+        endif
 " }}}
 " General Options {{{
         scriptencoding utf-8              " UTF-8 for scripts
         filetype plugin indent on         " Turn on filetype plugins
         syntax on                         " syntax highlighting
-        colorscheme base16-default-dark   "colorscheme
         set showmode                      " display the current mode
         set cmdheight=2                   " cmdline is 2 row tall
         set ff=unix                       " files are unix line ending
