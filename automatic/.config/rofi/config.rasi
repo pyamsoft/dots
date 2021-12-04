@@ -1,5 +1,5 @@
 configuration {
-  font: "mono 12";
+  font: "mono 13";
   show-icons: true;
   terminal: "xfce4-terminal";
 
