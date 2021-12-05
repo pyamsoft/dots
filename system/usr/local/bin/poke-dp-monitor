@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# DisplayPort monitor sometimes does not turn back on upon resume
+# Poke it via xrandr to see if it will re-activate willingly.
+#
+# https://wiki.archlinux.org/title/Xrandr_
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf -- 'You must run this script as your normal user, not root!\n'
+  exit 1
+fi
+
+# Make an assumption about our Xorg environment
+readonly DISPLAY=:0.0
+readonly XAUTHORITY="${HOME}/.Xauthority"
+
+# Export into environment
+export DISPLAY
+export XAUTHORITY
+
+# Attempt countdown
+count=2
+
+# Wait between pokes
+readonly WAIT_TIME=1
+
+printf -- 'Attempting to poke monitor via xrandr.\n'
+while [ "${count}" -gt 0 ]; do
+  printf -- 'Poke: %s...\n' "${count}"
+  xrandr > /dev/null || {
+    printf -- 'Failed to poke monitors with xrandr.\n'
+    exit 2
+  }
+  sleep "${WAIT_TIME}"
+  count=$((count - 1))
+done
+
+printf -- 'Monitor has been poked.\n'
+exit 0
