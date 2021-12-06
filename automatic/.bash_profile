@@ -6,15 +6,6 @@ fi
 # Strict umask
 umask 077
 
-set_stty_options()
-{
-  # Disable stopping the shell output with Ctrl+S
-  # Disable job sleep with Ctrl+Z
-  # stty options
-  stty -ixon
-  stty susp undef
-}
-
 set_shopt_options()
 {
   # shopt options
@@ -74,28 +65,10 @@ set_env_vars()
   export LC_IDENTIFICATION="en_US.UTF-8"
 }
 
-enable_bash_completion()
-{
-  # Enable bash completion
-  bcomp="/usr/share/bash-completion/bash_completion"
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
-  unset bcomp
-
-  bcomp="/etc/bash_completion"
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
-  unset bcomp
-}
-
-set_stty_options
 set_shopt_options
 set_env_vars
-enable_bash_completion
 
-unset enable_bash_completion
 unset set_env_vars
-unset set_stty_options
 unset set_shopt_options
 
 [ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc

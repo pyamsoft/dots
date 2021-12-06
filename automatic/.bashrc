@@ -87,6 +87,20 @@ prompt_command()
   unset git_prompt
 }
 
+enable_bash_completion()
+{
+  # Enable bash completion
+  bcomp="/usr/share/bash-completion/bash_completion"
+  # shellcheck disable=SC1090
+  [ -r "${bcomp}" ] && . "${bcomp}"
+  unset bcomp
+
+  bcomp="/etc/bash_completion"
+  # shellcheck disable=SC1090
+  [ -r "${bcomp}" ] && . "${bcomp}"
+  unset bcomp
+}
+
 bashrc()
 {
   # Source the bash extras file
@@ -97,11 +111,13 @@ bashrc()
   export PROMPT_COMMAND
 }
 
-# Source the dircolors here
+# Setup
 bashrc
+enable_bash_completion
 
 # Do not export the functions
 unset bashrc
+unset enable_bash_completion
 
 # Launch an ssh-agent at least for this shell - see .environment
 # for an agent for an entire session - normally this line will not be used.
