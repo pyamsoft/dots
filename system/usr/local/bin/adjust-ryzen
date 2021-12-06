@@ -3,7 +3,7 @@
 readonly zenstates='/usr/local/src/Zenstates-Linux'
 readonly script="${zenstates}/zenstates.py"
 readonly url='https://github.com/irusanov/ZenStates-Linux'
-readonly gui_command="${script} --libcpuid"
+readonly gui_command="${script}"
 readonly command="${gui_command} --no-gui"
 
 readonly voltage_undervolt="3C" # 1.17500V
