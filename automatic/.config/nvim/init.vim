@@ -1,8 +1,11 @@
 " vimrc symlinked to nvimrc
 
 " Essentials {{{
+    set nocompatible
+
+    if has("autocmd")
+        " Remove all autocmds
         autocmd!
-        set nocompatible
 
         " Load vim-plug if not installed
         if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -10,6 +13,7 @@
             \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
           autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
         endif
+    endif
 " }}}
 " Plugins Loading {{{
 
@@ -19,9 +23,16 @@
         call plug#begin()
 
         if has('nvim')
+          " Treesitter
           Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+          " LSP Config (requires outside installed bash-language-server and vscode-langservers-extracted
           Plug 'neovim/nvim-lspconfig'
+          Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+
+          " LuaLine
           Plug 'nvim-lualine/lualine.nvim'
+          Plug 'kyazdani42/nvim-web-devicons'
         endif
 
         Plug 'bronson/vim-trailing-whitespace'
@@ -38,27 +49,6 @@
         Plug 'vim-syntastic/syntastic'
 
         call plug#end()
-" }}}
-" NVIM Treesitter{{{
-        if has('nvim')
-                lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,
-    disable = {},
-  },
-  indent = {
-    enable = false,
-    disable = {},
-  },
-  ensure_installed = {
-    "bash",
-    "json",
-    "vim",
-  },
-}
-EOF
-        endif
 " }}}
 " General Options {{{
         scriptencoding utf-8              " UTF-8 for scripts
@@ -191,11 +181,38 @@ EOF
         map :mit :0r ~/.vim/licenses/mit<CR>
 " }}}
 "}}}
-" Autocmds {{{
-    if has("autocmd")
-      " Set some format options
-      autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-    endif
+" Lua Config{{{
+        if has('nvim')
+                lua <<EOF
+-- TreeSitter
+local treesitter = require'nvim-treesitter.configs'
+treesitter.setup {
+  highlight = {
+    enable = true,
+    disable = {},
+  },
+  indent = {
+    enable = false,
+    disable = {},
+  },
+  ensure_installed = {
+    "bash",
+    "json",
+    "vim",
+  },
+}
+
+-- LSP Config (with COQ)
+local lsp = require'lspconfig'
+local coq = require'coq'
+
+lsp.bashls.setup(coq.lsp_ensure_capabilities{})
+lsp.jsonls.setup(coq.lsp_ensure_capabilities{})
+
+-- LuaLine
+require'lualine'.setup()
+EOF
+        endif
 " }}}
 " Syntastic {{{
   set statusline+=%#warningmsg#
@@ -206,4 +223,13 @@ EOF
   let g:syntastic_auto_loc_list = 1
   let g:syntastic_check_on_open = 1
   let g:syntastic_check_on_wq = 0
+" }}}
+" Autocmds {{{
+    if has("autocmd")
+      " Set some format options
+      autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+      " Call COQnow
+      autocmd BufReadPre,FileReadPre * :COQnow
+    endif
 " }}}
