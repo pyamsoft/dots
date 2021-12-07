@@ -1,10 +1,5 @@
 #!/bin/sh
-# Environment variables
-
-# IBUS setup
-# export GTK_IM_MODULE=ibus
-# export XMODIFIERS=@im=ibus
-# export QT_IM_MODULE=ibus
+# X11 environment
 
 # SDL Options
 # Use pulse audio for SDL audio
@@ -12,9 +7,6 @@ export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
 export SDL_AUDIODRIVER=pulse
 
 # Hardware Accel
-#
-# For Intel/Nvidia
-# export VDPAU_DRIVER=va_gl
 #
 # For AMD
 export LIBVA_DRIVER_NAME=radeonsi
@@ -25,7 +17,6 @@ export force_s3tc_enable=true
 # Help with Pulse audio crackling in some programs
 export PULSE_LATENCY_MSEC=60
 
-# Other
 # Disable the terminal bell noise
 xset -b
 
@@ -38,12 +29,8 @@ if command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
 fi
 
-# shellcheck disable=SC1090
-# Source bash_profile if the environment is not setup
-if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
-fi
+# shellcheck disable=SC1091
+[ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 
 # No idea if this is kosher but this is what worked to fix the rofi theme problem.
 # Without these lines using rofi to launch systemsettings resulted in unthemed systemsettings
