@@ -73,9 +73,4 @@ unset set_shopt_options
 
 [ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
 
-# Start xserver if on first VT and not started
-# if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
-#   exec startx
-# fi
-
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
