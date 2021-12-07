@@ -11,6 +11,10 @@ PATH="${HOME}/bin:${PATH}"
 PATH="${HOME}/.local/bin:${PATH}"
 PATH="${HOME}/.bww/bin:${PATH}"
 PATH="${HOME}/.flatpak/bin:${PATH}"
+
+if command -v npm > /dev/null; then
+  PATH="$(npm config get prefix)/bin:${PATH}"
+fi
 export PATH
 
 # On VNC sessions, PATH is sometimes re-written. How weird.

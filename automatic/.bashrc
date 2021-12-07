@@ -1,8 +1,8 @@
 # User bashrc
 
-# shellcheck disable=SC1090
 # Source bash_profile if the environment is not setup
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 fi
 
@@ -32,7 +32,7 @@ prompt_command_git()
 prompt_color_ps1()
 {
   # we have colors :-)
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [ -r "${HOME}/.sh_colors" ] && . "${HOME}/.sh_colors"
 
   user_color=""
@@ -104,7 +104,7 @@ enable_bash_completion()
 bashrc()
 {
   # Source the bash extras file
-  # shellcheck disable=SC1090
+  # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
 
   PROMPT_COMMAND=prompt_command
