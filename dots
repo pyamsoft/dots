@@ -15,7 +15,11 @@ targets="automatic"
 case "$1" in
   install)
     # shellcheck disable=SC2086
+    mkdir -p "${HOME}/.local/bin"
     mkdir -p "${HOME}/.local/share/flatpak"
+    mkdir -p "${HOME}/.config"
+    mkdir -p "${HOME}/.bww"
+    mkdir -p "${HOME}/.npm/global"
     stow -v -S ${targets}
     exit 0
     ;;
