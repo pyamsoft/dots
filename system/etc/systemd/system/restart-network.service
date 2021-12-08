@@ -1,0 +1,13 @@
+[Unit]
+Description=Restart NetworkManager after system suspend
+Before=sleep.target
+StopWhenUnneeded=yes
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/bin/systemctl restart NetworkManager
+
+[Install]
+WantedBy=sleep.target
