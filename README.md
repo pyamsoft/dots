@@ -8,6 +8,12 @@ To install all dotfiles run `dots install`.
 To uninstall all dotfiles run `dots uninstall`.  
 To dry run an install run `dots test`.  
 
+
+## Notes
+
+For video acceleration in a flatpak, make sure you install ffmpeg-full.
+For video acceleration in docker, make sure you add /dev/dri as a --device
+
 ## License
 
 GPLv2
