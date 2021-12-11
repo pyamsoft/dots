@@ -1,0 +1,12 @@
+[Unit]
+Description=Enable Wake on LAN for interface %I
+After=default.target
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/bin/ethtool -s %I wol g
+ExecStop=/usr/bin/ethtool -s %I wol d
+
+[Install]
+WantedBy=default.target

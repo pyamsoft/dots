@@ -29,6 +29,10 @@ if command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
 fi
 
+if command -v qt5ct > /dev/null 2>&1; then
+  export QT_QPA_PLATFORMTHEME=qt5ct
+fi
+
 # shellcheck disable=SC1091
 [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 
