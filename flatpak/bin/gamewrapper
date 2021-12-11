@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Runs gamescope with some common pre-defined options
+
+# Disable VSYNC
+export vblank_mode=0
+
+# Prevent weird graphical glitches
+# https://github.com/Plagman/gamescope/issues/320
+export RADV_DEBUG=nodcc
+export AMD_DEBUG=nodcc
+
+width=1600
+height=900
+fps=144
+
+# Execute gamescope
+exec gamescope \
+  -W "${width}" -w "${width}" \
+  -H "${height}" -h "${height}" \
+  -r "${fps}" -o "${fps}" \
+  -e -- "$@"
