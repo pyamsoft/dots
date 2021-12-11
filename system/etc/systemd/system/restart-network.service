@@ -7,7 +7,7 @@ StopWhenUnneeded=yes
 Type=simple
 RemainAfterExit=yes
 ExecStart=/bin/true
-ExecStop=/bin/systemctl restart NetworkManager
+ExecStop=/bin/bash -c 'sleep 5 && systemctl restart dnsmasq stubby NetworkManager'
 
 [Install]
 WantedBy=sleep.target
