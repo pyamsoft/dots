@@ -1,5 +1,10 @@
 #!/bin/sh
 
+##
+# NOTE: This script is kept around because it does 'work' but it may not actually do anything on your system.
+#       If `cpuid` reports your CPU as VID = false for advanced power management, you may not actually be able
+#       to control voltage at all. Check your BIOS for alternative methods.
+
 # Needed for C6 disable
 readonly zenstates='/usr/local/src/Zenstates-Linux'
 readonly url='https://github.com/irusanov/ZenStates-Linux'
