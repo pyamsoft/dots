@@ -1,0 +1,110 @@
+#!/bin/sh
+
+readonly zenstates='/usr/local/src/Zenstates-Linux'
+readonly script="${zenstates}/zenstates.py"
+readonly url='https://github.com/irusanov/ZenStates-Linux'
+readonly gui_command="${script}"
+readonly command="${gui_command} --no-gui"
+
+readonly voltage_undervolt="40" # 1.15000V
+readonly voltage_original="32"  # 1.23750V
+
+check_zenstates()
+{
+  if [ ! -e "${zenstates}" ] || [ ! -d "${zenstates}" ]; then
+    git clone "${url}" "${zenstates}" || {
+      printf -- 'Failed to clone "%s" into "%s"\n' "${url}" "${zenstates}"
+      printf -- 'Please re-run the script.\n'
+      return 1
+    }
+
+		cd "${zenstates}" || return 1
+		cd ..
+  else
+    if [ ! -e "${script}" ] || [ ! -x "${script}" ]; then
+      printf -- 'Zenstates script could not be found at %s\n' "${script}"
+      printf -- 'Please re-clone the repository.\n'
+      return 1
+    fi
+  fi
+
+  return 0
+}
+
+require()
+{
+  if ! command -v "$1" > /dev/null; then
+    printf -- 'You must install "%s"\n' "$1"
+    return 1
+  fi
+
+  return 0
+}
+
+require_root()
+{
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'You must be root.\n'
+    return 1
+  fi
+
+  return 0
+}
+
+load_kernel_modules()
+{
+  modprobe -i msr || {
+    printf -- 'Failed to load "msr" module\n'
+    return 1
+  }
+
+  modprobe -i cpuid || {
+    printf -- 'Failed to load "cpuid" module\n'
+    return 1
+  }
+
+  return 0
+}
+
+main()
+{
+  enable="$1"
+
+  # Pre-req user
+  require_root || return 1
+
+  # Pre-req software
+  require 'git' || return 1
+  require 'python3' || return 1
+
+  # Pre-req script location
+  check_zenstates || return 1
+
+  # Run the script and disable c6
+  load_kernel_modules || return 1
+
+  # shellcheck disable=SC2086
+  ${command} --c6-disable || return 1
+
+  if [ "${enable}" = "list" ]; then
+    # shellcheck disable=SC2086
+    exec ${command} -l || return 1
+  elif [ "${enable}" = "gui" ]; then
+    # shellcheck disable=SC2086
+    exec ${gui_command} || return 1
+  elif [ "${enable}" = "enable" ]; then
+    # Apply p-state undervolt
+    # shellcheck disable=SC2086
+    exec ${command} -p 0 -v "${voltage_undervolt}" || return 1
+  elif [ "${enable}" = "disable" ]; then
+    # Restore default p-state
+    # shellcheck disable=SC2086
+    exec ${command} -p 0 -v "${voltage_original}" || return 1
+  else
+    printf -- 'Call with "list" "gui" "enable" "disable"\n'
+    return 1
+  fi
+}
+
+main "$@" || exit 1
+exit 0
