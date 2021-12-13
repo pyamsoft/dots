@@ -8,6 +8,12 @@ To install all dotfiles run `dots install`.
 To uninstall all dotfiles run `dots uninstall`.  
 To dry run an install run `dots test`.  
 
+# Structure
+
+`automatic` is a meant to be installed with GNU stow using the `dots` script.
+`system` are system configuration files that should be manually copied.
+`flatpak` is a folder for optional scripts that are meant to run in a flatpak environment.
+
 
 ## Notes
 
