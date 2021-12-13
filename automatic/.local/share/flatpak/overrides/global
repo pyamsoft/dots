@@ -1,7 +1,7 @@
 [Context]
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
-filesystems=!xdg-templates;!home;!host-os;!host-etc;~/.drirc:ro;!/tmp;!xdg-music;xdg-run/dconf;!xdg-pictures;!xdg-documents;xdg-config/qt5ct;!xdg-videos;xdg-config/kdeglobals:ro;!host;xdg-config/Kvantum;xdg-config/dconf:ro;!xdg-desktop;xdg-cache/mesa_shader_cache;!xdg-download;
+filesystems=!home;!xdg-templates;!host-os;!host-etc;~/.drirc:ro;!/tmp;!xdg-music;xdg-run/dconf;!xdg-pictures;!xdg-documents;xdg-config/qt5ct;!xdg-videos;xdg-config/kdeglobals:ro;!host;xdg-config/Kvantum:ro;xdg-config/dconf:ro;!xdg-desktop;xdg-cache/mesa_shader_cache;!xdg-download;
 persistent=.;
 shared=ipc;
 sockets=x11;wayland;fallback-x11;!ssh-auth;!pcsc;!cups;
@@ -9,3 +9,4 @@ unset-environment=PROMPT_COMMAND;
 
 [Environment]
 PROMPT_COMMAND=
+QT_STYLE_OVERRIDE=kvantum
