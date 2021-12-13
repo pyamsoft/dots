@@ -33,6 +33,10 @@ if command -v qt5ct > /dev/null 2>&1; then
   export QT_QPA_PLATFORMTHEME=qt5ct
 fi
 
+if command -v kvantummanager > /dev/null 2>&1; then
+  export QT_STYLE_OVERRIDE=kvantum
+fi
+
 # shellcheck disable=SC1091
 [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 
