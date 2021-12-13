@@ -5,8 +5,8 @@ After=default.target
 [Service]
 Type=simple
 RemainAfterExit=yes
-ExecStart=/usr/local/bin/adjust-ryzen
-ExecStop=/usr/local/bin/adjust-ryzen
+ExecStart=/usr/local/bin/adjust-ryzen enable
+ExecStop=/usr/local/bin/adjust-ryzen disable
 
 [Install]
 WantedBy=default.target

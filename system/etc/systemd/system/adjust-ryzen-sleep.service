@@ -6,8 +6,8 @@ StopWhenUnneeded=yes
 [Service]
 Type=simple
 RemainAfterExit=yes
-ExecStart=/usr/local/bin/adjust-ryzen
-ExecStop=/usr/local/bin/adjust-ryzen
+ExecStart=/usr/local/bin/adjust-ryzen disable
+ExecStop=/usr/local/bin/adjust-ryzen enable
 
 [Install]
 WantedBy=sleep.target
