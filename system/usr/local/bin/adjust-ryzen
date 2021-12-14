@@ -6,7 +6,7 @@ readonly url='https://github.com/irusanov/ZenStates-Linux'
 readonly gui_command="${script}"
 readonly command="${gui_command} --no-gui"
 
-readonly voltage_undervolt="36" # 1.21250V
+readonly voltage_undervolt="34" # 1.22500V
 readonly voltage_original="32"  # 1.23750V
 
 check_zenstates()
