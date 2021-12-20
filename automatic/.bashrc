@@ -30,21 +30,20 @@ prompt_command()
     # Don't source .sh_colors since this runs each time, its very expensive
 
     # No Color
-    color_off="\033[0m"
-    path_color="\033[1;35m"
-    root_color="\033[1;31m"
-    normal_color="\033[1;32m"
+    ps1_reset="\[\017\]"
+    color_off="\[\033[0m\]"
+    path_color="\[\033[1;35m\]"
 
     user_color=""
     if [ "$(id -u)" -eq 0 ]; then
-      user_color="${root_color}"
+      user_color="\[\033[1;31m\]"
     else
-      user_color="${normal_color}"
+      user_color="\[\033[1;32m\]"
     fi
 
     # Double quotes so colors are evaluated, but escape __git_ps1 so its evaluated each command
     # shellcheck disable=SC2089
-    PS1="${user_color}\u@\h ${path_color}\w${color_off}\$(__git_ps1 ' (%s)')
+    PS1="${ps1_reset}${user_color}\u@\h ${path_color}\w${color_off}\$(__git_ps1 ' (%s)')
 ${user_color}\$ ${color_off}"
   else
     # Single quote so __git_ps1 is evaluated at runtime each new command
