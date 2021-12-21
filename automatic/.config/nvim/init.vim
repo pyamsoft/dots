@@ -187,18 +187,27 @@
 -- TreeSitter
 local treesitter = require'nvim-treesitter.configs'
 treesitter.setup {
-  highlight = {
-    enable = true,
-    disable = {},
-  },
-  indent = {
-    enable = false,
-    disable = {},
-  },
   ensure_installed = {
     "bash",
     "json",
     "vim",
+  },
+  highlight = {
+    enable = true,
+  },
+  autopairs = {
+    enable = true,
+  },
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = true,
+  },
+  indent = {
+    enable = true,
+  },
+  context_commentstring = {
+    enable = true,
+    enable_autocmd = false,
   },
 }
 
@@ -210,7 +219,19 @@ lsp.bashls.setup(coq.lsp_ensure_capabilities{})
 lsp.jsonls.setup(coq.lsp_ensure_capabilities{})
 
 -- LuaLine
-require'lualine'.setup()
+require'lualine'.setup {
+  options = {
+    icons_enabled = false,
+    theme = 'codedark',
+  },
+  sections = {
+    lualine_b = {'filename'},
+    lualine_c = {'buffers'},
+    lualine_x = {'branch', 'diff', 'diagnostics'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+}
 EOF
         endif
 " }}}
