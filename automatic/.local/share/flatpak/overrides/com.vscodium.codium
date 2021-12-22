@@ -1,2 +1,2 @@
 [Context]
-filesystems=/storage/pyamsoft/devel/js;
+filesystems=/storage/pyamsoft/devel/js;/storage/pyamsoft/devel/shell/;
