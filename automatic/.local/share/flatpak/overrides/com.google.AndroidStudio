@@ -5,4 +5,3 @@ filesystems=/storage/pyamsoft/devel/android;
 
 [Environment]
 PATH=/app/bin:/usr/bin:/app/extra/bin:/app/extra/jre/bin:/storage/pyamsoft/devel/android/sdk/emulator:/storage/pyamsoft/devel/android/sdk/cmdline-tools/latest/bin:/storage/pyamsoft/devel/android/sdk/platform-tools
-ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
