@@ -12,7 +12,7 @@ fi
 
 # Source .xprofile
 #
-# shellcheck disable=SC1090
+# shellcheck disable=SC1091
 [ -f "${HOME}/.xprofile" ] && . "${HOME}/.xprofile"
 
 # For GTK desktops
@@ -23,4 +23,5 @@ eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets)"
 
 # Start desktop
 #
+# XFCE
 exec /usr/bin/startxfce4
