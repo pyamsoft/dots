@@ -17,18 +17,6 @@ export force_s3tc_enable=true
 # Help with Pulse audio crackling in some programs
 export PULSE_LATENCY_MSEC=60
 
-# Disable the terminal bell noise
-xset -b
-
-# Clean source xrdb config
-if [ -f "${HOME}"/.Xresources ]; then
-  xrdb "${HOME}"/.Xresources
-fi
-
-if command -v xhost > /dev/null 2>&1; then
-  xhost "+si:localuser:$(whoami)"
-fi
-
 if command -v qt5ct > /dev/null 2>&1; then
   export QT_QPA_PLATFORMTHEME=qt5ct
 fi
@@ -48,3 +36,29 @@ fi
 # X11 support for Gnome and GTK
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
+
+# Setup xhost for localhost
+if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
+  xhost "+si:localuser:$(whoami)"
+fi
+
+
+# Clean source xrdb config
+if command -v xrdb > /dev/null 2>&1 && [ -f "${HOME}"/.Xresources ]; then
+  xrdb "${HOME}"/.Xresources &
+fi
+
+# Disable the terminal bell noise
+if command -v xset > /dev/null 2>&1; then
+  xset -b &
+fi
+
+# Keybindings
+if command -v xbindkeys > /dev/null 2>&1; then
+  xbindkeys &
+fi
+
+# Flameshot (need this here first or else use of "flameshot gui" forks and breaks out of jail
+if command -v flameshot > /dev/null 2>&1; then
+  flameshot &
+fi
