@@ -1,0 +1,27 @@
+#!/bin/sh
+# X11 environment
+
+# Keybindings
+if command -v xbindkeys > /dev/null 2>&1; then
+  xbindkeys &
+fi
+
+# Flameshot (need this here first or else use of "flameshot gui" forks and breaks out of jail
+if command -v flameshot > /dev/null 2>&1; then
+  flameshot &
+fi
+
+# Setup xhost for localhost
+if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
+  xhost "+si:localuser:$(whoami)"
+fi
+
+# Clean source xrdb config
+if command -v xrdb > /dev/null 2>&1 && [ -f "${HOME}"/.Xresources ]; then
+  xrdb "${HOME}"/.Xresources &
+fi
+
+# Disable the terminal bell noise
+if command -v xset > /dev/null 2>&1; then
+  xset -b &
+fi
