@@ -25,7 +25,7 @@ prompt_command()
   fi
 
   # Set the PS1 based on color availability
-  if [ "$(tput colors)" -ne 0 ]; then
+  if command -v tput > /dev/null 2>&1 && tput colors > /dev/null 2>&1; then
     # we have colors :-)
     # Don't source .sh_colors since this runs each time, its very expensive
 
