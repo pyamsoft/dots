@@ -25,3 +25,10 @@ fi
 if command -v xset > /dev/null 2>&1; then
   xset -b &
 fi
+
+# For GTK desktops
+# So that wifi passwords work
+# Don't start ssh as it is handled by ssh-agent
+if command -v gnome-keyring-daemon > /dev/null 2>&1; then
+  eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets)"
+fi

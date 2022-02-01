@@ -15,12 +15,6 @@ fi
 # shellcheck disable=SC1091
 [ -f "${HOME}/.xprofile" ] && . "${HOME}/.xprofile"
 
-# For GTK desktops
-# So that wifi passwords work
-# Don't start ssh as it is handled by ssh-agent
-#
-eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets)"
-
 # Start desktop
 #
 # XFCE
