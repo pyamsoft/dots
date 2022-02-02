@@ -25,14 +25,9 @@ if command -v kvantummanager > /dev/null 2>&1; then
   export QT_STYLE_OVERRIDE=kvantum
 fi
 
-# shellcheck disable=SC1091
-[ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
-
-# No idea if this is kosher but this is what worked to fix the rofi theme problem.
-# Without these lines using rofi to launch systemsettings resulted in unthemed systemsettings
-# export KDE_FULL_SESSION=true
-# export XDG_CURRENT_DESKTOP=KDE
-
 # X11 support for Gnome and GTK
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
+
+# shellcheck disable=SC1091
+[ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
