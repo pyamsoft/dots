@@ -1,12 +1,6 @@
 #!/bin/sh
 # X11 environment
 
-# Replaced by desktop screenshot program
-# Flameshot (need this here first or else use of "flameshot gui" forks and breaks out of jail
-# if command -v flameshot > /dev/null 2>&1; then
-#   flameshot &
-# fi
-
 # Setup xhost for localhost
 if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
@@ -21,19 +15,3 @@ fi
 if command -v xset > /dev/null 2>&1; then
   xset -b &
 fi
-
-
-# Non GNOME desktops
-#######################################
-#   # Keybindings
-#   if command -v xbindkeys > /dev/null 2>&1; then
-#     xbindkeys &
-#   fi
-#
-#   # For GTK desktops
-#   # So that wifi passwords work
-#   # Don't start ssh as it is handled by ssh-agent
-#   if command -v gnome-keyring-daemon > /dev/null 2>&1; then
-#     eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets)"
-#   fi
-########################################
