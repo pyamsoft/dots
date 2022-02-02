@@ -1,3 +1,9 @@
 #!/bin/sh
 
+# We must remove the dead symlink
+rm -rf "${HOME}"/.var/app/org.gnome.Lollypop/music || {
+  printf -- 'Failed to remove Lollypop dead music\n'
+  exit 1
+}
+
 exec flatpak run org.gnome.Lollypop "$@"
