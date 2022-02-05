@@ -40,12 +40,6 @@ export XDG_CACHE_HOME="${HOME}/.cache"
 export WINEDEBUG=-all
 export WINEESYNC=1
 
-# Launch an ssh-agent the entire user session
-# Your DE may launch ssh agents for you - be sure you are not doubling up!
-if [ -z "${SSH_AUTH_SOCK}" ]; then
-  eval "$(ssh-agent -s)"
-fi
-
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1
 

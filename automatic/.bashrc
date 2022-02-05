@@ -94,10 +94,4 @@ bashrc
 unset bashrc
 unset enable_bash_completion
 
-# Launch an ssh-agent at least for this shell - see .environment
-# for an agent for an entire session - normally this line will not be used.
-if [ -z "${SSH_AUTH_SOCK}" ]; then
-  eval "$(ssh-agent -s)"
-fi
-
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
