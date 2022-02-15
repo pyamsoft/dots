@@ -39,10 +39,12 @@ fi
 
 backup "${backup_options}" "${HOME}/.crypto/" "$1/crypto"
 backup "${backup_options}" "${HOME}/.keepass/" "$1/keepassx"
-backup "${backup_options}" "${HOME}/music/" "$1/music"
-backup "${backup_options}" "/storage/pyamsoft/games/dolphin" "$1/games"
-backup "${backup_options}" "${HOME}/documents/" "$1/documents"
 backup "${backup_options}" "${HOME}/.config/git-ssh/keys/" "$1/ssh_keys"
+
+backup "${backup_options}" "${HOME}/documents/" "$1/documents"
+
+backup "${backup_options}" "/storage/pyamsoft/music" "$1/music"
+backup "${backup_options}" "/storage/pyamsoft/games/dolphin" "$1/games"
 
 # Not used because this machine does not hold all videos all the time, so --delete would remove data
 # backup "${backup_options}" "${HOME}/videos/" "$1/videos"
