@@ -11,6 +11,5 @@ delete_old()
 }
 
 delete_old "${HOME}/.config/MusicBrainz" || exit 1
-delete_old "${HOME}/music" || exit 1
 
 exec flatpak run org.musicbrainz.Picard "$@"

@@ -11,6 +11,4 @@ delete_old()
   return 0
 }
 
-delete_old "${HOME}/music" || exit 1
-
 exec flatpak run org.gnome.Lollypop "$@"
