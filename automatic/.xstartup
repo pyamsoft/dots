@@ -1,6 +1,11 @@
 #!/bin/sh
 # X11 environment
 
+# Setup flameshot before so that 'flameshot gui' does not fork out of the jail
+if command -v flameshot > /dev/null 2>&1; then
+  flameshot &
+fi
+
 # Setup xhost for localhost
 if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
   xhost "+si:localuser:$(whoami)"
