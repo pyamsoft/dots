@@ -36,4 +36,4 @@ set match-hidden-files off
 "\el": "ls -l "
 "\ec": "cd "
 "\em": "man "
-"\ep": "paru -Syu --removemake"
+"\ep": "paru -Syu --removemake && flatpak update"
