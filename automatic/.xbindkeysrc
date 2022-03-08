@@ -39,6 +39,9 @@
 "keepassxc"
   Mod4+X
 
+"steam"
+  Mod4+S
+
 "rofi -modi 'run' -show run"
   Mod4+Return
 
