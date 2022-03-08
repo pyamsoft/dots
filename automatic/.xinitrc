@@ -17,5 +17,5 @@ fi
 
 # Start desktop
 #
-# XFCE
-exec /usr/bin/startxfce4
+# MATE
+exec /usr/bin/mate-session

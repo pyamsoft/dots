@@ -29,5 +29,8 @@ fi
 export XDG_SESSION_TYPE=x11
 export GDK_BACKEND=x11
 
+# No AT accessibility bus
+export NO_AT_BRIDGE=1
+
 # shellcheck disable=SC1091
 [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
