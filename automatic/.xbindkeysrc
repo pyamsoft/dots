@@ -47,3 +47,6 @@
 
 "flameshot gui"
   Mod4+P
+
+"guake"
+  Mod4+BackSpace
