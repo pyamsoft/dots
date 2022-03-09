@@ -51,5 +51,5 @@
 "flameshot gui"
   Mod4+P
 
-"guake"
+"xfce4-terminal --drop-down -e 'tmux -2u'"
   Mod4+BackSpace
