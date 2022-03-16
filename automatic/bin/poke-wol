@@ -7,7 +7,7 @@ fi
 
 machine="$1"
 if [ "${machine}" = "nerd2" ]; then
-  exec wol -i 192.168.1.112
+  exec wol -i 192.168.1.112 7a:a0:8f:ca:14:ab
 else
   printf -- 'Could not target machine for wol: "%s"\n' "${machine}"
   exit 1
