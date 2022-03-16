@@ -1,2 +1,2 @@
 [Context]
-filesystems=xdg-videos;
+filesystems=xdg-download;xdg-videos;
