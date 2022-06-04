@@ -25,3 +25,8 @@ fi
 if command -v xbindkeys > /dev/null 2>&1; then
   xbindkeys &
 fi
+
+# CoreCtrl
+if command -v corectrl > /dev/null 2>&1; then
+  corectrl &
+fi
