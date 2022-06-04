@@ -1,7 +1,7 @@
 [Context]
 devices=all;
 features=devel;multiarch;
-filesystems=/storage/pyamsoft/games/steam;
+filesystems=/storage/pyamsoft/games/heroic;/storage/pyamsoft/games/steam;
 
 [Environment]
 PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin
