@@ -42,6 +42,15 @@
 "steam"
   Mod4+S
 
+"discord"
+  Mod4+D
+
+"caprine"
+  Mod4+M
+
+"heroic"
+  Mod4+H
+
 "rofi -modi 'run' -show run"
   Mod4+Return
 
