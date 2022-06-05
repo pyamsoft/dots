@@ -117,5 +117,11 @@ main()
   fi
 }
 
-main "$@" || exit 1
+
+# NOTE: VID does not seem to do anything (when monitored via zenmonitor)
+printf -- 'NOTE: VID clocking does not work in userspace on Linux.\n'
+printf -- '      Use your BIOS settings to undervolt your CPU\n.'
 exit 0
+
+#  main "$@" || exit 1
+#  exit 0
