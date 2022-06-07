@@ -1,0 +1,54 @@
+#!/bin/sh
+
+##
+# Installer
+#
+# $1 flatpak app name
+# $2 script to install from this directory
+installer() {
+  app_name="$1"
+  script="$2"
+  current_directory="$(pwd)"
+
+  printf -- 'Attempt install script %s into flatpak app %s\n' "${script}" "${app_name}"
+
+  if [ -d "${HOME}/.var/app/${app_name}" ]; then
+    cd "${HOME}/.var/app/${app_name}" || {
+      printf -- 'Failed to cd into flatpak app directory: %s\n.' "${app_name}"
+      return 1
+    }
+
+    mkdir -p .local/bin || {
+      printf -- 'Failed to create local bin directory for app: %s\n' "${app_name}"
+      return 2
+    }
+
+    cp -f "${current_directory}/$script" ".local/bin/${script}" || {
+      printf -- 'Failed to copy script %s into local bin directory for app: %s\n' "${script}" "${app_name}"
+      return 3
+    }
+
+    chmod +x ".local/bin/${script}" || {
+      printf -- 'Failed to mark script %s executable for app: %s\n' "${script}" "${app_name}"
+      return 4
+    }
+
+    cd "${current_directory}" || {
+      printf -- 'Failed to cd out of flatpak app directory: %s back to %s\n.' "${app_name}" "${current_directory}"
+      return 5
+    }
+
+    printf -- '    %s installed for flatpak app %s\n' "${script}" "${app_name}"
+
+    unset app_name
+    unset script
+    unset current_directory
+  fi
+
+  return 0
+}
+
+installer "com.valvesoftware.Steam" "gametime" || exit 1
+installer "com.heroicgameslauncher.hgl" "gametime" || exit 1
+exit 0
+

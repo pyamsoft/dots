@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# S3TC texture filtering
+export force_s3tc_enable=true
+
+# Fix artifacting on AMDGPU (https://github.com/Plagman/gamescope/issues/320)
+export AMD_DEBUG=nodcc
+export RADV_DEBUG=nodcc
+
+# Fix distortion on Intel (https://github.com/Plagman/gamescope/issues/356)
+export INTEL_DEBUG=norbc
+
+# Ignore forced TearFree display sync
+export vblank_mode=0
+
+# Run the executable in a session
+exec "$@"
