@@ -2,4 +2,11 @@
 
 # Extracts youtube-dl contents into MP3 using best quality and ignoring errors
 
-exec youtube-dl --youtube-skip-dash-manifest --no-call-home --yes-playlist -x --audio-format mp3 --audio-quality 0 -i "$@"
+dlp=""
+if command -v yt-dlp > /dev/null; then
+  dlp="yt-dlp"
+else
+  dlp="youtube-dl"
+fi
+
+exec "${dlp}" --youtube-skip-dash-manifest --no-call-home --yes-playlist -x --audio-format mp3 --audio-quality 0 -i "$@"
