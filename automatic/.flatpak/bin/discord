@@ -10,4 +10,4 @@ delete_old()
   return 0
 }
 
-exec flatpak run com.discordapp.Discord "$@"
+exec flatpak run io.github.spacingbat3.webcord "$@"
