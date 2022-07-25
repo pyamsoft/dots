@@ -27,10 +27,10 @@
 #keystate_capslock = enable
 #keystate_scrolllock= enable
 
-"rofi -modi 'run' -show run"
+"rofi -show run"
   Mod4+Return
 
-"rofi -modi 'run' -show run"
+"rofi -show run"
   Mod4+R
 
 "flameshot gui"

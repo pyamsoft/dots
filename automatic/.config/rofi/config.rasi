@@ -1,8 +1,11 @@
 configuration {
-  font: "mono 11";
+  modi: "run,drun";
+  font: "mono 12";
+  fixed-num-lines: true;
   show-icons: true;
   terminal: "xfce4-terminal";
-
+  icon-theme: "Papirus";
+  disable-history: true;
   timeout {
       action: "kb-cancel";
       delay:  0;
@@ -11,7 +14,6 @@ configuration {
       directories-first: true;
       sorting-method:    "name";
   }
-
 }
 
-@theme "Arc-Dark"
+@theme "rounded-nord-dark"
