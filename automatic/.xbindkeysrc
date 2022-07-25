@@ -27,30 +27,6 @@
 #keystate_capslock = enable
 #keystate_scrolllock= enable
 
-"firefox"
-  Mod4+W
-
-"ferdi"
-  Mod4+U
-
-"android-studio"
-  Mod4+I
-
-"keepassxc"
-  Mod4+X
-
-"steam"
-  Mod4+S
-
-"discord"
-  Mod4+D
-
-"caprine"
-  Mod4+M
-
-"heroic"
-  Mod4+H
-
 "rofi -modi 'run' -show run"
   Mod4+Return
 
@@ -62,3 +38,6 @@
 
 "xfce4-terminal --drop-down -e 'tmux -2u'"
   Mod4+BackSpace
+
+"xfce4-terminal --drop-down -e 'tmux -2u'"
+  Mod4+T
