@@ -1,0 +1,7 @@
+[Context]
+devices=all;
+features=devel;multiarch;
+filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/dolphin/;
+
+[Environment]
+PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin
