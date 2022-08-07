@@ -15,3 +15,4 @@ XDG_DATA_DIRS=/app/share:/usr/lib/extensions/vulkan/share:/usr/share:/usr/share/
 PS1=
 AMD_DEBUG=nodcc
 QT_STYLE_OVERRIDE=kvantum
+QT_QPA_PLATFORMTHEME=qt5ct
