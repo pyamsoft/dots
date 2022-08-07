@@ -14,5 +14,3 @@ PROMPT_COMMAND=
 XDG_DATA_DIRS=/app/share:/usr/lib/extensions/vulkan/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share
 PS1=
 AMD_DEBUG=nodcc
-QT_STYLE_OVERRIDE=kvantum
-QT_QPA_PLATFORMTHEME=qt5ct

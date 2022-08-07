@@ -17,13 +17,11 @@ export force_s3tc_enable=true
 # Help with Pulse audio crackling in some programs
 export PULSE_LATENCY_MSEC=60
 
-# Use Kvantum if available
+# Use QT5CT
 if command -v qt5ct > /dev/null 2>&1; then
   export QT_QPA_PLATFORMTHEME=qt5ct
-fi
-
-# Use Kvantum if available
-if command -v kvantummanager > /dev/null 2>&1; then
+elif command -v kvantummanager > /dev/null 2>&1; then
+  # Else use Kvantum if available
   export QT_STYLE_OVERRIDE=kvantum
 fi
 
