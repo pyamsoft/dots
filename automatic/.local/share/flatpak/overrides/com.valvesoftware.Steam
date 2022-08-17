@@ -4,4 +4,4 @@ features=devel;multiarch;
 filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/steam;
 
 [Environment]
-PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin
+PATH=~/.local/bin:/app/bin:/app/utils/bin:/usr/bin
