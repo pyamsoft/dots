@@ -4,12 +4,16 @@ configuration {
   fixed-num-lines: true;
   show-icons: true;
   terminal: "xfce4-terminal";
+  threads: 4;
   icon-theme: "Papirus";
   disable-history: true;
+  drun-use-desktop-cache: true;
+
   timeout {
       action: "kb-cancel";
       delay:  0;
   }
+
   filebrowser {
       directories-first: true;
       sorting-method:    "name";
