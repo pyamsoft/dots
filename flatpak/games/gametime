@@ -14,4 +14,8 @@ export INTEL_DEBUG=norbc
 export vblank_mode=0
 
 # Run the executable in a session
+# printf -- 'Running gametime: %s %s\n' "gamescope -w 1366 -h 768  -U -W 1600 -H 900 -e -b -r 120 -o 60 --rt" "$*"
+# exec gamescope -w 1366 -h 768  -U -W 1600 -H 900 -e -b -r 120 -o 60 --rt -- "$@"
+
+# Raw execute, no gamescope (crashes with std::pthread not allowed error)
 exec "$@"

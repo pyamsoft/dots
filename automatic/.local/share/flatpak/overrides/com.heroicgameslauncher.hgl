@@ -4,4 +4,4 @@ features=devel;multiarch;
 filesystems=/storage/pyamsoft/games/heroic;!~/Games/Heroic;
 
 [Environment]
-PATH=~/.local/bin:/app/bin:/app/utils/bin:/usr/bin
+PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin
