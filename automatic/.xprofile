@@ -27,10 +27,6 @@ elif command -v kvantummanager > /dev/null 2>&1; then
   export QT_STYLE_OVERRIDE=kvantum
 fi
 
-# X11 support for Gnome and GTK
-export XDG_SESSION_TYPE=x11
-export GDK_BACKEND=x11
-
 # No AT accessibility bus
 export NO_AT_BRIDGE=1
 
