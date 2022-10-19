@@ -1,3 +1,3 @@
 [Context]
 features=devel;
-filesystems=/storage/pyamsoft/devel/shell;/storage/pyamsoft/devel/js;
+filesystems=/storage/pyamsoft/devel/shell;/storage/pyamsoft/devel/js;/storage/pyamsoft/devel/aur;
