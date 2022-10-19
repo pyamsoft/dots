@@ -21,6 +21,9 @@ case "$1" in
     mkdir -p "${HOME}/.bww"
     mkdir -p "${HOME}/.npm/global"
     stow -v -S ${targets}
+
+    printf -- 'You may wish to install LunarVim:\n'
+    printf -- '%s\n' 'bash <(curl -s https://raw.githubusercontent.com/lunarvim/lunarvim/master/utils/installer/install.sh)'
     exit 0
     ;;
   uninstall)
