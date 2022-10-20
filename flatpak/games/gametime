@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# For gamescope, the following is needed
+# --devices=all;shm; is needed for Steam overlay and Steam input
+# --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
+
 # S3TC texture filtering
 export force_s3tc_enable=true
 
@@ -14,8 +18,12 @@ export INTEL_DEBUG=norbc
 export vblank_mode=0
 
 # Run the executable in a session
-# printf -- 'Running gametime: %s %s\n' "gamescope -w 1366 -h 768  -U -W 1600 -H 900 -e -b -r 120 -o 60 --rt" "$*"
-# exec gamescope -w 1366 -h 768  -U -W 1600 -H 900 -e -b -r 120 -o 60 --rt -- "$@"
-
-# Raw execute, no gamescope (crashes with std::pthread not allowed error)
-exec "$@"
+# NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
+exec gamescope \
+  -w 1280 -h 720 \
+  -W 1920 -H 1080 \
+  -r 120 -o 60 \
+  -e \
+  -b \
+  -U --fsr-sharpness 10 \
+  -- "$@"
