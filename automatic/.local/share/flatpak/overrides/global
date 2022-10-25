@@ -1,11 +1,15 @@
 [Context]
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
-filesystems=xdg-config/gtk-3.0:ro;xdg-config/gtkrc-2.0:ro;!xdg-templates;!xdg-data;!host-os;!host-etc;xdg-config/gtkrc:ro;~/.drirc:ro;!home;!/tmp;!xdg-music;xdg-run/dconf;!xdg-cache;!xdg-pictures;!xdg-documents;xdg-config/qt5ct;!xdg-config;!xdg-videos;xdg-config/kdeglobals:ro;!host;xdg-config/Kvantum:ro;xdg-config/dconf:ro;xdg-cache/mesa_shader_cache;xdg-config/gtk-4.0:ro;!/storage;!xdg-download;
+filesystems=xdg-config/gtk-3.0:ro;!xdg-data;!host-os;xdg-config/gtkrc:ro;!host-etc;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;xdg-config/gtk-4.0:ro;!xdg-pictures;!xdg-documents;xdg-config/qt5ct;!xdg-cache;xdg-config/gtkrc-2.0:ro;!xdg-videos;xdg-config/kdeglobals:ro;!xdg-config;!host;xdg-config/Kvantum:ro;!xdg-templates;xdg-config/dconf:ro;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;!/storage;!xdg-download;!home;
 persistent=.;
 shared=ipc;
-sockets=x11;wayland;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
+sockets=x11;wayland;!session-bus;!system-bus;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
 unset-environment=PROMPT_COMMAND;PS1;
+
+[Session Bus Policy]
+org.freedesktop.Flatpak=none
+org.freedesktop.impl.portal.PermissionStore=none
 
 [Environment]
 XDG_CONFIG_DIRS=/etc/xdg:/usr/lib/x86_64-linux-gnu/GL:/usr/lib/i386-linux-gnu/GL
