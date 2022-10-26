@@ -22,7 +22,6 @@ lvim.builtin.alpha.active = false
 -- can be "all"
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = { "bash", "python" }
-lvim.builtin.treesitter.highlight.enable = true
 -- disable automatic installation of servers
 -- lvim.lsp.installer.setup.automatic_installation = false
 
@@ -41,12 +40,16 @@ linters.setup {
 }
 
 -- Additional Plugins
--- lvim.plugins = {
---     {
---       "folke/trouble.nvim",
---       cmd = "TroubleToggle",
---     },
--- }
+lvim.plugins = {
+    {
+      -- Rainbow Parentheses
+      "p00f/nvim-ts-rainbow",
+    },
+}
+
+-- Treesitter
+lvim.builtin.treesitter.highlight.enable = true
+lvim.builtin.treesitter.rainbow.enable = true
 
 -- Mouse
 vim.opt.mouse = "" -- Disable mouse support
