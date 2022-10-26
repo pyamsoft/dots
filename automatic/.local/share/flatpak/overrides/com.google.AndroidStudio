@@ -1,8 +1,9 @@
 [Context]
 devices=all;kvm;shm;
 features=devel;multiarch;
-filesystems=/storage/pyamsoft/devel/android;
+filesystems=/storage/pyamsoft/devel/android;!xdg-run/keyring;
 
 [Environment]
+ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 SDL_VIDEODRIVER=x11
 PATH=/app/bin:/app/extra/android-studio/jre/bin:/usr/bin:/storage/pyamsoft/devel/android/sdk/emulator:/storage/pyamsoft/devel/android/sdk/cmdline-tools/latest/bin:/storage/pyamsoft/devel/android/sdk/platform-tools
