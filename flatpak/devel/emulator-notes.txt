@@ -1,0 +1,7 @@
+Android Emulator
+
+For better performance
+
+Launch emulator in its own application, not in a tool window
+Go into advanced settings and explicitly set Cold Boot
+Use ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
