@@ -4,7 +4,6 @@
 # SDL Options
 # Use pulse audio for SDL audio
 # Use X11 for SDL video
-export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
 export SDL_AUDIODRIVER=pulse
 export SDL_VIDEODRIVER=x11
 

@@ -54,6 +54,9 @@ lvim.builtin.treesitter.rainbow.enable = true
 -- Mouse
 vim.opt.mouse = "" -- Disable mouse support
 
+-- Editor
+vim.opt.wrap = true
+
 -- Key Mapping [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 
