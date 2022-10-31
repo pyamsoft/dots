@@ -1,72 +1,21 @@
+#!/bin/bash
 # User bashrc
 
-# Source bash_profile if the environment is not setup
-if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
-fi
-
-__git_ps1()
+__launch_starship()
 {
-  return 0
-}
-
-# set the PS1
-prompt_command()
-{
-  # Clear the ps1
-  unset PROMPT_COMMAND
-  unset PS1
-
-  gprompt_path="/usr/share/git/completion/git-prompt.sh"
-  if [ -r "${gprompt_path}" ]; then
-    # shellcheck disable=SC1090
-    . "${gprompt_path}"
-  fi
-
-  # Set the PS1 based on color availability
-  if command -v tput > /dev/null 2>&1 && tput colors > /dev/null 2>&1; then
-    # we have colors :-)
-    # Don't source .sh_colors since this runs each time, its very expensive
-
-    # No Color
-    ps1_reset="\[\017\]"
-    color_off="\[\033[0m\]"
-    path_color="\[\033[1;35m\]"
-
-    user_color=""
-    if [ "$(id -u)" -eq 0 ]; then
-      user_color="\[\033[1;31m\]"
-    else
-      user_color="\[\033[1;32m\]"
-    fi
-
-    # Double quotes so colors are evaluated, but escape __git_ps1 so its evaluated each command
-    # shellcheck disable=SC2089
-    PS1="${ps1_reset}${user_color}\u@\h ${path_color}\w${color_off}\$(__git_ps1 ' (%s)')
-${user_color}\$ ${color_off}"
+  if command -v starship > /dev/null; then
+    eval "$(starship init bash)"
   else
-    # Single quote so __git_ps1 is evaluated at runtime each new command
-    # shellcheck disable=SC2089
-    PS1='\u@\h \w $(__git_ps1 " (%s)")
+    export PS1='\w
 \$ '
   fi
-
-  # shellcheck disable=SC2090
-  export PS1
-
-  # Unset local variables
-  unset git_prompt
-  unset color_off
-  unset path_color
-  unset root_color
-  unset normal_color
 }
 
-enable_bash_completion()
+__enable_bash_completion()
 {
   # Enable bash completion
-  bcomp="/usr/share/bash-completion/bash_completion"
+  local bcomp="/usr/share/bash-completion/bash_completion"
+
   # shellcheck disable=SC1090
   [ -r "${bcomp}" ] && . "${bcomp}"
   unset bcomp
@@ -75,23 +24,35 @@ enable_bash_completion()
   # shellcheck disable=SC1090
   [ -r "${bcomp}" ] && . "${bcomp}"
   unset bcomp
+
+  bcomp="/usr/local/share/bash-completion/bash_completion"
+  # shellcheck disable=SC1090
+  [ -r "${bcomp}" ] && . "${bcomp}"
+  unset bcomp
 }
 
-bashrc()
+__bashrc()
 {
+  # Source bash_profile if the environment is not setup
+  if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+    # shellcheck disable=SC1091
+    [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+  fi
+
   # Source the bash extras file
   # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
 
-  prompt_command
-  enable_bash_completion
+  __enable_bash_completion
+  __launch_starship
 }
 
 # Setup
-bashrc
+__bashrc
 
 # Do not export the functions
-unset bashrc
-unset enable_bash_completion
+unset -f __bashrc
+unset -f __enable_bash_completion
+unset -f __launch_starship
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:

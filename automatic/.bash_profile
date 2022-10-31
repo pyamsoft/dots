@@ -29,7 +29,9 @@ set_env_vars()
   unset HISTFILE
 
   # dircolors outputs an export command
-  eval "$(dircolors -b "${HOME}/.dir_colors")"
+  if command -v dircolors > /dev/null; then
+    eval "$(dircolors -b "${HOME}/.dir_colors")"
+  fi
 
   EDITOR=vim
   export EDITOR
