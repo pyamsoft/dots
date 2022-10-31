@@ -4,3 +4,12 @@ add_newline = false
 truncation_length = 0
 truncate_to_repo = false
 style = "blue"
+
+[java]
+disabled = true
+
+[python]
+disabled = true
+
+[nodejs]
+disabled = true
