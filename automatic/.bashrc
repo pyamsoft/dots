@@ -1,5 +1,4 @@
-#!/bin/bash
-# User bashrc
+# shellcheck shell=bash
 
 __launch_starship()
 {

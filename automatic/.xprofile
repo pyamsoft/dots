@@ -1,33 +1,65 @@
-#!/bin/sh
-# X11 environment
+# shellcheck shell=bash
 
-# SDL Options
-# Use pulse audio for SDL audio
-# Use X11 for SDL video
-export SDL_AUDIODRIVER=pulse
-export SDL_VIDEODRIVER=x11
+__setup_sdl()
+{
+  # SDL Options
+  # Use pulse audio for SDL audio
+  # Use X11 for SDL video
+  export SDL_AUDIODRIVER=pulse
+  export SDL_VIDEODRIVER=x11
+}
 
-# Hardware Accel
-#
-# For AMD
-export LIBVA_DRIVER_NAME=radeonsi
+__setup_gpu()
+{
+  # Hardware Accel
+  #
+  # For AMD
+  export LIBVA_DRIVER_NAME=radeonsi
 
-# Use S3TC texture compression
-export force_s3tc_enable=true
+  # Use S3TC texture compression
+  export force_s3tc_enable=true
+}
 
-# Help with Pulse audio crackling in some programs
-export PULSE_LATENCY_MSEC=60
+__setup_audio()
+{
+  # Help with Pulse audio crackling in some programs
+  export PULSE_LATENCY_MSEC=60
+}
 
-# Use QT5CT
-if command -v qt5ct > /dev/null 2>&1; then
-  export QT_QPA_PLATFORMTHEME=qt5ct
-elif command -v kvantummanager > /dev/null 2>&1; then
-  # Else use Kvantum if available
-  export QT_STYLE_OVERRIDE=kvantum
-fi
+__setup_accessibility()
+{
+  # No AT accessibility bus
+  export NO_AT_BRIDGE=1
+}
 
-# No AT accessibility bus
-export NO_AT_BRIDGE=1
+__setup_qt()
+{
+  # Use QT5CT
+  if command -v qt5ct > /dev/null 2>&1; then
+    export QT_QPA_PLATFORMTHEME=qt5ct
+  elif command -v kvantummanager > /dev/null 2>&1; then
+    # Else use Kvantum if available
+    export QT_STYLE_OVERRIDE=kvantum
+  fi
+}
 
-# shellcheck disable=SC1091
-[ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+__xprofile()
+{
+  # shellcheck disable=SC1091
+  [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+
+  __setup_qt
+  __setup_gpu
+  __setup_sdl
+  __setup_audio
+  __setup_accessibility
+}
+
+__xprofile
+
+unset -f __xprofile
+unset -f __setup_qt
+unset -f __setup_gpu
+unset -f __setup_sdl
+unset -f __setup_audio
+unset -f __setup_accessibility

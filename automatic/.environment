@@ -1,46 +1,112 @@
-# If we have already been sourced, exit out
-if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
-  exit 0
-fi
+# shellcheck shell=bash
 
-# Keep the original PATH before we toutch it
-export SYSTEM_DEFAULT_PATH="${PATH}"
+__setup_editor()
+{
+  # Setup system editors
+  export EDITOR=vim
+  export SYSTEMD_EDITOR=vim
+  export SUDO_EDITOR=vim
+}
 
-# Git tracked scripts
-PATH="${HOME}/bin:${PATH}"
+__setup_c_compiler()
+{
+  # System C compilers
+  export CC=gcc
+  export CXX=g++
+}
 
-# Local scripts that are not git tracked
-PATH="${HOME}/.local/bin:${PATH}"
+__setup_locale()
+{
+  # Incase LANG is not defined since Java and other tools nolikey POSIX
+  # May be UserLand related on Android
+  export LANG="en_US.UTF-8"
+  export LANGUAGE="en_US.UTF-8"
+  export LC_CTYPE="en_US.UTF-8"
+  export LC_NUMERIC="en_US.UTF-8"
+  export LC_TIME="en_US.UTF-8"
+  export LC_COLLATE="en_US.UTF-8"
+  export LC_MONETARY="en_US.UTF-8"
+  export LC_MESSAGES="en_US.UTF-8"
+  export LC_PAPER="en_US.UTF-8"
+  export LC_NAME="en_US.UTF-8"
+  export LC_ADDRESS="en_US.UTF-8"
+  export LC_TELEPHONE="en_US.UTF-8"
+  export LC_MEASUREMENT="en_US.UTF-8"
+  export LC_IDENTIFICATION="en_US.UTF-8"
+}
 
-# bubblewrap-wrap scripts
-if command -v bww > /dev/null; then
-  PATH="${HOME}/.bww/bin:${PATH}"
-fi
+__setup_path()
+{
+  # Keep the original PATH before we toutch it
+  export SYSTEM_DEFAULT_PATH="${PATH}"
 
-# Flatpak scrips
-if command -v flatpak > /dev/null; then
-  PATH="${HOME}/.flatpak/bin:${PATH}"
-fi
+  # Git tracked scripts
+  PATH="${HOME}/bin:${PATH}"
 
-# Add local npm repository: used for things like bash-language-server
-# Set the local npm global path with "npm config set prefix ~/.npm/global"
-if command -v npm > /dev/null; then
-  PATH="$(npm config get prefix)/bin:${PATH}"
-fi
+  # Local scripts that are not git tracked
+  PATH="${HOME}/.local/bin:${PATH}"
 
-# Export the PATH
-export PATH
+  # bubblewrap-wrap scripts
+  if command -v bww > /dev/null; then
+    PATH="${HOME}/.bww/bin:${PATH}"
+  fi
 
-# Define XDG directories
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="${HOME}/.cache"
+  # Flatpak scrips
+  if command -v flatpak > /dev/null; then
+    PATH="${HOME}/.flatpak/bin:${PATH}"
+  fi
 
-# Wine with esync
-# https://github.com/zfigura/wine/blob/esync/README.esync
-export WINEDEBUG=-all
-export WINEESYNC=1
+  # Add local npm repository: used for things like bash-language-server
+  # Set the local npm global path with "npm config set prefix ~/.npm/global"
+  if command -v npm > /dev/null; then
+    PATH="$(npm config get prefix)/bin:${PATH}"
+  fi
 
-# Mark environment as set up
-export PYAMSOFT_ENVIRONMENT=1
+  # Export the PATH
+  export PATH
+}
+
+__setup_xdg()
+{
+  # Define XDG directories
+  export XDG_CONFIG_HOME="$HOME/.config"
+  export XDG_CACHE_HOME="${HOME}/.cache"
+}
+
+__setup_wine()
+{
+  # Wine with esync
+  # https://github.com/zfigura/wine/blob/esync/README.esync
+  export WINEDEBUG=-all
+  export WINEESYNC=1
+}
+
+__environment()
+{
+  # If we have already been sourced, exit out
+  if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
+    return 0
+  fi
+
+  __setup_path
+  __setup_editor
+  __setup_c_compiler
+  __setup_locale
+  __setup_xdg
+  __setup_wine
+
+  # Mark environment as set up
+  export PYAMSOFT_ENVIRONMENT=1
+}
+
+__environment
+
+unset -f __environment
+unset -f __setup_wine
+unset -f __setup_xdg
+unset -f __setup_path
+unset -f __setup_locale
+unset -f __setup_c_compiler
+unset -f __setup_editor
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

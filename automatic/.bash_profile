@@ -1,13 +1,11 @@
-# shellcheck disable=SC1090,SC1091
-if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-  [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
-fi
+# shellcheck shell=bash
 
-# Strict umask
-umask 077
-
-set_shopt_options()
+__set_shopt_options()
 {
+  if ! command -v shopt > /dev/null; then
+    return 0
+  fi
+
   # shopt options
   shopt -s checkwinsize
   shopt -s histappend
@@ -21,58 +19,40 @@ set_shopt_options()
   shopt -s dotglob
 }
 
-set_env_vars()
+__setup_shell_env()
 {
-  # Disable the bash_history file
-  HISTCONTROL=ignoreboth
-  export HISTCONTROL
-  unset HISTFILE
-
   # dircolors outputs an export command
   if command -v dircolors > /dev/null; then
     eval "$(dircolors -b "${HOME}/.dir_colors")"
   fi
 
-  EDITOR=vim
-  export EDITOR
-
-  SYSTEMD_EDITOR=vim
-  export SYSTEMD_EDITOR
-
-  SUDO_EDITOR=vim
-  export SUDO_EDITOR
-
-  CC=gcc
-  export CC
-
-  CXX=g++
-  export CXX
-
-  # Incase LANG is not defined since Java and other tools nolikey POSIX
-  # May be UserLand related on Android
-  export LANG="en_US.UTF-8"
-  export LANGUAGE="en_US.UTF-8"
-
-  export LC_CTYPE="en_US.UTF-8"
-  export LC_NUMERIC="en_US.UTF-8"
-  export LC_TIME="en_US.UTF-8"
-  export LC_COLLATE="en_US.UTF-8"
-  export LC_MONETARY="en_US.UTF-8"
-  export LC_MESSAGES="en_US.UTF-8"
-  export LC_PAPER="en_US.UTF-8"
-  export LC_NAME="en_US.UTF-8"
-  export LC_ADDRESS="en_US.UTF-8"
-  export LC_TELEPHONE="en_US.UTF-8"
-  export LC_MEASUREMENT="en_US.UTF-8"
-  export LC_IDENTIFICATION="en_US.UTF-8"
+  # Disable the bash_history file
+  export HISTCONTROL=ignoreboth
+  unset HISTFILE
 }
 
-set_shopt_options
-set_env_vars
+__bash_profile()
+{
+  # shellcheck disable=SC1090,SC1091
+  if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+    [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
+  fi
 
-unset set_env_vars
-unset set_shopt_options
+  # Strict umask
+  if command -v umask > /dev/null; then
+    umask 077
+  fi
 
-[ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
+  __set_shopt_options
+  __setup_shell_env
+
+  [ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
+}
+
+__bash_profile
+
+unset -f __bash_profile
+unset -f __set_shopt_options
+unset -f __setup_shell_env
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
