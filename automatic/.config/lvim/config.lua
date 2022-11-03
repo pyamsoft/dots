@@ -5,8 +5,6 @@ lvim.transparent_window = false -- For transparent windows
 
 -- Theme
 lvim.colorscheme = "tokyonight-night"
-lvim.builtin.theme.options.dim_inactive = true
-lvim.builtin.theme.options.style = "storm"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
