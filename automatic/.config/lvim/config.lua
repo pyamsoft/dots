@@ -4,7 +4,7 @@ lvim.format_on_save = false
 lvim.transparent_window = false -- For transparent windows
 
 -- Theme
-lvim.colorscheme = "catppuccin-frappe"
+lvim.colorscheme = "catppuccin-mocha"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
