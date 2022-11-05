@@ -4,7 +4,7 @@ lvim.format_on_save = false
 lvim.transparent_window = false -- For transparent windows
 
 -- Theme
-lvim.colorscheme = "tokyonight-night"
+lvim.colorscheme = "catppuccin-frappe"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
@@ -39,10 +39,14 @@ linters.setup {
 
 -- Additional Plugins
 lvim.plugins = {
-    {
-      -- Rainbow Parentheses
-      "p00f/nvim-ts-rainbow",
-    },
+  {
+    -- Rainbow Parentheses
+    "p00f/nvim-ts-rainbow",
+  },
+  {
+    -- Catppuccin Theme
+    "catppuccin/nvim",
+  },
 }
 
 -- Treesitter
