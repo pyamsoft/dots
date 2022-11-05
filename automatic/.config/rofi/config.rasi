@@ -20,4 +20,4 @@ configuration {
   }
 }
 
-@theme "rounded-nord-dark"
+@theme "rounded-catppuccin-mocha"

@@ -25,14 +25,14 @@ window {
 }
 
 mainbox {
-    padding:    12px;
+    padding:    16px;
 }
 
 inputbar {
     background-color:   @bg1;
     border-color:       @bg3;
 
-    border:         2px;
+    border:         4px;
     border-radius:  16px;
 
     padding:    8px 16px;
@@ -50,7 +50,7 @@ entry {
 }
 
 message {
-    margin:             12px 0 0;
+    margin:             16px 0 0;
     border-radius:      16px;
     border-color:       @bg2;
     background-color:   @bg2;
@@ -63,7 +63,7 @@ textbox {
 listview {
     background-color:   transparent;
 
-    margin:     12px 0 0;
+    margin:     16px 0 0;
     lines:      8;
     columns:    1;
 
