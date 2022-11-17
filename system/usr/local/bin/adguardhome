@@ -6,11 +6,25 @@ _app="${_root}/adguardhome"
 _work="${_app}/work"
 _conf="${_app}/conf"
 
+##
+# Make directories
+#
 prepare_dirs()
 {
   mkdir -p "${_work}" || return 1
   mkdir -p "${_conf}" || return 2
   return 0
+}
+
+##
+# Setup container networking
+#
+prepare_container()
+{
+  if command -v sysctl > /dev/null; then
+    # Enable IP forwarding for container bridge networking
+    sysctl -w net.ipv4.ip_forward=1 || return 1
+  fi
 }
 
 main()
@@ -26,12 +40,21 @@ main()
     return 1
   }
 
+  prepare_container || {
+    printf -- 'Could not setup docker container.\n'
+    return 1
+  }
+
   # https://hub.docker.com/r/adguard/adguardhome
   #
-  # Always restart unless we kill it explicitly
+  # Restart the container always unless explicitly stopped (so we can view logs if it crashes)
+  # Run with a tiny init system
+  # No new privileges
+  # Drop all caps
+  # Give adguard cap NET_BIND_SERVICE so it can own port 53 and 81
   # Bind work and conf directories
   #
-  # Always bind port 53 for DNS queries
+  # Always bind port 53 for DNS queries - only respond to requests from localhost
   # Bind port 81 for admin console (set to 81 in the first-time-setup)
   # Bind port 3000 for first-time-setup
   # Run as daemon
@@ -40,33 +63,44 @@ main()
     exec docker run \
       --name adguardhome \
       --restart unless-stopped \
+      --init \
+      --security-opt no-new-privileges \
+      --cap-drop ALL \
+      --cap-add NET_BIND_SERVICE \
       -v "${_work}":/opt/adguardhome/work \
       -v "${_conf}":/opt/adguardhome/conf \
-      -p 53:53/tcp \
-      -p 53:53/udp \
-      -p 81:81/tcp \
-      -p 3000:3000/tcp \
-      -d \
+      -p 127.0.0.1:53:53/tcp \
+      -p 127.0.0.1:53:53/udp \
+      -p 127.0.0.1:81:81/tcp \
+      -p 127.0.0.1:3000:3000/tcp \
       adguard/adguardhome
   elif [ "$1" = "systemd" ]; then
     exec docker run \
       --name adguardhome \
       --restart unless-stopped \
+      --init \
+      --security-opt no-new-privileges \
+      --cap-drop ALL \
+      --cap-add NET_BIND_SERVICE \
       -v "${_work}":/opt/adguardhome/work \
       -v "${_conf}":/opt/adguardhome/conf \
-      -p 53:53/tcp \
-      -p 53:53/udp \
-      -p 81:81/tcp \
+      -p 127.0.0.1:53:53/tcp \
+      -p 127.0.0.1:53:53/udp \
+      -p 127.0.0.1:81:81/tcp \
       adguard/adguardhome
   else
     exec docker run \
       --name adguardhome \
       --restart unless-stopped \
+      --init \
+      --security-opt no-new-privileges \
+      --cap-drop ALL \
+      --cap-add NET_BIND_SERVICE \
       -v "${_work}":/opt/adguardhome/work \
       -v "${_conf}":/opt/adguardhome/conf \
-      -p 53:53/tcp \
-      -p 53:53/udp \
-      -p 81:81/tcp \
+      -p 127.0.0.1:53:53/tcp \
+      -p 127.0.0.1:53:53/udp \
+      -p 127.0.0.1:81:81/tcp \
       -d \
       adguard/adguardhome
    fi
