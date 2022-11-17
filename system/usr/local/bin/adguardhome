@@ -71,7 +71,6 @@ main()
 
     exec docker run \
       --name adguardhome \
-      --restart unless-stopped \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
@@ -83,6 +82,7 @@ main()
       -p 127.0.0.1:53:53/udp \
       -p 127.0.0.1:81:81/tcp \
       -p 127.0.0.1:3000:3000/tcp \
+      --rm \
       adguard/adguardhome "$@"
   elif [ "$1" = "systemd" ]; then
     # Eat argument
@@ -90,7 +90,6 @@ main()
 
     exec docker run \
       --name adguardhome \
-      --restart unless-stopped \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
@@ -101,6 +100,7 @@ main()
       -p 127.0.0.1:53:53/tcp \
       -p 127.0.0.1:53:53/udp \
       -p 127.0.0.1:81:81/tcp \
+      --rm \
       adguard/adguardhome "$@"
   else
     exec docker run \

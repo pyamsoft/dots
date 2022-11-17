@@ -4,7 +4,7 @@ After=syslog.target network-online.target
 
 [Service]
 ExecStart=/usr/local/bin/%I systemd
-ExecStop=/bin/sh -c 'docker stop %I && docker rm %I'
+ExecStop=/bin/sh -c 'docker stop %I'
 
 [Install]
 WantedBy=multi-user.target
