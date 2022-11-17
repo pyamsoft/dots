@@ -21,9 +21,14 @@ prepare_dirs()
 #
 prepare_container()
 {
-  if command -v sysctl > /dev/null; then
-    # Enable IP forwarding for container bridge networking
-    sysctl -w net.ipv4.ip_forward=1 || return 1
+  # If we are running on MacOS, this sysctl won't work
+  if command -v uname > /dev/null; then
+    if [ "$(uname)" != "Darwin" ]; then
+      if command -v sysctl > /dev/null; then
+        # Enable IP forwarding for container bridge networking
+        sysctl -w net.ipv4.ip_forward=1 || return 1
+      fi
+    fi
   fi
 }
 
