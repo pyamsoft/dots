@@ -15,10 +15,11 @@ prepare_dirs()
 
 main()
 {
-  if [ "$(id -u)" -ne 0 ]; then
-    printf -- 'You must be root.\n'
-    return 1
-  fi
+  # We don't need to check for root as the command will fail
+  # if a user lacks privs either during directory prep
+  # or when running docker.
+  #
+  # We don't need to be root per se, just have perm and docker access.
 
   prepare_dirs || {
     printf -- 'Could not setup docker directories.\n'
