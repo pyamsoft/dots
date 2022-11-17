@@ -1,0 +1,10 @@
+[Unit]
+Description=Docker Container: %I
+After=syslog.target network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/%I systemd
+ExecStop=/bin/sh -c 'docker stop %I && docker rm %I'
+
+[Install]
+WantedBy=multi-user.target
