@@ -56,6 +56,11 @@ __setup_path()
     PATH="${HOME}/.flatpak/bin:${PATH}"
   fi
 
+  # Docker scrips
+  if command -v docker > /dev/null; then
+    PATH="${HOME}/.docker/bin:${PATH}"
+  fi
+
   # Add local npm repository: used for things like bash-language-server
   # Set the local npm global path with "npm config set prefix ~/.npm/global"
   if command -v npm > /dev/null; then

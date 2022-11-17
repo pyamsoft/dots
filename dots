@@ -19,6 +19,8 @@ ensure_dirs()
     mkdir -p "${HOME}/.local/share/xfce4/terminal/colorschemes" || return 1
     mkdir -p "${HOME}/.bww" || return 1
     mkdir -p "${HOME}/.config/lvim" || return 1
+    mkdir -p "${HOME}/.docker/app" || return 1
+    mkdir -p "${HOME}/.docker/bin" || return 1
     return 0
 }
 
