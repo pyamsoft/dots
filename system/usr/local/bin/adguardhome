@@ -1,0 +1,75 @@
+#!/bin/sh
+
+_root="/usr/local/etc/docker"
+_app="${_root}/adguardhome"
+
+_work="${_app}/work"
+_conf="${_app}/conf"
+
+prepare_dirs()
+{
+  mkdir -p "${_work}" || return 1
+  mkdir -p "${_conf}" || return 2
+  return 0
+}
+
+main()
+{
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'You must be root.\n'
+    return 1
+  fi
+
+  prepare_dirs || {
+    printf -- 'Could not setup docker directories.\n'
+    return 1
+  }
+
+  # https://hub.docker.com/r/adguard/adguardhome
+  #
+  # Always restart unless we kill it explicitly
+  # Bind work and conf directories
+  #
+  # Always bind port 53 for DNS queries
+  # Bind port 81 for admin console (set to 81 in the first-time-setup)
+  # Bind port 3000 for first-time-setup
+  # Run as daemon
+
+  if [ "$1" = "setup" ];then
+    exec docker run \
+      --name adguardhome \
+      --restart unless-stopped \
+      -v "${_work}":/opt/adguardhome/work \
+      -v "${_conf}":/opt/adguardhome/conf \
+      -p 53:53/tcp \
+      -p 53:53/udp \
+      -p 81:81/tcp \
+      -p 3000:3000/tcp \
+      -d \
+      adguard/adguardhome
+  elif [ "$1" = "systemd" ]; then
+    exec docker run \
+      --name adguardhome \
+      --restart unless-stopped \
+      -v "${_work}":/opt/adguardhome/work \
+      -v "${_conf}":/opt/adguardhome/conf \
+      -p 53:53/tcp \
+      -p 53:53/udp \
+      -p 81:81/tcp \
+      adguard/adguardhome
+  else
+    exec docker run \
+      --name adguardhome \
+      --restart unless-stopped \
+      -v "${_work}":/opt/adguardhome/work \
+      -v "${_conf}":/opt/adguardhome/conf \
+      -p 53:53/tcp \
+      -p 53:53/udp \
+      -p 81:81/tcp \
+      -d \
+      adguard/adguardhome
+   fi
+}
+
+main "$@" || exit 1
+exit 0

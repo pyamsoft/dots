@@ -1,0 +1,10 @@
+[Unit]
+Description=(Docker) Adguard Home
+After=syslog.target network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/adguardhome systemd
+ExecStop=/bin/sh -c 'docker stop adguardhome && docker rm adguardhome'
+
+[Install]
+WantedBy=multi-user.target
