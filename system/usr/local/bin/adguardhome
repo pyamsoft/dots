@@ -66,6 +66,9 @@ main()
   # Run as daemon
 
   if [ "$1" = "setup" ];then
+    # Eat argument
+    shift
+
     exec docker run \
       --name adguardhome \
       --restart unless-stopped \
@@ -80,8 +83,11 @@ main()
       -p 127.0.0.1:53:53/udp \
       -p 127.0.0.1:81:81/tcp \
       -p 127.0.0.1:3000:3000/tcp \
-      adguard/adguardhome
+      adguard/adguardhome "$@"
   elif [ "$1" = "systemd" ]; then
+    # Eat argument
+    shift
+
     exec docker run \
       --name adguardhome \
       --restart unless-stopped \
@@ -95,7 +101,7 @@ main()
       -p 127.0.0.1:53:53/tcp \
       -p 127.0.0.1:53:53/udp \
       -p 127.0.0.1:81:81/tcp \
-      adguard/adguardhome
+      adguard/adguardhome "$@"
   else
     exec docker run \
       --name adguardhome \
@@ -111,7 +117,7 @@ main()
       -p 127.0.0.1:53:53/udp \
       -p 127.0.0.1:81:81/tcp \
       -d \
-      adguard/adguardhome
+      adguard/adguardhome "$@"
    fi
 }
 
