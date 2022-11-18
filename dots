@@ -18,6 +18,8 @@ ensure_dirs()
     mkdir -p "${HOME}/.docker" || return 1
 
     mkdir -p "${HOME}/.config/lvim" || return 1
+    mkdir -p "${HOME}/.config/corectrl" || return 1
+    mkdir -p "${HOME}/.config/fontconfig" || return 1
 
     mkdir -p "${HOME}/.local/bin" || return 1
     mkdir -p "${HOME}/.local/share/flatpak" || return 1
