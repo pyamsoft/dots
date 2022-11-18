@@ -41,24 +41,34 @@ __setup_path()
   export SYSTEM_DEFAULT_PATH="${PATH}"
 
   # Git tracked scripts
-  PATH="${HOME}/bin:${PATH}"
+  if [ -d "${HOME}/bin" ]; then
+    PATH="${HOME}/bin:${PATH}"
+  fi
 
   # Local scripts that are not git tracked
-  PATH="${HOME}/.local/bin:${PATH}"
+  if [ -d "${HOME}/.local/bin" ]; then
+    PATH="${HOME}/.local/bin:${PATH}"
+  fi
 
   # bubblewrap-wrap scripts
   if command -v bww > /dev/null; then
-    PATH="${HOME}/.bww/bin:${PATH}"
+    if [ -d "${HOME}/.bww/bin" ]; then
+      PATH="${HOME}/.bww/bin:${PATH}"
+    fi
   fi
 
   # Flatpak scrips
   if command -v flatpak > /dev/null; then
-    PATH="${HOME}/.flatpak/bin:${PATH}"
+    if [ -d "${HOME}/.flatpak/bin" ]; then
+      PATH="${HOME}/.flatpak/bin:${PATH}"
+    fi
   fi
 
   # Docker scrips
   if command -v docker > /dev/null; then
-    PATH="${HOME}/.docker/bin:${PATH}"
+    if [ -d "${HOME}/.docker/bin" ]; then
+      PATH="${HOME}/.docker/bin:${PATH}"
+    fi
   fi
 
   # Add local npm repository: used for things like bash-language-server
