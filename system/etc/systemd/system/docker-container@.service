@@ -3,8 +3,15 @@ Description=Docker Container: %I
 After=docker.service NetworkManager.service
 
 [Service]
+# A script should exist in your system local bin which supports a "systemd" mode.
+# This script should run the docker container with --rm and not as -d
 ExecStart=/usr/local/bin/%I systemd
+
+# Use /bin/sh so we don't need to know where docker lives specifically
 ExecStop=/bin/sh -c 'docker stop %I'
 
 [Install]
 WantedBy=multi-user.target
+
+# Also ensure the docker service is installed
+Also=docker.service
