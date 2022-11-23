@@ -12,6 +12,3 @@ ExecStop=/bin/sh -c 'docker stop %I'
 
 [Install]
 WantedBy=multi-user.target
-
-# Also ensure the docker service is installed
-Also=docker.service
