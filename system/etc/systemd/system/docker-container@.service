@@ -1,6 +1,6 @@
 [Unit]
 Description=Docker Container: %I
-After=syslog.target network-online.target
+After=docker.service NetworkManager.service
 
 [Service]
 ExecStart=/usr/local/bin/%I systemd
