@@ -20,7 +20,7 @@ export vblank_mode=0
 # Run the executable in a session
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
 exec gamescope \
-  -w 1280 -h 720 \
+  -w 1366 -h 768 \
   -W 1920 -H 1080 \
   -r 120 -o 60 \
   -e \
