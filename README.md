@@ -20,6 +20,8 @@ To dry run an install run `dots test`.
 For video acceleration in a flatpak, make sure you install ffmpeg-full.
 For video acceleration in docker, make sure you add /dev/dri as a --device
 
+For headphone audio, plug into Green back and use Analog Stereo Duplex
+
 ## License
 
 GPLv2
