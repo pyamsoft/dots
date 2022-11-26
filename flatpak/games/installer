@@ -60,6 +60,7 @@ install_gametime()
 install_gametime "com.heroicgameslauncher.hgl" || exit 1
 install_gametime "com.valvesoftware.Steam" || exit 1
 install_gametime "io.openrct2.OpenRCT2" || exit 1
+installer "io.openrct2.OpenRCT2" "openrct2-dedicated" || exit 1
 
 exit 0
 

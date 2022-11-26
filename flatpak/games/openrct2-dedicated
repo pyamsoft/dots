@@ -1,0 +1,7 @@
+#!/bin/sh
+
+park="$1"
+
+shift 
+
+exec openrct2 host "${park}" --port 11753 --password=poop --headless "$@"
