@@ -1,6 +1,6 @@
 [Unit]
 Description=Docker Container: %I
-After=docker.service NetworkManager.service
+After=docker.service network-online.target
 
 [Service]
 # A script should exist in your system local bin which supports a "systemd" mode.

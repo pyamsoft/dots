@@ -1,0 +1,268 @@
+#!/bin/sh
+
+_name="$(basename "$0")"
+
+_root="/usr/local/etc/docker"
+_app="${_root}/${_name}"
+
+##
+# Attempt to create an empty container
+#
+# $1
+attempt_create_container()
+{
+  create_container="$1"
+
+  # Check we have container
+  if [ -z "${create_container}" ]; then
+    printf -- 'Could not attempt container create, no name defined.\n'
+    return 1
+  fi
+
+  # Make the root directory
+  mkdir -p "${_app}" || {
+    printf -- 'Unable to create docker directory: %s\n' "${_app}"
+    return 1
+  }
+
+  # Create empty config
+  #
+  printf -- '%s\n' "$(cat << EOF
+# Comments look like this
+#
+# This file is directly source by POSIX sh script. Make sure you quote strings and
+# do not execute any unexpected code. Not Secure.
+#
+# [REQUIRED]
+# CONTAINER_TARGET
+#
+# [OPTIONAL]
+# CONTAINER_DIRS
+# CONTAINER_PORTS
+# CONTAINER_CAPS
+# CONTAINER_OPTIONS
+
+# The name of the container to run
+# CONTAINER_TARGET="adguard/adguardhome"
+CONTAINER_TARGET="adguard/adguardhome"
+
+# Directories: Format like -v/--volume
+# CONTAINER_DIRS="directory:/root/directory"
+CONTAINER_DIRS="work:/opt/adguardhome/work conf:/opt/adguardhome/conf"
+
+# Ports: Format like -p/--port
+# CONTAINER_PORTS="80:80/tcp 443:443/tcp"
+CONTAINER_PORTS="127.0.0.1:53:53/tcp 127.0.0.1:53:53/udp 127.0.0.1:81:81/tcp"
+
+# Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
+# CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
+CONTAINER_CAPS=""
+
+# Options: Any options passed to the container raw
+# CONTAINER_OPTIONS="-i -t --read-only"
+CONTAINER_OPTIONS=""
+EOF
+)" > "${create_container}"
+
+  printf -- 'Created empty container environment at %s\n' "${create_container}"
+  unset create_container
+  return 0
+}
+
+##
+# Source container environment
+# 
+# $1 file
+source_container()
+{
+  container_env="$1"
+
+  if [ ! -r "${container_env}" ]; then
+    # We failed, but try to create the directory
+    attempt_create_container "${container_env}" || {
+      printf -- 'Failed to create attempted container: %s' "${container_env}"
+      unset container_env
+      return 1
+    }
+
+    unset container_env
+    return 1
+  fi
+
+  # shellcheck disable=SC1090
+  . "${container_env}"
+
+  # Export
+  export CONTAINER_TARGET
+  export CONTAINER_DIRS
+  export CONTAINER_PORTS
+  export CONTAINER_CAPS
+  export CONTAINER_OPTIONS
+
+  unset container_env
+  return 0
+}
+
+##
+# Make directories
+#
+prepare_dirs()
+{
+  for d in ${CONTAINER_DIRS}; do
+    # This is a volume format, grab just the host directory name
+    # Split the string by ':' => directory:/container/directory -> directory /container/directory
+    # Grab only the first section => direction /container/directory -> directory
+    # Prepend the _app container and run mkdir
+    path_d="${_app}/$(printf -- '%s' "${d}" | tr ':' ' ' | awk '{ print $1 }')"
+    printf -- 'Create host directory: %s\n' "${path_d}"
+    mkdir -p "${path_d}" || {
+      printf -- 'Failed to create host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
+    unset d
+    unset path_d
+  done
+
+  return 0
+}
+
+##
+# Setup container networking
+#
+enable_bridge_network()
+{
+  # If we are running on MacOS, this sysctl won't work
+  if command -v uname > /dev/null; then
+    if [ "$(uname)" != "Darwin" ]; then
+      if command -v sysctl > /dev/null; then
+        # Enable IP forwarding for container bridge networking
+        printf -- 'Enable IPv4 forwarding for bridge networking\n'
+        sysctl -q -w net.ipv4.ip_forward=1 || {
+          printf -- 'Failed to enable IPv4 forwarding\n'
+          return 1
+        }
+      fi
+    fi
+  fi
+}
+
+check_container()
+{
+  if [ -z "${CONTAINER_TARGET}" ]; then
+    printf -- 'Missing CONTAINER_TARGET for %s. Is your container environment valid?\n' "${_name}"
+    return 1
+  fi
+
+  return 0
+}
+
+compile_container_options()
+{
+  my_container_options="${CONTAINER_OPTIONS}"
+
+  # Volume mounts
+  for d in ${CONTAINER_DIRS}; do
+    my_container_options="${my_container_options} -v ${_app}/${d}"
+  done
+
+  # Expose ports
+  for p in ${CONTAINER_PORTS}; do
+    my_container_options="${my_container_options} -p ${p}"
+  done
+
+  # Add capabilities
+  for c in ${CONTAINER_CAPS}; do
+    my_container_options="${my_container_options} --cap-add ${c}"
+  done
+
+  # Generic raw options
+  for o in ${CONTAINER_OPTIONS}; do
+    my_container_options="${my_container_options} ${o}"
+  done
+
+  # Echo out
+  printf -- '%s' "${my_container_options}"
+
+  unset my_container_options
+
+  # Unset environment
+  unset CONTAINER_DIRS
+  unset CONTAINER_PORTS
+  unset CONTAINER_CAPS
+  unset CONTAINER_OPTIONS
+  
+  return 0
+}
+
+main()
+{
+  # We don't need to check for root as the command will fail
+  # if a user lacks privs either during directory prep
+  # or when running docker.
+  #
+  # We don't need to be root per se, just have perm and docker access.
+
+  # Source the container environment
+  source_container "${_app}/container" || {
+    printf -- 'Could not source container environment file: %s\n' "${_app}/container"
+    return 1
+  }
+
+  # Validate the container environment
+  check_container || {
+    printf -- 'Invalid docker environment %s\n' "${_name}"
+    return 1
+  }
+
+  # Set IP forwarding for bridge networking
+  enable_bridge_network || {
+    printf -- 'Could not enable bridge network for container %s.\n' "${_name}"
+    return 1
+  }
+
+  # Prepare mounts
+  if [ -n "${CONTAINER_DIRS}" ]; then
+    prepare_dirs || {
+      printf -- 'Could not setup docker directories %s\n' "${CONTAINER_DIRS}"
+      return 1
+    }
+  fi
+
+  # Compile all options into one
+  options="$(compile_container_options)"
+
+  if [ "$1" = "systemd" ]; then
+    # Eat argument
+    shift
+
+    # Don't quote ${options} expansion - we want the raw strings
+    # shellcheck disable=SC2086
+    exec docker run \
+      --name "${_name}" \
+      --init \
+      --security-opt no-new-privileges \
+      --cap-drop ALL \
+      --rm \
+      ${options} \
+      "${CONTAINER_TARGET}" "$@"
+  else
+    # Don't quote ${options} expansion - we want the raw strings
+    # shellcheck disable=SC2086
+    exec docker run \
+      --name "${_name}" \
+      --init \
+      --security-opt no-new-privileges \
+      --cap-drop ALL \
+      --restart unless-stopped \
+      -d \
+      ${options} \
+      "${CONTAINER_TARGET}" "$@"
+   fi
+}
+
+main "$@" || exit 1
+exit 0
