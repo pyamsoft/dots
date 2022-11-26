@@ -38,9 +38,11 @@ __bashrc()
     [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
   fi
 
-  # Source the bash extras file
   # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
+
+  # shellcheck disable=SC1091
+  [ -f "${HOME}"/.bash_functions ] && . "${HOME}"/.bash_functions
 
   __enable_bash_completion
   __launch_starship
