@@ -44,15 +44,15 @@ attempt_create_container()
 
 # The name of the container to run
 # CONTAINER_TARGET="adguard/adguardhome"
-CONTAINER_TARGET="adguard/adguardhome"
+CONTAINER_TARGET=""
 
 # Directories: Format like -v/--volume
 # CONTAINER_DIRS="directory:/root/directory"
-CONTAINER_DIRS="work:/opt/adguardhome/work conf:/opt/adguardhome/conf"
+CONTAINER_DIRS=""
 
 # Ports: Format like -p/--port
 # CONTAINER_PORTS="80:80/tcp 443:443/tcp"
-CONTAINER_PORTS="127.0.0.1:53:53/tcp 127.0.0.1:53:53/udp 127.0.0.1:81:81/tcp"
+CONTAINER_PORTS=""
 
 # Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
 # CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
