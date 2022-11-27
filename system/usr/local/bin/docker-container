@@ -162,7 +162,7 @@ check_container()
 
 compile_container_options()
 {
-  my_container_options="${CONTAINER_OPTIONS}"
+  my_container_options=""
 
   # Volume mounts
   for d in ${CONTAINER_DIRS}; do
