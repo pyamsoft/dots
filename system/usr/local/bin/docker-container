@@ -33,6 +33,8 @@ attempt_create_container()
 # This file is directly source by POSIX sh script. Make sure you quote strings and
 # do not execute any unexpected code. Not Secure.
 #
+# All lines must be double-quoted (with escape rules like a shell script) or stuff wont work.
+#
 # [REQUIRED]
 # CONTAINER_TARGET
 #
@@ -41,6 +43,7 @@ attempt_create_container()
 # CONTAINER_PORTS
 # CONTAINER_CAPS
 # CONTAINER_OPTIONS
+# CONTAINER_ARGS
 
 # The name of the container to run
 # CONTAINER_TARGET="adguard/adguardhome"
@@ -61,6 +64,10 @@ CONTAINER_CAPS=""
 # Options: Any options passed to the container raw
 # CONTAINER_OPTIONS="-i -t --read-only"
 CONTAINER_OPTIONS=""
+
+# Arguments: Passed directly to the command ran inside the container
+# CONTAINER_ARGS="--verbose help"
+CONTAINER_ARGS=""
 EOF
 )" > "${create_container}"
 
@@ -98,6 +105,7 @@ source_container()
   export CONTAINER_PORTS
   export CONTAINER_CAPS
   export CONTAINER_OPTIONS
+  export CONTAINER_ARGS
 
   unset container_env
   return 0
@@ -194,6 +202,9 @@ compile_container_options()
   unset CONTAINER_PORTS
   unset CONTAINER_CAPS
   unset CONTAINER_OPTIONS
+
+  # Don't unset CONTAINER_ARGS since we need them
+  # unset CONTAINER_ARGS
   
   return 0
 }
@@ -239,7 +250,7 @@ main()
     # Eat argument
     shift
 
-    # Don't quote ${options} expansion - we want the raw strings
+    # Don't quote expansion - we want the raw strings
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
@@ -248,9 +259,9 @@ main()
       --cap-drop ALL \
       --rm \
       ${options} \
-      "${CONTAINER_TARGET}" "$@"
+      "${CONTAINER_TARGET}" "${CONTAINER_ARGS}" "$@"
   else
-    # Don't quote ${options} expansion - we want the raw strings
+    # Don't quote expansion - we want the raw strings
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
@@ -260,7 +271,7 @@ main()
       --restart unless-stopped \
       -d \
       ${options} \
-      "${CONTAINER_TARGET}" "$@"
+      "${CONTAINER_TARGET}" "${CONTAINER_ARGS}" "$@"
    fi
 }
 
