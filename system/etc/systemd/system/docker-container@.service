@@ -5,7 +5,9 @@ After=docker.service network-online.target
 [Service]
 # A script should exist in your system local bin which supports a "systemd" mode.
 # This script should run the docker container with --rm and not as -d
-ExecStart=/usr/local/bin/%I systemd
+#
+# Sleep for 5 seconds so that docker is live (sometimes adguardhome doesn't resolve DNS?)
+ExecStart=/bin/sh -c 'sleep 5 && %I systemd'
 
 # Use /bin/sh so we don't need to know where docker lives specifically
 ExecStop=/bin/sh -c 'docker stop %I'
