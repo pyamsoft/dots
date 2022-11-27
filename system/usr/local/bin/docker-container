@@ -259,7 +259,7 @@ main()
       --cap-drop ALL \
       --rm \
       ${options} \
-      "${CONTAINER_TARGET}" "${CONTAINER_ARGS}" "$@"
+      "${CONTAINER_TARGET}" ${CONTAINER_ARGS} "$@"
   else
     # Don't quote expansion - we want the raw strings
     # shellcheck disable=SC2086
@@ -271,7 +271,7 @@ main()
       --restart unless-stopped \
       -d \
       ${options} \
-      "${CONTAINER_TARGET}" "${CONTAINER_ARGS}" "$@"
+      "${CONTAINER_TARGET}" ${CONTAINER_ARGS} "$@"
    fi
 }
 
