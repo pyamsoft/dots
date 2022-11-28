@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# MacOS has a permission problem with volume mounts
+# Regardless of what user owns the real folder on the host, it is always mounted root:root
+# As such, our container needs to run root:root in order for paths to be writable.
+IS_MACOS_MESSED_UP=1
+
 _name="$(basename "$0")"
 
 _root="/usr/local/etc/docker"
@@ -13,6 +18,13 @@ _app="${_root}/${_name}"
 # The real user should be a member of the dockerusers group so they can still interact with files
 _user="docker-${_name}"
 _group="dockerusers"
+
+# Volume mounts are broken on MacOS, don't make a dockeruser, just use our own
+if [ "$(uname)" = "Darwin" ] && [ "${IS_MACOS_MESSED_UP}" -ne 0 ]; then
+  printf -- 'MacOS is buggy. Do not attempt user permission seperation.\n'
+  _user="$(id -un)"
+  _group="$(id -gn)"
+fi
 
 ##
 # Attempt to create an empty container
@@ -103,7 +115,7 @@ EOF
   printf -- 'Created empty container environment at %s\n' "${create_container}"
 
   # Own the configuration as the root user
-  chown root:root "${create_container}" || {
+  chown 0:0 "${create_container}" || {
     printf -- 'Failed to own the host configuration file %s\n' "${_app}"
 
     unset create_container
@@ -133,7 +145,7 @@ source_container()
   if [ ! -r "${container_env}" ]; then
     # We failed, but try to create the directory
     attempt_create_container "${container_env}" || {
-      printf -- 'Failed to create attempted container: %s' "${container_env}"
+      printf -- 'Failed to create attempted container: %s\n' "${container_env}"
       unset container_env
       return 1
     }
@@ -208,16 +220,14 @@ prepare_dirs()
 enable_bridge_network()
 {
   # If we are running on MacOS, this sysctl won't work
-  if command -v uname > /dev/null; then
-    if [ "$(uname)" != "Darwin" ]; then
-      if command -v sysctl > /dev/null; then
-        # Enable IP forwarding for container bridge networking
-        printf -- 'Enable IPv4 forwarding for bridge networking\n'
-        sysctl -q -w net.ipv4.ip_forward=1 || {
-          printf -- 'Failed to enable IPv4 forwarding\n'
-          return 1
-        }
-      fi
+  if [ "$(uname)" != "Darwin" ]; then
+    if command -v sysctl > /dev/null; then
+      # Enable IP forwarding for container bridge networking
+      printf -- 'Enable IPv4 forwarding for bridge networking\n'
+      sysctl -q -w net.ipv4.ip_forward=1 || {
+        printf -- 'Failed to enable IPv4 forwarding\n'
+        return 1
+      }
     fi
   fi
 }
@@ -308,33 +318,103 @@ compile_container_args()
 # Creates a docker user and group for safer container access
 create_docker_usergroup()
 {
-  # Check that the group does not already exist
-  if ! getent group "${_group}" > /dev/null; then
-    printf -- 'Creating docker container group: %s\n' "${_group}"
-    # Create a group for docker users
-    # Assign it to the _group as primary
-    groupadd "${_group}" || {
-      printf -- 'Could not make docker group: %s\n' "${_group}"
+  if [ "$(uname)" != "Darwin" ]; then
+    # Linux specific
+
+    # Check that the group does not already exist
+    if ! getent group "${_group}" > /dev/null; then
+      printf -- 'Creating docker container group: %s\n' "${_group}"
+      # Create a group for docker users
+      # Assign it to the _group as primary
+      groupadd "${_group}" || {
+        printf -- 'Could not make docker group: %s\n' "${_group}"
+        return 1
+      }
+    fi
+
+    # Check that the user does not already exist
+    if ! getent passwd "${_user}" > /dev/null; then
+      printf -- 'Creating docker container user: %s\n' "${_user}"
+      # Create a user with no home, and no user group.
+      # Assign it to the _group as primary
+      useradd --no-create-home --no-user-group -g "${_group}" "${_user}" || {
+        printf -- 'Could not make docker user: %s\n' "${_user}"
+        return 1
+      }
+    fi
+
+    # Add user to group
+    gpasswd -a "${_user}" "${_group}" || {
+      printf -- 'Failed to add docker user to group %s -> %s\n' "${_user}" "${_group}"
       return 1
     }
-  fi
+  else
+    # MacOS specific
+    if [ "${IS_MACOS_MESSED_UP}" -ne 0 ]; then
+      # MacOS volume mounting UID permission is messed up, don't do it
+      printf -- 'MacOS volume mounts are messed up, do not dscl\n'
+    else
+      # Check that the group does not already exist
+      if ! dscl . list /groups | grep "${_group}" > /dev/null; then
+        highest_gid="$(dscl . list /groups PrimaryGroupID | awk '{print $2}' | sort -n | tail -n 1)"
+        new_gid="$(( highest_gid + 1 ))"
 
-  # Check that the user does not already exist
-  if ! getent passwd "${_user}" > /dev/null; then
-    printf -- 'Creating docker container user: %s\n' "${_user}"
-    # Create a user with no home, and no user group.
-    # Assign it to the _group as primary
-    useradd --no-create-home --no-user-group -g "${_group}" "${_user}" || {
-      printf -- 'Could not make docker user: %s\n' "${_user}"
-      return 1
-    }
-  fi
+        # Create the group
+        dscl . create /Groups/"${_group}" || {
+          printf -- 'Failed to create /Groups/%s\n' "${_group}"
+          return 1
+        }
 
-  # Add user to group
-  gpasswd -a "${_user}" "${_group}" || {
-    printf -- 'Failed to add docker user to group %s -> %s\n' "${_user}" "${_group}"
-    return 1
-  }
+        # Assign group ID
+        dscl . create /Groups/"${_group}" gid "${new_gid}" || {
+          printf -- 'Failed to assign /Groups/%s GID: %s\n' "${_group}" "${new_gid}"
+          return 1
+        }
+
+        # Assign Group name
+        dscl . create /Groups/"${_group}" RealName "Docker Users" || {
+          printf -- 'Failed to assign /Groups/%s RealName\n' "${_group}"
+          return 1
+        }
+
+        # Assign Group passwd
+        dscl . create /Groups/"${_group}" passwd "*" || {
+          printf -- 'Failed to assign /Groups/%s passwd\n' "${_group}"
+          return 1
+        }
+      fi
+
+      # Check that the user does not exist
+      if ! dscl . list /users | grep "${_user}" > /dev/null; then
+        highest_uid="$(dscl . list /users UniqueID | awk '{print $2}' | sort -n | tail -n 1)"
+        new_uid="$(( highest_uid + 1 ))"
+
+        # Create user
+        dscl . -create /Users/"${_user}" || {
+          printf -- 'Failed to create new user %s\n' "${_user}"
+          return 1
+        }
+
+        # Assign UID
+        dscl . -create /Users/"${_user}" UniqueID "${new_uid}"  || {
+          printf -- 'Failed to assign  user UID %s %s\n' "${_user}" "${new_uid}"
+          return 1
+        }
+
+        existing_group_id="$(dscl . list /groups PrimaryGroupID | grep "${_group}" | awk '{print $2}')"
+
+        dscl . -create /Users/"${_user}" UserShell /bin/nologin
+        dscl . -create /Users/"${_user}" RealName "Docker ${_name}"
+        dscl . -create /Users/"${_user}" PrimaryGroupID "${existing_group_id}"
+      fi
+
+      # Add user to group
+      dscl . append /Groups/"${_group}" GroupMembership "${_user}" || {
+        printf -- 'Failed to add user to group %s -> %s\n' "${_user}" "${_group}"
+        return 1
+      }
+    fi
+  fi
 
   printf -- 'Running container as docker user: %s %s\n' "${_user}" "${_group}"
   return 0
@@ -389,9 +469,16 @@ main()
   # Compile all options into one
   options="$(compile_container_options)"
 
-  # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
-  docker_uid="$(id -u "${_user}")"
-  docker_gid="$(id -g "${_user}")"
+
+  # For some reason, even volume mounts as root into docker instead of as the docker user.
+  # Beacuse of this, just run docker assuming our local user on MacOS only
+  if [ "$(uname)" = "Darwin" ] && [ "${IS_MACOS_MESSED_UP}" -ne 0 ]; then
+    printf -- 'MacOS is buggy. Do not attempt user permission seperation.\n'
+    docker_user=""
+  else
+    # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
+    docker_user="$(id -u "${_user}"):$(id -g "${_user}")"
+  fi
 
   if [ "$1" = "systemd" ]; then
     # Eat argument
@@ -404,7 +491,7 @@ main()
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
-      --user "${docker_uid}:${docker_gid}" \
+      --user "${docker_user}" \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
@@ -420,12 +507,11 @@ main()
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
-      --user "${docker_uid}:${docker_gid}" \
+      --user "${docker_user}" \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
-      --restart unless-stopped \
-      -d \
+      --restart unless-stopped -d \
       ${options} "${CONTAINER_TARGET}" ${args}
    fi
 }
