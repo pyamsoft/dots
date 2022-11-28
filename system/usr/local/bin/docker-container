@@ -5,6 +5,15 @@ _name="$(basename "$0")"
 _root="/usr/local/etc/docker"
 _app="${_root}/${_name}"
 
+# Run containers unprivileged but also not as our own user
+# Since a container runs as root by default that's bad, though root in a container
+# is still safer than real root. Run every container as a dynamically created docker-* user
+# in the dockerusers group.
+#
+# The real user should be a member of the dockerusers group so they can still interact with files
+_user="docker-${_name}"
+_group="dockerusers"
+
 ##
 # Attempt to create an empty container
 #
@@ -16,12 +25,32 @@ attempt_create_container()
   # Check we have container
   if [ -z "${create_container}" ]; then
     printf -- 'Could not attempt container create, no name defined.\n'
+
+    unset create_container
     return 1
   fi
 
   # Make the root directory
   mkdir -p "${_app}" || {
     printf -- 'Unable to create docker directory: %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Own the directory as the docker user
+  chown "${_user}:${_group}" "${_app}" || {
+    printf -- 'Failed to own the host directory %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Mark the directory accessible to owner and group only
+  chmod 750 "${_app}" || {
+    printf -- 'Failed to chmod the host directory %s\n' "${_app}"
+
+    unset create_container
     return 1
   }
 
@@ -65,13 +94,30 @@ CONTAINER_CAPS=""
 # CONTAINER_OPTIONS="-i -t --read-only"
 CONTAINER_OPTIONS=""
 
-# Arguments: Passed directly to the command ran inside the container
+# Arguments: Passed directly to the command ran inside the container (will be used only if no arguments are passed on command line)
 # CONTAINER_ARGS="--verbose help"
 CONTAINER_ARGS=""
 EOF
 )" > "${create_container}"
 
   printf -- 'Created empty container environment at %s\n' "${create_container}"
+
+  # Own the configuration as the root user
+  chown root:root "${create_container}" || {
+    printf -- 'Failed to own the host configuration file %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Mark the configuration accessible to owner and group only
+  chmod 600 "${create_container}" || {
+    printf -- 'Failed to chmod the host configuration file %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
   unset create_container
   return 0
 }
@@ -131,6 +177,24 @@ prepare_dirs()
       return 1
     }
 
+    # Own the directory as the docker user
+    chown "${_user}:${_group}" "${path_d}" || {
+      printf -- 'Failed to own the host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
+    # Mark the directory accessible to owner and group only
+    chmod 750 "${path_d}" || {
+      printf -- 'Failed to chmod the host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
     unset d
     unset path_d
   done
@@ -158,6 +222,8 @@ enable_bridge_network()
   fi
 }
 
+##
+# Check the container configuration is valid
 check_container()
 {
   if [ -z "${CONTAINER_TARGET}" ]; then
@@ -168,6 +234,8 @@ check_container()
   return 0
 }
 
+##
+# Compile together all the container options
 compile_container_options()
 {
   my_container_options=""
@@ -209,6 +277,69 @@ compile_container_options()
   return 0
 }
 
+##
+# Compile container arguments
+#
+# $@ all arguments
+compile_container_args()
+{
+  my_container_args=""
+
+  # If we have args passed, take them, otherwise use defaults
+  if [ "$#" -le 0 ]; then
+    my_container_args="${CONTAINER_ARGS}"
+  else
+    # Use $* instead of $@ so we don't expand the array - we want it as a string we will expand later
+    my_container_args="$*"
+  fi
+
+  # Echo out
+  printf -- '%s' "${my_container_args}"
+
+  unset my_container_args
+
+  # Unset environment
+  unset CONTAINER_ARGS
+
+  return 0
+}
+
+##
+# Creates a docker user and group for safer container access
+create_docker_usergroup()
+{
+  # Check that the group does not already exist
+  if ! getent group "${_group}" > /dev/null; then
+    printf -- 'Creating docker container group: %s\n' "${_group}"
+    # Create a group for docker users
+    # Assign it to the _group as primary
+    groupadd "${_group}" || {
+      printf -- 'Could not make docker group: %s\n' "${_group}"
+      return 1
+    }
+  fi
+
+  # Check that the user does not already exist
+  if ! getent passwd "${_user}" > /dev/null; then
+    printf -- 'Creating docker container user: %s\n' "${_user}"
+    # Create a user with no home, and no user group.
+    # Assign it to the _group as primary
+    useradd --no-create-home --no-user-group -g "${_group}" "${_user}" || {
+      printf -- 'Could not make docker user: %s\n' "${_user}"
+      return 1
+    }
+  fi
+
+  # Add user to group
+  gpasswd -a "${_user}" "${_group}" || {
+    printf -- 'Failed to add docker user to group %s -> %s\n' "${_user}" "${_group}"
+    return 1
+  }
+
+  printf -- 'Running container as docker user: %s %s\n' "${_user}" "${_group}"
+  return 0
+}
+
 main()
 {
   # We don't need to check for root as the command will fail
@@ -216,6 +347,18 @@ main()
   # or when running docker.
   #
   # We don't need to be root per se, just have perm and docker access.
+
+  # Set the umask for user, group, but no other
+  umask 0027 || {
+    printf -- 'Failed to set restrictive umask 0027\n'
+    return 1
+  }
+
+  # Create docker user and group
+  create_docker_usergroup || {
+    printf -- 'Failed to create docker usergroup %s %s\n' "${_user}" "${_group}"
+    return 1
+  }
 
   # Source the container environment
   source_container "${_app}/container" || {
@@ -246,32 +389,44 @@ main()
   # Compile all options into one
   options="$(compile_container_options)"
 
+  # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
+  docker_uid="$(id -u "${_user}")"
+  docker_gid="$(id -g "${_user}")"
+
   if [ "$1" = "systemd" ]; then
     # Eat argument
     shift
+
+    # Then grab args
+    args="$(compile_container_args "$@")"
 
     # Don't quote expansion - we want the raw strings
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
+      --user "${docker_uid}:${docker_gid}" \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
       --rm \
-      ${options} \
-      "${CONTAINER_TARGET}" ${CONTAINER_ARGS} "$@"
+      ${options} "${CONTAINER_TARGET}" ${args}
   else
+    # Then grab args
+    args="$(compile_container_args "$@")"
+
+    # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
+
     # Don't quote expansion - we want the raw strings
     # shellcheck disable=SC2086
     exec docker run \
       --name "${_name}" \
+      --user "${docker_uid}:${docker_gid}" \
       --init \
       --security-opt no-new-privileges \
       --cap-drop ALL \
       --restart unless-stopped \
       -d \
-      ${options} \
-      "${CONTAINER_TARGET}" ${CONTAINER_ARGS} "$@"
+      ${options} "${CONTAINER_TARGET}" ${args}
    fi
 }
 
