@@ -31,200 +31,6 @@ else
 fi
 
 ##
-# Attempt to create an empty container
-#
-# $1
-attempt_create_container()
-{
-  create_container="$1"
-
-  # Check we have container
-  if [ -z "${create_container}" ]; then
-    printf -- 'Could not attempt container create, no name defined.\n'
-
-    unset create_container
-    return 1
-  fi
-
-  # Make the root directory
-  mkdir -p "${_app}" || {
-    printf -- 'Unable to create docker directory: %s\n' "${_app}"
-
-    unset create_container
-    return 1
-  }
-
-  # Own the directory as the docker user
-  chown "${_user}:${_group}" "${_app}" || {
-    printf -- 'Failed to own the host directory %s\n' "${_app}"
-
-    unset create_container
-    return 1
-  }
-
-  # Mark the directory accessible to owner and group only
-  chmod 750 "${_app}" || {
-    printf -- 'Failed to chmod the host directory %s\n' "${_app}"
-
-    unset create_container
-    return 1
-  }
-
-  # Create empty config
-  #
-  printf -- '%s\n' "$(cat << EOF
-# Comments look like this
-#
-# This file is directly source by POSIX sh script. Make sure you quote strings and
-# do not execute any unexpected code. Not Secure.
-#
-# All lines must be double-quoted (with escape rules like a shell script) or stuff wont work.
-#
-# [REQUIRED]
-# CONTAINER_TARGET
-#
-# [OPTIONAL]
-# CONTAINER_DIRS
-# CONTAINER_PORTS
-# CONTAINER_CAPS
-# CONTAINER_USER
-# CONTAINER_OPTIONS
-# CONTAINER_ARGS
-
-# The name of the container to run
-# CONTAINER_TARGET="adguard/adguardhome"
-CONTAINER_TARGET=""
-
-# Directories: Format like -v/--volume
-# CONTAINER_DIRS="directory:/root/directory"
-CONTAINER_DIRS=""
-
-# Ports: Format like -p/--port
-# CONTAINER_PORTS="80:80/tcp 443:443/tcp"
-CONTAINER_PORTS=""
-
-# Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
-# CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
-CONTAINER_CAPS=""
-
-# User: Override the --user option passed to the container.
-# Pass UID:GID instead of names for maximum compatibility.
-# CONTAINER_USER="1000:1000"
-CONTAINER_USER=""
-
-# Options: Any options passed to the container raw
-# CONTAINER_OPTIONS="-i -t --read-only"
-CONTAINER_OPTIONS=""
-
-# Arguments: Passed directly to the command ran inside the container (will be used only if no arguments are passed on command line)
-# CONTAINER_ARGS="--verbose help"
-CONTAINER_ARGS=""
-EOF
-)" > "${create_container}"
-
-  printf -- 'Created empty container environment at %s\n' "${create_container}"
-
-  # Own the configuration as the root user
-  chown 0:0 "${create_container}" || {
-    printf -- 'Failed to own the host configuration file %s\n' "${_app}"
-
-    unset create_container
-    return 1
-  }
-
-  # Mark the configuration accessible to owner and group only
-  chmod 600 "${create_container}" || {
-    printf -- 'Failed to chmod the host configuration file %s\n' "${_app}"
-
-    unset create_container
-    return 1
-  }
-
-  unset create_container
-  return 0
-}
-
-##
-# Source container environment
-# 
-# $1 file
-source_container()
-{
-  container_env="$1"
-
-  if [ ! -r "${container_env}" ]; then
-    # We failed, but try to create the directory
-    attempt_create_container "${container_env}" || {
-      printf -- 'Failed to create attempted container: %s\n' "${container_env}"
-      unset container_env
-      return 1
-    }
-
-    unset container_env
-    return 1
-  fi
-
-  # shellcheck disable=SC1090
-  . "${container_env}"
-
-  # Export
-  export CONTAINER_TARGET
-  export CONTAINER_DIRS
-  export CONTAINER_PORTS
-  export CONTAINER_CAPS
-  export CONTAINER_OPTIONS
-  export CONTAINER_ARGS
-
-  unset container_env
-  return 0
-}
-
-##
-# Make directories
-#
-prepare_dirs()
-{
-  for d in ${CONTAINER_DIRS}; do
-    # This is a volume format, grab just the host directory name
-    # Split the string by ':' => directory:/container/directory -> directory /container/directory
-    # Grab only the first section => direction /container/directory -> directory
-    # Prepend the _app container and run mkdir
-    path_d="${_app}/$(printf -- '%s' "${d}" | tr ':' ' ' | awk '{ print $1 }')"
-    printf -- 'Create host directory: %s\n' "${path_d}"
-    mkdir -p "${path_d}" || {
-      printf -- 'Failed to create host directory %s\n' "${path_d}"
-
-      unset d
-      unset path_d
-      return 1
-    }
-
-    # Own the directory as the docker user
-    chown "${_user}:${_group}" "${path_d}" || {
-      printf -- 'Failed to own the host directory %s\n' "${path_d}"
-
-      unset d
-      unset path_d
-      return 1
-    }
-
-    # Mark the directory accessible to owner and group only
-    chmod 750 "${path_d}" || {
-      printf -- 'Failed to chmod the host directory %s\n' "${path_d}"
-
-      unset d
-      unset path_d
-      return 1
-    }
-
-    unset d
-    unset path_d
-  done
-
-  return 0
-}
-
-##
 # Enable bridge networking on MacOS
 __mac_enable_bridge_network()
 {
@@ -242,106 +48,6 @@ __linux_enable_bridge_network()
     printf -- 'Failed to enable IPv4 forwarding\n'
     return 1
   }
-
-  return 0
-}
-
-##
-# Setup container networking
-#
-enable_bridge_network()
-{
-  # If we are running on MacOS, this sysctl won't work
-  if [ "$(uname)" = "Darwin" ]; then
-    __mac_enable_bridge_network || return 1
-  else
-    __linux_enable_bridge_network || return 1
-  fi
-
-  return 0
-}
-
-##
-# Check the container configuration is valid
-check_container()
-{
-  if [ -z "${CONTAINER_TARGET}" ]; then
-    printf -- 'Missing CONTAINER_TARGET for %s. Is your container environment valid?\n' "${_name}"
-    return 1
-  fi
-
-  return 0
-}
-
-##
-# Compile together all the container options
-compile_container_options()
-{
-  my_container_options=""
-
-  # Volume mounts
-  for d in ${CONTAINER_DIRS}; do
-    my_container_options="${my_container_options} -v ${_app}/${d}"
-  done
-
-  # Expose ports
-  for p in ${CONTAINER_PORTS}; do
-    my_container_options="${my_container_options} -p ${p}"
-  done
-
-  # Add capabilities
-  for c in ${CONTAINER_CAPS}; do
-    my_container_options="${my_container_options} --cap-add ${c}"
-  done
-
-  # Generic raw options
-  for o in ${CONTAINER_OPTIONS}; do
-    my_container_options="${my_container_options} ${o}"
-  done
-
-  # Echo out
-  printf -- '%s' "${my_container_options}"
-
-  unset my_container_options
-
-  # Unset environment
-  unset CONTAINER_DIRS
-  unset CONTAINER_PORTS
-  unset CONTAINER_CAPS
-  unset CONTAINER_OPTIONS
-
-  # Don't unset CONTAINER_ARGS since we need them
-  # unset CONTAINER_ARGS
-  #
-  # Don't unset CONTAINER_USER since we need them
-  # unset CONTAINER_USER
-  
-  return 0
-}
-
-##
-# Compile container arguments
-#
-# $@ all arguments
-compile_container_args()
-{
-  my_container_args=""
-
-  # If we have args passed, take them, otherwise use defaults
-  if [ "$#" -le 0 ]; then
-    my_container_args="${CONTAINER_ARGS}"
-  else
-    # Use $* instead of $@ so we don't expand the array - we want it as a string we will expand later
-    my_container_args="$*"
-  fi
-
-  # Echo out
-  printf -- '%s' "${my_container_args}"
-
-  unset my_container_args
-
-  # Unset environment
-  unset CONTAINER_ARGS
 
   return 0
 }
@@ -480,6 +186,336 @@ __mac_create_docker_usergroup()
 }
 
 ##
+# Attempt to create an empty container
+#
+# $1
+attempt_create_container()
+{
+  create_container="$1"
+
+  # Check we have container
+  if [ -z "${create_container}" ]; then
+    printf -- 'Could not attempt container create, no name defined.\n'
+
+    unset create_container
+    return 1
+  fi
+
+  # Make the root directory
+  mkdir -p "${_app}" || {
+    printf -- 'Unable to create docker directory: %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Own the directory as the docker user
+  chown "${_user}:${_group}" "${_app}" || {
+    printf -- 'Failed to own the host directory %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Mark the directory accessible to owner and group only
+  chmod 750 "${_app}" || {
+    printf -- 'Failed to chmod the host directory %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Create empty config
+  #
+  printf -- '%s\n' "$(cat << EOF
+# Comments look like this
+#
+# This file is directly source by POSIX sh script. Make sure you quote strings and
+# do not execute any unexpected code. Not Secure.
+#
+# All lines must be double-quoted (with escape rules like a shell script) or stuff wont work.
+#
+# [REQUIRED]
+# CONTAINER_TARGET
+#
+# [OPTIONAL]
+# CONTAINER_DIRS
+# CONTAINER_PORTS
+# CONTAINER_CAPS
+# CONTAINER_USER
+# CONTAINER_OPTIONS
+# CONTAINER_ARGS
+
+# The name of the container to run
+#
+# CONTAINER_TARGET="adguard/adguardhome"
+CONTAINER_TARGET=""
+
+# Directories: Format like -v/--volume. Paths will be automatically prepended with this directory path
+# This does not use docker volumes, just host directory bind mounts.
+# Ex: config becomes -> "-v /usr/local/etc/docker/my_app/config"
+#
+# CONTAINER_DIRS="directory:/root/directory"
+CONTAINER_DIRS=""
+
+# Ports: Format like -p/--port
+# Will be prepended with the -p option
+# Ex: 80:80/tcp -> "-p 80:80/tcp"
+#
+# CONTAINER_PORTS="80:80/tcp 443:443/tcp"
+CONTAINER_PORTS=""
+
+# Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
+# Will be prepended with --cap-add
+# Ex: NET_ADMIN NET_BIND_SERVICE -> "--cap-add NET_ADMIN --cap-add NET_BIND_SERVICE"
+#
+# CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
+CONTAINER_CAPS=""
+
+# User: Override the --user option passed to the container.
+# Pass UID:GID instead of names for maximum compatibility.
+# Will be prepended with --user
+# Ex: 1000:1000 -> "--user 1000:1000"
+#
+# CONTAINER_USER="1000:1000"
+CONTAINER_USER=""
+
+# Options: Any options passed to the container raw
+# Passed directory to docker run
+# 
+# CONTAINER_OPTIONS="-i -t --read-only"
+CONTAINER_OPTIONS=""
+
+# Arguments: Passed directly to the command ran inside the container.
+# If arguments are passed at invocation time, those will be used instead of these default args.
+#
+# CONTAINER_ARGS="--verbose help"
+CONTAINER_ARGS=""
+EOF
+)" > "${create_container}"
+
+  printf -- 'Created empty container environment at %s\n' "${create_container}"
+
+  # Own the configuration as the root user
+  chown 0:0 "${create_container}" || {
+    printf -- 'Failed to own the host configuration file %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  # Mark the configuration accessible to owner and group only
+  chmod 600 "${create_container}" || {
+    printf -- 'Failed to chmod the host configuration file %s\n' "${_app}"
+
+    unset create_container
+    return 1
+  }
+
+  unset create_container
+  return 0
+}
+
+##
+# Source container environment
+# 
+# $1 file
+source_container()
+{
+  container_env="$1"
+
+  if [ ! -r "${container_env}" ]; then
+    # We failed, but try to create the directory
+    attempt_create_container "${container_env}" || {
+      printf -- 'Failed to create attempted container: %s\n' "${container_env}"
+      unset container_env
+      return 1
+    }
+
+    unset container_env
+    return 1
+  fi
+
+  # shellcheck disable=SC1090
+  . "${container_env}"
+
+  # Export
+  export CONTAINER_TARGET
+  export CONTAINER_DIRS
+  export CONTAINER_PORTS
+  export CONTAINER_CAPS
+  export CONTAINER_OPTIONS
+  export CONTAINER_ARGS
+
+  unset container_env
+  return 0
+}
+
+##
+# Make directories
+#
+prepare_dirs()
+{
+  for d in ${CONTAINER_DIRS}; do
+    # This is a volume format, grab just the host directory name
+    # Split the string by ':' => directory:/container/directory -> directory /container/directory
+    # Grab only the first section => direction /container/directory -> directory
+    # Prepend the _app container and run mkdir
+    path_d="${_app}/$(printf -- '%s' "${d}" | tr ':' ' ' | awk '{ print $1 }')"
+    printf -- 'Create host directory: %s\n' "${path_d}"
+    mkdir -p "${path_d}" || {
+      printf -- 'Failed to create host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
+    # Own the directory as the docker user
+    chown "${_user}:${_group}" "${path_d}" || {
+      printf -- 'Failed to own the host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
+    # Mark the directory accessible to owner and group only
+    chmod 750 "${path_d}" || {
+      printf -- 'Failed to chmod the host directory %s\n' "${path_d}"
+
+      unset d
+      unset path_d
+      return 1
+    }
+
+    unset d
+    unset path_d
+  done
+
+  return 0
+}
+
+##
+# Setup container networking
+#
+enable_bridge_network()
+{
+  # If we are running on MacOS, this sysctl won't work
+  if [ "$(uname)" = "Darwin" ]; then
+    __mac_enable_bridge_network || return 1
+  else
+    __linux_enable_bridge_network || return 1
+  fi
+
+  return 0
+}
+
+##
+# Check the container configuration is valid
+check_container()
+{
+  if [ -z "${CONTAINER_TARGET}" ]; then
+    printf -- 'Missing CONTAINER_TARGET for %s. Is your container environment valid?\n' "${_name}"
+    return 1
+  fi
+
+  return 0
+}
+
+##
+# Compile together all the container options
+compile_container_options()
+{
+  # NOTE: Do not log anything in this function as we export the stdout as a variable
+
+  my_container_options=""
+
+  # Volume mounts in the format {host_directory_relative}:{container_absolute}
+  for d in ${CONTAINER_DIRS}; do
+    my_container_options="${my_container_options} -v ${_app}/${d}"
+  done
+
+  # Expose ports {host_port:container_port}
+  for p in ${CONTAINER_PORTS}; do
+    my_container_options="${my_container_options} -p ${p}"
+  done
+
+  # Add capabilities {CAPABILITY_NAME}
+  for c in ${CONTAINER_CAPS}; do
+    my_container_options="${my_container_options} --cap-add ${c}"
+  done
+
+  # Generic raw options {option}
+  for o in ${CONTAINER_OPTIONS}; do
+    my_container_options="${my_container_options} ${o}"
+  done
+
+  # Resolve User {user} or {user:group} or {uid} or {uid:gid}
+  if [ -n "${CONTAINER_USER}" ]; then
+    # Manual override, may not work on MacOS
+    my_container_options="${my_container_options} --user ${CONTAINER_USER}"
+  elif [ "$(uname)" = "Darwin" ] && [ "${IS_MACOS_MESSED_UP}" -ne 0 ]; then
+    # For some reason, even volume mounts as root into docker instead of as the docker user.
+    # Beacuse of this, just run docker assuming our local user on MacOS only
+    # Blank it out as if we had never passed an option - will run the user as default container user or as root.
+    # On MacOS, even though the container says root, files are created with the correct user and permissions.
+    #my_container_options="${my_container_options} --user ${CONTAINER_USER}"
+    true
+  else
+    # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
+    #
+    # Failing to specify a user runs the container user as root, and files created in the container
+    # are marked as created by root user 0
+    my_container_options="${my_container_options} --user $(id -u "${_user}"):$(id -g "${_user}")"
+  fi
+
+  # Echo out
+  printf -- '%s' "${my_container_options}"
+
+  unset my_container_options
+
+  # Unset environment
+  unset CONTAINER_DIRS
+  unset CONTAINER_PORTS
+  unset CONTAINER_CAPS
+  unset CONTAINER_OPTIONS
+  unset CONTAINER_USER
+
+  # Don't unset CONTAINER_ARGS since we need them
+  # unset CONTAINER_ARGS
+  
+  return 0
+}
+
+##
+# Compile container arguments
+#
+# $@ all arguments
+compile_container_args()
+{
+  my_container_args=""
+
+  # If we have args passed, take them, otherwise use defaults
+  if [ "$#" -le 0 ]; then
+    my_container_args="${CONTAINER_ARGS}"
+  else
+    # Use $* instead of $@ so we don't expand the array - we want it as a string we will expand later
+    my_container_args="$*"
+  fi
+
+  # Echo out
+  printf -- '%s' "${my_container_args}"
+
+  unset my_container_args
+
+  # Unset environment
+  unset CONTAINER_ARGS
+
+  return 0
+}
+
+##
 # Creates a docker user and group for safer container access
 create_docker_usergroup()
 {
@@ -488,40 +524,6 @@ create_docker_usergroup()
   else
     __linux_create_docker_usergroup || return 1
   fi
-
-  return 0
-}
-
-##
-# Decide the --user that the container will run as
-resolve_container_user()
-{
-  my_container_user=""
-
-  # For some reason, even volume mounts as root into docker instead of as the docker user.
-  # Beacuse of this, just run docker assuming our local user on MacOS only
-  if [ -n "${CONTAINER_USER}" ]; then
-    # Manual override, may not work on MacOS
-    my_container_user="--user ${CONTAINER_USER}"
-  elif [ "$(uname)" = "Darwin" ] && [ "${IS_MACOS_MESSED_UP}" -ne 0 ]; then
-    # Blank it out as if we had never passed an option - will run the user as default container user or as root.
-    # On MacOS, even though the container says root, files are created with the correct user and permissions.
-    my_container_user=""
-  else
-    # You must run --user with UID:GID instead of names or docker won't resolve names created on the fly.
-    #
-    # Failing to specify a user runs the container user as root, and files created in the container
-    # are marked as created by root user 0
-    my_container_user="--user $(id -u "${_user}"):$(id -g "${_user}")"
-  fi
-
-  # Echo out
-  printf -- '%s' "${my_container_user}"
-
-  unset my_container_user
-
-  # Unset environment
-  unset CONTAINER_USER
 
   return 0
 }
@@ -574,9 +576,8 @@ main()
 
   # Compile all options into one
   options="$(compile_container_options)"
-  docker_user="$(resolve_container_user)"
 
-  printf -- 'Running container %s as user: %s\n' "${CONTAINER_TARGET}" "${docker_user}"
+  printf -- 'Running container %s\n' "${CONTAINER_TARGET}"
 
   if [ "$1" = "systemd" ]; then
     # Eat argument
@@ -593,7 +594,6 @@ main()
       --security-opt no-new-privileges \
       --cap-drop ALL \
       --rm \
-      ${docker_user} \
       ${options} "${CONTAINER_TARGET}" ${args}
   else
     # Then grab args
@@ -607,7 +607,6 @@ main()
       --security-opt no-new-privileges \
       --cap-drop ALL \
       --restart unless-stopped -d \
-      ${docker_user} \
       ${options} "${CONTAINER_TARGET}" ${args}
    fi
 }
