@@ -1,14 +1,14 @@
 [Unit]
-Description=Docker Container: %I
+Description=Docker Container: %i
 After=docker.service network-online.target
 
 [Service]
 # A script should exist in your system local bin which supports a "systemd" mode.
 # This script should run the docker container with --rm and not as -d
-ExecStart=/bin/sh -c '%I systemd'
+ExecStart=/bin/sh -c '%i systemd'
 
 # We shouldn't need ExecStop since --rm should clean up the container automatically
-#ExecStop=/bin/sh -c 'docker stop %I'
+#ExecStop=/bin/sh -c 'docker stop %i'
 
 [Install]
 WantedBy=multi-user.target
