@@ -1,5 +1,5 @@
 [Context]
-devices=all;
+devices=all;shm;
 features=devel;multiarch;
 filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/dolphin/;
 

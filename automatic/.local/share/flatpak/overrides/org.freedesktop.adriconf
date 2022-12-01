@@ -1,2 +1,2 @@
 [Context]
-filesystems=/home/pyamsoft/.drirc;
+filesystems=~/.drirc;

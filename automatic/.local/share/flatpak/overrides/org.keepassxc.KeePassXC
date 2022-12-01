@@ -2,4 +2,4 @@
 shared=!network
 sockets=!ssh-auth
 devices=!all
-filesystems=/home/pyamsoft/.keepass;!host
+filesystems=~/.keepass;
