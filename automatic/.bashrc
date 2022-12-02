@@ -8,6 +8,8 @@ __launch_starship()
     export PS1='\w
 \$ '
   fi
+
+  return 0
 }
 
 __enable_bash_completion()
@@ -28,10 +30,15 @@ __enable_bash_completion()
   # shellcheck disable=SC1090
   [ -r "${bcomp}" ] && . "${bcomp}"
   unset bcomp
+
+  return 0
 }
 
 __bashrc()
 {
+  # If not running interactively, don't do anything
+  [[ $- != *i* ]] && return 0
+
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
     # shellcheck disable=SC1091
@@ -44,8 +51,10 @@ __bashrc()
   # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_functions ] && . "${HOME}"/.bash_functions
 
-  __enable_bash_completion
-  __launch_starship
+  __enable_bash_completion || return 1
+  __launch_starship || return 1
+
+  return 0
 }
 
 # Setup
