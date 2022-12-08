@@ -1,0 +1,26 @@
+#!/bin/sh
+
+readonly _RCT_STORAGE="${HOME}/games/openrct2/container"
+readonly _RCT_PASSWD="poop"
+
+main() {
+  park="$1"
+  if [ -z "${park}" ]; then
+    printf -- 'Pass a path to an OpenRCT2 save game.\n'
+    return 1
+  fi
+
+  printf -- 'Running dedicated openrct2 docker container for park: %s\n' "${park}"
+  exec sudo docker run \
+    --name openrct2 \
+    --rm --init \
+    --security-opt no-new-privileges --cap-drop ALL \
+    -v "${_RCT_STORAGE}:/home/openrct2/.config/OpenRCT2" \
+    -p 11753:11753/tcp -p 11753:11753/udp \
+    -i -t \
+    openrct2/openrct2-cli \
+    host /home/openrct2/.config/OpenRCT2/save/"${park}" --password "${_RCT_PASSWD}"
+}
+
+main "$@" || exit 1
+exit 0
