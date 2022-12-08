@@ -20,7 +20,7 @@ man()
 # Do not -Sy anywhere else, always -Syu
 fix_pacman_keyring()
 {
-  exec sudo pacman -Sy archlinux-keyring && sudo pacman -Syu
+  sudo pacman -Sy archlinux-keyring && sudo pacman -Syu
 }
 
 ##
