@@ -2,7 +2,7 @@
 # Color man pages
 man()
 {
-  exec env \
+  env \
   LESS_TERMCAP_mb=$'\E[01;31m' \
   LESS_TERMCAP_md=$'\E[01;38;5;74m' \
   LESS_TERMCAP_me=$'\E[0m' \
