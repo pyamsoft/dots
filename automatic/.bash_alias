@@ -10,18 +10,11 @@ alias gitpl="git pull"
 alias gitf="git fetch"
 alias gitps="git push"
 
-alias gitl="git lg"
 # git lg setup:
 # git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gitl="git lg"
 
-# Same syntax as mac, easier to handle, requires xclip
-alias pbcopy='xsel --clipboard --input'
-alias pbpaste='xsel --clipboard --output'
-
-# Allow sudo calls to receive the above alias support as well.
-alias sudo="sudo "
-
-# Colorized
+# Colorized (requires ~/.dir_colors)
 alias ls="ls -CHh --color=auto "
 alias dir="dir -CHAlh --color=auto "
 alias grep="grep -E --color=auto "
@@ -53,5 +46,8 @@ alias du="du -ch "
 # Quick ping, only ipv4
 alias p8="ping -4 8.8.8.8 "
 alias pingg="ping -4 www.google.com "
+
+# Allow sudo calls to receive the above alias support as well.
+alias sudo="sudo "
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
