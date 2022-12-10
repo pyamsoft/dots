@@ -41,7 +41,7 @@ clear_flatpak_pins()
 {
   # Don't use sudo for flatpak pin
   for p in $(flatpak pin | tail -n +1); do
-    flatpak pin --remove "${p}" || return 1
+    sudo flatpak pin --remove "${p}" || return 1
   done
  
   return 0
