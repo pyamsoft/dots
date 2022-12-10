@@ -1,1 +1,1 @@
-ATTRS{idVendor}=="03f0", ATTRS{idProduct}=="6412", MODE="0664", GROUP="lpadmin", ENV{libsane_matched}="yes"
+ATTRS{idVendor}=="03f0", ATTRS{idProduct}=="6412", MODE="0660", GROUP="lpadmin", ENV{libsane_matched}="yes"
