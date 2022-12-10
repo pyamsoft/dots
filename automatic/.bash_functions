@@ -27,10 +27,23 @@ fix_pacman_keyring()
 # Unexport all flatpak documents
 clear_flatpak_exported_documents()
 {
+  # Don't use sudo for flatpak document-unexport
   for d in $(flatpak documents); do
     flatpak document-unexport --doc-id "${d}" || return 1
   done
 
+  return 0
+}
+
+##
+# Unpin all flatpak pins
+clear_flatpak_pins()
+{
+  # Don't use sudo for flatpak pin
+  for p in $(flatpak pin | tail -n +1); do
+    flatpak pin --remove "${p}" || return 1
+  done
+ 
   return 0
 }
 
