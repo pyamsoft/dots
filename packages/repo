@@ -5,7 +5,6 @@ android-udev
 autoconf
 automake
 base
-bash-completion
 bison
 corectrl
 corkscrew
