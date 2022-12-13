@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 ##
 # Color man pages
 man()

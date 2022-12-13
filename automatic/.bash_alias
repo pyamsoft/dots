@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 # Git
 alias gits="git status"
 alias gita="git add"
