@@ -420,7 +420,7 @@ compile_container_options()
 {
   # NOTE: Do not log anything in this function as we export the stdout as a variable
 
-  my_container_options="--name ${_name} --security-opt no-new-privileges --cap-drop ALL"
+  my_container_options="--name ${_name} --init --security-opt no-new-privileges --cap-drop ALL"
 
   # Volume mounts in the format {host_directory_relative}:{container_absolute}
   for d in ${CONTAINER_DIRS}; do
