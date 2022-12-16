@@ -15,10 +15,21 @@ main()
     return 1
   fi
 
+  # Eat argument
   shift
 
+  # If we are in the i2c group attempt a brightness change without root
+  needs_sudo=1
+  if id -G -n | grep -q i2c ; then
+    needs_sudo=0
+  fi
+
   if [ "${cmd}" = "get" ]; then
-    sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    if [ "${needs_sudo}" -ne 0 ]; then
+      sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    else
+      ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    fi
   elif [ "${cmd}" = "set" ]; then
     amount="$1"
 
@@ -27,7 +38,11 @@ main()
       return 1
     fi
 
-    sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
+    if [ "${needs_sudo}" -ne 0 ]; then
+      sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
+    else
+      ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
+    fi
   else
     printf -- 'Must pass command "get" or "set"\n'
   fi
