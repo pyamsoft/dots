@@ -575,7 +575,7 @@ resolve_container_user()
 
   # Unset global
   unset CONTAINER_USER
-  return 1
+  return 0
 }
 
 init_user()
