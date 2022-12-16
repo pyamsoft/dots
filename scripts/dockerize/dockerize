@@ -459,10 +459,8 @@ compile_container_options()
     # Since containers are run 'as root' by default, if we have specified root here, just run the container
     # with its own specific defaults
     if [ "${d_user}" = "root" ]; then
-      printf -- 'Run container as Dockerfile user\n' 2>&1
       true
     else
-      printf -- 'Run container as user: %s\n' "${d_user}" 2>&1
       my_container_options="${my_container_options} --user $(id -u "${d_user}"):$(id -g "${d_user}")"
     fi
   fi
