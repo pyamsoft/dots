@@ -263,7 +263,7 @@ CONTAINER_CAPS=""
 # Pass UID instead of names for maximum compatibility.
 # This user will be parsed into the --user=uid:gid format,
 # where the UID is the resolved UID of the provided user, and the group
-# is the user's primary Group.
+# is the users primary Group.
 # Ex: root -> --user=0:0
 # Ex: myuser -> --user=1000:1000
 # Ex: 700 -> --user=700:700
