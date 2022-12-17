@@ -19,7 +19,7 @@ export vblank_mode=0
 
 # Mangohud
 export MANGOHUD=1
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,fps_limit=90,gl_vsync=0,vsync=1
 
 # Run the executable in a session
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
