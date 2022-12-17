@@ -25,7 +25,7 @@ export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,fps_limit=90,gl_vsync=0,vsync=1
 exec gamescope \
   -w 1366 -h 768 \
   -W 1920 -H 1080 \
-  -r 120 -o 60 \
+  -r 90 -o 60 \
   -e \
   -b \
   -U --fsr-sharpness 10 \

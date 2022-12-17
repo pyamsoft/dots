@@ -1,0 +1,13 @@
+#!/bin/sh
+
+proton_pid="$(pgrep -f 'GradleDaemon')"
+if [ -n "${proton_pid}" ]; then
+  printf -- 'Killing Proton process %s\n' "${proton_pid}"
+
+  # Don't quote so that multiple PIDs can be killed
+  # shellcheck disable=SC2086
+  kill ${proton_pid}
+else
+  printf -- 'Proton not running.\n'
+fi
+
