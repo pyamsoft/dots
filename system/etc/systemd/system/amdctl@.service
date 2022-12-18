@@ -1,0 +1,10 @@
+[Unit]
+Description=Undervolt Ryzen CPU with amdctl
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "amdctl -m -p 0 -v %i && amdctl -m -g"
+
+[Install]
+WantedBy=basic.target
+
