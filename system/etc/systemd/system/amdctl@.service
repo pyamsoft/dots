@@ -1,10 +1,10 @@
 [Unit]
 Description=Undervolt Ryzen CPU with amdctl
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
-Type=oneshot
 ExecStart=/bin/sh -c "amdctl -m -p 0 -v %i && amdctl -m -g"
+Type=oneshot
 
 [Install]
-WantedBy=basic.target
-
+WantedBy=multi-user.target suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
