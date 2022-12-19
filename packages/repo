@@ -12,6 +12,7 @@ debugedit
 docker
 flatpak
 flex
+fwupd
 gcc
 gdm
 gnome-shell-extension-appindicator
@@ -44,6 +45,7 @@ sane-airscan
 simple-scan
 starship
 stow
+tailscale
 texinfo
 tmux
 ttf-lato
