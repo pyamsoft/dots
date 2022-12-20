@@ -53,6 +53,10 @@ __xprofile()
   __setup_sdl
   __setup_audio
   __setup_accessibility
+
+  # Run startup programs
+  # shellcheck disable=SC1091
+  [ -f "${XDG_CONFIG_HOME}/X11/startup" ] && . "${XDG_CONFIG_HOME}/X11/startup" &
 }
 
 __xprofile

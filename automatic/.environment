@@ -84,8 +84,10 @@ __setup_path()
 __setup_xdg()
 {
   # Define XDG directories
-  export XDG_CONFIG_HOME="$HOME/.config"
-  export XDG_CACHE_HOME="${HOME}/.cache"
+  export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+  export XDG_CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
+  export XDG_DATA_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}"
+  export XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
 }
 
 __setup_wine()
@@ -94,6 +96,15 @@ __setup_wine()
   # https://github.com/zfigura/wine/blob/esync/README.esync
   export WINEDEBUG=-all
   export WINEESYNC=1
+}
+
+__setup_homedir()
+{
+  # Suggestions from xdg-ninja
+  export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
+  export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
+  export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
+  export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 }
 
 __environment()
@@ -109,6 +120,7 @@ __environment()
   __setup_locale
   __setup_xdg
   __setup_wine
+  __setup_homedir
 
   # Mark environment as set up
   export PYAMSOFT_ENVIRONMENT=1
@@ -123,5 +135,6 @@ unset -f __setup_path
 unset -f __setup_locale
 unset -f __setup_c_compiler
 unset -f __setup_editor
+unset -f __setup_homedir
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

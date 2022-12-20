@@ -1,0 +1,13 @@
+# shellcheck shell=bash
+
+for script in "${HOME}"/.bash_completion.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && . "${script}"
+done
+unset script
+
+for script in "${XDG_CONFIG_HOME}"/bash-completion.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && . "${script}"
+done
+unset script

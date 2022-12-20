@@ -1,15 +1,20 @@
 #!/bin/sh
 # X11 environment
 
+# Sleep for a little bit before we get started
+sleep 5
+
 # Setup xhost for localhost
 if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
-  xhost "+si:localuser:$(whoami)"
+  xhost "+si:localuser:$(whoami)" &
 fi
 
 # Clean source xrdb config
-if command -v xrdb > /dev/null 2>&1 && [ -f "${HOME}"/.Xresources ]; then
-  xrdb "${HOME}"/.Xresources &
+xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/resources"
+if command -v xrdb > /dev/null 2>&1 && [ -f "${xrdb_path}" ]; then
+  xrdb "${xrdb_path}" &
 fi
+unset xrdb_path
 
 # Disable the terminal bell noise
 if command -v xset > /dev/null 2>&1; then
@@ -31,4 +36,9 @@ fi
 # CoreCtrl
 if command -v corectrl > /dev/null 2>&1; then
   corectrl &
+fi
+
+# KDE Connect
+if command -v kdeconnect-indicator > /dev/null 2>&1; then
+  kdeconnect-indicator &
 fi

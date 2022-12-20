@@ -22,13 +22,18 @@ __set_shopt_options()
 __setup_shell_env()
 {
   # dircolors outputs an export command
-  if command -v dircolors > /dev/null; then
-    eval "$(dircolors -b "${HOME}/.dir_colors")"
+  colors="${XDG_CONFIG_HOME}/bash/dir_colors"
+  if command -v dircolors > /dev/null && [ -f "${colors}" ]; then
+    eval "$(dircolors -b "${colors}")"
   fi
+  unset colors
 
   # Disable the bash_history file
   export HISTCONTROL=ignoreboth
-  unset HISTFILE
+  export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
+
+  # Move bash_completion file
+  export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
 }
 
 __bash_profile()

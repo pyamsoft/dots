@@ -45,11 +45,15 @@ __bashrc()
     [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
   fi
 
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.bash_alias ] && . "${HOME}"/.bash_alias
+  aliases="${XDG_CONFIG_HOME}/bash/aliases"
+  # shellcheck disable=SC1090
+  [ -f "${aliases}" ] && . "${aliases}"
+  unset aliases
 
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.bash_functions ] && . "${HOME}"/.bash_functions
+  functions="${XDG_CONFIG_HOME}/bash/functions"
+  # shellcheck disable=SC1090
+  [ -f "${functions}" ] && . "${functions}"
+  unset functions
 
   __enable_bash_completion || return 1
   __launch_starship || return 1
