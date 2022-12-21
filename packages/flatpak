@@ -1,5 +1,6 @@
 com.google.AndroidStudio
 com.heroicgameslauncher.hgl
+com.mattjakeman.ExtensionManager
 com.obsproject.Studio
 com.transmissionbt.Transmission
 com.valvesoftware.Steam
@@ -14,4 +15,5 @@ org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.mozilla.firefox
 org.pulseaudio.pavucontrol
+org.remmina.Remmina
 re.chiaki.Chiaki
