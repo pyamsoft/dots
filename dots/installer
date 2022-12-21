@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Clone the repo as bar into the dotfiles folder
+# Clone the repo as bare into the dotfiles folder
+# This will only pull in repo information but not any files yet
 git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles
 
 # The dotfiles alias
@@ -13,3 +14,4 @@ printf -- 'When you are ready, run the following:\n\n'
 printf -- '$ %s\n' "alias dotfiles='git --git-dir \"\${HOME}\"/.dotfiles --work-tree \"\${HOME}\"'"
 printf -- '$ %s\n' "dotfiles checkout"
 printf -- '\nSee "%s" for more information\n' "https://www.atlassian.com/git/tutorials/dotfiles"
+printf -- 'To convert your BARE repo to a NORMAL repo, see "%s"\n' "https://stackoverflow.com/questions/10637378/how-do-i-convert-a-bare-git-repository-into-a-normal-one-in-place"
