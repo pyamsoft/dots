@@ -1,7 +1,7 @@
 [Context]
-devices=all;kvm;shm;
-features=devel;multiarch;
-filesystems=/storage/pyamsoft/devel/android;!xdg-run/keyring;
+devices=all;shm;kvm
+features=multiarch;devel
+filesystems=!xdg-run/keyring;/storage/pyamsoft/devel/android
 
 [Environment]
 ANDROID_EMULATOR_USE_SYSTEM_LIBS=1

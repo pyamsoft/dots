@@ -1,5 +1,5 @@
 [Context]
-filesystems=xdg-data/flatpak;xdg-data/flatpak/overrides;xdg-data/flatpak/app:ro;/var/lib/flatpak/app:ro;
+filesystems=xdg-data/flatpak;xdg-data/flatpak/app:ro;/var/lib/flatpak;/var/lib/flatpak/app:ro;
 
 [Session Bus Policy]
 org.gnome.Software=talk

@@ -3,7 +3,7 @@ shared=ipc;
 sockets=x11;wayland;pulseaudio;!session-bus;!system-bus;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
-filesystems=!xdg-data;!xdg-templates;!host-os;!xdg-cache;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;!home;!xdg-pictures;!xdg-documents;!xdg-config;!xdg-videos;!xdg-data/flatpak/app;!host-etc;!host;!/var/lib/flatpak/app;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-download;!/storage;
+filesystems=!xdg-data;!xdg-templates;!host-os;!xdg-cache;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;!home;!xdg-pictures;!xdg-documents;!xdg-config;!xdg-videos;!host-etc;!host;!/var/lib/flatpak;xdg-cache/mesa_shader_cache;!xdg-download;!/storage;
 persistent=.;
 unset-environment=PROMPT_COMMAND;PS1;
 
