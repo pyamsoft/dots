@@ -1,14 +1,15 @@
 [Context]
+shared=ipc;
+sockets=x11;wayland;pulseaudio;!session-bus;!system-bus;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
-filesystems=xdg-config/gtk-3.0:ro;!xdg-download;!xdg-data;!host-os;xdg-config/gtkrc:ro;!host-etc;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;xdg-config/gtk-4.0:ro;!xdg-pictures;!xdg-documents;xdg-config/qt5ct;!xdg-cache;xdg-config/gtkrc-2.0:ro;!xdg-videos;!xdg-run/keyring;!host;xdg-config/Kvantum:ro;!xdg-templates;!xdg-config;xdg-config/kdeglobals:ro;xdg-cache/mesa_shader_cache;xdg-config/dconf:ro;!/storage;!home;
+filesystems=!xdg-data;!xdg-templates;!host-os;!xdg-cache;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;!home;!xdg-pictures;!xdg-documents;!xdg-config;!xdg-videos;!xdg-data/flatpak/app;!host-etc;!host;!/var/lib/flatpak/app;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-download;!/storage;
 persistent=.;
-shared=ipc;
-sockets=x11;wayland;!session-bus;!system-bus;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
 unset-environment=PROMPT_COMMAND;PS1;
 
 [Session Bus Policy]
 org.freedesktop.Flatpak=none
+org.gnome.Software=none
 com.freedesktop.secrets=none
 org.freedesktop.impl.portal.PermissionStore=none
 

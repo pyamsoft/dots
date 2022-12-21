@@ -1,3 +1,4 @@
 [Context]
-filesystems=xdg-documents;
-sockets=cups;
+shared=!network
+sockets=cups
+filesystems=xdg-documents
