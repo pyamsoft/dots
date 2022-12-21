@@ -6,7 +6,7 @@ for script in "${HOME}"/.bash_completion.d/*; do
 done
 unset script
 
-for script in "${XDG_CONFIG_HOME}"/bash-completion.d/*; do
+for script in "${XDG_CONFIG_HOME}"/bash/completion.d/*; do
   # shellcheck disable=SC1090
   [ -r "${script}" ] && . "${script}"
 done

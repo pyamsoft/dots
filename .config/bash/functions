@@ -49,21 +49,4 @@ clear_flatpak_pins()
   return 0
 }
 
-# Manage dotfiles in a bare git repository in your HOME
-dotfiles()
-{
-  # Treat an empty command as status instead of help, for help call "help" explicitly
-  if [ "$#" -le 0 ]; then
-    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" status
-  else
-    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
-  fi
-}
-
-# Function alias
-dots()
-{
-  dotfiles "$@"
-}
-
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

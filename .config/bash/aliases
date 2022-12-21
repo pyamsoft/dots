@@ -1,5 +1,22 @@
 # shellcheck shell=bash
 
+# git lg setup:
+# git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+# Dotfiles Git
+alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
+alias dots="dotfiles status"
+alias dota="dotfiles add"
+alias dotc="dotfiles commit"
+alias dotd="dotfiles diff"
+alias dotm="dotfiles merge"
+alias dotck="dotfiles checkout"
+alias dotb="dotfiles branch"
+alias dotpl="dotfiles pull"
+alias dotf="dotfiles fetch"
+alias dotps="dotfiles push"
+alias dotl="dotfiles lg"
+
 # Git
 alias gits="git status"
 alias gita="git add"
@@ -11,20 +28,6 @@ alias gitb="git branch"
 alias gitpl="git pull"
 alias gitf="git fetch"
 alias gitps="git push"
-
-# Dotfiles Git
-alias dotsa="dotfiles add"
-alias dotsc="dotfiles commit"
-alias dotsd="dotfiles diff"
-alias dotsm="dotfiles merge"
-alias dotsck="dotfiles checkout"
-alias dotsb="dotfiles branch"
-alias dotspl="dotfiles pull"
-alias dotsf="dotfiles fetch"
-alias dotsps="dotfiles push"
-
-# git lg setup:
-# git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 alias gitl="git lg"
 
 # Colorized (requires ~/.dir_colors)
