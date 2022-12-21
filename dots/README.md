@@ -2,18 +2,7 @@
 
 [Inspired](https://www.atlassian.com/git/tutorials/dotfiles)
 
-```bash
-# Manage dotfiles in a bare git repository in your HOME
-dotfiles()
-{
-  # Treat an empty command as status instead of help, for help call "help" explicitly
-  if [ "$#" -le 0 ]; then
-    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" status
-  else
-    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
-  fi
-}
-```
+See `installer` in the `dots/` folder
 
 # Structure
 

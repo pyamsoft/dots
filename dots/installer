@@ -1,0 +1,30 @@
+#!/bin/sh
+
+
+# First define the function in scope
+
+# Manage dotfiles in a bare git repository in your HOME
+dotfiles()
+{
+  # Treat an empty command as status instead of help, for help call "help" explicitly
+  if [ "$#" -le 0 ]; then
+    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" status
+  else
+    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+  fi
+}
+
+# Function alias
+dots()
+{
+  dotfiles "$@"
+}
+
+# Clone the repo as bar into the dotfiles folder
+git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles
+
+# Configure the repository to only show explicitly added files
+dotfiles config --local status.showUntrackedFiles no
+
+export dotfiles
+export dots
