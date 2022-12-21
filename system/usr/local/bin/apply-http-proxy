@@ -6,15 +6,16 @@ if [ -z "${proxy}" ]; then
   # We log to stderr to avoid polluting a shell in eval mode
   printf -- 'Must specify a proxy in format hostname:port\n' 1>&2
   exit 1
-fi
-
-if [ "${proxy}" = "clear" ]; then
+elif [ "${proxy}" = "clear" ]; then
   # We log to stderr to avoid polluting a shell in eval mode
   printf -- 'Proxy cleared\n' 1>&2
 
   printf -- '%s\n' "unset http_proxy"
   printf -- '%s\n' "unset https_proxy"
 else
+  if [ "${proxy}" = "default" ]; then
+    proxy="192.168.49.1:8228"
+  fi
   # We log to stderr to avoid polluting a shell in eval mode
   printf -- 'Proxy set as http://%s\n' "${proxy}" 1>&2
 
