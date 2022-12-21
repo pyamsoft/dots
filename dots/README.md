@@ -1,19 +1,26 @@
 # dots
 
-dotfiles managed with GNU stow.
+[Inspired](https://www.atlassian.com/git/tutorials/dotfiles)
 
-dotfiles are handled via the `dots` script.  
-
-To install all dotfiles run `dots install`.  
-To uninstall all dotfiles run `dots uninstall`.  
-To dry run an install run `dots test`.  
+```bash
+# Manage dotfiles in a bare git repository in your HOME
+dotfiles()
+{
+  # Treat an empty command as status instead of help, for help call "help" explicitly
+  if [ "$#" -le 0 ]; then
+    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" status
+  else
+    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+  fi
+}
+```
 
 # Structure
 
-`automatic` is a meant to be installed with GNU stow using the `dots` script.
-`system` are system configuration files that should be manually copied.
-`flatpak` is a folder for optional scripts that are meant to run in a flatpak environment.
+Most of the dotfiles are in the bare repository, so they are
+already a part of the real HOME directory
 
+For other files that are copied into place, see `dots/`
 
 ## Notes
 
@@ -33,7 +40,7 @@ GPLv2
 ```
   The GPLv2 License
 
-    Copyright (C) 2020  Peter Kenji Yamanaka
+    Copyright (C) 2022  Peter Kenji Yamanaka
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
