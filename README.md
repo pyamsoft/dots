@@ -17,10 +17,14 @@ To dry run an install run `dots test`.
 
 ## Notes
 
-For video acceleration in a flatpak, make sure you install ffmpeg-full.
-For video acceleration in docker, make sure you add /dev/dri as a --device
+For video acceleration in docker, make sure you
+[setup hardware accel in the container](https://jellyfin.org/docs/general/administration/hardware-acceleration#hardware-acceleration-on-docker-linux)
 
 For headphone audio, plug into Green back and use Analog Stereo Duplex
+
+For RDP, use Remmina as client with Gnome-Remote-Desktop as server.
+To work around GRDP not allowing you to see the lock screen, install the extension
+[Allow Locked Remote Desktop](https://extensions.gnome.org/extension/4338/allow-locked-remote-desktop/)
 
 ## License
 
