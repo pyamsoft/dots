@@ -1,0 +1,21 @@
+# Git Alias completion
+
+# Source the git completion file
+if [ -e "/usr/share/bash-completion/completions/git" ]; then
+  . /usr/share/bash-completion/completions/git
+
+  # Work with aliases 
+  __git_complete gits git_status
+  __git_complete gitck git_checkout
+  __git_complete gita git_add
+  __git_complete gitc git_commit
+  __git_complete gitd git_diff
+  __git_complete gitm git_merge
+  __git_complete gitb git_branch
+  __git_complete gitb git_pull
+  __git_complete gitf git_fetch
+  __git_complete gitps git_push
+  __git_complete gitl git_log
+fi
+
+

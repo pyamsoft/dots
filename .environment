@@ -38,7 +38,9 @@ __setup_locale()
 __setup_path()
 {
   # Keep the original PATH before we toutch it
-  export SYSTEM_DEFAULT_PATH="${PATH}"
+  if [ -z "${SYSTEM_DEFAULT_PATH}" ]; then
+    export SYSTEM_DEFAULT_PATH="${PATH}"
+  fi
 
   # Git tracked scripts
   if [ -d "${HOME}/bin" ]; then
@@ -114,16 +116,20 @@ __environment()
     return 0
   fi
 
-  __setup_path
-  __setup_editor
-  __setup_c_compiler
-  __setup_locale
-  __setup_xdg
-  __setup_wine
-  __setup_homedir
+  __setup_path || return 1
+  __setup_xdg || return 1
+  __setup_editor || return 1
+  __setup_c_compiler || return 1
+  __setup_locale || return 1
+  __setup_wine || return 1
+
+  # Expect XDG to be setup
+  __setup_homedir || return 1
 
   # Mark environment as set up
   export PYAMSOFT_ENVIRONMENT=1
+
+  return 0
 }
 
 __environment
