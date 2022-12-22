@@ -1,5 +1,8 @@
 # dotfiles completion
 # Copied from /usr/share/bash-completion/completions/git on ArchLinux
+#
+# Changed __git_find_repo_path to use dotfiles instead of git
+# Changed __git_complete to use dotfiles instead of git
 
 # bash/zsh completion support for core Git.
 #
@@ -78,7 +81,7 @@ __git_find_repo_path ()
 	fi
 
 	if [ -n "${__git_C_args-}" ]; then
-		__git_repo_path="$(git "${__git_C_args[@]}" \
+		__git_repo_path="$(dotfiles "${__git_C_args[@]}" \
 			${__git_dir:+--git-dir="$__git_dir"} \
 			rev-parse --absolute-git-dir 2>/dev/null)"
 	elif [ -n "${__git_dir-}" ]; then
@@ -87,10 +90,10 @@ __git_find_repo_path ()
 	elif [ -n "${GIT_DIR-}" ]; then
 		test -d "$GIT_DIR" &&
 		__git_repo_path="$GIT_DIR"
-	elif [ -d .git ]; then
-		__git_repo_path=.git
+	elif [ -d .dotfiles ]; then
+		__git_repo_path=.dotfiles
 	else
-		__git_repo_path="$(git rev-parse --git-dir 2>/dev/null)"
+		__git_repo_path="$(dotfiles rev-parse --git-dir 2>/dev/null)"
 	fi
 }
 
