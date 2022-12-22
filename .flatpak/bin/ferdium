@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Runs Ferdium with extra flags set (see Discord flathub files)
+exec flatpak run org.ferdium.Ferdium  --enable-gpu-rasterization --enable-zero-copy --enable-gpu-compositing --enable-native-gpu-memory-buffers --enable-oop-rasterization --enable-features=UseSkiaRenderer "$@"
