@@ -65,7 +65,7 @@ __ensure_env()
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
     # shellcheck disable=SC1091
-    [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+    [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
   fi
 
   return 0
