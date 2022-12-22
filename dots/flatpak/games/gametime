@@ -23,10 +23,9 @@ export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,fps_limit=90,gl_vsync=0,vsync=1
 # Run the executable in a session
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
 exec gamescope \
-  -w 1366 -h 768 \
-  -W 1920 -H 1080 \
-  -r 90 -o 60 \
-  -e \
-  -b \
-  -U --fsr-sharpness 10 \
+  --nested-width 1280 --nested-height 720 \
+  --output-width 1600 --output-height 900 \
+  --nested-refresh 90 --nested-unfocused-refresh 30 \
+  --fsr-upscaling --fsr-sharpness 10 \
+  --steam \
   -- "$@"
