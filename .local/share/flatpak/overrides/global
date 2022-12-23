@@ -3,7 +3,7 @@ shared=ipc;
 sockets=x11;wayland;pulseaudio;!session-bus;!system-bus;fallback-x11;!ssh-auth;!pcsc;!cups;!gpg-agent;
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
-filesystems=!xdg-data;!host-os;!host-etc;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/dconf;!xdg-music;!home;!xdg-pictures;!xdg-config;!xdg-documents;!xdg-templates;!xdg-data/flatpak/app;!xdg-videos;!host;!/var/lib/flatpak/overrides;!/var/lib/flatpak/app;!xdg-cache;!/var/lib/flatpak;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-download;!/storage;
+filesystems=!xdg-templates;!home;!host-os;!host-etc;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/pipewire-0;xdg-run/dconf;!xdg-music;!xdg-data;!xdg-pictures;!xdg-documents;!xdg-config;!xdg-cache;!xdg-videos;!xdg-data/flatpak/app;!host;!/var/lib/flatpak/overrides;!/var/lib/flatpak/app;!/var/lib/flatpak;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-download;!/storage;
 persistent=.;
 unset-environment=PROMPT_COMMAND;PS1;
 
@@ -11,8 +11,8 @@ unset-environment=PROMPT_COMMAND;PS1;
 org.freedesktop.Flatpak=none
 org.gnome.Software=none
 org.gnome.SessionManager=none
-org.gnome.Shell.Extensions=none
 com.freedesktop.secrets=none
+org.gnome.Shell.Extensions=none
 org.freedesktop.impl.portal.PermissionStore=none
 
 [Environment]
