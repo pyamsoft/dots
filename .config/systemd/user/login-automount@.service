@@ -10,6 +10,7 @@ Requires=home-%u.mount
 After=home-%u.mount
 
 [Service]
+Type=oneshot
 ExecStart=/bin/sh -c 'mount %h/%I'
 ExecStop=/bin/sh -c 'umount %h/%I'
 RemainAfterExit=yes
