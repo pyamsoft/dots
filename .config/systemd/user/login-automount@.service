@@ -1,0 +1,18 @@
+# https://unix.stackexchange.com/questions/258434/how-can-i-have-a-filesystem-mounted-during-user-login
+#
+# Requires that the mount be specified in /etc/fstab with options
+# noauto (do not mount on boot)
+# user (allow a normal user to mount the FS)
+
+[Unit]
+Description=Automatically mounts %h/%I upon %u login
+Requires=home-%u.mount
+After=home-%u.mount
+
+[Service]
+ExecStart=/bin/sh -c 'mount %h/%I'
+ExecStop=/bin/sh -c 'umount %h/%I'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
