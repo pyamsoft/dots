@@ -15,4 +15,4 @@ ExecStop=/bin/sh -c 'umount %h/%I'
 RemainAfterExit=yes
 
 [Install]
-WantedBy=default.target
+WantedBy=basic.target
