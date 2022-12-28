@@ -20,7 +20,7 @@ export vblank_mode=0
 # Mangohud
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD=0
+export MANGOHUD=
 export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,fps_limit=75,gl_vsync=0,vsync=1
 
 # Run the executable in a session
