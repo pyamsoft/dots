@@ -16,7 +16,5 @@ org.gnome.Shell.Extensions=none
 org.freedesktop.impl.portal.PermissionStore=none
 
 [Environment]
-RADV_DEBUG=nodcc
 PROMPT_COMMAND=
-AMD_DEBUG=nodcc
 PS1=
