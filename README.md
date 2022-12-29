@@ -13,14 +13,22 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+
+### Docker
 For video acceleration in docker, make sure you
 [setup hardware accel in the container](https://jellyfin.org/docs/general/administration/hardware-acceleration#hardware-acceleration-on-docker-linux)
 
+### Audio
 For headphone audio, plug into Green back and use Analog Stereo Duplex
 
+### RDP
 For RDP, use Remmina as client with Gnome-Remote-Desktop as server.
 To work around GRDP not allowing you to see the lock screen, install the extension
 [Allow Locked Remote Desktop](https://extensions.gnome.org/extension/4338/allow-locked-remote-desktop/)
+
+### FS performance
+Enable [fast_commit for ext4](https://wiki.archlinux.org/title/Ext4#Enabling_fast_commit_in_existing_filesystems)
+Disable [crypt workqueues](https://wiki.archlinux.org/title/Dm-crypt/Specialties)
 
 ## License
 
