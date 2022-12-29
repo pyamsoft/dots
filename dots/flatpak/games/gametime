@@ -15,13 +15,23 @@ export vblank_mode=0
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=16,fps_limit=75,gl_vsync=0,vsync=1
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=12,fps_limit=75,gl_vsync=0,vsync=1
 
 # For Proton-GE
 # https://github.com/GloriousEggroll/proton-ge-custom#modification
 export PROTON_HEAP_DELAY_FREE=1
 export PROTON_USE_SECCOMP=1
 
-# Run the executable in a session
+# gamescope
+# https://github.com/Plagman/gamescope
+#
+# Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
+# FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-exec mangohud "$@"
+exec gamescope --steam \
+  --nested-width 1280 --nested-height 720 \
+  --output-width 1920 --output-height 1080 \
+  --fsr-upscaling --fsr-sharpness 8 \
+  --adaptive-sync --immediate-flips \
+  --nested-refresh 75 --nested-unfocused-refresh 30 \
+  -- mangohud "$@"
