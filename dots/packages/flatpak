@@ -5,13 +5,11 @@ com.mattjakeman.ExtensionManager
 com.obsproject.Studio
 com.transmissionbt.Transmission
 com.valvesoftware.Steam
-com.vscodium.codium
 io.github.realmazharhussain.GdmSettings
 io.openrct2.OpenRCT2
 org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
 org.freedesktop.adriconf
-org.kde.krita
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.mozilla.firefox
