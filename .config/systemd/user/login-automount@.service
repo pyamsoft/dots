@@ -11,8 +11,8 @@ After=home-%u.mount
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'mount %h/%I'
-ExecStop=/bin/sh -c 'umount %h/%I'
+ExecStart=/bin/mount %h/%I
+ExecStop=/bin/umount %h/%I
 RemainAfterExit=yes
 
 [Install]
