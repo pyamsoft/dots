@@ -11,9 +11,16 @@ export force_s3tc_enable=true
 export vblank_mode=0
 
 # Mangohud
+# https://github.com/flightlessmango/MangoHud#hud-configuration
+#
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,fps_limit=75,gl_vsync=0,vsync=1
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=16,fps_limit=75,gl_vsync=0,vsync=1
+
+# For Proton-GE
+# https://github.com/GloriousEggroll/proton-ge-custom#modification
+export PROTON_HEAP_DELAY_FREE=1
+export PROTON_USE_SECCOMP=1
 
 # Run the executable in a session
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
