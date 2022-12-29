@@ -33,10 +33,19 @@ export PROTON_USE_SECCOMP=1
 # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
 # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-exec gamescope --steam \
-  --nested-width 1280 --nested-height 720 \
-  --output-width 1920 --output-height 1080 \
-  --fsr-upscaling --fsr-sharpness 8 \
-  --adaptive-sync --immediate-flips \
-  --nested-refresh 75 --nested-unfocused-refresh 30 \
-  -- mangohud "$@"
+
+# Normal gamescope options
+gamescope_options="--nested-width 1280 --nested-height 720 \
+--output-width 1920 --output-height 1080 \
+--fsr-upscaling --fsr-sharpness 8 \
+--adaptive-sync --immediate-flips \
+--nested-refresh 75 --nested-unfocused-refresh 30"
+
+# If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
+if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
+  # shellcheck disable=SC2086
+  exec gamescope --steam ${gamescope_options} -- mangohud "$@"
+else
+  # shellcheck disable=SC2086
+  exec gamescope ${gamescope_options} -- mangohud "$@"
+fi
