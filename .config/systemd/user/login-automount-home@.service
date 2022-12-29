@@ -5,14 +5,14 @@
 # user (allow a normal user to mount the FS)
 
 [Unit]
-Description=Automatically mounts %I upon %u login
+Description=Automatically mounts %h/%I upon %u login
 Requires=home-%u.mount
 After=home-%u.mount
 
 [Service]
 Type=oneshot
-ExecStart=/bin/mount %I
-ExecStop=/bin/umount %I
+ExecStart=/bin/mount %h/%I
+ExecStop=/bin/umount %h/%I
 RemainAfterExit=yes
 
 [Install]
