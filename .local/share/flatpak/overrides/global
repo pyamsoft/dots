@@ -11,7 +11,7 @@ unset-environment=PROMPT_COMMAND;PS1;
 org.freedesktop.Flatpak=none
 org.gnome.Software=none
 org.gnome.SessionManager=none
-com.freedesktop.secrets=none
+org.freedesktop.secrets=none
 org.gnome.Shell.Extensions=none
 org.freedesktop.impl.portal.PermissionStore=none
 
