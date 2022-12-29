@@ -63,6 +63,8 @@ alias du="du -ch "
 alias p8="ping -4 8.8.8.8 "
 alias pingg="ping -4 www.google.com "
 
+alias ip="ip -color "
+
 # Allow sudo calls to receive the above alias support as well.
 alias sudo="sudo "
 
