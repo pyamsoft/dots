@@ -27,6 +27,12 @@ export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=12,fps_limit=75,gl_vs
 export PROTON_HEAP_DELAY_FREE=1
 export PROTON_USE_SECCOMP=1
 
+# Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
+# https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
+if printf -- '%s' "$*" | grep -q 'Vampire Survivors'; then
+  export PROTON_LOGS=1
+fi
+
 # gamescope
 # https://github.com/Plagman/gamescope
 #
