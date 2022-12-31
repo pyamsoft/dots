@@ -1,2 +1,2 @@
 [Context]
-filesystems=/storage/pyamsoft/music;xdg-music;xdg-config/MusicBrainz;
+filesystems=xdg-music;

@@ -1,2 +1,2 @@
 [Context]
-filesystems=/storage/pyamsoft/music;xdg-music;
+filesystems=xdg-music;
