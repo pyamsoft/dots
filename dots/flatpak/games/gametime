@@ -29,7 +29,10 @@ export PROTON_USE_SECCOMP=1
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
-if printf -- '%s' "$*" | grep -q 'Vampire Survivors'; then
+if printf -- '%s' "$*" | grep -q "$(cat << EOF
+Vampire Survivors
+EOF
+)"; then
   export PROTON_LOGS=1
 fi
 
@@ -41,17 +44,21 @@ fi
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
 
 # Normal gamescope options
-gamescope_options="--nested-width 1280 --nested-height 720 \
+readonly gamescope_options="--nested-width 1280 --nested-height 720 \
 --output-width 1920 --output-height 1080 \
 --fsr-upscaling --fsr-sharpness 0 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
 
+# Default arguments passed to games
+# These are common values that attempt to disable startup splash screens
+readonly game_arguments="-novid -nosplash -nostartupmovies"
+
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   # shellcheck disable=SC2086
-  exec gamescope --steam ${gamescope_options} -- mangohud "$@"
+  exec gamescope --steam ${gamescope_options} -- mangohud "$@" ${game_arguments}
 else
   # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- mangohud "$@"
+  exec gamescope ${gamescope_options} -- mangohud "$@" ${game_arguments}
 fi
