@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0.0">
+  <short>rustdesk</short>
+  <description>Rustdesk RDP https://rustdesk.com</description>
+  <port port="21115-21119" protocol="tcp"/>
+  <port port="21116" protocol="udp"/>
+</service>
