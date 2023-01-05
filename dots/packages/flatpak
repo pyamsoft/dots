@@ -14,6 +14,7 @@ org.gnome.Lollypop
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.mozilla.firefox
+org.musicbrainz.Picard
 org.pulseaudio.pavucontrol
 org.remmina.Remmina
 re.chiaki.Chiaki
