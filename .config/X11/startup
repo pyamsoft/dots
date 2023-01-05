@@ -42,3 +42,8 @@ fi
 if command -v kdeconnect-indicator > /dev/null 2>&1; then
   kdeconnect-indicator &
 fi
+
+# RustDesk
+if command -v rustdesk > /dev/null 2>&1; then
+  rustdesk --service &
+fi
