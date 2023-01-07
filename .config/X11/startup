@@ -47,3 +47,8 @@ fi
 if command -v rustdesk > /dev/null 2>&1; then
   rustdesk --service &
 fi
+
+# EasyEffects
+if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
+  com.github.wwmm.easyeffects --gapplication-service &
+fi
