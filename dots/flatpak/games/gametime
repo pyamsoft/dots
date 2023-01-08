@@ -3,6 +3,8 @@
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
 # --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
+# You must use Proton-GE from within a flatpak, since Steam pressure-vessel messes up gamescope
+# You must use Super+U to enable FSR in game
 
 # S3TC texture filtering
 export force_s3tc_enable=true
@@ -20,12 +22,7 @@ export RADV_DEBUG=nodcc
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=12,fps_limit=75,gl_vsync=0,vsync=1
-
-# For Proton-GE
-# https://github.com/GloriousEggroll/proton-ge-custom#modification
-export PROTON_HEAP_DELAY_FREE=1
-export PROTON_USE_SECCOMP=1
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=12,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
@@ -44,7 +41,7 @@ fi
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
 
 # Normal gamescope options
-readonly gamescope_options="--nested-width 1368 --nested-height 768 \
+readonly gamescope_options="--nested-width 1280 --nested-height 720 \
 --output-width 1920 --output-height 1080 \
 --fsr-upscaling --fsr-sharpness 2 \
 --adaptive-sync --immediate-flips \
@@ -57,8 +54,8 @@ readonly game_arguments="-novid -nosplash -nostartupmovies"
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   # shellcheck disable=SC2086
-  exec gamescope --steam ${gamescope_options} -- mangohud "$@" ${game_arguments}
+  exec gamescope --steam ${gamescope_options} -- mangohud --dlsym "$@" ${game_arguments}
 else
   # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- mangohud "$@" ${game_arguments}
+  exec gamescope ${gamescope_options} -- mangohud --dlsym "$@" ${game_arguments}
 fi
