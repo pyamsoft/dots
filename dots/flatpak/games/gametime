@@ -22,7 +22,7 @@ export RADV_DEBUG=nodcc
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,font_size=12,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
@@ -54,8 +54,8 @@ readonly game_arguments="-novid -nosplash -nostartupmovies"
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   # shellcheck disable=SC2086
-  exec gamescope --steam ${gamescope_options} -- mangohud --dlsym "$@" ${game_arguments}
+  exec gamescope --steam ${gamescope_options} -- mangohud "$@" ${game_arguments}
 else
   # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- mangohud --dlsym "$@" ${game_arguments}
+  exec gamescope ${gamescope_options} -- mangohud "$@" ${game_arguments}
 fi
