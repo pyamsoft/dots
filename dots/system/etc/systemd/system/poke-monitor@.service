@@ -1,6 +1,6 @@
 [Unit]
 Description=Poke Monitors with xrandr on resume
-After=suspend.target
+After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
 Type=simple
@@ -9,5 +9,4 @@ Group=%I
 ExecStart=/bin/sh -c "poke-monitor"
 
 [Install]
-WantedBy=suspend.target
-
+WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
