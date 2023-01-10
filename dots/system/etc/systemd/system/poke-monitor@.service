@@ -1,16 +1,13 @@
 [Unit]
 Description=Poke Monitors with xrandr on resume
-Before=sleep.target
-StopWhenUnneeded=yes
+After=suspend.target
 
 [Service]
 Type=simple
 User=%I
 Group=%I
-RemainAfterExit=yes
-ExecStart=/bin/true
-ExecStop=/usr/local/bin/poke-dp-monitor
+ExecStart=/usr/local/bin/poke-monitor
 
 [Install]
-WantedBy=sleep.target
+WantedBy=suspend.target
 
