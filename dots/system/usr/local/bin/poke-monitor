@@ -11,29 +11,63 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 # Make an assumption about our Xorg environment
-readonly DISPLAY=:0.0
 readonly XAUTHORITY="${HOME}/.Xauthority"
-
-# Export into environment
-export DISPLAY
 export XAUTHORITY
-
-# Attempt countdown
-count=2
 
 # Wait between pokes
 readonly WAIT_TIME=1
 
-printf -- 'Attempting to poke monitor via xrandr.\n'
-while [ "${count}" -gt 0 ]; do
-  printf -- 'Poke: %s...\n' "${count}"
-  xrandr > /dev/null || {
-    printf -- 'Failed to poke monitors with xrandr.\n'
-    exit 2
-  }
-  sleep "${WAIT_TIME}"
-  count=$((count - 1))
-done
+##
+# Poke with display
+poke()
+{
+  _display="$1"
 
-printf -- 'Monitor has been poked.\n'
+  # Guess DISPLAY variable to poke
+  DISPLAY="${_display}"
+  export DISPLAY
+
+  # Attempt countdown
+  count=2
+
+  printf -- 'Attempting to poke monitor via xrandr.\n'
+  while [ "${count}" -gt 0 ]; do
+    printf -- 'Poke: %s...\n' "${count}"
+    xrandr > /dev/null || {
+      printf -- 'Failed to poke monitors with xrandr.\n'
+
+      unset DISPLAY
+      unset _display
+      return 1
+    }
+    sleep "${WAIT_TIME}"
+    count=$((count - 1))
+  done
+
+  printf -- 'Monitor has been poked.\n'
+  unset DISPLAY
+  unset _display
+  return 0
+}
+
+main()
+{
+  # Try poking common monitor DISPLAY connections
+
+  # Raw console startx
+  poke ":0" && return 0
+
+  # GDM
+  poke ":1" && return 0
+
+  # LightDM
+  poke ":7" && return 0
+
+  # Nothing worked
+  printf -- 'Failed all attempts to poke monitor\n'
+  return 1
+}
+
+main "$@" || exit 1
 exit 0
+

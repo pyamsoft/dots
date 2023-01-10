@@ -6,7 +6,7 @@ After=suspend.target
 Type=simple
 User=%I
 Group=%I
-ExecStart=/usr/local/bin/poke-monitor
+ExecStart=/bin/sh -c "poke-monitor"
 
 [Install]
 WantedBy=suspend.target
