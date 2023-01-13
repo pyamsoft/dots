@@ -8,11 +8,19 @@
 ##
 
 # Global defaults
+
+# Reset environment
 Defaults env_reset
-Defaults fast_glob
+
+# Define secure path
 Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Set umask to 0022 as most files are owned by root but used by everyone
 Defaults umask=0022
 Defaults umask_override
+
+# Keep defined proxies
+Defaults env_keep += "*_proxy *_PROXY"
 
 root ALL=(ALL:ALL) ALL
 
