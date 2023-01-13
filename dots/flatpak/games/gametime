@@ -43,7 +43,8 @@ fi
 # NOTE: ReadyOrNot has a minimum of 1368x768
 
 # Normal gamescope options
-readonly gamescope_options="--nested-height 768 --output-height 1080 \
+readonly gamescope_options="--nested-width 960 --nested-height 600 \
+--output-width 1680 --output-height 1050 \
 --fsr-upscaling --fsr-sharpness 2 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
