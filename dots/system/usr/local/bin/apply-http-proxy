@@ -4,7 +4,19 @@ proxy="$1"
 
 if [ -z "${proxy}" ]; then
   # We log to stderr to avoid polluting a shell in eval mode
-  printf -- 'Must specify a proxy in format hostname:port\n' 1>&2
+  printf -- '%s\n' "$(cat <<EOF
+apply-http-proxy
+
+clear   - Reset proxy
+default - Apply default proxy values
+
+Must specify a proxy in format hostname:port
+
+$ eval "\$(apply-http-proxy clear)"
+$ eval "\$(apply-http-proxy default)"
+$ eval "\$(apply-http-proxy 192.168.49.1:8228)"
+EOF
+)" 1>&2
   exit 1
 elif [ "${proxy}" = "clear" ]; then
   # We log to stderr to avoid polluting a shell in eval mode
@@ -12,6 +24,7 @@ elif [ "${proxy}" = "clear" ]; then
 
   printf -- '%s\n' "unset http_proxy"
   printf -- '%s\n' "unset https_proxy"
+  printf -- '%s\n' "unset no_proxy"
 else
   if [ "${proxy}" = "default" ]; then
     proxy="192.168.49.1:8228"
@@ -21,6 +34,7 @@ else
 
   printf -- '%s\n' "export http_proxy=\"http://${proxy}\""
   printf -- '%s\n' "export https_proxy=\"http://${proxy}\""
+  printf -- '%s\n' "export no_proxy=\"localhost,127.0.0.1,127.0.0.0/8\""
 fi
 
 exit 0
