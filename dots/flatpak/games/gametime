@@ -22,7 +22,7 @@ export RADV_DEBUG=nodcc
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,font_size=16,font_size_text=16
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
@@ -38,14 +38,20 @@ fi
 #
 # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
 # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
+#
 # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
+#
 # NOTE: If we only provide a height, gamescope will assume the width as 16x9
-# NOTE: ReadyOrNot has a minimum of 1368x768
+#
+# NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
+#       If you open the settings in game, your FPS will go to 2.
+#
+# NOTE: FSR balanced is 1.7x nested resolution. For 1680x1050 we need 988x617
 
 # Normal gamescope options
-readonly gamescope_options="--nested-width 960 --nested-height 600 \
+readonly gamescope_options="--nested-width 988 --nested-height 617 \
 --output-width 1680 --output-height 1050 \
---fsr-upscaling --fsr-sharpness 2 \
+--fsr-upscaling --fsr-sharpness 8 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
 
