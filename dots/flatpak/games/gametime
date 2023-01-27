@@ -46,9 +46,11 @@ fi
 # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
 #       If you open the settings in game, your FPS will go to 2.
 #
+# NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
+#
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
-
+#
 # Normal gamescope options (1067 is the math 1.5x resolution, but games like to report 1064 for some reason)
 readonly gamescope_options="--nested-width 1064 --nested-height 600 \
 --output-width 1600 --output-height 900 \
