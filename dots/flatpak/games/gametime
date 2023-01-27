@@ -46,12 +46,12 @@ fi
 # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
 #       If you open the settings in game, your FPS will go to 2.
 #
-# NOTE: FSR balanced is 1.7x nested resolution. For 1680x1050 we need 988x617
-# NOTE: FSR quality is 1.5x nested resolution. For 1680x1050 we need 1120x700
+# NOTE: FSR balanced is 1.7x nested resolution.
+# NOTE: FSR quality is 1.5x nested resolution.
 
 # Normal gamescope options
-readonly gamescope_options="--nested-width 1120 --nested-height 700 \
---output-width 1680 --output-height 1050 \
+readonly gamescope_options="--nested-width 1067 --nested-height 600 \
+--output-width 1600 --output-height 900 \
 --fsr-upscaling --fsr-sharpness 8 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
