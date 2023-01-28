@@ -51,9 +51,8 @@ fi
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
 #
-# Normal gamescope options (1067 is the math 1.5x resolution, but games like to report 1064 for some reason)
-readonly gamescope_options="--nested-width 1064 --nested-height 600 \
---output-width 1600 --output-height 900 \
+readonly gamescope_options="--nested-width 1280 --nested-height 720 \
+--output-width 1920 --output-height 1080 \
 --fsr-upscaling --fsr-sharpness 8 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
