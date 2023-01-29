@@ -48,11 +48,11 @@ fi
 #
 # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
 #
+# NOTE: FSR performance is 2.0x nested resolution.
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
 #
-readonly gamescope_options="--nested-width 1280 --nested-height 720 \
---output-width 1920 --output-height 1080 \
+readonly gamescope_options="--nested-height 540 --output-height 1080 \
 --fsr-upscaling --fsr-sharpness 8 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
