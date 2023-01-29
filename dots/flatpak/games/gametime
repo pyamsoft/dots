@@ -22,7 +22,7 @@ export RADV_DEBUG=nodcc
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,font_size=16,font_size_text=16
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,font_size=12,font_size_text=12
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
@@ -52,8 +52,8 @@ fi
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
 #
-readonly gamescope_options="--nested-height 540 --output-height 1080 \
---fsr-upscaling --fsr-sharpness 8 \
+readonly gamescope_options="--nested-height 720 --output-height 1080 \
+--fsr-upscaling --fsr-sharpness 10 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
 
