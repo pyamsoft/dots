@@ -83,6 +83,14 @@ __setup_path()
   export PATH
 }
 
+__setup_homebrew()
+{
+  # Add homebrew scripts (generally MacOS)
+  if [ -e /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+}
+
 __setup_xdg()
 {
   # Define XDG directories
@@ -122,6 +130,7 @@ __environment()
   __setup_c_compiler || return 1
   __setup_locale || return 1
   __setup_wine || return 1
+  __setup_homebrew || return 1
 
   # Expect XDG to be setup
   __setup_homedir || return 1
@@ -135,6 +144,7 @@ __environment()
 __environment
 
 unset -f __environment
+unset -f __setup_homebrew
 unset -f __setup_wine
 unset -f __setup_xdg
 unset -f __setup_path

@@ -31,6 +31,10 @@ __enable_bash_completion()
   # shellcheck disable=SC1090
   [ -r "${bcomp}" ] && . "${bcomp}"
 
+  bcomp="/opt/homebrew/share/bash-completion/bash_completion"
+  # shellcheck disable=SC1090
+  [ -r "${bcomp}" ] && . "${bcomp}"
+
   unset bcomp
 
   return 0
