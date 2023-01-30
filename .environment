@@ -79,6 +79,11 @@ __setup_path()
     PATH="$(npm config get prefix)/bin:${PATH}"
   fi
 
+  # Add Jetbrains Toolbox scripts (generally MacOS)
+  if [ -d /opt/jetbrains ]; then
+    PATH="/opt/jetbrains:${PATH}"
+  fi
+
   # Export the PATH
   export PATH
 }
