@@ -67,12 +67,23 @@ __ensure_env()
   return 0
 }
 
+__direnv()
+{
+  # Source bash_profile if the environment is not setup
+  if command -v direnv > /dev/null; then
+    eval "$(direnv hook bash)"
+  fi
+
+  return 0
+}
+
 __bashrc()
 {
   __ensure_env || return 1
   __bash_qol || return 1
   __enable_bash_completion || return 1
   __launch_starship || return 1
+  __direnv || return 1
 
   return 0
 }
@@ -86,5 +97,6 @@ unset -f __enable_bash_completion
 unset -f __launch_starship
 unset -f __bash_qol
 unset -f __ensure_env
+unset -f __direnv
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
