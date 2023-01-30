@@ -26,7 +26,7 @@ CONTAINER_TARGET="syncthing/syncthing"
 # Ex: config becomes -> "-v /usr/local/etc/docker/my_app/config"
 #
 # CONTAINER_DIRS="directory:/root/directory"
-CONTAINER_DIRS="sync:/var/syncthing"
+CONTAINER_DIRS="work:/var/syncthing"
 
 # Ports: Format like -p/--port
 # Will be prepended with the -p option
@@ -66,7 +66,7 @@ CONTAINER_USER=""
 #
 # Unset STGUIADDRESS since we configure it through the web GUI
 # Use host network for local network discovery
-CONTAINER_OPTIONS="-e STGUIADDRESS= -e STNODEFAULTFOLDER --init"
+CONTAINER_OPTIONS="-e STGUIADDRESS= -e STNODEFAULTFOLDER=1 -e --init"
 
 # Arguments: Passed directly to the command ran inside the container.
 # If arguments are passed at invocation time, those will be used instead of these default args.
