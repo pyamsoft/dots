@@ -27,6 +27,7 @@ export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vs
 # OBS VKCapture
 # https://github.com/nowrep/obs-vkcapture
 export OBS_VKCAPTURE=1
+export OBS_USE_EGL=1
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
