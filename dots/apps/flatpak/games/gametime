@@ -45,6 +45,10 @@ EOF
   export PROTON_LOGS=1
 fi
 
+# Default arguments passed to games
+# These are common values that attempt to disable startup splash screens
+game_arguments="-novid -nosplash -nostartupmovies"
+
 # gamescope
 # https://github.com/Plagman/gamescope
 #
@@ -64,21 +68,23 @@ fi
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
 #
-readonly gamescope_options="--nested-height 720 --output-height 1080 \
+gamescope_options="--nested-height 720 --output-height 1080 \
 --fsr-upscaling --fsr-sharpness 10 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
 
-# Default arguments passed to games
-# These are common values that attempt to disable startup splash screens
-readonly game_arguments="-novid -nosplash -nostartupmovies"
-readonly game_environment="obs-gamecapture mangohud ENABLE_VKBASALT=1"
+# The game environment
+# gamescope must call these tools directly instead of setting them in the outside environment
+game_environment="ENABLE_VKBASALT=1 mangohud"
 
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-  # shellcheck disable=SC2086
-  exec gamescope --steam ${gamescope_options} -- ${game_environment} "$@" ${game_arguments}
-else
-  # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- ${game_environment} "$@" ${game_arguments}
+  # OBS_VKCAPTURE works in Steam
+  game_environment="${game_environment} obs-gamecapture"
+
+  # Add --steam param
+  gamescope_options="${gamescope_options} --steam"
 fi
+
+# shellcheck disable=SC2086
+exec gamescope ${gamescope_options} -- ${game_environment} "$@" ${game_arguments}
