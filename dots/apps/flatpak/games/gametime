@@ -22,7 +22,19 @@ export RADV_DEBUG=nodcc
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,font_size=16,font_size_text=16
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16
+
+# OBS VKCapture
+# https://github.com/nowrep/obs-vkcapture
+#
+# We cannot export OBS_VKCAPTURE=1 before gamescope as it will crash.
+# See below - must call obs-gamecapture after gamescope
+
+# vkBasalt
+# https://github.com/DadSchoorse/vkBasalt
+#
+# We cannot export ENABLE_VKBASALT=1 before gamescope as it will crash.
+# See below, must call vkBasalt after gamescope
 
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
@@ -60,12 +72,13 @@ readonly gamescope_options="--nested-height 720 --output-height 1080 \
 # Default arguments passed to games
 # These are common values that attempt to disable startup splash screens
 readonly game_arguments="-novid -nosplash -nostartupmovies"
+readonly game_environment="obs-gamecapture mangohud ENABLE_VKBASALT=1"
 
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   # shellcheck disable=SC2086
-  exec gamescope --steam ${gamescope_options} -- obs-gamecapture mangohud "$@" ${game_arguments}
+  exec gamescope --steam ${gamescope_options} -- ${game_environment} "$@" ${game_arguments}
 else
   # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- obs-gamecapture mangohud "$@" ${game_arguments}
+  exec gamescope ${gamescope_options} -- ${game_environment} "$@" ${game_arguments}
 fi
