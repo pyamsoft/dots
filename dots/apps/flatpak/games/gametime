@@ -68,22 +68,26 @@ game_arguments="-novid -nosplash -nostartupmovies"
 # NOTE: FSR balanced is 1.7x nested resolution.
 # NOTE: FSR quality is 1.5x nested resolution.
 #
+# NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
+#
 gamescope_options="--nested-height 720 --output-height 1080 \
---fsr-upscaling --fsr-sharpness 10 \
+--fsr-upscaling --fsr-sharpness 20 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
 
 # The game environment
 # gamescope must call these tools directly instead of setting them in the outside environment
-game_environment="ENABLE_VKBASALT=1 mangohud"
+game_environment="mangohud"
 
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-  # OBS_VKCAPTURE works in Steam
-  game_environment="${game_environment} obs-gamecapture"
+  game_environment="${game_environment} obs-gamecapture ENABLE_VKBASALT=1"
 
   # Add --steam param
   gamescope_options="${gamescope_options} --steam"
+elif [ "${FLATPAK_ID}" = "com.heroicgameslauncher.hgl" ]; then
+  # No vkBasalt in heroic yet
+  true
 fi
 
 # shellcheck disable=SC2086
