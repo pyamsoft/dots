@@ -3,26 +3,30 @@
 # Source the git completion file
 if [ -e "/usr/share/bash-completion/completions/git" ]; then
   . /usr/share/bash-completion/completions/git
-
-  # NOTE(Peter):
-  # The completion only works 1 level deep.
-  # To work deeper, it assumes the git dir location at .git but
-  # we use .dotfiles
-
-  # Three underscores
-  ___git_complete dotfiles __git_main
-
-  # Work with aliases 
-  __git_complete dots git_status
-  __git_complete dotck git_checkout
-  __git_complete dota git_add
-  __git_complete dotc git_commit
-  __git_complete dotd git_diff
-  __git_complete dotm git_merge
-  __git_complete dotb git_branch
-  __git_complete dotb git_pull
-  __git_complete dotf git_fetch
-  __git_complete dotps git_push
-  __git_complete dotl git_log
+elif [ -e "/opt/homebrew/etc/bash_completion.d/git-completion.bash" ]; then
+  . /opt/homebrew/etc/bash_completion.d/git-completion.bash
+else
+  # No completion found
+  return
 fi
 
+# NOTE(Peter):
+# The completion only works 1 level deep.
+# To work deeper, it assumes the git dir location at .git but
+# we use .dotfiles
+
+# Three underscores
+___git_complete dotfiles __git_main
+
+# Work with aliases 
+__git_complete dots git_status
+__git_complete dotck git_checkout
+__git_complete dota git_add
+__git_complete dotc git_commit
+__git_complete dotd git_diff
+__git_complete dotm git_merge
+__git_complete dotb git_branch
+__git_complete dotb git_pull
+__git_complete dotf git_fetch
+__git_complete dotps git_push
+__git_complete dotl git_log
