@@ -64,8 +64,13 @@ game_arguments="-novid -nosplash -nostartupmovies"
 # NOTE: FSR quality is 1.5x nested resolution.
 #
 # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
-#
-gamescope_options="--nested-height 720 --output-height 1080 \
+# NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+readonly target_width="1920"
+readonly target_height="1080"
+readonly fsr_level="17"
+
+gamescope_options="--output-height ${target_width} --output-height ${target_height} \
+--nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level)) \
 --fsr-upscaling --fsr-sharpness 20 \
 --adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30"
