@@ -17,20 +17,8 @@ export vblank_mode=0
 export AMD_DEBUG=nodcc
 export RADV_DEBUG=nodcc
 
-# Mangohud
-# https://github.com/flightlessmango/MangoHud#hud-configuration
+# Game workarounds
 #
-# We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
-# We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16
-
-
-# OBS VKCapture
-# https://github.com/nowrep/obs-vkcapture
-#
-# We cannot export OBS_VKCAPTURE=1 before gamescope as it will crash or not report correctly.
-# See below - must call obs-gamecapture after gamescope
-
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
 # https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
 if printf -- '%s' "$*" | grep -q "$(cat << EOF
@@ -39,10 +27,6 @@ EOF
 )"; then
   export PROTON_LOGS=1
 fi
-
-# Default arguments passed to games
-# These are common values that attempt to disable startup splash screens
-game_arguments="-novid -nosplash -nostartupmovies"
 
 # gamescope
 # https://github.com/Plagman/gamescope
@@ -70,16 +54,39 @@ readonly target_height="1080"
 readonly fsr_level="15"
 readonly window_type="--borderless"
 
+# Options passed to gamescope session
 gamescope_options="--output-height ${target_width} --output-height ${target_height} \
 --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level)) \
 --fsr-upscaling --fsr-sharpness 20 \
---adaptive-sync --immediate-flips \
 --nested-refresh 75 --nested-unfocused-refresh 30 ${window_type}"
+
+# vkBasalt
+# https://github.com/DadSchoorse/vkBasalt
+#
+# Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
 
 # The game environment
 # gamescope must call these tools directly instead of setting them in the outside environment
 game_environment="ENABLE_VKBASALT=1"
+
+# Extra tools to run as a wrapper
 game_tools="mangohud"
+
+# Default arguments passed to games
+# These are common values that attempt to disable startup splash screens
+game_arguments="-novid -nosplash -nostartupmovies"
+
+# Mangohud
+# https://github.com/flightlessmango/MangoHud#hud-configuration
+#
+# We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
+# We must use gamescope to run mangohud, and then use mangohud to run our command.
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16
+
+# OBS VKCapture
+# https://github.com/nowrep/obs-vkcapture
+#
+# Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
 
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
