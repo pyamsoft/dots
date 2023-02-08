@@ -85,7 +85,6 @@ game_tools="mangohud"
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   gamescope_options="${gamescope_options} --steam"
   game_environment="${game_environment} OBS_VKCAPTURE=1"
-  game_tools="${game_tools} mangohud"
 elif [ "${FLATPAK_ID}" = "com.heroicgameslauncher.hgl" ]; then
   # For not Steam, we export this var here instead of within gamescope session
   export OBS_VKCAPTURE=1
