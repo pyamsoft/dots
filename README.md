@@ -22,8 +22,8 @@ For video acceleration in docker, make sure you
 For headphone audio, plug into Green back and use Analog Stereo Duplex
 
 ### RDP
-For RDP, use Remmina as client with Gnome-Remote-Desktop as server.
-To work around GRDP not allowing you to see the lock screen, install the extension
+Use rustdesk for accelerated RDP
+To work around Gnome not allowing you to see the lock screen, install the extension
 [Allow Locked Remote Desktop](https://extensions.gnome.org/extension/4338/allow-locked-remote-desktop/)
 
 ### FS performance
