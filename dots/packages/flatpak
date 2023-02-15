@@ -3,10 +3,10 @@ com.github.wwmm.easyeffects
 com.google.AndroidStudio
 com.heroicgameslauncher.hgl
 com.jetbrains.WebStorm
-com.mattjakeman.ExtensionManager
 com.obsproject.Studio
 com.transmissionbt.Transmission
 com.valvesoftware.Steam
+com.valvesoftware.SteamLink
 io.github.realmazharhussain.GdmSettings
 io.openrct2.OpenRCT2
 org.DolphinEmu.dolphin-emu

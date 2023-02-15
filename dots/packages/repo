@@ -3,6 +3,7 @@ android-udev
 autoconf
 automake
 base
+base-devel
 bison
 corectrl
 corkscrew
@@ -13,6 +14,7 @@ debugedit
 docker
 flatpak
 flex
+fuse2
 gdm
 gnome-shell-extension-appindicator
 gnome-shell-extension-gtile
@@ -51,4 +53,3 @@ usbutils
 which
 xfce4-terminal
 yt-dlp
-zram-generator
