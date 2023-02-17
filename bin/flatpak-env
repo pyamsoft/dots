@@ -1,0 +1,100 @@
+#!/bin/sh
+
+
+# Runs flatpak with the given data prepended to an existing ENV var
+
+##
+# Attempt to source the existing env var if it exists
+__source_existing_env()
+{
+  __src_flatpak="$1"
+  __src_env_var="$2"
+
+  printf -- '%s\n' "$(flatpak info -m "${__src_flatpak}" | grep "^${__src_env_var}=" | tr '=' ' ' | awk '{ print $2 }')"
+
+  unset __src_flatpak
+  unset __src_env_var
+
+  return 0
+}
+
+##
+# Main
+main()
+{
+  if ! command -v flatpak > /dev/null; then
+    printf -- 'You must install "flatpak"\n'
+    return 1
+  fi
+
+  __run_shell=0
+  if [ "$1" = "--shell" ]; then
+    shift
+    __run_shell=1
+  fi
+
+  __flatpak="$1"
+  __env_var="$2"
+  __env_arg="$3"
+  __env_default="$4"
+
+  if [ -z "${__flatpak}" ]; then
+    printf -- 'Missing target flatpak\n'
+
+    unset __run_shell
+    unset __flatpak
+    unset __env_var
+    unset __env_arg
+    unset __env_default
+    return 1
+  fi
+
+  if [ -z "${__env_var}" ]; then
+    printf -- 'Missing [%s] env var\n' "${__flatpak}"
+
+    unset __run_shell
+    unset __flatpak
+    unset __env_var
+    unset __env_arg
+    unset __env_default
+    return 1
+  fi
+
+  if [ -z "${__env_arg}" ]; then
+    printf -- 'Missing [%s] "%s" env argument\n' "${__flatpak}" "${__env_var}"
+
+    unset __run_shell
+    unset __flatpak
+    unset __env_var
+    unset __env_arg
+    unset __env_default
+    return 1
+  fi
+
+  # Parse the environment, falling back to defined defaults
+  __existing_env="$(__source_existing_env "${__flatpak}" "${__env_var}")"
+  if [ -z "${__existing_env}" ]; then
+    __new_env="${__env_arg}${__env_default}"
+  else
+    __new_env="${__env_arg}${__existing_env}"
+  fi
+  unset __env_default
+  unset __existing_env
+
+  # Run the flatpak or a shell in the flatpak (use /bin/sh, if you need bash, run it in shell)
+  printf -- 'Running flatpak [%s] with "%s"="%s"\n' "${__flatpak}" "${__env_var}" "${__new_env}"
+  if [ "${__run_shell}" -eq 1 ]; then
+    exec flatpak run --env="${__env_var}"="${__new_env}" --command=/bin/sh "${__flatpak}" || return 1
+  else
+    exec flatpak run --env="${__env_var}"="${__new_env}" "${__flatpak}" || return 1
+  fi
+
+  unset __run_shell
+  unset __flatpak
+  unset __env_var
+  unset __env_arg
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
