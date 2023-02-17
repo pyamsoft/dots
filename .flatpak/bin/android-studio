@@ -1,0 +1,17 @@
+#!/bin/sh
+
+self="$(id -un)"
+readonly self
+
+path="${HOME}/.local/bin"
+path="${path}:/app/extra/android-studio/jre/bin"
+path="${path}:/storage/${self}/devel/android/sdk/emulator"
+path="${path}:/storage/${self}/devel/android/sdk/cdmline-tools/latest/bin"
+path="${path}:/storage/${self}/devel/android/sdk/platform-tools"
+readonly path
+
+if [ "$1" = "--shell" ]; then
+  exec flatpak-path "--shell" com.google.AndroidStudio "${path}"
+else
+  exec flatpak-path com.google.AndroidStudio "${path}"
+fi
