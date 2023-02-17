@@ -1,0 +1,13 @@
+#!/bin/sh
+
+readonly pak="io.openrct2.OpenRCT2"
+
+path="${HOME}/.local/bin"
+readonly path
+
+if [ "$1" = "--shell" ]; then
+  exec flatpak-path "--shell" "${pak}" "${path}"
+else
+  exec flatpak-path "${pak}" "${path}"
+fi
+

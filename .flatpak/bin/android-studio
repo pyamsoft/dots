@@ -1,5 +1,7 @@
 #!/bin/sh
 
+readonly pak="com.google.AndroidStudio"
+
 self="$(id -un)"
 readonly self
 
@@ -11,7 +13,7 @@ path="${path}:/storage/${self}/devel/android/sdk/platform-tools"
 readonly path
 
 if [ "$1" = "--shell" ]; then
-  exec flatpak-path "--shell" com.google.AndroidStudio "${path}"
+  exec flatpak-path "--shell" "${pak}" "${path}"
 else
-  exec flatpak-path com.google.AndroidStudio "${path}"
+  exec flatpak-path "${pak}" "${path}"
 fi

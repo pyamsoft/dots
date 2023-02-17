@@ -1,0 +1,12 @@
+#!/bin/sh
+
+readonly pak="com.heroicgameslauncher.hgl"
+
+path="${HOME}/.local/bin"
+readonly path
+
+if [ "$1" = "--shell" ]; then
+  exec flatpak-path "--shell" "${pak}" "${path}"
+else
+  exec flatpak-path "${pak}" "${path}"
+fi

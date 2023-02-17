@@ -4,4 +4,4 @@ features=devel;multiarch;
 filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/dolphin/;/storage/pyamsoft/games2/dolphin/;
 
 [Environment]
-PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin
+SDL_VIDEODRIVER=x11

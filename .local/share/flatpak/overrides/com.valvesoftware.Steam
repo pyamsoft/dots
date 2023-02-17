@@ -5,4 +5,3 @@ filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/steam;/s
 
 [Environment]
 SDL_VIDEODRIVER=x11
-PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin

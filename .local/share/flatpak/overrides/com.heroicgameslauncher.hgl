@@ -2,6 +2,3 @@
 devices=all;
 features=devel;multiarch;
 filesystems=/storage/pyamsoft/games/heroic;/storage/pyamsoft/games2/heroic;!~/Games/Heroic;
-
-[Environment]
-PATH=/home/pyamsoft/.local/bin:/app/bin:/app/utils/bin:/usr/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/app/bin/heroic/resources/app.asar.unpacked/build/bin/linux
