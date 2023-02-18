@@ -1,6 +1,7 @@
 #!/bin/sh
 
 readonly pak="com.google.AndroidStudio"
+readonly def_path="/app/bin:/usr/bin"
 
 self="$(id -un)"
 readonly self
@@ -12,8 +13,16 @@ path="${path}:/storage/${self}/devel/android/sdk/cdmline-tools/latest/bin"
 path="${path}:/storage/${self}/devel/android/sdk/platform-tools"
 readonly path
 
+cmd=""
 if [ "$1" = "--shell" ]; then
-  exec flatpak-path "--shell" "${pak}" "${path}"
-else
-  exec flatpak-path "${pak}" "${path}"
+  cmd="${cmd} --shell"
+  shift
 fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --env PATH "${path}" "${def_path}" \
+  --filesystem "/storage/${self}/devel/android" \
+  "$@" || exit 1
+exit 0

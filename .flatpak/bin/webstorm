@@ -1,11 +1,10 @@
 #!/bin/sh
 
+readonly pak="com.jetbrains.WebStorm"
+readonly def_path="/app/bin:/usr/bin"
+
 self="$(id -un)"
 readonly self
-
-readonly pak="org.DolphinEmu.dolphin-emu"
-readonly def_path="/app/bin:/usr/bin"
-readonly path="${HOME}/.local/bin"
 
 cmd=""
 if [ "$1" = "--shell" ]; then
@@ -16,7 +15,6 @@ readonly cmd
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
-  --env PATH "${path}" "${def_path}" \
-  --filesystem "/storage/${self}/games/dolphin" \
+  --filesystem "/storage/${self}/devel/js" \
   "$@" || exit 1
 exit 0

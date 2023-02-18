@@ -1,7 +1,7 @@
 [Context]
 devices=all;shm;
 features=devel;multiarch;
-filesystems=!xdg-run/app/com.discordapp.Discord;/storage/pyamsoft/games/steam;/storage/pyamsoft/games2/steam;
+filesystems=!xdg-run/app/com.discordapp.Discord;
 
 [Environment]
 SDL_VIDEODRIVER=x11

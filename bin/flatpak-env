@@ -19,6 +19,56 @@ __source_existing_env()
 }
 
 ##
+# Compile environment
+__compile_env()
+{
+  __compile_env_flatpak="$1"
+  __compile_env_var="$2"
+  __compile_env_arg="$3"
+  __compile_env_default="$4"
+
+  if [ -z "${__compile_env_var}" ]; then
+    printf -- 'Missing [%s] env var\n' "${__compile_env_flatpak}" 1>&2
+
+    unset __compile_env_flatpak
+    unset __compile_env_var
+    unset __compile_env_arg
+    unset __compile_env_default
+    return 1
+  fi
+
+  if [ -z "${__compile_env_arg}" ]; then
+    printf -- 'Missing [%s] "%s" env argument\n' "${__compile_env_flatpak}" "${__compile_env_var}" 1>&2
+
+    unset __compile_env_flatpak
+    unset __compile_env_var
+    unset __compile_env_arg
+    unset __compile_env_default
+    return 1
+  fi
+
+  # Parse the environment, falling back to defined defaults
+  __existing_env="$(__source_existing_env "${__compile_env_flatpak}" "${__compile_env_var}")"
+  if [ -z "${__existing_env}" ]; then
+    __new_env="${__compile_env_arg}${__compile_env_default}"
+  else
+    __new_env="${__compile_env_arg}${__existing_env}"
+  fi
+
+  printf -- '--env=%s=%s\n' "${__compile_env_var}" "${__new_env}"
+
+  unset __compile_env_default
+  unset __existing_env
+  unset __new_env
+  unset __compile_env_flatpak
+  unset __compile_env_var
+  unset __compile_env_arg
+  unset __compile_env_default
+
+  return 0
+}
+
+##
 # Main
 main()
 {
@@ -29,70 +79,66 @@ main()
 
   __run_shell=0
   if [ "$1" = "--shell" ]; then
-    shift
     __run_shell=1
+    shift
   fi
 
   __flatpak="$1"
-  __env_var="$2"
-  __env_arg="$3"
-  __env_default="$4"
+  shift
 
   if [ -z "${__flatpak}" ]; then
     printf -- 'Missing target flatpak\n'
 
     unset __run_shell
     unset __flatpak
-    unset __env_var
-    unset __env_arg
-    unset __env_default
     return 1
   fi
 
-  if [ -z "${__env_var}" ]; then
-    printf -- 'Missing [%s] env var\n' "${__flatpak}"
+  __fp_env=""
+  while [ -n "$1" ]; do
+    if [ "$1" = "--env" ]; then
+      # This is an env command
+      shift
 
-    unset __run_shell
-    unset __flatpak
-    unset __env_var
-    unset __env_arg
-    unset __env_default
-    return 1
-  fi
+      # Compile the environment
+      if [ -z "${__fp_env}" ]; then
+        __fp_env="$(__compile_env "${__flatpak}" "$1" "$2" "$3" )"
+      else
+        __fp_env="${__fp_env} $(__compile_env "${__flatpak}" "$1" "$2" "$3" )"
+      fi
 
-  if [ -z "${__env_arg}" ]; then
-    printf -- 'Missing [%s] "%s" env argument\n' "${__flatpak}" "${__env_var}"
+      # Eat the arguments
+      shift
+      shift
+      shift
+    elif [ "$1" = "--filesystem" ]; then
+      # This is a filesystem command
+      shift
 
-    unset __run_shell
-    unset __flatpak
-    unset __env_var
-    unset __env_arg
-    unset __env_default
-    return 1
-  fi
-
-  # Parse the environment, falling back to defined defaults
-  __existing_env="$(__source_existing_env "${__flatpak}" "${__env_var}")"
-  if [ -z "${__existing_env}" ]; then
-    __new_env="${__env_arg}${__env_default}"
-  else
-    __new_env="${__env_arg}${__existing_env}"
-  fi
-  unset __env_default
-  unset __existing_env
+      # Add the filesystem link
+      if [ -z "${__fp_env}" ]; then
+        __fp_env="--filesystem=$1"
+      else
+        __fp_env="${__fp_env} --filesystem=$1"
+      fi
+      shift
+    else
+      break
+    fi
+  done
 
   # Run the flatpak or a shell in the flatpak (use /bin/sh, if you need bash, run it in shell)
-  printf -- 'Running flatpak [%s] with "%s"="%s"\n' "${__flatpak}" "${__env_var}" "${__new_env}"
+  printf -- 'Running flatpak [%s] with "%s"\n' "${__flatpak}" "${__fp_env}"
   if [ "${__run_shell}" -eq 1 ]; then
-    exec flatpak run --env="${__env_var}"="${__new_env}" --command=/bin/sh "${__flatpak}" || return 1
-  else
-    exec flatpak run --env="${__env_var}"="${__new_env}" "${__flatpak}" || return 1
+    __fp_env="${__fp_env} --command=/bin/sh"
   fi
+
+  # shellcheck disable=SC2086
+  exec flatpak run ${__fp_env} "${__flatpak}" || return 1
 
   unset __run_shell
   unset __flatpak
-  unset __env_var
-  unset __env_arg
+  unset __fp_env
   return 0
 }
 

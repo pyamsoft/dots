@@ -1,4 +1,4 @@
 [Context]
 devices=all;
 features=devel;multiarch;
-filesystems=/storage/pyamsoft/games/heroic;/storage/pyamsoft/games2/heroic;!~/Games/Heroic;
+filesystems=!~/Games/Heroic;

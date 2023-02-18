@@ -1,12 +1,23 @@
 #!/bin/sh
 
+self="$(id -un)"
+readonly self
+
 readonly pak="com.valvesoftware.Steam"
+readonly def_path="/app/bin:/usr/bin"
+readonly path="${HOME}/.local/bin"
 
-path="${HOME}/.local/bin"
-readonly path
-
+cmd=""
 if [ "$1" = "--shell" ]; then
-  exec flatpak-path "--shell" "${pak}" "${path}"
-else
-  exec flatpak-path "${pak}" "${path}"
+  cmd="${cmd} --shell"
+  shift
 fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --env PATH "${path}" "${def_path}" \
+  --filesystem "/storage/${self}/games/steam" \
+  --filesystem "/storage/${self}/games2/steam" \
+  "$@" || exit 1
+exit 0

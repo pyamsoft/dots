@@ -1,6 +1,6 @@
 [Context]
 features=devel;
-filesystems=!xdg-run/keyring;/storage/pyamsoft/devel/js;
+filesystems=!xdg-run/keyring;
 
 [Environment]
 FLATPAK_ENABLE_SDK_EXT=node16
