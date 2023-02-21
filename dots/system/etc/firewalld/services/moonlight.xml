@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0.0">
+  <short>moonlight</short>
+  <description>Moonlight Gamestream</description>
+
+  <!-- https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide#streaming-over-the-internet -->
+  <port port="47984" protocol="tcp"/>
+  <port port="47989" protocol="tcp"/>
+  <port port="48010" protocol="tcp"/>
+
+  <port port="47998" protocol="udp"/>
+  <port port="47999" protocol="udp"/>
+  <port port="48000" protocol="udp"/>
+  <port port="48002" protocol="udp"/>
+  <port port="48010" protocol="udp"/>
+</service>
