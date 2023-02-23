@@ -45,7 +45,7 @@ CONTAINER_PORTS="127.0.0.1:5432:5432/tcp"
 # Ex: NET_ADMIN NET_BIND_SERVICE -> "--cap-add NET_ADMIN --cap-add NET_BIND_SERVICE"
 #
 # CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
-CONTAINER_CAPS="CHOWN DAC_OVERRIDE SETGID SETUID"
+CONTAINER_CAPS="CHOWN DAC_OVERRIDE SETUID SETGID"
 
 # User: Override the --user option passed to the container.
 # Pass UID instead of names for maximum compatibility.
@@ -63,7 +63,7 @@ CONTAINER_CAPS="CHOWN DAC_OVERRIDE SETGID SETUID"
 # Ex: 700 -> --user=700:700
 #
 # CONTAINER_USER="1000"
-CONTAINER_USER="root"
+CONTAINER_USER=""
 
 # Options: Any options passed to the container raw
 # Passed directory to docker run
