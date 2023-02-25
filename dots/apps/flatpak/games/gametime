@@ -17,6 +17,10 @@ export vblank_mode=0
 export AMD_DEBUG=nodcc
 export RADV_DEBUG=nodcc
 
+# May fix VKD3D issues
+# https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
+export VKD3D_CONFIG=no_upload_hvv
+
 # Game workarounds
 #
 # Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
