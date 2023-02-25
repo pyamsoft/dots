@@ -81,7 +81,7 @@ game_arguments="-novid -nosplash -nostartupmovies"
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16
+export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=1,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16,no_display
 
 # OBS VKCapture
 # https://github.com/nowrep/obs-vkcapture
