@@ -55,14 +55,23 @@ fi
 # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 readonly target_width="1920"
 readonly target_height="1080"
-readonly fsr_level="15"
 readonly window_type="--borderless"
 
+
 # Options passed to gamescope session
-gamescope_options="--output-height ${target_width} --output-height ${target_height} \
---nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level)) \
---fsr-upscaling --fsr-sharpness 20 \
---nested-refresh 75 --nested-unfocused-refresh 30 ${window_type}"
+gamescope_options="--output-height ${target_width} --output-height ${target_height} --nested-refresh 75 --nested-unfocused-refresh 30 ${window_type}"
+
+# If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
+# gametime so that gamescope will not apply its rougher implementation of FSR1.
+if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
+  # This game needs our gamescope FSR
+  readonly fsr_level="15"
+  gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
+  gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+else
+  # This game has its own FSR, pass our target dimensions directly
+  gamescope_options="${gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
+fi
 
 # vkBasalt
 # https://github.com/DadSchoorse/vkBasalt
