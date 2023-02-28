@@ -17,6 +17,8 @@ readonly cmd
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --env PATH "${path}:" "${def_path}" \
+  --filesystem "/home/${self}/games/dolphin" \
   --filesystem "/storage/${self}/games/dolphin" \
+  --filesystem "/storage/${self}/games2/dolphin" \
   "$@" || exit 1
 exit 0

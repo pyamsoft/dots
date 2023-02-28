@@ -1,7 +1,6 @@
 #!/bin/sh
 
 readonly pak="com.jetbrains.WebStorm"
-readonly def_path="/app/bin:/usr/bin"
 
 self="$(id -un)"
 readonly self
