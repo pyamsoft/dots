@@ -1,5 +1,18 @@
 #!/bin/sh
 
+##
+# Get the hostname
+if [ -n "${HOSTNAME}" ]; then
+  _hostname="${HOSTNAME}"
+elif command -v hostname > /dev/null; then
+  _hostname="$(hostname)"
+elif command -v hostnamectl > /dev/null; then
+  _hostname="$(hostnamectl)"
+else
+  printf -- "[gametime] Can't get the machine hostname :( Who am I?"
+  exit 1
+fi
+
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
 # --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
@@ -42,10 +55,24 @@ export VKD3D_CONFIG=no_upload_hvv
 #
 # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
 # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-readonly target_width="1920"
-readonly target_height="1080"
-readonly window_type="--borderless"
-
+if [ "${_hostname}" = "nerd1" ]; then
+  target_width="1440"
+  target_height="900"
+  window_type="--borderless"
+elif [ "${_hostname}" = "nerd2" ]; then
+  target_width="1920"
+  target_height="1080"
+  window_type="--fullscreen"
+elif [ "${_hostname}" = "macnerd.local" ]; then
+  target_width="1680"
+  target_height="1050"
+  window_type="--borderless"
+else
+  printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${_hostname}"
+  target_width="1440"
+  target_height="900"
+  window_type="--borderless"
+fi
 
 # Options passed to gamescope session
 gamescope_options="--output-height ${target_width} --output-height ${target_height} --nested-refresh 75 --nested-unfocused-refresh 30 ${window_type}"
