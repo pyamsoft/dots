@@ -21,17 +21,6 @@ export RADV_DEBUG=nodcc
 # https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
 export VKD3D_CONFIG=no_upload_hvv
 
-# Game workarounds
-#
-# Vampire survivors needs to run with logs on Proton Experimental or it crashes with a Javascript Error
-# https://steamcommunity.com/app/1675200/discussions/1/3273566073555640279/
-if printf -- '%s' "$*" | grep -q "$(cat << EOF
-Vampire Survivors
-EOF
-)"; then
-  export PROTON_LOGS=1
-fi
-
 # gamescope
 # https://github.com/Plagman/gamescope
 #
