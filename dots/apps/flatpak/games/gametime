@@ -82,6 +82,8 @@ gamescope_options="--output-width ${target_width} --output-height ${target_heigh
 # gametime so that gamescope will not apply its rougher implementation of FSR1.
 if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
   # This game needs our gamescope FSR
+  # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
+  # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
   readonly fsr_level="15"
   gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
   gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
