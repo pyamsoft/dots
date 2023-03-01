@@ -6,8 +6,6 @@
 
 [Unit]
 Description=Automatically mounts %h/%I upon %u login
-Requires=home-%u.mount
-After=home-%u.mount
 
 [Service]
 Type=oneshot
