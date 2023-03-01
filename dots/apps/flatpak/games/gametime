@@ -74,8 +74,11 @@ else
   window_type="--borderless"
 fi
 
+# Set max FPS
+readonly fps_max=75
+
 # Options passed to gamescope session
-gamescope_options="--output-height ${target_width} --output-height ${target_height} --nested-refresh 75 --nested-unfocused-refresh 30 ${window_type}"
+gamescope_options="--output-height ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
 
 # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
 # gametime so that gamescope will not apply its rougher implementation of FSR1.
@@ -103,14 +106,15 @@ game_tools="mangohud"
 
 # Default arguments passed to games
 # These are common values that attempt to disable startup splash screens
-game_arguments="-novid -nosplash -nostartupmovies"
+# Common Source engine max fps
+game_arguments="-novid -nosplash -nostartupmovies +fps_max ${fps_max}"
 
 # Mangohud
 # https://github.com/flightlessmango/MangoHud#hud-configuration
 #
 # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
 # We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG=fps,cpu_temp,gpu_temp,ram,vram,fps_limit=75,gl_vsync=0,vsync=0,resolution,show_fps_limit,vkbasalt,gamemode,font_size=16,no_display
+export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,fps_limit=${fps_max},gl_vsync=0,vsync=0,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
 
 # OBS VKCapture
 # https://github.com/nowrep/obs-vkcapture
