@@ -78,7 +78,7 @@ fi
 readonly fps_max=75
 
 # Options passed to gamescope session
-gamescope_options="--output-height ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+gamescope_options="--output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
 
 # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
 # gametime so that gamescope will not apply its rougher implementation of FSR1.
