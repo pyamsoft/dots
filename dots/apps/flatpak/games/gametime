@@ -63,10 +63,6 @@ elif [ "${_hostname}" = "nerd2" ]; then
   target_width="1920"
   target_height="1080"
   window_type="--fullscreen"
-elif [ "${_hostname}" = "macnerd.local" ]; then
-  target_width="1680"
-  target_height="1050"
-  window_type="--borderless"
 else
   printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${_hostname}"
   exit 1
