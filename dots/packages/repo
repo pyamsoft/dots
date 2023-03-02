@@ -2,7 +2,6 @@ amd-ucode
 android-udev
 base
 base-devel
-corectrl
 croc
 cups-pdf
 ddcutil
@@ -15,7 +14,6 @@ gnome-themes-extra
 gnome-tweaks
 hplip
 htop
-kdeconnect
 kernel-modules-hook
 linux-lts
 man-db

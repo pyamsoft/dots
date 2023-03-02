@@ -7,6 +7,7 @@ com.moonlight_stream.Moonlight
 com.obsproject.Studio
 com.transmissionbt.Transmission
 com.valvesoftware.Steam
+com.valvesoftware.SteamLink
 io.openrct2.OpenRCT2
 org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
