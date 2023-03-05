@@ -56,8 +56,8 @@ export VKD3D_CONFIG=no_upload_hvv
 # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
 # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 if [ "${_hostname}" = "nerd1" ]; then
-  target_width="1680"
-  target_height="1050"
+  target_width="1440"
+  target_height="900"
   window_type="--borderless"
 elif [ "${_hostname}" = "nerd2" ]; then
   target_width="1920"
