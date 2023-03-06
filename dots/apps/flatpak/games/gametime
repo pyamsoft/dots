@@ -57,8 +57,8 @@ export VKD3D_CONFIG=no_upload_hvv
 # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 if [ "${_hostname}" = "nerd1" ]; then
   window_type="--borderless"
-  target_width="1440"
-  target_height="900"
+  target_width="1920"
+  target_height="1080"
 elif [ "${_hostname}" = "nerd2" ]; then
   window_type="--fullscreen"
   target_width="1920"
