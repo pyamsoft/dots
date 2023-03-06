@@ -56,10 +56,12 @@ export VKD3D_CONFIG=no_upload_hvv
 # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
 # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 if [ "${_hostname}" = "nerd1" ]; then
+  fsr_level="17"
   window_type="--borderless"
-  target_width="1920"
-  target_height="1080"
+  target_width="1600"
+  target_height="900"
 elif [ "${_hostname}" = "nerd2" ]; then
+  fsr_level="15"
   window_type="--fullscreen"
   target_width="1920"
   target_height="1080"
@@ -80,7 +82,6 @@ if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
   # This game needs our gamescope FSR
   # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
   # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-  readonly fsr_level="15"
   gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
   gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
 else
