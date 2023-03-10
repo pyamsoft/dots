@@ -35,7 +35,7 @@ export RADV_DEBUG=nodcc
 export VKD3D_CONFIG=no_upload_hvv
 
 # Zink driver for OpenGL-over-Vulkan
-if [ -n "${ZINK}" ] || [ "${ZINK}" -eq 1 ]; then
+if [ -n "${GAME_ZINK}" ] || [ "${GAME_ZINK}" -eq 1 ]; then
   # Enable Zink driver
   # https://wiki.archlinux.org/title/OpenGL
   export __GLX_VENDOR_LIBRARY_NAME=mesa
