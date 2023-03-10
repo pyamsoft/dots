@@ -34,6 +34,19 @@ export RADV_DEBUG=nodcc
 # https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
 export VKD3D_CONFIG=no_upload_hvv
 
+# Zink driver for OpenGL-over-Vulkan
+if [ -n "${ZINK}" ] || [ "${ZINK}" -eq 1 ]; then
+  # Enable Zink driver
+  # https://wiki.archlinux.org/title/OpenGL
+  export __GLX_VENDOR_LIBRARY_NAME=mesa
+  export MESA_LOADER_DRIVER_OVERRIDE=zink
+  export GALLIUM_DRIVER=zink
+
+  # Speed up
+  # https://www.phoronix.com/news/Mesa-Zink-DB-Descriptor-Mode
+  export ZINK_DESCRIPTOR_MODE=db
+fi
+
 # gamescope
 # https://github.com/Plagman/gamescope
 #

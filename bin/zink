@@ -8,6 +8,12 @@ if [ "$#" -le 0 ]; then
   printf -- 'export __GLX_VENDOR_LIBRARY_NAME=mesa\n'
   printf -- 'export MESA_LOADER_DRIVER_OVERRIDE=zink\n'
   printf -- 'export GALLIUM_DRIVER=zink\n'
+  printf -- 'export ZINK_DESCRIPTOR_MODE=db\n'
 else
-  exec env __GLX_VENDOR_LIBRARY_NAME=mesa MESA_LOADER_DRIVER_OVERRIDE=zink GALLIUM_DRIVER=zink "$@"
+  exec env \
+    __GLX_VENDOR_LIBRARY_NAME=mesa \
+    MESA_LOADER_DRIVER_OVERRIDE=zink \
+    GALLIUM_DRIVER=zink \
+    ZINK_DESCRIPTOR_MODE=db \
+    "$@"
 fi
