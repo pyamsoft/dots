@@ -52,3 +52,8 @@ fi
 if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
   com.github.wwmm.easyeffects --gapplication-service &
 fi
+
+# Sunshine
+if command -v sunshine > /dev/null 2>&1; then
+  sunshine &
+fi
