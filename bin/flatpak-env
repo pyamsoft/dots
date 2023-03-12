@@ -96,7 +96,7 @@ main()
 
   __fp_env=""
   while [ -n "$1" ]; do
-    if [ "$1" = "--env" ]; then
+    if [ "$1" = "--with-env" ]; then
       # This is an env command
       shift
 
@@ -111,19 +111,15 @@ main()
       shift
       shift
       shift
-    elif [ "$1" = "--filesystem" ]; then
-      # This is a filesystem command
-      shift
-
-      # Add the filesystem link
-      if [ -z "${__fp_env}" ]; then
-        __fp_env="--filesystem=$1"
-      else
-        __fp_env="${__fp_env} --filesystem=$1"
-      fi
-      shift
     else
-      break
+      if [ -z "${__fp_env}" ]; then
+        __fp_env="$1"
+      else
+        __fp_env="${__fp_env} $1"
+      fi
+
+      # Eat argument
+      shift
     fi
   done
 

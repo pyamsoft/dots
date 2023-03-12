@@ -14,6 +14,6 @@ readonly cmd
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
-  --filesystem "/storage/${self}/devel/js" \
+  --filesystem="/storage/${self}/devel/js" \
   "$@" || exit 1
 exit 0
