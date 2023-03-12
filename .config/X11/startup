@@ -26,34 +26,12 @@ if command -v xbindkeys > /dev/null 2>&1; then
   xbindkeys &
 fi
 
-# Setup flameshot before so that 'flameshot gui' does not fork out of the jail
-if command -v org.flameshot.Flameshot > /dev/null 2>&1; then
-  org.flameshot.Flameshot &
-elif command -v flameshot > /dev/null 2>&1; then
-  flameshot &
-fi
-
 # CoreCtrl
 if command -v corectrl > /dev/null 2>&1; then
   corectrl &
 fi
 
-# KDE Connect
-if command -v kdeconnect-indicator > /dev/null 2>&1; then
-  kdeconnect-indicator &
-fi
-
-# RustDesk
-if command -v rustdesk > /dev/null 2>&1; then
-  rustdesk --service &
-fi
-
 # EasyEffects
 if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
   com.github.wwmm.easyeffects --gapplication-service &
-fi
-
-# Sunshine
-if command -v sunshine > /dev/null 2>&1; then
-  sunshine &
 fi
