@@ -67,5 +67,9 @@ installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || e
 installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 
+# Local install
+mkdir -p ~/.local/bin || exit 1
+cp gametime ~/.local/bin || exit 1
+
 exit 0
 
