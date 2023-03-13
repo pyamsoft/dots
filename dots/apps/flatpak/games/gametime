@@ -151,5 +151,7 @@ elif [ "${FLATPAK_ID}" = "com.heroicgameslauncher.hgl" ]; then
   game_arguments="-novid -nosplash -nostartupmovies +fps_max ${fps_max}"
 fi
 
+printf -- '%s' "gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} $* ${game_arguments}"
+
 # shellcheck disable=SC2086
 exec gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@" ${game_arguments}
