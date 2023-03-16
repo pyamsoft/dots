@@ -67,10 +67,11 @@ __setup_path()
   fi
 
   # Docker scrips
-  if command -v docker > /dev/null; then
-    if [ -d "${HOME}/.docker/bin" ]; then
-      PATH="${HOME}/.docker/bin:${PATH}"
-    fi
+  # This one is a little weird. On MacOS, the "docker" binary lives in .docker/bin
+  # so we can't check for the docker command before adding the PATH since the docker
+  # command is in the destination we want to add.
+  if [ -d "${HOME}/.docker/bin" ]; then
+    PATH="${HOME}/.docker/bin:${PATH}"
   fi
 
   # Add local npm repository: used for things like bash-language-server
