@@ -33,7 +33,7 @@ CONTAINER_DIRS="data:/var/lib/postgresql/data"
 # Ex: 80:80/tcp -> "-p 80:80/tcp"
 #
 # CONTAINER_PORTS="80:80/tcp 443:443/tcp"
-CONTAINER_PORTS="5432:5432/tcp"
+CONTAINER_PORTS="127.0.0.1:5432:5432/tcp"
 
 # Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
 # Will be prepended with --cap-add. You may need to add capabilities, as this script is run with
