@@ -65,8 +65,13 @@ CONTAINER_USER=""
 # CONTAINER_OPTIONS="-i -t --read-only"
 #
 # Unset STGUIADDRESS since we configure it through the web GUI
-# Use host network for local network discovery
-CONTAINER_OPTIONS="-e STGUIADDRESS= -e STNODEFAULTFOLDER=1 -e --init"
+# syncthing expects files to be owned by a user 1000 by default, which works fine in many Linux cases.
+# On MacOS though, our user is 501:20 normally, so we override the PUID and PGID here to the current running
+# user
+CONTAINER_OPTIONS="-e STGUIADDRESS= -e STNODEFAULTFOLDER=1 --init"
+if [ "$(uname)" = "Darwin" ]; then
+  CONTAINER_OPTIONS="${CONTAINER_OPTIONS} -e PUID=$(id -u) -e PGID=$(id -g)"
+fi
 
 # Arguments: Passed directly to the command ran inside the container.
 # If arguments are passed at invocation time, those will be used instead of these default args.
