@@ -21,7 +21,7 @@ CONTAINER_TARGET="adguard/adguardhome"
 
 # Directories: Format like -v/--volume
 # CONTAINER_DIRS="directory:/root/directory"
-CONTAINER_DIRS="work:/opt/adguardhome/work conf:/opt/adguardhome/conf"
+CONTAINER_DIRS="conf:/opt/adguardhome/conf"
 
 # Ports: Format like -p/--port
 # CONTAINER_PORTS="80:80/tcp 443:443/tcp"
@@ -29,7 +29,7 @@ CONTAINER_PORTS="53:53/tcp 53:53/udp 81:81/tcp"
 
 # Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
 # CONTAINER_CAPS="NET_BIND_SERVICE NET_ADMIN"
-CONTAINER_CAPS="NET_BIND_SERVICE"
+CONTAINER_CAPS="NET_BIND_SERVICE FOWNER DAC_OVERRIDE"
 
 # Options: Any options passed to the container raw
 # CONTAINER_OPTIONS="-i -t --read-only"
