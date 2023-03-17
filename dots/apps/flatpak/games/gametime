@@ -4,10 +4,10 @@
 # Get the hostname
 if [ -n "${HOSTNAME}" ]; then
   _hostname="${HOSTNAME}"
-elif command -v hostname > /dev/null; then
-  _hostname="$(hostname)"
 elif command -v hostnamectl > /dev/null; then
   _hostname="$(hostnamectl)"
+elif command -v hostname > /dev/null; then
+  _hostname="$(hostname)"
 else
   printf -- "[gametime] Can't get the machine hostname :( Who am I?"
   exit 1
