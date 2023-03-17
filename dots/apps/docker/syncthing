@@ -38,7 +38,7 @@ CONTAINER_DIRS="work:/var/syncthing"
 # 22000 TCP transfer
 # 22000 UDP transfer
 # 21027 Discovery packets
-CONTAINER_PORTS="127.0.0.1:8384:8384/tcp 127.0.0.1:22000:22000/tcp 127.0.0.1:22000:22000/udp 127.0.0.1:21027:21027/udp"
+CONTAINER_PORTS="8384:8384/tcp 22000:22000/tcp 22000:22000/udp 21027:21027/udp"
 
 # Capabilities: Format like --cap-add (these are only added, everything is DROPPED by default)
 # Will be prepended with --cap-add
