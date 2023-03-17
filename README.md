@@ -18,13 +18,9 @@ For other files that are copied into place, see `dots/`
 For video acceleration in docker, make sure you
 [setup hardware accel in the container](https://jellyfin.org/docs/general/administration/hardware-acceleration#hardware-acceleration-on-docker-linux)
 
-### Audio
-For headphone audio, plug into Green back and use Analog Stereo Duplex
+For MacOS you probably want to use [colima](https://github.com/abiosoft/colima)
+or Docker desktop.
 
-### RDP
-Use rustdesk for accelerated RDP
-To work around Gnome not allowing you to see the lock screen, install the extension
-[Allow Locked Remote Desktop](https://extensions.gnome.org/extension/4338/allow-locked-remote-desktop/)
 
 ### FS performance
 Enable [fast_commit for ext4](https://wiki.archlinux.org/title/Ext4#Enabling_fast_commit_in_existing_filesystems)

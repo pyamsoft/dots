@@ -67,21 +67,9 @@ __setup_path()
   fi
 
   # Docker scrips
-  # This one is a little weird. On MacOS, the "docker" binary lives in .docker/bin
-  # so we can't check for the docker command before adding the PATH since the docker
-  # command is in the destination we want to add.
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ -d "/Applications/Docker.app" ]; then
-      if [ -d "${HOME}/.docker/bin" ]; then
-        PATH="${HOME}/.docker/bin:${PATH}"
-      fi
-    fi
-  else
-    # On Linux its all the same like the others though
-    if command -v docker > /dev/null; then
-      if [ -d "${HOME}/.docker/bin" ]; then
-        PATH="${HOME}/.docker/bin:${PATH}"
-      fi
+  if command -v docker > /dev/null; then
+    if [ -d "${HOME}/.docker/bin" ]; then
+      PATH="${HOME}/.docker/bin:${PATH}"
     fi
   fi
 
