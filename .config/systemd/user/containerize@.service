@@ -3,7 +3,7 @@ Description=On %u login, start container %i
 
 [Service]
 Type=simple
-ExecStart=%h/.containers/bin/%i
+ExecStart=%h/.jails/containers/bin/%i
 
 [Install]
 WantedBy=basic.target
