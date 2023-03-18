@@ -69,9 +69,6 @@ CONTAINER_USER=""
 # On MacOS though, our user is 501:20 normally, so we override the PUID and PGID here to the current running
 # user
 CONTAINER_OPTIONS="-e STGUIADDRESS= -e STNODEFAULTFOLDER=1 --init"
-if [ "$(uname)" = "Darwin" ]; then
-  CONTAINER_OPTIONS="${CONTAINER_OPTIONS} -e PUID=$(id -u) -e PGID=$(id -g)"
-fi
 
 # Arguments: Passed directly to the command ran inside the container.
 # If arguments are passed at invocation time, those will be used instead of these default args.
