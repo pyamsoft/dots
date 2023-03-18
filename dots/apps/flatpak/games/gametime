@@ -5,7 +5,7 @@
 if [ -n "${HOSTNAME}" ]; then
   _hostname="${HOSTNAME}"
 elif command -v hostnamectl > /dev/null; then
-  _hostname="$(hostnamectl)"
+  _hostname="$(hostnamectl hostname)"
 elif command -v hostname > /dev/null; then
   _hostname="$(hostname)"
 else
