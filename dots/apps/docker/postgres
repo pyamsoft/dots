@@ -69,7 +69,14 @@ CONTAINER_USER=""
 # Passed directory to docker run
 # 
 # CONTAINER_OPTIONS="--init -i -t --read-only"
+#
+# On MacOS, binding permissions for directories are a little weird. psg must
+# have the same user own the pgdata, so we must do this to explicitly run the container
+# as our owning user
 CONTAINER_OPTIONS="-e POSTGRES_PASSWORD=mysecretpostgrespasswd"
+if [ "$(uname)" = "Darwin" ]; then
+  CONTAINER_OPTIONS="${CONTAINER_OPTIONS} --user $(id -u):$(id -g)"
+fi
 
 # Arguments: Passed directly to the command ran inside the container.
 # If arguments are passed at invocation time, those will be used instead of these default args.
