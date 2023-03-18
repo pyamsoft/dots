@@ -76,7 +76,7 @@ set -xeu
 # Don't quote so that if user is empty it still expands
 #
 # shellcheck disable=SC2086
-exec "${_cmd}" run "${_how}" \
+exec ${_cmd} run ${_how} \
   --name "${_name}" --hostname "${_name}" --pull never \
   --security-opt no-new-privileges:true --cap-drop ALL \
   ${_mounts} \
