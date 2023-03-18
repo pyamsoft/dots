@@ -129,13 +129,13 @@ __environment()
     return 0
   fi
 
+  __setup_homebrew || return 1
   __setup_path || return 1
   __setup_xdg || return 1
   __setup_editor || return 1
   __setup_c_compiler || return 1
   __setup_locale || return 1
   __setup_wine || return 1
-  __setup_homebrew || return 1
 
   # Expect XDG to be setup
   __setup_homedir || return 1
