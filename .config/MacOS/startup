@@ -16,6 +16,11 @@ fi
 # Start podman machine
 podman machine start || exit 1
 
+# Kill old containers
+podman stop postgres; podman rm postgres
+podman stop syncthing; podman rm syncthing
+podman stop adguardhome; podman rm adguardhome
+
 # Start rootless containers
 ~/.containers/bin/postgres -d || exit 1
 ~/.containers/bin/syncthing -d || exit 1
