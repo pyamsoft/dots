@@ -1,0 +1,10 @@
+[Unit]
+Description=On %u login, start unsafe-adguardhome
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'sudo unsafe-adguardhome %u'
+
+[Install]
+WantedBy=basic.target
+

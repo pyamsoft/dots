@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly _user="$1"
+
+if [ -z "${_user}" ]; then
+  printf -- 'Must provide a target user to run adguardhome\n'
+  exit 1
+fi
+
+shift
+exec unsafe-portbind "${_user}" 53 adguardhome "$@"

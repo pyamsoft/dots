@@ -1,0 +1,9 @@
+[Unit]
+Description=On %u login, start container %i
+
+[Service]
+Type=simple
+ExecStart=%h/.containers/bin/%i
+
+[Install]
+WantedBy=basic.target
