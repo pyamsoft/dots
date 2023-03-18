@@ -4,7 +4,7 @@ After=docker.service network-online.target
 
 [Service]
 ExecStart=/bin/sh -c '%i'
-ExecStop=/bin/sh -c '_cmd="docker"; if command -v podman >/dev/null; then _cmd="podman"; fi; "${_cmd} stop %i'
+ExecStop=/bin/sh -c '_cmd="docker"; if command -v podman >/dev/null; then _cmd="podman"; fi; "${_cmd} stop %i && ${_cmd} rm %i'
 
 [Install]
 WantedBy=multi-user.target
