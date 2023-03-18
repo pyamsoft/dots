@@ -1,0 +1,27 @@
+#!/bin/sh
+
+
+# podman does not exist on the path normally. We expect it so add it here
+
+if ! command -v podman > /dev/null; then
+  PATH="/opt/homebrew/bin:${PATH}"
+fi
+export PATH
+
+if ! command -v podman > /dev/null; then
+  printf -- 'You must install "podman"\n'
+  exit 1
+fi
+
+# Start podman machine
+podman machine start || exit 1
+
+# Start rootless containers
+~/.containers/bin/postgres -d || exit 1
+~/.containers/bin/syncthing -d || exit 1
+
+# Start rootful containers
+/usr/local/bin/adguardhome -d || exit 1
+
+# Done!
+exit 0

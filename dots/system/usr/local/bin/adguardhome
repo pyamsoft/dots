@@ -29,6 +29,11 @@ if [ "$(uname)" = "Darwin" ]; then
   _mounts="--mount type=bind,source=${_mount1},target=/opt/adguardhome/conf"
 
   # On MacOS we can't use 127.0.0.1 syntax for ports
+  #
+  # NOTE: On MacOS in order to bind to port 53, you need to edit the VM
+  #
+  # Use podman machine ssh to enter the VM shell, and edit /etc/systemd/resolved.conf
+  # to turn off the Stub listener or it will occupy port 53 of the VM
   _ports="-p 53:53/tcp -p 53:53/udp -p 81:81/tcp"
 
   # On MacOS we need these extra caps
