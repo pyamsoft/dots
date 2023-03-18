@@ -1,0 +1,10 @@
+[Unit]
+Description=System Container: %i
+After=docker.service network-online.target
+
+[Service]
+ExecStart=/bin/sh -c '%i'
+ExecStop=/bin/sh -c '_cmd="docker"; if command -v podman >/dev/null; then _cmd="podman"; fi; "${_cmd} stop %i'
+
+[Install]
+WantedBy=multi-user.target
