@@ -54,22 +54,22 @@ __setup_path()
 
   # bubblewrap-wrap scripts
   if command -v bww > /dev/null; then
-    if [ -d "${HOME}/.jails/bww/bin" ]; then
-      PATH="${HOME}/.jails/bww/bin:${PATH}"
+    if [ -d "${HOME}/.bww/bin" ]; then
+      PATH="${HOME}/.bww/bin:${PATH}"
     fi
   fi
 
   # Flatpak scrips
   if command -v flatpak > /dev/null; then
-    if [ -d "${HOME}/.jails/flatpak/bin" ]; then
-      PATH="${HOME}/.jails/flatpak/bin:${PATH}"
+    if [ -d "${HOME}/.flatpak/bin" ]; then
+      PATH="${HOME}/.flatpak/bin:${PATH}"
     fi
   fi
 
   # Docker scrips
   if command -v docker > /dev/null || command -v podman > /dev/null; then
-    if [ -d "${HOME}/.jails/oci/bin" ]; then
-      PATH="${HOME}/.jails/oci/bin:${PATH}"
+    if [ -d "${HOME}/.containers/bin" ]; then
+      PATH="${HOME}/.containers/bin:${PATH}"
     fi
   fi
 

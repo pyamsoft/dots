@@ -17,7 +17,7 @@ readonly _how
 readonly _name="syncthing"
 readonly _image="docker.io/syncthing/syncthing"
 
-readonly _mount1="${HOME}/.jails/oci/containers/${_name}/work"
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
 
 # Prep the directories
 mkdir -p "${_mount1}" || exit 1
