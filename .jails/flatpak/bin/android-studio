@@ -1,0 +1,28 @@
+#!/bin/sh
+
+readonly pak="com.google.AndroidStudio"
+readonly def_path="/app/bin:/usr/bin"
+
+self="$(id -un)"
+readonly self
+
+path="${HOME}/.local/bin"
+path="${path}:/app/extra/android-studio/jre/bin"
+path="${path}:/storage/${self}/devel/android/sdk/emulator"
+path="${path}:/storage/${self}/devel/android/sdk/cdmline-tools/latest/bin"
+path="${path}:/storage/${self}/devel/android/sdk/platform-tools"
+readonly path
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --with-env PATH "${path}:" "${def_path}" \
+  --filesystem="/storage/${self}/devel/android" \
+  "$@" || exit 1
+exit 0
