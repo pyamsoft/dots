@@ -22,11 +22,6 @@ readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
 # Prep the directories
 mkdir -p "${_mount1}" || exit 1
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
-
 # Use docker or podman (priority podman)
 _cmd="docker"
 if command -v podman > /dev/null; then
@@ -34,6 +29,22 @@ if command -v podman > /dev/null; then
 fi
 readonly _cmd
 
+# On MacOS we need to own the files to chown them
+# because just VM things
+if [ "$(uname)" = "Darwin" ]; then
+  _user="--user=$(id -u):$(id -g)"
+else
+  _user=""
+fi
+
+# Log the commands we use next
+# Fail on errors
+# Fail on unassigned
+set -xeu
+
+# Don't quote so that if user is empty it still expands
+#
+# shellcheck disable=SC2086
 exec "${_cmd}" run "${_how}" \
   --name "${_name}" --hostname "${_name}" --pull never \
   --security-opt no-new-privileges:true --cap-drop ALL \
@@ -48,4 +59,5 @@ exec "${_cmd}" run "${_how}" \
   --cap-add SETUID \
   -e STGUIADDRESS= \
   -e STNODEFAULTFOLDER=1 \
+  ${_user} \
   "${_image}" "$@"
