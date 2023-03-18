@@ -2,8 +2,10 @@
 Description=On %u login, start unsafe-adguardhome
 
 [Service]
-Type=simple
+Type=oneshot
+RemainAfterExit=true
 ExecStart=/bin/sh -c 'sudo unsafe-adguardhome %u'
+ExecStop=/bin/sh -c 'podman stop adguardhome'
 
 [Install]
 WantedBy=basic.target

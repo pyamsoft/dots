@@ -68,8 +68,8 @@ __setup_path()
 
   # Docker scrips
   if command -v docker > /dev/null || command -v podman > /dev/null; then
-    if [ -d "${HOME}/.jails/containers/bin" ]; then
-      PATH="${HOME}/.jails/containers/bin:${PATH}"
+    if [ -d "${HOME}/.jails/oci/bin" ]; then
+      PATH="${HOME}/.jails/oci/bin:${PATH}"
     fi
   fi
 
