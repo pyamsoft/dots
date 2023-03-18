@@ -37,11 +37,6 @@ __setup_locale()
 
 __setup_path()
 {
-  # Keep the original PATH before we toutch it
-  if [ -z "${SYSTEM_DEFAULT_PATH}" ]; then
-    export SYSTEM_DEFAULT_PATH="${PATH}"
-  fi
-
   # Git tracked scripts
   if [ -d "${HOME}/bin" ]; then
     PATH="${HOME}/bin:${PATH}"
@@ -127,6 +122,11 @@ __environment()
   # If we have already been sourced, exit out
   if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
     return 0
+  fi
+
+  # Keep the original PATH before we toutch it
+  if [ -z "${SYSTEM_DEFAULT_PATH}" ]; then
+    export SYSTEM_DEFAULT_PATH="${PATH}"
   fi
 
   __setup_homebrew || return 1
