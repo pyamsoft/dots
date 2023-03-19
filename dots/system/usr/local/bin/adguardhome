@@ -44,7 +44,7 @@ else
     exit 1
   fi
 
-  readonly _mount1="/user/local/etc/containers/${_name}/conf"
+  readonly _mount1="/usr/local/etc/containers/${_name}/conf"
   readonly _mount2="/usr/local/etc/containers/${_name}/work"
 
   # Prep the directories
