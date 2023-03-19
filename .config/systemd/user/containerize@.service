@@ -4,7 +4,7 @@ Description=On %u login, start container %i
 [Service]
 Type=oneshot
 RemainAfterExit=true
-ExecStart=%h/.jails/oci/bin/%i
+ExecStart=%h/.containers/bin/%i
 ExecStop=/bin/sh -c '_cmd="docker"; if command -v podman >/dev/null; then _cmd="podman"; fi; "${_cmd} stop %i && ${_cmd} rm %i'
 
 [Install]
