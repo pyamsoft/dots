@@ -1,0 +1,60 @@
+#!/bin/sh
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf -- 'You must run this as a rootless container\n'
+  exit 1
+fi
+
+# Let it daemonize
+if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+  shift
+  _how="-d"
+else
+  _how="--rm"
+fi
+readonly _how
+
+readonly _name="jellyfin"
+readonly _image="docker.io/jellyfin/jellyfin"
+
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
+readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
+readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
+
+# Prep the directories
+mkdir -p "${_mount1}" || exit 1
+mkdir -p "${_mount2}" || exit 1
+mkdir -p "${_mount3}" || exit 1
+
+# Use docker or podman (priority podman)
+_cmd="docker"
+_userns=""
+if command -v podman > /dev/null; then
+  _cmd="podman"
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  _userns="--userns keep-id"
+fi
+readonly _cmd
+
+# Log the commands we use next
+# Fail on errors
+# Fail on unassigned
+set -xeu
+
+# Don't quote so that if user is empty it still expands
+#
+# shellcheck disable=SC2086
+exec ${_cmd} run ${_how} \
+  --name "${_name}" --hostname "${_name}" --pull never \
+  --security-opt no-new-privileges:true --cap-drop ALL \
+  --mount type=bind,source="${_mount1}",target=/cache \
+  --mount type=bind,source="${_mount2}",target=/config \
+  --mount type=bind,source="${_mount3}",target=/media \
+  -p 127.0.0.1:8096:8096/tcp \
+  --group-add=989 \
+  --device /dev/dri/renderD128:/dev/dri/renderD128 \
+  --device /dev/dri/card0:/dev/dri/card0 \
+  ${_userns} \
+  "${_image}" "$@"
+
