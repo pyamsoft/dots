@@ -18,7 +18,12 @@ if [ "$1" = "--" ]; then
   shift
 
   # shellcheck disable=SC2086
-  exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "$(pwd)" "${command_name}" "$@"
+  cur="$(pwd)"
+  if [ "${HOME}" != "${cur}" ]; then
+    exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "${cur}" "${command_name}" "$@"
+  else
+    exec bww $arguments --bind-if-exists "${HOME}" "${command_name}" "$@"
+  fi
 elif [ "$1" = "shell" ]; then
   # Launch a shell in the environment
   shift
@@ -26,8 +31,18 @@ elif [ "$1" = "shell" ]; then
   # No extra arguments for shells
 
   # shellcheck disable=SC2086
-  exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "$(pwd)" --shell "${command_name}"
+  cur="$(pwd)"
+  if [ "${HOME}" != "${cur}" ]; then
+    exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "${cur}" --shell "${command_name}" "$@"
+  else
+    exec bww $arguments --bind-if-exists "${HOME}" --shell "${command_name}" "$@"
+  fi
 else
   # shellcheck disable=SC2086
-  exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "$(pwd)" "${command_name}" "$@"
+  cur="$(pwd)"
+  if [ "${HOME}" != "${cur}" ]; then
+    exec bww $arguments --bind-if-exists "${HOME}" --bind-if-exists "${cur}" "${command_name}" "$@"
+  else
+    exec bww $arguments --bind-if-exists "${HOME}" "${command_name}" "$@"
+  fi
 fi
