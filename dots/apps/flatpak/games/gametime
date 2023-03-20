@@ -47,59 +47,61 @@ if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
   export ZINK_DESCRIPTOR_MODE=db
 fi
 
-# gamescope
-# https://github.com/Plagman/gamescope
-#
-# Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
-# FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
-#
-# NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-#
-# NOTE: If we only provide a height, gamescope will assume the width as 16x9
-#
-# NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
-#       If you open the settings in game, your FPS will go to 2.
-#
-# NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
-#
-# NOTE: FSR performance is 2.0x nested resolution.
-# NOTE: FSR balanced is 1.7x nested resolution.
-# NOTE: FSR quality is 1.5x nested resolution.
-#
-# NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
-# NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-if [ "${_hostname}" = "nerd1" ]; then
-  fsr_level="15"
-  window_type="--borderless"
-  target_width="1920"
-  target_height="1080"
-elif [ "${_hostname}" = "nerd2" ]; then
-  fsr_level="15"
-  window_type="--fullscreen"
-  target_width="1920"
-  target_height="1080"
-else
-  printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${_hostname}"
-  exit 1
-fi
-
 # Set max FPS
 readonly fps_max=75
 
-# Options passed to gamescope session
-gamescope_options="--output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+if command -v gamescope > /dev/null; then
+  # gamescope
+  # https://github.com/Plagman/gamescope
+  #
+  # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
+  # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
+  #
+  # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
+  #
+  # NOTE: If we only provide a height, gamescope will assume the width as 16x9
+  #
+  # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
+  #       If you open the settings in game, your FPS will go to 2.
+  #
+  # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
+  #
+  # NOTE: FSR performance is 2.0x nested resolution.
+  # NOTE: FSR balanced is 1.7x nested resolution.
+  # NOTE: FSR quality is 1.5x nested resolution.
+  #
+  # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
+  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+  if [ "${_hostname}" = "nerd1" ]; then
+    fsr_level="15"
+    window_type="--borderless"
+    target_width="1920"
+    target_height="1080"
+  elif [ "${_hostname}" = "nerd2" ]; then
+    fsr_level="15"
+    window_type="--fullscreen"
+    target_width="1920"
+    target_height="1080"
+  else
+    printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${_hostname}"
+    exit 1
+  fi
 
-# If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
-# gametime so that gamescope will not apply its rougher implementation of FSR1.
-if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
-  # This game needs our gamescope FSR
-  # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
-  # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-  gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
-  gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
-else
-  # This game has its own FSR, pass our target dimensions directly
-  gamescope_options="${gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
+  # Options passed to gamescope session
+  gamescope_options="--output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+
+  # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
+  # gametime so that gamescope will not apply its rougher implementation of FSR1.
+  if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
+    # This game needs our gamescope FSR
+    # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
+    # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
+    gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
+    gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+  else
+    # This game has its own FSR, pass our target dimensions directly
+    gamescope_options="${gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
+  fi
 fi
 
 # vkBasalt
@@ -116,7 +118,7 @@ game_tools=""
 
 # If we have mangohud, use it
 if command -v mangohud > /dev/null; then
-  game_tools="mangohud"
+  game_tools="${game_tools} mangohud"
 fi
 
 # Mangohud
@@ -133,7 +135,10 @@ export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gp
 
 # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
 if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-  gamescope_options="${gamescope_options} --steam"
+  if command -v gamescope > /dev/null; then
+    gamescope_options="${gamescope_options} --steam"
+  fi
+
   game_environment="${game_environment} OBS_VKCAPTURE=1"
 elif [ "${FLATPAK_ID}" = "com.heroicgameslauncher.hgl" ]; then
   # For not Steam, we export this var here instead of within gamescope session
@@ -142,5 +147,10 @@ fi
 
 printf -- '%s' "gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} $*"
 
-# shellcheck disable=SC2086
-exec gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@"
+if command -v gamescope > /dev/null; then
+  # shellcheck disable=SC2086
+  exec gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@"
+else
+  # shellcheck disable=SC2086
+  exec env ${game_environment} ${game_tools} "$@"
+fi
