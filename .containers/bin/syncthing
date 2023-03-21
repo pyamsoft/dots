@@ -44,17 +44,17 @@ else
   _user=""
 fi
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
-
 # systemd --user does not like the healthcheck command
 # disable it.
 _health=""
 if [ "$(uname)" != "Darwin" ]; then
 _health="--health-cmd none"
 fi
+
+# Log the commands we use next
+# Fail on errors
+# Fail on unassigned
+set -xeu
 
 # Don't quote so that if user is empty it still expands
 #
