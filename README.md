@@ -13,14 +13,17 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
-
 ### Docker
 For video acceleration in docker, make sure you
 [setup hardware accel in the container](https://jellyfin.org/docs/general/administration/hardware-acceleration#hardware-acceleration-on-docker-linux)
 
-For MacOS you probably want to use [colima](https://github.com/abiosoft/colima)
-or Docker desktop.
+Use `podman` instead of `docker` to avoid the root daemon
 
+## Flatpak
+
+For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
+Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
+You will need to install `MangoHud` `vkBasalt` `gamescope` `proton-GE` and `Adwaita-dark` manually
 
 ### FS performance
 Enable [fast_commit for ext4](https://wiki.archlinux.org/title/Ext4#Enabling_fast_commit_in_existing_filesystems)

@@ -24,8 +24,15 @@ mkdir -p "${_mount1}" || exit 1
 
 # Use docker or podman (priority podman)
 _cmd="docker"
+_userns=""
 if command -v podman > /dev/null; then
   _cmd="podman"
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  # Can't apply on Mac because our VM runs as root for adguardhome
+  if [ "$(uname)" != "Darwin" ]; then
+    _userns="--userns keep-id"
+  fi
 fi
 readonly _cmd
 
@@ -41,6 +48,13 @@ fi
 # Fail on errors
 # Fail on unassigned
 set -xeu
+
+# systemd --user does not like the healthcheck command
+# disable it.
+_health=""
+if [ "$(uname)" != "Darwin" ]; then
+_health="--health-cmd none"
+fi
 
 # Don't quote so that if user is empty it still expands
 #
@@ -59,5 +73,7 @@ exec ${_cmd} run ${_how} \
   --cap-add SETUID \
   -e STGUIADDRESS= \
   -e STNODEFAULTFOLDER=1 \
+  ${_health} \
   ${_user} \
+  ${_userns} \
   "${_image}" "$@"
