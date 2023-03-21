@@ -1,6 +1,7 @@
 [Unit]
 Description=System Container: %i
-After=docker.service network-online.target
+After=network-online.target docker.service
+Wants=network-online.target
 
 [Service]
 ExecStart=/bin/sh -c 'podman stop %i; podman rm %i; /usr/local/bin/%i'
