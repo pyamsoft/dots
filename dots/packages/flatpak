@@ -1,3 +1,4 @@
+app.drey.Warp
 com.github.tchx84.Flatseal
 com.github.wwmm.easyeffects
 com.google.AndroidStudio
@@ -14,5 +15,6 @@ org.gnome.Lollypop
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.mozilla.firefox
+org.musicbrainz.Picard
 org.pulseaudio.pavucontrol
 re.chiaki.Chiaki
