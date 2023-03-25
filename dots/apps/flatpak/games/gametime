@@ -115,6 +115,7 @@ game_environment="ENABLE_VKBASALT=1"
 
 # Extra tools to run as a wrapper
 game_tools=""
+env_tools=""
 
 # If we have mangohud, use it
 if command -v mangohud > /dev/null; then
@@ -123,7 +124,7 @@ fi
 
 # If we have obs-gamecapture use it
 if command -v obs-gamecapture > /dev/null; then
-  game_tools="${game_tools} obs-gamecapture"
+  env_tools="${env_tools} obs-gamecapture"
 fi
 
 # Mangohud
@@ -149,8 +150,8 @@ printf -- '%s' "gamescope ${gamescope_options} -- env ${game_environment} ${game
 
 if command -v gamescope > /dev/null; then
   # shellcheck disable=SC2086
-  exec gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@"
+  exec ${env_tools} gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@"
 else
   # shellcheck disable=SC2086
-  exec env ${game_environment} ${game_tools} "$@"
+  exec env ${env_tools} ${game_environment} ${game_tools} "$@"
 fi
