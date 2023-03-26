@@ -1,157 +1,251 @@
 #!/bin/sh
 
+# Variables
+__hostname=""
+__gamescope_options=""
+__game_environment=""
+__game_tools=""
+__env_tools=""
+
 ##
 # Get the hostname
-if [ -n "${HOSTNAME}" ]; then
-  _hostname="${HOSTNAME}"
-elif command -v hostnamectl > /dev/null; then
-  _hostname="$(hostnamectl hostname)"
-elif command -v hostname > /dev/null; then
-  _hostname="$(hostname)"
-else
-  printf -- "[gametime] Can't get the machine hostname :( Who am I?"
-  exit 1
-fi
+_get_hostname()
+{
+  if [ -n "${HOSTNAME}" ]; then
+    __hostname="${HOSTNAME}"
+  elif command -v hostnamectl > /dev/null; then
+    __hostname="$(hostnamectl hostname)"
+  elif command -v hostname > /dev/null; then
+    __hostname="$(hostname)"
+  else
+    __hostname=""
+    return 1
+  fi
 
+  return 0
+}
+
+_export_gaming_environment()
+{
+  export force_s3tc_enable=true
+
+  # Ignore forced TearFree display sync
+  export vblank_mode=0
+
+  # Fix weird texture bugs
+  # https://github.com/Plagman/gamescope/issues/320
+  export AMD_DEBUG=nodcc
+  export RADV_DEBUG=nodcc
+
+  # May fix VKD3D issues
+  # https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
+  export VKD3D_CONFIG=no_upload_hvv
+
+  # Zink driver for OpenGL-over-Vulkan
+  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
+    # Enable Zink driver
+    # https://wiki.archlinux.org/title/OpenGL
+    export __GLX_VENDOR_LIBRARY_NAME=mesa
+    export MESA_LOADER_DRIVER_OVERRIDE=zink
+    export GALLIUM_DRIVER=zink
+
+    # Speed up
+    # https://www.phoronix.com/news/Mesa-Zink-DB-Descriptor-Mode
+    export ZINK_DESCRIPTOR_MODE=db
+  fi
+
+  return 0
+}
+
+##
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
 # --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
 # You must use Proton-GE from within a flatpak, since Steam pressure-vessel messes up gamescope
 # You must use Super+U to enable FSR in game
+_prepare_gamescope()
+{
+  # Set max FPS
+  fps_max=75
 
-# S3TC texture filtering
-export force_s3tc_enable=true
-
-# Ignore forced TearFree display sync
-export vblank_mode=0
-
-# Fix weird texture bugs
-# https://github.com/Plagman/gamescope/issues/320
-export AMD_DEBUG=nodcc
-export RADV_DEBUG=nodcc
-
-# May fix VKD3D issues
-# https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
-export VKD3D_CONFIG=no_upload_hvv
-
-# Zink driver for OpenGL-over-Vulkan
-if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
-  # Enable Zink driver
-  # https://wiki.archlinux.org/title/OpenGL
-  export __GLX_VENDOR_LIBRARY_NAME=mesa
-  export MESA_LOADER_DRIVER_OVERRIDE=zink
-  export GALLIUM_DRIVER=zink
-
-  # Speed up
-  # https://www.phoronix.com/news/Mesa-Zink-DB-Descriptor-Mode
-  export ZINK_DESCRIPTOR_MODE=db
-fi
-
-# Set max FPS
-readonly fps_max=75
-
-if command -v gamescope > /dev/null; then
-  # gamescope
-  # https://github.com/Plagman/gamescope
-  #
-  # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
-  # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
-  #
-  # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-  #
-  # NOTE: If we only provide a height, gamescope will assume the width as 16x9
-  #
-  # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
-  #       If you open the settings in game, your FPS will go to 2.
-  #
-  # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
-  #
-  # NOTE: FSR performance is 2.0x nested resolution.
-  # NOTE: FSR balanced is 1.7x nested resolution.
-  # NOTE: FSR quality is 1.5x nested resolution.
-  #
-  # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
-  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-  if [ "${_hostname}" = "nerd1" ]; then
-    fsr_level="15"
-    window_type="--borderless"
-    target_width="1920"
-    target_height="1080"
-  elif [ "${_hostname}" = "nerd2" ]; then
-    fsr_level="15"
-    window_type="--fullscreen"
-    target_width="1920"
-    target_height="1080"
-  else
-    printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${_hostname}"
-    exit 1
-  fi
-
-  # Options passed to gamescope session
-  gamescope_options="--output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
-
-  # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
-  # gametime so that gamescope will not apply its rougher implementation of FSR1.
-  if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
-    # This game needs our gamescope FSR
-    # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
-    # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-    gamescope_options="${gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
-    gamescope_options="${gamescope_options} --fsr-upscaling --fsr-sharpness 20"
-  else
-    # This game has its own FSR, pass our target dimensions directly
-    gamescope_options="${gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
-  fi
-fi
-
-# vkBasalt
-# https://github.com/DadSchoorse/vkBasalt
-#
-# Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
-
-# The game environment
-# gamescope must call these tools directly instead of setting them in the outside environment
-game_environment="ENABLE_VKBASALT=1"
-
-# Extra tools to run as a wrapper
-game_tools=""
-env_tools=""
-
-# If we have mangohud, use it
-if command -v mangohud > /dev/null; then
-  game_tools="${game_tools} mangohud"
-fi
-
-# If we have obs-gamecapture use it
-if command -v obs-gamecapture > /dev/null; then
-  env_tools="${env_tools} obs-gamecapture"
-fi
-
-# Mangohud
-# https://github.com/flightlessmango/MangoHud#hud-configuration
-#
-# We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
-# We must use gamescope to run mangohud, and then use mangohud to run our command.
-export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,fps_limit=${fps_max},resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
-
-# OBS VKCapture
-# https://github.com/nowrep/obs-vkcapture
-#
-# Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
-
-# If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
-if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
   if command -v gamescope > /dev/null; then
-    gamescope_options="${gamescope_options} --steam"
+    # gamescope
+    # https://github.com/Plagman/gamescope
+    #
+    # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
+    # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
+    #
+    # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
+    #
+    # NOTE: If we only provide a height, gamescope will assume the width as 16x9
+    #
+    # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
+    #       If you open the settings in game, your FPS will go to 2.
+    #
+    # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
+    #
+    # NOTE: FSR performance is 2.0x nested resolution.
+    # NOTE: FSR balanced is 1.7x nested resolution.
+    # NOTE: FSR quality is 1.5x nested resolution.
+    #
+    # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
+    # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+    if [ "${__hostname}" = "nerd1" ]; then
+      fsr_level="15"
+      window_type="--borderless"
+      target_width="1920"
+      target_height="1080"
+    elif [ "${__hostname}" = "nerd2" ]; then
+      fsr_level="15"
+      window_type="--fullscreen"
+      target_width="1920"
+      target_height="1080"
+    else
+      return 1
+    fi
+
+    # Options passed to gamescope session
+    __gamescope_options="${__gamescope_options} --output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+
+    # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
+    # gametime so that gamescope will not apply its rougher implementation of FSR1.
+    if [ -z "${GAME_FSR}" ] || [ "${GAME_FSR}" -eq 0 ]; then
+      # This game needs our gamescope FSR
+      # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
+      # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
+      __gamescope_options="${__gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
+      __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+    else
+      # This game has its own FSR, pass our target dimensions directly
+      __gamescope_options="${__gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
+    fi
   fi
-fi
 
-printf -- '%s' "gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} $*"
+  unset target_width
+  unset target_height
+  unset fsr_level
+  unset window_type
+  unset fps_max
 
-if command -v gamescope > /dev/null; then
-  # shellcheck disable=SC2086
-  exec ${env_tools} gamescope ${gamescope_options} -- env ${game_environment} ${game_tools} "$@"
-else
-  # shellcheck disable=SC2086
-  exec env ${env_tools} ${game_environment} ${game_tools} "$@"
-fi
+  return 0
+}
+
+_enable_vkbasalt()
+{
+  # vkBasalt
+  # https://github.com/DadSchoorse/vkBasalt
+  #
+  # Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
+  if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
+    __game_environment="${__game_environment} ENABLE_VKBASALT=1"
+  fi
+
+  return 0
+}
+
+_enable_obs()
+{
+  # OBS VKCapture
+  # https://github.com/nowrep/obs-vkcapture
+  #
+  # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
+  if command -v obs-gamecapture > /dev/null; then
+    __env_tools="${__env_tools} obs-gamecapture"
+  fi
+
+  return 0
+}
+
+_enable_mangohud()
+{
+  # Mangohud
+  # https://github.com/flightlessmango/MangoHud#hud-configuration
+  #
+  # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
+  # We must use gamescope to run mangohud, and then use mangohud to run our command.
+  if command -v mangohud > /dev/null; then
+    __game_tools="${__game_tools} mangohud"
+
+    export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
+  fi
+
+  return 0
+}
+
+_enable_flatpak_options()
+{
+  # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
+  if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
+    if command -v gamescope > /dev/null; then
+      __gamescope_options="${__gamescope_options} --steam"
+    fi
+  fi
+
+  return 0
+}
+
+_execute()
+{
+  printf -- '[gametime] gamescope %s -- env %s %s %s' "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+
+  if command -v gamescope > /dev/null; then
+    # shellcheck disable=SC2086
+    exec ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+  else
+    # shellcheck disable=SC2086
+    exec env ${__env_tools} ${__game_environment} ${__game_tools} "$@"
+  fi
+
+  return 0
+}
+
+main()
+{
+  if [ -z "${FLATPAK_ID}" ]; then
+    printf -- "[gametime] Must run inside flatpak.\n"
+    return
+  fi
+
+  _get_hostname || {
+    printf -- "[gametime] Can't get the machine hostname :( Who am I?"
+    return 1
+  }
+
+  _export_gaming_environment || {
+    printf -- '[gametime] Unable to export gaming environment: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _prepare_gamescope || {
+    printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _enable_obs || {
+    printf -- '[gametime] Unable to enable OBS: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _enable_vkbasalt || {
+    printf -- '[gametime] Unable to enable vkBasalt: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _enable_mangohud || {
+    printf -- '[gametime] Unable to enable mangohud: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _enable_flatpak_options || {
+    printf -- '[gametime] Unable to enable specific flatpak options: "%s" "%s"\n' "${FLATPAK_ID}" "${__hostname}"
+    return 1
+  }
+
+  _execute "$@" || {
+    printf -- '[gametime] Failed execute: "%s" "%s"\n' "${FLATPAK_ID}" "${__hostname}"
+    return 1
+  }
+}
+
+main "$@" || exit 1
+exit 0
