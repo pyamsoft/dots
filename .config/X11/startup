@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # X11 environment
 _log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/logs"
 
@@ -70,6 +71,9 @@ main()
 
   # Then execute startup programs
   _startup_programs || return 1
+
+  # Clear var
+  unset _log_path
 
   return 0
 }

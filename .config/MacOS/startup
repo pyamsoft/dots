@@ -1,32 +1,83 @@
 #!/bin/sh
 
+# MacOS environment
+_log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs"
 
-# podman does not exist on the path normally. We expect it so add it here
+_clear_logs()
+{
+  rm -rf "${_log_path}" || return 1
+  mkdir -p "${_log_path}" || return 1
+  return 0
+}
 
-if ! command -v podman > /dev/null; then
-  PATH="/opt/homebrew/bin:${PATH}"
-fi
-export PATH
+_podman_rootful()
+{
+  touch "${_log_path}/adguardhome" || return 1
+  podman stop adguardhome >> "${_log_path}/adguardhome" 2>&1
+  podman rm adguardhome >> "${_log_path}/adguardhome" 2>&1
 
-if ! command -v podman > /dev/null; then
-  printf -- 'You must install "podman"\n'
-  exit 1
-fi
+  /usr/local/bin/adguardhome >> "${_log_path}/adguardhome" 2>&1 &
+}
 
-# Start podman machine
-podman machine start || exit 1
+_podman_rootless()
+{
+  touch "${_log_path}/postgres" || return 1
+  podman stop postgres >> "${_log_path}/postgres" 2>&1
+  podman rm postgres >> "${_log_path}/postgres" 2>&1
+  "${HOME}"/.containers/bin/postgres >> "${_log_path}/postgres" 2>&1 &
 
-# Kill old containers
-podman stop postgres; podman rm postgres
-podman stop syncthing; podman rm syncthing
-podman stop adguardhome; podman rm adguardhome
+  touch "${_log_path}/syncthing" || return 1
+  podman stop syncthing >> "${_log_path}/syncthing" 2>&1
+  podman rm syncthing >> "${_log_path}/syncthing" 2>&1
+  "${HOME}"/.containers/bin/syncthing >> "${_log_path}/syncthing" 2>&1 &
+}
 
-# Start rootless containers
-~/.containers/bin/postgres -d || exit 1
-~/.containers/bin/syncthing -d || exit 1
+_podman()
+{
+  # Shared log
+  touch "${_log_path}/podman" || return 1
 
-# Start rootful containers
-/usr/local/bin/adguardhome -d || exit 1
+  # If podman does not exist on the path normally,
+  # We expect it so add it here
+  if ! command -v podman > /dev/null; then
+    PATH="/opt/homebrew/bin:${PATH}"
+    printf -- 'Added homebrew-bin to PATH for podman\n' >> "${_log_path}/podman"
+  fi
+  export PATH
 
-# Done!
-exit 0
+  if ! command -v podman > /dev/null; then
+    printf -- 'You must install "podman"\n' >> "${_log_path}/podman"
+    return 1
+  fi
+
+  # Restart podman machine
+  podman machine stop >> "${_log_path}/podman" 2>&1 || return 1
+  podman machine start >> "${_log_path}/podman" 2>&1 || return 1
+
+  _podman_rootful || return 1
+  _podman_rootless || return 1
+
+  return 0
+}
+
+_startup_programs()
+{
+  _podman || {
+    # Don't return 1 here, we don't want to die just because podman failed
+    printf -- 'podman failed to initialize.\n' >> "${_log_path}/podman"
+  }
+
+  return 0
+}
+
+main()
+{
+  _clear_logs || return 1
+
+  _startup_programs || return 1
+
+  unset _log_path
+  return 0
+}
+
+main "$@"
