@@ -1,43 +1,77 @@
 #!/bin/sh
 # X11 environment
+_log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/logs"
 
-# Sleep for a little bit before we get started
-sleep 5
+_clear_logs()
+{
+  rm -rf "${_log_path}" || return 1
+  mkdir -p "${_log_path}" || return 1
+  return 0
+}
 
-# Setup xhost for localhost
-if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
-  xhost "+si:localuser:$(whoami)" &
-fi
+_x_setup()
+{
+  # Setup xhost for localhost
+  if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
+    # Do not run in background, this must be complete before continuing
+    xhost "+si:localuser:$(whoami)" > "${_log_path}/xhost" 2>&1
+  fi
 
-# Clean source xrdb config
-xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/resources"
-if command -v xrdb > /dev/null 2>&1 && [ -f "${xrdb_path}" ]; then
-  xrdb "${xrdb_path}" &
-fi
-unset xrdb_path
+  # Clean source xrdb config
+  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/resources"
+  if command -v xrdb > /dev/null 2>&1 && [ -f "${_xrdb_path}" ]; then
+    # Do not run in background, this must be complete before continuing
+    xrdb "${_xrdb_path}" > "${_log_path}/xrdb" 2>&1
+  fi
+  unset _xrdb_path
 
-# Disable the terminal bell noise
-if command -v xset > /dev/null 2>&1; then
-  xset -b &
-fi
+  # Disable the terminal bell noise
+  if command -v xset > /dev/null 2>&1; then
+    # Do not run in background, this must be complete before continuing
+    xset -b > "${_log_path}/xset" 2>&1
+  fi
 
-# XBindkeys
-if command -v xbindkeys > /dev/null 2>&1; then
-  xbindkeys &
-fi
+  return 0
+}
 
-# CoreCtrl
-if command -v corectrl > /dev/null 2>&1; then
-  corectrl &
-fi
+_startup_programs()
+{
+  # XBindkeys
+  if command -v xbindkeys > /dev/null 2>&1; then
+    xbindkeys > "${_log_path}/xbindkeys" 2>&1 &
+  fi
 
-# EasyEffects
-if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
-  com.github.wwmm.easyeffects --gapplication-service &
-fi
+  # CoreCtrl
+  if command -v corectrl > /dev/null 2>&1; then
+    corectrl > "${_log_path}/corectrl" 2>&1 &
+  fi
 
-# Sunshine
-# The systemd user service is broken so we manually launch this way for now
-if command -v sunshine > /dev/null 2>&1; then
-  sunshine &
-fi
+  # EasyEffects
+  if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
+    com.github.wwmm.easyeffects --gapplication-service > "${_log_path}/easyeffects" 2>&1 &
+  fi
+
+  # Sunshine
+  # The systemd user service is broken so we manually launch this way for now
+  if command -v sunshine > /dev/null 2>&1; then
+    sunshine > "${_log_path}/sunshine" 2>&1 &
+  fi
+
+  return 0
+}
+
+main()
+{
+  # Reset log directory
+  _clear_logs || return 1
+
+  # Setup X11 generic
+  _x_setup || return 1
+
+  # Then execute startup programs
+  _startup_programs || return 1
+
+  return 0
+}
+
+main "$@"

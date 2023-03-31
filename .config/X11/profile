@@ -57,7 +57,7 @@ __xprofile()
   # Run startup programs
   _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
   # shellcheck disable=SC1091
-  [ -f "${_cfg}/X11/startup" ] && . "${_cfg}/X11/startup"
+  [ -f "${_cfg}/X11/startup" ] && . "${_cfg}/X11/startup" &
   unset _cfg
 }
 
