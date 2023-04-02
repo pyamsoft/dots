@@ -90,22 +90,18 @@ _prepare_gamescope()
     #
     # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+    output_width=1920
+    output_height=1080
     if [ "${__hostname}" = "nerd1" ]; then
-      fsr_level="15"
       window_type="--borderless"
-      target_width="1920"
-      target_height="1080"
     elif [ "${__hostname}" = "nerd2" ]; then
-      fsr_level="15"
       window_type="--fullscreen"
-      target_width="1920"
-      target_height="1080"
     else
       return 1
     fi
 
     # Options passed to gamescope session
-    __gamescope_options="${__gamescope_options} --output-width ${target_width} --output-height ${target_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+    __gamescope_options="${__gamescope_options} --output-width ${output_width} --output-height ${output_height} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
 
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
@@ -113,17 +109,26 @@ _prepare_gamescope()
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
       # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-      __gamescope_options="${__gamescope_options} --nested-width $((target_width * 10 / fsr_level)) --nested-height $((target_height * 10 / fsr_level))"
-      __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+      nested_width=1280
+      nested_height=720
     else
-      # This game has its own FSR, pass our target dimensions directly
-      __gamescope_options="${__gamescope_options} --nested-width ${target_width} --nested-height ${target_height}"
+      # This game has its own FSR, pass in a slightly smaller size to save just a little FPS
+      # FPS 1 will be good enough to correct the difference between this small size and the output size
+      # and then the game's implementation of FSR internally will downscale from that
+      nested_width=1600
+      nested_height=900
     fi
+
+      __gamescope_options="${__gamescope_options} --nested-width ${nested_width} --nested-height ${nested_height}"
+      __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
   fi
 
-  unset target_width
-  unset target_height
-  unset fsr_level
+  unset output_width
+  unset output_height
+
+  unset nested_width
+  unset nested_height
+
   unset window_type
   unset fps_max
 
