@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Stop systemd
+systemctl --user stop sunshine
+
+# Kill any potentially symlinks
+rm -f "${HOME}/.config/sunshine/sunshine_keyboard"
+rm -f "${HOME}/.config/sunshine/sunshine_mouse"
+rm -f "${HOME}/.config/sunshine/sunshine_touchscreen"
+
+# Initialize display vars in case we are running from console or SSH
+if [ -z "${DISPLAY}" ]; then
+  export DISPLAY=:0
+fi
+
+if [ -z "${XAUTHORITY}" ]; then
+  export XAUTHORITY=/run/user/1000/gdm/Xauthority
+fi
+
+# Better compression
+export force_s3tc_enable=true
+
+# Run sunshine
+exec /usr/bin/sunshine

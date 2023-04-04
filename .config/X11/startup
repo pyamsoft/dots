@@ -59,12 +59,7 @@ _startup_programs()
     rm -f "${HOME}/.config/sunshine/sunshine_keyboard"
     rm -f "${HOME}/.config/sunshine/sunshine_mouse"
     rm -f "${HOME}/.config/sunshine/sunshine_touchscreen"
-
-    # We use the systemd service but just start it here
-    #
-    # The systemd service has a dep loop when trying to enable it, but start works just fine
-    # sunshine > "${_log_path}/sunshine" 2>&1 &
-    systemctl --user start sunshine > "${_log_path}/sunshine" 2>&1 &
+    "${HOME}/bin/restart-sunshine" > "${_log_path}/sunshine" 2>&1 &
   fi
 
   return 0
