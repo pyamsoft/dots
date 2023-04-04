@@ -55,10 +55,6 @@ _startup_programs()
   # Sunshine
   # The systemd user service is broken so we manually launch this way for now
   if command -v sunshine > /dev/null 2>&1; then
-    # Kill any potentially symlinks
-    rm -f "${HOME}/.config/sunshine/sunshine_keyboard"
-    rm -f "${HOME}/.config/sunshine/sunshine_mouse"
-    rm -f "${HOME}/.config/sunshine/sunshine_touchscreen"
     "${HOME}/bin/restart-sunshine" > "${_log_path}/sunshine" 2>&1 &
   fi
 
