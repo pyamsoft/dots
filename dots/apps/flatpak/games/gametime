@@ -92,8 +92,8 @@ _prepare_gamescope()
     #
     # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-    output_width="1920"
-    output_height="1080"
+    output_width=1920
+    output_height=1080
     if [ "${__hostname}" = "nerd1" ]; then
       window_type="--borderless"
     elif [ "${__hostname}" = "nerd2" ]; then
@@ -111,16 +111,20 @@ _prepare_gamescope()
     if [ -n "${GAME_FSR}" ] || [ "${GAME_FSR}" -ne 0 ]; then
       # The game implements its own FSR
       unset GAME_FSR
+
+      # We need all the help we can get
+      nested_width=1600
+      nested_height=900
     else
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
       # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-      nested_width="1280"
-      nested_height="720"
-
-      __gamescope_options="${__gamescope_options} --nested-width ${nested_width} --nested-height ${nested_height}"
-      __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+      nested_width=1280
+      nested_height=720
     fi
+
+    __gamescope_options="${__gamescope_options} --nested-width ${nested_width} --nested-height ${nested_height}"
+    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
 
   fi
 
