@@ -47,11 +47,6 @@ _startup_programs()
     corectrl > "${_log_path}/corectrl" 2>&1 &
   fi
 
-  # EasyEffects
-  if command -v com.github.wwmm.easyeffects > /dev/null 2>&1; then
-    com.github.wwmm.easyeffects --gapplication-service > "${_log_path}/easyeffects" 2>&1 &
-  fi
-
   # Sunshine
   # The systemd user service is broken so we manually launch this way for now
   if command -v sunshine > /dev/null 2>&1; then
