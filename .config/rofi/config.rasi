@@ -1,6 +1,5 @@
 configuration {
   modi: "run,drun";
-  font: "mono 12";
   fixed-num-lines: true;
   show-icons: true;
   terminal: "xfce4-terminal";
