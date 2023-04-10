@@ -94,7 +94,11 @@ _prepare_gamescope()
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
     output_width=1920
     output_height=1080
-    if [ "${__hostname}" = "nerd1" ]; then
+    if [ -n "${GAME_RES}" ]; then
+      output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
+      output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
+      window_type="--borderless"
+    elif [ "${__hostname}" = "nerd1" ]; then
       window_type="--borderless"
     elif [ "${__hostname}" = "nerd2" ]; then
       window_type="--fullscreen"
