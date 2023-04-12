@@ -102,6 +102,7 @@ _prepare_gamescope()
       output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
       output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
       window_type="--borderless"
+      unset GAME_RES
     elif [ "${__hostname}" = "nerd1" ]; then
       window_type="--borderless"
     elif [ "${__hostname}" = "nerd2" ]; then
@@ -120,8 +121,8 @@ _prepare_gamescope()
       unset GAME_FSR
 
       # The game implements its own FSR
-      nested_width=1920
-      nested_height=1080
+      nested_width="${output_width}"
+      nested_height="${output_height}"
     else
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
