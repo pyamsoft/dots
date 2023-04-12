@@ -117,12 +117,11 @@ _prepare_gamescope()
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
     if [ -n "${GAME_FSR}" ] || [ "${GAME_FSR}" -ne 0 ]; then
-      # The game implements its own FSR
       unset GAME_FSR
 
-      # We need all the help we can get
-      nested_width=1600
-      nested_height=900
+      # The game implements its own FSR
+      nested_width=1920
+      nested_height=1080
     else
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
