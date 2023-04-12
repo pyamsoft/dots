@@ -41,6 +41,10 @@ _export_gaming_environment()
   # https://www.reddit.com/r/linux_gaming/comments/119hwmt/this_setting_may_help_vkd3d_games_that_have/
   export VKD3D_CONFIG=no_upload_hvv
 
+  # Use single-file shader cache
+  # https://www.phoronix.com/news/Mesa-Single-File-Cache
+  export MESA_DISK_CACHE_SINGLE_FILE=1
+
   # Zink driver for OpenGL-over-Vulkan
   if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
     unset GAME_ZINK
