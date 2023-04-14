@@ -27,8 +27,6 @@ _get_hostname()
 
 _export_gaming_environment()
 {
-  export force_s3tc_enable=true
-
   # Ignore forced TearFree display sync
   export vblank_mode=0
 

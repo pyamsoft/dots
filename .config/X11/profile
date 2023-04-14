@@ -16,9 +16,6 @@ __setup_gpu()
   # For AMD
   export LIBVA_DRIVER_NAME=radeonsi
 
-  # Use S3TC texture compression
-  export force_s3tc_enable=true
-
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
