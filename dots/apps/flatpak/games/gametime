@@ -69,9 +69,6 @@ _export_gaming_environment()
 # You must use Super+U to enable FSR in game
 _prepare_gamescope()
 {
-  # Set max FPS
-  fps_max=75
-
   if command -v gamescope > /dev/null; then
     # gamescope
     # https://github.com/Plagman/gamescope
@@ -111,7 +108,7 @@ _prepare_gamescope()
 
     # Options passed to gamescope session
     __gamescope_options="${__gamescope_options} --output-width ${output_width} --output-height ${output_height}"
-    __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max} --nested-unfocused-refresh 30 ${window_type}"
+    __gamescope_options="${__gamescope_options} ${window_type}"
 
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
@@ -142,7 +139,6 @@ _prepare_gamescope()
   unset nested_height
 
   unset window_type
-  unset fps_max
 
   return 0
 }
