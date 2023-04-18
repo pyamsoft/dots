@@ -56,6 +56,11 @@ _export_gaming_environment()
     # Speed up
     # https://www.phoronix.com/news/Mesa-Zink-DB-Descriptor-Mode
     export ZINK_DESCRIPTOR_MODE=db
+
+    # Load Vulkan layers to be compatible with stuff like vkbasalt
+    # https://github.com/DadSchoorse/vkBasalt/issues/168
+    export VK_INSTANCE_LAYERS="VK_LAYER_MANGOHUD_overlay;VK_LAYER_OBS_vkcapture_32;VK_LAYER_OBS_vkcapture_64;VK_LAYER_VKBASALT_post_processing"
+    export VK_LAYER_PATH="/usr/lib/extensions/vulkan/share/vulkan/implicit_layer.d"
   fi
 
   return 0
