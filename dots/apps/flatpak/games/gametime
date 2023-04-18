@@ -128,8 +128,8 @@ _prepare_gamescope()
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
       # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-      nested_width=1280
-      nested_height=720
+      nested_width=1368
+      nested_height=768
     fi
 
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width} --nested-height ${nested_height}"
