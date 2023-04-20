@@ -27,9 +27,6 @@ _get_hostname()
 
 _export_gaming_environment()
 {
-  # Ignore forced TearFree display sync
-  export vblank_mode=0
-
   # Fix weird texture bugs
   # https://github.com/Plagman/gamescope/issues/320
   export AMD_DEBUG=nodcc
