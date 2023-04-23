@@ -10,8 +10,8 @@ com.valvesoftware.Steam
 io.openrct2.OpenRCT2
 org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
-org.freedesktop.adriconf
 org.gnome.Lollypop
+org.gnome.gThumb
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.mozilla.firefox
