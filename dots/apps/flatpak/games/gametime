@@ -40,26 +40,6 @@ _export_gaming_environment()
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
 
-  # Zink driver for OpenGL-over-Vulkan
-  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
-    unset GAME_ZINK
-
-    # Enable Zink driver
-    # https://wiki.archlinux.org/title/OpenGL
-    export __GLX_VENDOR_LIBRARY_NAME=mesa
-    export MESA_LOADER_DRIVER_OVERRIDE=zink
-    export GALLIUM_DRIVER=zink
-
-    # Speed up
-    # https://www.phoronix.com/news/Mesa-Zink-DB-Descriptor-Mode
-    export ZINK_DESCRIPTOR_MODE=db
-
-    # Load Vulkan layers to be compatible with stuff like vkbasalt
-    # https://github.com/DadSchoorse/vkBasalt/issues/168
-    export VK_INSTANCE_LAYERS="VK_LAYER_MANGOHUD_overlay;VK_LAYER_OBS_vkcapture_32;VK_LAYER_OBS_vkcapture_64;VK_LAYER_VKBASALT_post_processing"
-    export VK_LAYER_PATH="/usr/lib/extensions/vulkan/share/vulkan/implicit_layer.d"
-  fi
-
   return 0
 }
 
