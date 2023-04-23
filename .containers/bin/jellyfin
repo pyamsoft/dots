@@ -37,6 +37,13 @@ if command -v podman > /dev/null; then
 fi
 readonly _cmd
 
+# systemd --user does not like the healthcheck command
+# disable it.
+_health=""
+if [ "$(uname)" != "Darwin" ]; then
+_health="--health-cmd none"
+fi
+
 # Log the commands we use next
 # Fail on errors
 # Fail on unassigned
@@ -55,6 +62,7 @@ exec ${_cmd} run ${_how} \
   --group-add=989 \
   --device /dev/dri/renderD128:/dev/dri/renderD128 \
   --device /dev/dri/card0:/dev/dri/card0 \
+  ${_health} \
   ${_userns} \
   "${_image}" "$@"
 
