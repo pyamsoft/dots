@@ -47,11 +47,6 @@ _startup_programs()
     corectrl > "${_log_path}/corectrl" 2>&1 &
   fi
 
-  # Firewall applet
-  if command -v firewall-applet > /dev/null 2>&1; then
-    firewall-applet > "${_log_path}/firewall-applet" 2>&1 &
-  fi
-
   # Sunshine
   # The systemd user service is broken so we manually launch this way for now
   if command -v sunshine > /dev/null 2>&1; then
