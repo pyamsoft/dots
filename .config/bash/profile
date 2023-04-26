@@ -1,0 +1,87 @@
+# shellcheck shell=bash
+
+__set_shopt_options()
+{
+  if ! command -v shopt > /dev/null; then
+    return 0
+  fi
+
+  # Window
+  shopt -s checkwinsize
+
+  # Spellcheck
+  shopt -s cdspell
+  shopt -s dirspell
+
+  # Don't destroy history file
+  shopt -s histappend
+  shopt -s cmdhist
+
+  # No completion on empty command
+  shopt -s no_empty_cmd_completion
+
+  # Glob
+  shopt -s globstar
+  shopt -s extglob
+  shopt -s dotglob
+}
+
+__setup_shell_env()
+{
+  # Disable the bash_history file
+  export HISTCONTROL=ignoreboth
+  export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
+
+  # Move bash_completion file
+  export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
+}
+
+__restrict_umask()
+{
+  # Strict umask
+  if command -v umask > /dev/null; then
+    umask 077
+  fi
+
+  return 0
+}
+
+__bashrc()
+{
+  [ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
+
+  return 0
+}
+
+__ensure_env()
+{
+  # Source bash_profile if the environment is not setup
+  if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+    # shellcheck disable=SC1091
+    [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
+  fi
+
+  return 0
+}
+
+__bash_profile()
+{
+  __ensure_env || return 1
+  __restrict_umask || return 1
+  __set_shopt_options || return 1
+  __setup_shell_env || return 1
+  __bashrc || return 1
+
+  return 0
+}
+
+__bash_profile
+
+unset -f __bash_profile
+unset -f __set_shopt_options
+unset -f __setup_shell_env
+unset -f __ensure_env
+unset -f __restrict_umask
+unset -f __bashrc
+
+# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
