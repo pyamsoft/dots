@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1.0.0">
-  <short>dolphin-netplay</short>
-  <description>Dolphin Netplay</description>
-  <port port="2626" protocol="tcp"/>
-  <port port="2626" protocol="udp"/>
-</service>

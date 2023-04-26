@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1.0.0">
-  <short>openrct2</short>
-  <description>OpenRCT2 Netplay</description>
-  <port port="11753" protocol="tcp"/>
-  <port port="11753" protocol="udp"/>
-</service>

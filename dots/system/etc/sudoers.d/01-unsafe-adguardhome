@@ -1,2 +1,0 @@
-# Allow running unsafe-adguardhome without sudo password
-pyamsoft ALL=(ALL:ALL) NOPASSWD:/usr/local/bin/unsafe-adguardhome
