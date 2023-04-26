@@ -10,15 +10,17 @@ main() {
     return 1
   fi
 
-  printf -- 'Running dedicated openrct2 docker container for park: %s\n' "${park}"
-  exec sudo docker run \
-    --name openrct2 \
-    --rm --init \
-    --security-opt no-new-privileges --cap-drop ALL \
-    -v "${_RCT_STORAGE}:/home/openrct2/.config/OpenRCT2" \
-    -p 11753:11753/tcp -p 11753:11753/udp \
+  printf -- 'Running dedicated openrct2 container for park: %s\n' "${park}"
+  exec podman run --rm \
+    --name openrct2 -- hostname openrct2 --pull never \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --mount type=bind,source="${_RCT_STORAGE}",target=/home/openrct2/.config/OpenRCT2 \
+    -p 127.0.0.1:11753:11753/tcp \
+    -p 127.0.0.1:11753:11753/udp \
     -i -t \
-    openrct2/openrct2-cli \
+    --health-cmd none \
+    --userns keep-id \
+    docker.io/openrct2/openrct2-cli \
     host /home/openrct2/.config/OpenRCT2/save/"${park}" --password "${_RCT_PASSWD}"
 }
 
