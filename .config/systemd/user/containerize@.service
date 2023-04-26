@@ -6,4 +6,4 @@ ExecStart=/bin/sh -c 'podman stop %i; podman rm %i; %h/.containers/bin/%i'
 ExecStop=/bin/sh -c 'podman stop %i && podman rm %i'
 
 [Install]
-WantedBy=basic.target
+WantedBy=default.target

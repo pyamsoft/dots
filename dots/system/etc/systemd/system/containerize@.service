@@ -1,6 +1,6 @@
 [Unit]
 Description=System Container: %i
-After=network-online.target docker.service
+After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service
 Wants=network-online.target
 
 [Service]
