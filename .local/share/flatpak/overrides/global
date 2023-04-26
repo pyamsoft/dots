@@ -4,7 +4,6 @@ sockets=x11;wayland;pulseaudio;!session-bus;!system-bus;fallback-x11;!ssh-auth;!
 devices=dri;!all;!kvm;!shm;
 features=!devel;!multiarch;!bluetooth;!canbus;!per-app-dev-shm;
 filesystems=!/storage;!xdg-data;!host-os;!host-etc;!xdg-data/flatpak;~/.drirc:ro;!/tmp;xdg-run/pipewire-0;xdg-run/dconf;!xdg-music;!xdg-templates;!xdg-pictures;!xdg-config;!xdg-documents;!home;!xdg-data/flatpak/app;!xdg-videos;!host;!/var/lib/flatpak/overrides;!/var/lib/flatpak/app;!xdg-cache;!/var/lib/flatpak;!xdg-data/flatpak/overrides;xdg-cache/mesa_shader_cache;xdg-cache/mesa_shader_cache_sf;xdg-cache/radv_builtin_shaders64;!xdg-download;
-persistent=.;
 unset-environment=PROMPT_COMMAND;PS1;
 
 [Session Bus Policy]
