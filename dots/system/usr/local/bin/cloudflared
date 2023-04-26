@@ -42,7 +42,7 @@ _caps="--cap-add DAC_OVERRIDE"
 
 # If no cmd args are passed, run the default tunnel
 if [ "$#" -le 0 ]; then
-  _run="tunnel run docker"
+  _run="tunnel run containers"
 else
   _run="$*"
 fi
