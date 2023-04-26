@@ -69,7 +69,6 @@ _prepare_gamescope()
     #
     # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-    output_width=1920
     output_height=1080
     if [ -n "${GAME_RES}" ]; then
       output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
@@ -85,8 +84,14 @@ _prepare_gamescope()
     fi
 
     # Options passed to gamescope session
-    __gamescope_options="${__gamescope_options} --output-width ${output_width} --output-height ${output_height}"
+    # Only provide width by default since gamescope defaults to 16x9
+    __gamescope_options="${__gamescope_options} --output-height ${output_height}"
     __gamescope_options="${__gamescope_options} ${window_type}"
+
+    # But if width is provided by GAME_RES, use it
+    if [ -n "${output_width}" ]; then
+      __gamescope_options="${__gamescope_options} --output-width ${output_width}"
+    fi
 
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
@@ -95,17 +100,15 @@ _prepare_gamescope()
 
       # The game implements its own FSR, but we need all the help we can get.
       # Double FSR us first from 900p to 1080p using gamescope, and then in the game from 900p via the FSR implementation.
-      nested_width=1600
       nested_height=900
     else
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
       # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-      nested_width=1368
       nested_height=768
     fi
 
-    __gamescope_options="${__gamescope_options} --nested-width ${nested_width} --nested-height ${nested_height}"
+    __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
     __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
 
   fi
