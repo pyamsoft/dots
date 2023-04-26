@@ -51,7 +51,9 @@ __bash_qol()
   [ -f "${functions}" ] && . "${functions}"
 
   # Set LS_COLORS
-  if command -v dircolors > /dev/null; then
+  if command -v gdircolors > /dev/null; then
+    eval "$(gdircolors -b)"
+  elif command -v dircolors > /dev/null; then
     eval "$(dircolors -b)"
   fi
 

@@ -30,8 +30,13 @@ alias gitf="git fetch"
 alias gitps="git push"
 alias gitl="git lg"
 
-# Colorized (requires ~/.dir_colors)
-alias ls="ls -CHh --color=auto "
+# On Mac, coreutils is g prefixed
+if command -v gls > /dev/null; then
+  alias ls="gls -CHh --color=auto "
+else
+  alias ls="ls -CHh --color=auto "
+fi
+
 alias dir="dir -CHAlh --color=auto "
 alias grep="grep -E --color=auto "
 
