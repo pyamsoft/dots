@@ -50,6 +50,11 @@ __bash_qol()
   # shellcheck disable=SC1090
   [ -f "${functions}" ] && . "${functions}"
 
+  # Set LS_COLORS
+  if command -v dircolors > /dev/null; then
+    eval "$(dircolors -b)"
+  fi
+
   unset aliases
   unset functions
 
