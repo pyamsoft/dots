@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Upscale an arbitrary video using video2x container
+#
+# $1 the video file (will be output as upscaled-<NAME>)
+# $2 the target resolution (output ratio will be honored) like 720 or 1080
+
+if [ -z "$1" ]; then
+  printf -- 'Need a target video to upscale\n'
+  exit 1
+fi
+
+if [ -z "$2" ]; then
+  printf -- 'Need a target resolution to upscale\n'
+  exit 1
+fi
+
+# Use docker or podman (priority podman)
+_cmd="docker"
+if command -v podman > /dev/null; then
+  _cmd="podman"
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  _userns="--userns keep-id"
+fi
+readonly _cmd
+
+# Log the commands we use next
+# Fail on errors
+# Fail on unassigned
+set -xeu
+
+# Don't quote so that if user is empty it still expands
+#
+# shellcheck disable=SC2086
+exec ${_cmd} run --rm \
+  --pull never \
+  --security-opt no-new-privileges:true --cap-drop ALL \
+  --device=/dev/dri \
+  --mount type=bind,source="$(pwd)",target=/host \
+  -i -t \
+  ${_userns} \
+  ghcr.io/k4yt3x/video2x:5.0.0-beta6 -i "$1" -o "upscaled-$1" -p3 upscale -h "$2" -a waifu2x -n3
