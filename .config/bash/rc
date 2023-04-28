@@ -33,12 +33,6 @@ __enable_bash_completion()
   [ -r "${bcomp}" ] && . "${bcomp}"
   unset bcomp
 
-  # Autocomplete magic for aliases
-  # https://aur.archlinux.org/packages/bash-complete-alias
-  if [ -f "/usr/share/bash-complete-alias/complete_alias" ]; then
-    . "/usr/share/bash-complete-alias/complete_alias"
-  fi
-
   return 0
 }
 
