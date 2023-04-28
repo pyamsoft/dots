@@ -1,0 +1,16 @@
+* {
+    bg0:    #EFF1F5EE;
+    bg1:    #EFF1F5;
+    bg2:    #179299;
+    bg3:    #1E66F544;
+    fg0:    #4C4F49;
+    fg1:    #4C4F49;
+    fg2:    #179299;
+    fg3:    #179299;
+}
+
+@import "rounded-common.rasi"
+
+element selected {
+    text-color: @bg2;
+}
