@@ -1,76 +1,14 @@
 # shellcheck shell=bash
 
-# git lg setup:
-# git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+for script in "${HOME}"/.bash_aliases.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && . "${script}"
+done
+unset script
 
-# Dotfiles Git
-alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
-alias dots="dotfiles status"
-alias dota="dotfiles add"
-alias dotc="dotfiles commit"
-alias dotd="dotfiles diff"
-alias dotm="dotfiles merge"
-alias dotck="dotfiles checkout"
-alias dotb="dotfiles branch"
-alias dotpl="dotfiles pull"
-alias dotf="dotfiles fetch"
-alias dotps="dotfiles push"
-alias dotl="dotfiles lg"
+for script in "${XDG_CONFIG_HOME}"/bash/aliases.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && . "${script}"
+done
+unset script
 
-# Git
-alias gits="git status"
-alias gita="git add"
-alias gitc="git commit"
-alias gitd="git diff"
-alias gitm="git merge"
-alias gitck="git checkout"
-alias gitb="git branch"
-alias gitpl="git pull"
-alias gitf="git fetch"
-alias gitps="git push"
-alias gitl="git lg"
-
-# On Mac, coreutils is g prefixed
-if command -v gls > /dev/null; then
-  alias ls="gls -CHh --color=auto "
-else
-  alias ls="ls -CHh --color=auto "
-fi
-
-alias dir="dir -CHAlh --color=auto "
-alias grep="grep -E --color=auto "
-
-# Quick ls
-alias ll="ls -CHhl --color=auto "
-alias la="ls -CHhA --color=auto "
-alias lla="ls -CHhAl --color=auto "
-alias lal="ls -CHhAl --color=auto "
-
-# Verbose
-alias rm="rm -iv "
-alias cp="cp -iv "
-alias mv="mv -iv "
-alias mkdir="mkdir -vp "
-alias paccache="paccache -v "
-
-# List mounts
-alias mounts="mount | column -t "
-
-# List ports in use
-alias ports="ss -tulanp "
-alias ports-netstat="netstat -tulanp "
-
-# Cleaner human output
-alias df="df -H "
-alias du="du -ch "
-
-# Quick ping, only ipv4
-alias p8="ping 8.8.8.8 "
-alias pingg="ping www.google.com "
-
-alias ip="ip -color "
-
-# Allow sudo calls to receive the above alias support as well.
-alias sudo="sudo "
-
-# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

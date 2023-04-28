@@ -1,0 +1,4 @@
+# shellcheck shell=bash
+
+# Allow sudo calls to receive alias support as well.
+alias sudo="sudo "

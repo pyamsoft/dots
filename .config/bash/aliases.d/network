@@ -1,0 +1,5 @@
+# shellcheck shell=bash
+
+# List ports in use
+alias ports="ss -tulanp "
+alias ports-netstat="netstat -tulanp "

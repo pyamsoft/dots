@@ -31,8 +31,13 @@ __enable_bash_completion()
   bcomp="/opt/homebrew/share/bash-completion/bash_completion"
   # shellcheck disable=SC1090
   [ -r "${bcomp}" ] && . "${bcomp}"
-
   unset bcomp
+
+  # Autocomplete magic for aliases
+  # https://aur.archlinux.org/packages/bash-complete-alias
+  if [ -f "/usr/share/bash-complete-alias/complete_alias" ]; then
+    . "/usr/share/bash-complete-alias/complete_alias"
+  fi
 
   return 0
 }
@@ -42,10 +47,12 @@ __bash_qol()
   aliases="${XDG_CONFIG_HOME}/bash/aliases"
   # shellcheck disable=SC1090
   [ -f "${aliases}" ] && . "${aliases}"
+  unset aliases
 
   functions="${XDG_CONFIG_HOME}/bash/functions"
   # shellcheck disable=SC1090
   [ -f "${functions}" ] && . "${functions}"
+  unset functions
 
   # Set LS_COLORS
   if command -v gdircolors > /dev/null; then
@@ -53,9 +60,6 @@ __bash_qol()
   elif command -v dircolors > /dev/null; then
     eval "$(dircolors -b)"
   fi
-
-  unset aliases
-  unset functions
 
   return 0
 }

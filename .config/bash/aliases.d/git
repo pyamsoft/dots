@@ -1,0 +1,17 @@
+# shellcheck shell=bash
+
+# git lg setup:
+# git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+alias gits="git status"
+alias gita="git add"
+alias gitc="git commit"
+alias gitd="git diff"
+alias gitm="git merge"
+alias gitck="git checkout"
+alias gitb="git branch"
+alias gitpl="git pull"
+alias gitf="git fetch"
+alias gitps="git push"
+alias gitl="git lg"
+
