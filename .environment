@@ -139,6 +139,7 @@ __environment()
   __setup_homebrew || return 1
   __setup_path || return 1
   __setup_xdg || return 1
+  __setup_systemd || return 1
   __setup_editor || return 1
   __setup_c_compiler || return 1
   __setup_locale || return 1
@@ -164,5 +165,6 @@ unset -f __setup_locale
 unset -f __setup_c_compiler
 unset -f __setup_editor
 unset -f __setup_homedir
+unset -f __setup_systemd
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
