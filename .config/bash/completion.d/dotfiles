@@ -1,19 +1,19 @@
 # shellcheck shell=bash
 
-if [ -f "/usr/share/bash-complete-alias/complete_alias" ]; then
-  . "/usr/share/bash-complete-alias/complete_alias"
+if [ -f "/usr/share/bash-completion/completions/git" ]; then
+  . "/usr/share/bash-completion/completions/git"
 
-  complete -F _complete_alias dotfiles
+  __git_complete dotfiles git
 
-  complete -F _complete_alias dots
-  complete -F _complete_alias dota
-  complete -F _complete_alias dotc
-  complete -F _complete_alias dotd
-  complete -F _complete_alias dotm
-  complete -F _complete_alias dotck
-  complete -F _complete_alias dotb
-  complete -F _complete_alias dotpl
-  complete -F _complete_alias dotf
-  complete -F _complete_alias dotps
-  complete -F _complete_alias dotl
+  __git_complete dots git_status
+  __git_complete dota git_add
+  __git_complete dotc git_commit
+  __git_complete dotd git_diff
+  __git_complete dotm git_merge
+  __git_complete dotck git_checkout
+  __git_complete dotb git_branch
+  __git_complete dotpl git_pull
+  __git_complete dotf git_fetch
+  __git_complete dotps git_push
+  __git_complete dotl git_log
 fi
