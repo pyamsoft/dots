@@ -1,5 +1,12 @@
 # shellcheck shell=bash
 
+__setup_systemd()
+{
+  # If systemd assumes we have 256 colors, it displays a weird yellow for example.
+  # Our terminal color scheme only handles 16
+  export SYSTEMD_COLORS=16
+}
+
 __setup_editor()
 {
   # Setup system editors
