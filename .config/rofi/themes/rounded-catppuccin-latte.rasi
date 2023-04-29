@@ -1,12 +1,12 @@
 * {
-    bg0:    #EFF1F5EE;
+    bg0:    #DCE0E8FA;
     bg1:    #EFF1F5;
-    bg2:    #179299;
+    bg2:    #8839EF;
     bg3:    #1E66F544;
-    fg0:    #4C4F49;
-    fg1:    #4C4F49;
-    fg2:    #179299;
-    fg3:    #179299;
+    fg0:    #4C4F69;
+    fg1:    #4C4F69;
+    fg2:    #7287FD;
+    fg3:    #7287FD;
 }
 
 @import "rounded-common.rasi"
