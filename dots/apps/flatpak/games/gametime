@@ -95,7 +95,7 @@ _prepare_gamescope()
 
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
-    if [ -n "${GAME_FSR}" ] || [ "${GAME_FSR}" -ne 0 ]; then
+    if [ -n "${GAME_FSR}" ] && [ "${GAME_FSR}" -ne 0 ]; then
       unset GAME_FSR
 
       # The game implements its own FSR, but we need all the help we can get.
