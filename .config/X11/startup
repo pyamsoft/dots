@@ -53,11 +53,21 @@ _startup_programs()
     "${HOME}/bin/restart-sunshine" > "${_log_path}/sunshine" 2>&1 &
   fi
 
+  # Firewall applet
+  # systemd startup is buggy and creates 2 applets
+  if command -v firewall-applet > /dev/null 2>&1; then
+    killall firewall-applet
+    firewall-applet > "${_log_path}/firewall-applet" 2>&1 &
+  fi
+
   return 0
 }
 
 main()
 {
+  # Wait just a bit for X settings to apply from Gnome or other daemon
+  sleep 2 || return 1
+
   # Reset log directory
   _clear_logs || return 1
 

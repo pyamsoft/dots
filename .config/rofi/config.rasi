@@ -19,4 +19,4 @@ configuration {
   }
 }
 
-@theme "rounded-catppuccin-latte"
+@theme "rounded-catppuccin-mocha"
