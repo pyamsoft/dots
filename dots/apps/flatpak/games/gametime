@@ -150,6 +150,19 @@ _enable_obs()
   return 0
 }
 
+_enable_gamemode()
+{
+  # Game mode
+  # https://github.com/nowrep/obs-vkcapture
+  #
+  # Run using gamemode for slightly more performance
+  if command -v gamemoderun > /dev/null; then
+    __env_tools="${__env_tools} gamemoderun"
+  fi
+
+  return 0
+}
+
 _enable_mangohud()
 {
   # Mangohud
@@ -180,12 +193,14 @@ _enable_flatpak_options()
 
 _execute()
 {
-  printf -- '[gametime] gamescope %s -- env %s %s %s' "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
-
   if command -v gamescope > /dev/null; then
+    printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
+      "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
     # shellcheck disable=SC2086
-    exec ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+    exec env ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
   else
+    printf -- '[gametime] env %s %s %s %s' \
+      "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
     # shellcheck disable=SC2086
     exec env ${__env_tools} ${__game_environment} ${__game_tools} "$@"
   fi
@@ -212,6 +227,11 @@ main()
 
   _prepare_gamescope || {
     printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${__hostname}"
+    return 1
+  }
+
+  _enable_gamemode || {
+    printf -- '[gametime] Unable to enable gamemode: "%s"\n' "${__hostname}"
     return 1
   }
 
