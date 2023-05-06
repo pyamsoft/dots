@@ -99,8 +99,7 @@ _prepare_gamescope()
       unset GAME_FSR
 
       # The game implements its own FSR, but we need all the help we can get.
-      # Double FSR us first from 900p to 1080p using gamescope, and then in the game from 900p via the FSR implementation.
-      nested_height=900
+      nested_height="${output_height}"
     else
       # This game needs our gamescope FSR
       # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
