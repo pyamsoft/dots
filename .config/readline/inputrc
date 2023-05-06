@@ -18,7 +18,7 @@ set match-hidden-files off
 "\er": re-read-init-file
 
 # Clear
-"\C-l": clear-screen
+"\C-l": "clear"
 
 # Send EOF
 "\C-d": end-of-file
