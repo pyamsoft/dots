@@ -1,29 +1,10 @@
 #!/bin/sh
 
 # Variables
-__hostname=""
 __gamescope_options=""
 __game_environment=""
 __game_tools=""
 __env_tools=""
-
-##
-# Get the hostname
-_get_hostname()
-{
-  if [ -n "${HOSTNAME}" ]; then
-    __hostname="${HOSTNAME}"
-  elif command -v hostnamectl > /dev/null; then
-    __hostname="$(hostnamectl hostname)"
-  elif command -v hostname > /dev/null; then
-    __hostname="$(hostname)"
-  else
-    __hostname=""
-    return 1
-  fi
-
-  return 0
-}
 
 _export_gaming_environment()
 {
@@ -70,17 +51,11 @@ _prepare_gamescope()
     # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
     output_height=1080
+    window_type="--fullscreen"
     if [ -n "${GAME_RES}" ]; then
       output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
       output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
-      window_type="--borderless"
       unset GAME_RES
-    elif [ "${__hostname}" = "nerd1" ]; then
-      window_type="--borderless"
-    elif [ "${__hostname}" = "nerd2" ]; then
-      window_type="--fullscreen"
-    else
-      return 1
     fi
 
     # Options passed to gamescope session
@@ -214,48 +189,43 @@ main()
     return
   fi
 
-  _get_hostname || {
-    printf -- "[gametime] Can't get the machine hostname :( Who am I?"
-    return 1
-  }
-
   _export_gaming_environment || {
-    printf -- '[gametime] Unable to export gaming environment: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to export gaming environment\n'
     return 1
   }
 
   _prepare_gamescope || {
-    printf -- '[gametime] Unable to decide window dimensions from hostname: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to prepare gamescope\n'
     return 1
   }
 
   _enable_gamemode || {
-    printf -- '[gametime] Unable to enable gamemode: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to enable gamemode\n'
     return 1
   }
 
   _enable_obs || {
-    printf -- '[gametime] Unable to enable OBS: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to enable OBS\n'
     return 1
   }
 
   _enable_vkbasalt || {
-    printf -- '[gametime] Unable to enable vkBasalt: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to enable vkBasalt\n'
     return 1
   }
 
   _enable_mangohud || {
-    printf -- '[gametime] Unable to enable mangohud: "%s"\n' "${__hostname}"
+    printf -- '[gametime] Unable to enable mangohud\n'
     return 1
   }
 
   _enable_flatpak_options || {
-    printf -- '[gametime] Unable to enable specific flatpak options: "%s" "%s"\n' "${FLATPAK_ID}" "${__hostname}"
+    printf -- '[gametime] Unable to enable specific flatpak options: "%s"\n' "${FLATPAK_ID}"
     return 1
   }
 
   _execute "$@" || {
-    printf -- '[gametime] Failed execute: "%s" "%s"\n' "${FLATPAK_ID}" "${__hostname}"
+    printf -- '[gametime] Failed execute: "%s"\n' "${FLATPAK_ID}"
     return 1
   }
 }
