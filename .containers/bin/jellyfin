@@ -41,7 +41,7 @@ readonly _cmd
 # disable it.
 _health=""
 if [ "$(uname)" != "Darwin" ]; then
-_health="--health-cmd none"
+  _health="--health-cmd none"
 fi
 
 # Log the commands we use next
