@@ -17,8 +17,8 @@ set match-hidden-files off
 # Re-source inputrc (ALT + r)
 "\er": re-read-init-file
 
-# Clear
-"\C-l": "clear"
+# Clear (space prefixed won't be saved by bash history)
+"\C-l": " clear"
 
 # Send EOF
 "\C-d": end-of-file
