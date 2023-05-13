@@ -6,11 +6,25 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$1" = "light" ]; then
-  sed -i '' 's/catppuccin-mocha/catppuccin-latte/' ~/.config/lvim/config.lua
-  sed -i '' 's/mocha/latte/' ~/.config/tmux/tmux.conf
+  if [ "$(uname)" = "Darwin" ]; then
+    # MacOS sed is BSD
+    sed -i '' 's/catppuccin-mocha/catppuccin-latte/' ~/.config/lvim/config.lua
+    sed -i '' 's/mocha/latte/' ~/.config/tmux/tmux.conf
+  else
+    # Linux is GNU sed
+    sed -i '0,/catppuccin-mocha/s//catppuccin-latte/' ~/.config/lvim/config.lua
+    sed -i '0,/mocha/s//latte/' ~/.config/tmux/tmux.conf
+  fi
 elif [ "$1" = "dark" ]; then
-  sed -i '' 's/catppuccin-latte/catppuccin-mocha/' ~/.config/lvim/config.lua
-  sed -i '' 's/latte/mocha/' ~/.config/tmux/tmux.conf
+  if [ "$(uname)" = "Darwin" ]; then
+    # MacOS sed is BSD
+    sed -i '' 's/catppuccin-latte/catppuccin-mocha/' ~/.config/lvim/config.lua
+    sed -i '' 's/latte/mocha/' ~/.config/tmux/tmux.conf
+  else
+    # Linux is GNU sed
+    sed -i '0,/catppuccin-latte/s//catppuccin-mocha/' ~/.config/lvim/config.lua
+    sed -i '0,/latte/s//mocha/' ~/.config/tmux/tmux.conf
+  fi
 else
   printf -- 'Must provide either "light" or "dark" mode\n'
   exit 1
