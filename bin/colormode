@@ -14,6 +14,16 @@ if [ "$1" = "light" ]; then
     # Linux is GNU sed
     sed -i '0,/catppuccin-mocha/s//catppuccin-latte/' ~/.config/lvim/config.lua
     sed -i '0,/mocha/s//latte/' ~/.config/tmux/tmux.conf
+
+    # XFCE4 terminal
+    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FE640B/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC/' ~/.config/xfce4/terminal/terminalrc
   fi
 elif [ "$1" = "dark" ]; then
   if [ "$(uname)" = "Darwin" ]; then
@@ -24,8 +34,21 @@ elif [ "$1" = "dark" ]; then
     # Linux is GNU sed
     sed -i '0,/catppuccin-latte/s//catppuccin-mocha/' ~/.config/lvim/config.lua
     sed -i '0,/latte/s//mocha/' ~/.config/tmux/tmux.conf
+
+    # XFCE4 terminal
+    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#1E1E2E/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#11111B/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#585B70/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#585B70/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FAB387/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#45475A;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#BAC2DE;#585B70;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#A6ADC8/' ~/.config/xfce4/terminal/terminalrc
   fi
 else
   printf -- 'Must provide either "light" or "dark" mode\n'
   exit 1
 fi
+
+# Re-source tmux
+tmux source-file ~/.config/tmux/tmux.conf

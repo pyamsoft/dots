@@ -37,7 +37,6 @@ ShortcutsNoMnemonics=TRUE
 ScrollingOnOutput=TRUE
 ScrollingBar=TERMINAL_SCROLLBAR_NONE
 ScrollingUnlimited=TRUE
-ColorForeground=#CDD6F4
 ColorBackground=#1E1E2E
 FontName=Cascadia Mono PL 12
 ColorCursorForeground=#11111B
@@ -48,4 +47,5 @@ ColorSelectionBackground=#585B70
 ColorSelectionUseDefault=FALSE
 ColorPalette=#45475A;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#BAC2DE;#585B70;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#A6ADC8
 TabActivityColor=#FAB387
+ColorForeground=#CDD6F4
 
