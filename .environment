@@ -15,6 +15,15 @@ __setup_editor()
   export SUDO_EDITOR=vim
 }
 
+__setup_java()
+{
+  if [ "$(uname)" = "Darwin" ] && [ -d "${HOME}/Library/Application Support/Jetbrains/Toolbox" ]; then
+    # Java on MacOS is provided by Jetbrains Toolbox
+    # This path will change if AS updates.
+    export JAVA_HOME="${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/222.4459.24.2221.9971841/Android Studio.app/Contents/jbr/Contents/Home/"
+  fi
+}
+
 __setup_locale()
 {
   # Incase LANG is not defined since Java and other tools nolikey POSIX
@@ -122,6 +131,7 @@ __environment()
   __setup_systemd || return 1
   __setup_editor || return 1
   __setup_locale || return 1
+  __setup_java || return 1
 
   # Expect XDG to be setup
   __setup_homedir || return 1
@@ -142,5 +152,6 @@ unset -f __setup_locale
 unset -f __setup_editor
 unset -f __setup_homedir
 unset -f __setup_systemd
+unset -f __setup_java
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
