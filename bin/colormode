@@ -5,15 +5,15 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-if [ "$1" = "light" ]; then
+if [ "$1" = "light" ] || [ "$1" = "l" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
     sed -i '' 's/catppuccin-mocha/catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '' 's/mocha/latte/' ~/.config/tmux/tmux.conf
+    sed -i '' 's/@catppuccin_flavour "mocha"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
   else
     # Linux is GNU sed
     sed -i '0,/catppuccin-mocha/s//catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '0,/mocha/s//latte/' ~/.config/tmux/tmux.conf
+    sed -i '0,/@catppuccin_flavour "mocha"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
 
     # XFCE4 terminal
     sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
@@ -25,15 +25,15 @@ if [ "$1" = "light" ]; then
     sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FE640B/' ~/.config/xfce4/terminal/terminalrc
     sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC/' ~/.config/xfce4/terminal/terminalrc
   fi
-elif [ "$1" = "dark" ]; then
+elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
     sed -i '' 's/catppuccin-latte/catppuccin-mocha/' ~/.config/lvim/config.lua
-    sed -i '' 's/latte/mocha/' ~/.config/tmux/tmux.conf
+    sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "mocha"/' ~/.config/tmux/tmux.conf
   else
     # Linux is GNU sed
     sed -i '0,/catppuccin-latte/s//catppuccin-mocha/' ~/.config/lvim/config.lua
-    sed -i '0,/latte/s//mocha/' ~/.config/tmux/tmux.conf
+    sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "mocha"/' ~/.config/tmux/tmux.conf
 
     # XFCE4 terminal
     sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc
