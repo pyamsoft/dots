@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf -- 'You must run this as a rootless container\n'
+  exit 1
+fi
+
+readonly _image="docker.io/clue/httpie"
+
+# Use docker or podman (priority podman)
+_cmd="docker"
+if command -v podman > /dev/null; then
+  _cmd="podman"
+fi
+readonly _cmd
+
+# Log the commands we use next
+# Fail on errors
+# Fail on unassigned
+set -xeu
+
+# Don't quote so that if user is empty it still expands
+#
+# shellcheck disable=SC2086
+exec ${_cmd} run \
+  --pull never \
+  --security-opt no-new-privileges:true --cap-drop ALL \
+  --rm \
+  -i -t \
+  "${_image}" "$@"
