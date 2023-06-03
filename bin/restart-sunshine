@@ -1,11 +1,20 @@
 #!/bin/sh
 
-systemctl --user stop sunshine || exit 1
+main()
+{
+  systemctl --user stop sunshine || return 1
 
-# Kill any potentially symlinks
-rm -f "${HOME}/.config/sunshine/sunshine_keyboard" || exit 1
-rm -f "${HOME}/.config/sunshine/sunshine_mouse" || exit 1
-rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" || exit 1
+  # Kill any potentially symlinks
+  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" || return 1
+  rm -f "${HOME}/.config/sunshine/sunshine_mouse" || return 1
+  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" || return 1
 
-systemctl --user restart sunshine || exit 1
+  # For some reason, sunshine spawns an extra firewall-applet, so kill them all here first
+  killall firewall-applet || return 1
+
+  systemctl --user restart sunshine || return 1
+  return 0
+}
+
+main "$@" || exit 1
 exit 0
