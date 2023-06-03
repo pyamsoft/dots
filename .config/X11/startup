@@ -50,7 +50,7 @@ _startup_programs()
   # Sunshine
   # The systemd user service is broken so we manually launch this way for now
   if command -v sunshine > /dev/null 2>&1; then
-    "${HOME}/bin/restart-sunshine" > "${_log_path}/sunshine" 2>&1 &
+    "${HOME}/bin/restart-sunshine" &
   fi
 
   return 0
