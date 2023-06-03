@@ -19,7 +19,7 @@ _x_setup()
   fi
 
   # Clean source xrdb config
-  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/resources"
+  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/resources"
   if command -v xrdb > /dev/null 2>&1 && [ -f "${_xrdb_path}" ]; then
     # Do not run in background, this must be complete before continuing
     xrdb "${_xrdb_path}" > "${_log_path}/xrdb" 2>&1
