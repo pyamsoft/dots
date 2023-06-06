@@ -1,22 +1,44 @@
 #!/bin/sh
 
+_remove_devices()
+{
+  printf -- 'Remove old sunshine devices...\n'
+  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" > /dev/null 2>&1
+  rm -f "${HOME}/.config/sunshine/sunshine_mouse" > /dev/null 2>&1
+  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" > /dev/null 2>&1
+  return 0
+}
+
+_kill_firewall()
+{
+  killall firewall-applet > /dev/null 2>&1
+  return 0
+}
+
 main()
 {
   printf -- 'Stopping old sunshine service...\n'
   systemctl --user stop sunshine > /dev/null 2>&1
 
-  # Kill any potentially symlinks
-  printf -- 'Remove old sunshine devices...\n'
-  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" > /dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_mouse" > /dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" > /dev/null 2>&1
-
-  # For some reason, sunshine spawns an extra firewall-applet, so kill them all here first
-  printf -- 'Kill firewall-applet to remove duplicate tray icons...\n'
-  killall firewall-applet > /dev/null 2>&1
+  # Kill any potentially bad symlinks
+  _remove_devices || return 1
 
   printf -- 'Starting new sunshine service...\n'
   systemctl --user restart sunshine > /dev/null 2>&1
+
+  if command -v firewall-applet > /dev/null 2>&1; then
+    # Wait a bit
+    sleep 2
+
+    # For some reason, sunshine spawns an extra firewall-applet, so kill them all
+    printf -- 'Kill firewall-applet to remove duplicate tray icons...\n'
+
+    # Kill all firewall-applet tray icons
+    _kill_firewall || return 1
+
+    # And start a new one
+    firewall-applet > /dev/null 2>&1 &
+  fi
   return 0
 }
 
