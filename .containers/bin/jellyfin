@@ -21,10 +21,14 @@ readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
 readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
 readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
 
+# Transcode shader cache
+readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache"
+
 # Prep the directories
 mkdir -p "${_mount1}" || exit 1
 mkdir -p "${_mount2}" || exit 1
 mkdir -p "${_mount3}" || exit 1
+mkdir -p "${_mount4}" || exit 1
 
 # Use docker or podman (priority podman)
 _cmd="docker"
@@ -58,6 +62,7 @@ exec ${_cmd} run ${_how} \
   --mount type=bind,source="${_mount1}",target=/cache \
   --mount type=bind,source="${_mount2}",target=/config \
   --mount type=bind,source="${_mount3}",target=/media \
+  --mount type=bind,source="${_mount4}",target=/.cache \
   -p 127.0.0.1:8096:8096/tcp \
   --group-add=989 \
   --device /dev/dri/renderD128:/dev/dri/renderD128 \
