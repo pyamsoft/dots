@@ -15,7 +15,7 @@ fi
 readonly _how
 
 readonly _name="jellyfin"
-readonly _image="docker.io/jellyfin/jellyfin"
+readonly _image="docker.io/jellyfin/jellyfin:10.7.7"
 
 readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
 readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
