@@ -3,7 +3,7 @@
 __launch_starship()
 {
   if command -v starship > /dev/null; then
-    eval "$(starship init bash)"
+    eval "$(starship init bash)" || return 1
   else
     export PS1='\w
 \$ '
@@ -12,47 +12,76 @@ __launch_starship()
   return 0
 }
 
+__increase_ulimit()
+{
+  if command -v ulimit > /dev/null; then
+    # ulimit is normally something like 1024 on Linux or 256 on MacOS
+    # This can lead to errors like postgres:too many files open
+    # We bump the ulimit up to 2048 in any interactive shell
+    _current_ulimit="$(ulimit -S -n)"
+    if [ "${_current_ulimit}" -le 2048 ]; then
+      ulimit -S -n 2048 || return 1
+    fi
+    unset _current_ulimit
+  fi
+
+  return 0
+}
+
 __enable_bash_completion()
 {
   # Enable bash completion
-  bcomp="/usr/share/bash-completion/bash_completion"
+  _bcomp="/usr/share/bash-completion/bash_completion"
 
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
+  [ -r "${_bcomp}" ] && {
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || return 1
+  }
 
-  bcomp="/etc/bash_completion"
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
+  _bcomp="/etc/bash_completion"
+  [ -r "${_bcomp}" ] && {
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || return 1
+  }
 
-  bcomp="/usr/local/share/bash-completion/bash_completion"
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
+  _bcomp="/usr/local/share/bash-completion/bash_completion"
+  [ -r "${_bcomp}" ] && {
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || return 1
+  }
 
-  bcomp="/opt/homebrew/share/bash-completion/bash_completion"
-  # shellcheck disable=SC1090
-  [ -r "${bcomp}" ] && . "${bcomp}"
-  unset bcomp
+  _bcomp="/opt/homebrew/share/bash-completion/bash_completion"
+  [ -r "${_bcomp}" ] && {
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || return 1
+  }
+
+  unset _bcomp
 
   return 0
 }
 
 __bash_qol()
 {
-  aliases="${XDG_CONFIG_HOME}/bash/aliases"
-  # shellcheck disable=SC1090
-  [ -f "${aliases}" ] && . "${aliases}"
-  unset aliases
+  _aliases="${XDG_CONFIG_HOME}/bash/aliases"
+  [ -f "${_aliases}" ] && {
+    # shellcheck disable=SC1090
+    . "${_aliases}" || return 1
+  }
+  unset _aliases
 
-  functions="${XDG_CONFIG_HOME}/bash/functions"
-  # shellcheck disable=SC1090
-  [ -f "${functions}" ] && . "${functions}"
-  unset functions
+  _functions="${XDG_CONFIG_HOME}/bash/functions"
+  [ -f "${_functions}" ] && {
+    # shellcheck disable=SC1090
+    . "${_functions}" || return 1
+  }
+  unset _functions
 
   # Set LS_COLORS
   if command -v gdircolors > /dev/null; then
-    eval "$(gdircolors -b)"
+    eval "$(gdircolors -b)" || return 1
   elif command -v dircolors > /dev/null; then
-    eval "$(dircolors -b)"
+    eval "$(dircolors -b)" || return 1
   fi
 
   return 0
@@ -62,8 +91,10 @@ __ensure_env()
 {
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-    # shellcheck disable=SC1091
-    [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
+    [ -f "${HOME}"/.bash_profile ] && {
+      # shellcheck disable=SC1091
+      . "${HOME}"/.bash_profile || return 1
+    }
   fi
 
   return 0
@@ -73,7 +104,7 @@ __direnv()
 {
   # Source bash_profile if the environment is not setup
   if command -v direnv > /dev/null; then
-    eval "$(direnv hook bash)"
+    eval "$(direnv hook bash)" || return 1
   fi
 
   return 0
@@ -81,20 +112,47 @@ __direnv()
 
 __bashrc()
 {
-  __ensure_env || return 1
-  __bash_qol || return 1
-  __enable_bash_completion || return 1
-  __launch_starship || return 1
-  __direnv || return 1
+  __ensure_env || {
+    printf -- '[bashrc] Failed to setup environment\n'
+    return 0
+  }
+
+  __bash_qol || {
+    printf -- '[bashrc] Failed to setup bash QOL features\n'
+    return 0
+  }
+
+  __enable_bash_completion || {
+    printf -- '[bashrc] Failed to setup bash shell completion\n'
+    return 0
+  }
+
+  __direnv || {
+    printf -- '[bashrc] Failed direnv setup\n'
+    return 0
+  }
+
+  __increase_ulimit || {
+    printf -- '[bashrc] Failed to increase ulimit\n'
+    return 0
+  }
+
+  __launch_starship || {
+    printf -- '[bashrc] Failed to launch starship\n'
+    return 0
+  }
 
   return 0
 }
 
-# Setup
-__bashrc
+# Never return bad from here, bashrc must never fail
+__bashrc || {
+    printf -- '[bashrc] Error during setup\n'
+}
 
 # Do not export the functions
 unset -f __bashrc
+unset -f __increase_ulimit
 unset -f __enable_bash_completion
 unset -f __launch_starship
 unset -f __bash_qol
