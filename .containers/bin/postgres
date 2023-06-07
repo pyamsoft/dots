@@ -54,6 +54,6 @@ exec ${_cmd} run ${_how} \
   --cap-add CHOWN \
   --cap-add SETGID \
   --cap-add SETUID \
-  -e POSTGRES_PASSWORD=mysecretpostgresspasswd \
+  -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
   ${_user} \
   "${_image}" "$@"
