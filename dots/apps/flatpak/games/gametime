@@ -72,14 +72,11 @@ _prepare_gamescope()
     # gametime so that gamescope will not apply its rougher implementation of FSR1.
     if [ -n "${GAME_FSR}" ] && [ "${GAME_FSR}" -ne 0 ]; then
       unset GAME_FSR
-
-      # The game implements its own FSR, but we need all the help we can get.
       nested_height="${output_height}"
     else
       # This game needs our gamescope FSR
-      # Since gamescope FSR is only 1x (bad), we use quality mode because it otherwise looks real bad.
-      # If a game implements its own native upscaling, use that instead with Balanced or Performance FSR 2x
-      nested_height=720
+      # Resolutions below 720 look shimmer-y when upscaled to 1080 or 1440
+      nested_height=768
     fi
 
     __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
