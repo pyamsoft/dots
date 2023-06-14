@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# More reading
+# https://www.atlassian.com/git/tutorials/dotfiles
+# https://stackoverflow.com/questions/10637378/how-do-i-convert-a-bare-git-repository-into-a-normal-one-in-place
+
 # Clone the repo as bare into the dotfiles folder
 # This will only pull in repo information but not any files yet
 git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles
@@ -10,8 +14,15 @@ alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
 # Configure the repository to only show explicitly added files
 dotfiles config --local status.showUntrackedFiles no
 
-printf -- 'When you are ready, run the following:\n\n'
-printf -- '$ %s\n' "alias dotfiles='git --git-dir \"\${HOME}\"/.dotfiles --work-tree \"\${HOME}\"'"
-printf -- '$ %s\n' "dotfiles checkout"
-printf -- '\nSee "%s" for more information\n' "https://www.atlassian.com/git/tutorials/dotfiles"
-printf -- 'To convert your BARE repo to a NORMAL repo, see "%s"\n' "https://stackoverflow.com/questions/10637378/how-do-i-convert-a-bare-git-repository-into-a-normal-one-in-place"
+printf -- 'When you are ready, press Enter:\n'
+
+read -r _ > /dev/null 2>&1
+
+# Mark our repo as not bare
+dotfiles config --local --bool core.bare false
+
+# Reset back onto master
+dotfiles reset --hard
+
+# Mark the upstream fetch lines so "dotfiles fetch" sees origin/main
+dotfiles config --local 'remote.origin.fetch' '+refs/heads/*:refs/remotes/origin/*'
