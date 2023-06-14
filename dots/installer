@@ -26,3 +26,6 @@ dotfiles reset --hard
 
 # Mark the upstream fetch lines so "dotfiles fetch" sees origin/main
 dotfiles config --local 'remote.origin.fetch' '+refs/heads/*:refs/remotes/origin/*'
+
+# Sync up
+dotfiles fetch -a -p
