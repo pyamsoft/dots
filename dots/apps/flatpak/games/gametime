@@ -20,6 +20,17 @@ _export_gaming_environment()
   return 0
 }
 
+_get_hostname()
+{
+  if command -v hostnamectl > /dev/null; then
+    __hostname="$(hostnamectl hostname)"
+  elif command -v hostname > /dev/null; then
+    __hostname="$(hostname)"
+  fi
+
+  return 0
+}
+
 ##
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
@@ -41,8 +52,10 @@ _prepare_gamescope()
     #
     # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
     #       If you open the settings in game, your FPS will go to 2.
+    #       Run it with GAME_FSR=1
     #
     # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
+    #       Or run it with GAME_FSR=1
     #
     # NOTE: FSR performance is 2.0x nested resolution.
     # NOTE: FSR balanced is 1.7x nested resolution.
@@ -50,24 +63,36 @@ _prepare_gamescope()
     #
     # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
     # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-    output_height=900
-    output_width=
 
+    # Defaults to 1080p
     window_type="--borderless"
+    output_height=1080
+    output_width=
+    nested_height=720
+    nested_width=
+
+    if [ "${__hostname}" = "nerd1" ]; then
+      printf -- '[gametime] Using nerd1 gamescope defaults\n'
+      window_type="--borderless"
+      output_height=900
+      output_width=
+      nested_height=600
+      nested_width=
+    elif [ "${__hostname}" = "nerd2" ]; then
+      printf -- '[gametime] Using nerd2 gamescope defaults\n'
+      window_type="--fullscreen"
+      output_height=1080
+      output_width=
+      nested_height=720
+      nested_width=
+    else
+      printf -- '[gametime] Hostname "%s" unknown, use 1080p defaults\n' "${__hostname}"
+    fi
+
     if [ -n "${GAME_RES}" ]; then
       output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
       output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
       unset GAME_RES
-    fi
-
-    # Options passed to gamescope session
-    # Only provide width by default since gamescope defaults to 16x9
-    __gamescope_options="${__gamescope_options} --output-height ${output_height}"
-    __gamescope_options="${__gamescope_options} ${window_type}"
-
-    # But if width is provided by GAME_RES, use it
-    if [ -n "${output_width}" ]; then
-      __gamescope_options="${__gamescope_options} --output-width ${output_width}"
     fi
 
     # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
@@ -78,21 +103,24 @@ _prepare_gamescope()
       # Game has its own FSR, or does not want FSR
       nested_height="${output_height}"
       if [ -n "${output_width}" ]; then
-      nested_width="${output_width}"
+        nested_width="${output_width}"
       fi
-    else
-      # This game needs our gamescope FSR
-      nested_height=600
-      nested_width=
     fi
 
-    # Nested resolution
+    # Options passed to gamescope session
+    # 0 is max sharpness, 20 is min sharpness
+    __gamescope_options="${__gamescope_options} ${window_type}"
+    __gamescope_options="${__gamescope_options} --output-height ${output_height}"
     __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
+    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+
+    if [ -n "${output_width}" ]; then
+      __gamescope_options="${__gamescope_options} --output-width ${output_width}"
+    fi
     if [ -n "${nested_width}" ]; then
       __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
     fi
 
-    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 8"
 
   fi
 
@@ -176,6 +204,8 @@ _enable_flatpak_options()
 
 _execute()
 {
+  unset __hostname
+
   if command -v gamescope > /dev/null; then
     printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
       "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
@@ -201,6 +231,11 @@ main()
   _export_gaming_environment || {
     printf -- '[gametime] Unable to export gaming environment\n'
     return 1
+  }
+
+  _get_hostname || {
+    printf -- '[gametime] Unable to resolve hostname\n'
+    __hostname=""
   }
 
   _prepare_gamescope || {
