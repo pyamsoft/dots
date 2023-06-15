@@ -1,0 +1,24 @@
+#!/bin/sh
+
+self="$(id -un)"
+readonly self
+
+readonly pak="com.usebottles.bottles"
+readonly def_path="/app/bin:/app/utils/bin:/usr/bin:/usr/lib/extensions/vulkan/MangoHud/bin/:/usr/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin/"
+readonly path="${HOME}/.local/bin"
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --with-env PATH "${path}:" "${def_path}" \
+  --filesystem="/home/${self}/games/bnet" \
+  --filesystem="/storage/${self}/games/bnet" \
+  --filesystem="/storage/${self}/games2/bnet" \
+  "$@" || exit 1
+exit 0
