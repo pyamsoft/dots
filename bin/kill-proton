@@ -3,26 +3,35 @@
 # Don't kill ourselves
 readonly self_pid="$$"
 
-my_pid="$(pgrep -f 'proton')"
-if [ -n "${my_pid}" ]; then
+killa()
+{
+  _process="$1"
 
-  clean_pids=""
-  for pid in ${my_pid}; do
-    if [ "${pid}" != "${self_pid}" ]; then
-      clean_pids="${pid} ${clean_pids}"
+  my_pid="$(pgrep -f "${_process}")"
+  if [ -n "${my_pid}" ]; then
+
+    clean_pids=""
+    for pid in ${my_pid}; do
+      if [ "${pid}" != "${self_pid}" ]; then
+        clean_pids="${pid} ${clean_pids}"
+      fi
+    done
+
+    if [ -n "${clean_pids}" ]; then
+      printf -- 'Killing process %s\n' "${_process}" "${clean_pids}"
+      # Don't quote so that multiple PIDs can be killed
+      # shellcheck disable=SC2086
+      kill ${clean_pids}
     fi
-  done
 
-  if [ -n "${clean_pids}" ]; then
-    printf -- 'Killing Proton process %s\n' "${clean_pids}"
-    # Don't quote so that multiple PIDs can be killed
-    # shellcheck disable=SC2086
-    kill ${clean_pids}
+    unset my_pid
+    unset clean_pids
+  else
+    printf -- '%s not running.\n' "${_process}"
   fi
 
-  unset my_pid
-  unset clean_pids
-else
-  printf -- 'Proton not running.\n'
-fi
+  unset _process
+}
 
+killa "proton"
+killa "gamescope"
