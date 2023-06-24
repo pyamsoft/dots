@@ -135,56 +135,81 @@ _prepare_gamescope()
   return 0
 }
 
-_enable_vkbasalt()
+_enable_game_env()
 {
-  # vkBasalt
-  # https://github.com/DadSchoorse/vkBasalt
-  #
-  # Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
-  if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
-    __game_environment="${__game_environment} ENABLE_VKBASALT=1"
+  if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -eq 0 ]; then
+    unset GAME_VKB
+    printf -- '[gametime] Do not enable vkBasalt: "%s"\n' "${FLATPAK_ID}"
+  else
+    # vkBasalt
+    # https://github.com/DadSchoorse/vkBasalt
+    #
+    # Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
+    if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
+      __game_environment="${__game_environment} ENABLE_VKBASALT=1"
+    fi
+  fi
+
+  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 0 ]; then
+    unset GAME_ZINK
+    # Zink OpenGL
+    # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
+    __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa" 
+    __game_environment="${__game_environment} MESA_LOADER_DRIVER_OVERRIDE=zink"
+    __game_environment="${__game_environment} GALLIUM_DRIVER=zink"
+  else
+    printf -- '[gametime] Do not enable Zink over OpenGL: "%s"\n' "${FLATPAK_ID}"
   fi
 
   return 0
 }
 
-_enable_obs()
+_enable_env_tools()
 {
-  # OBS VKCapture
-  # https://github.com/nowrep/obs-vkcapture
-  #
-  # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
-  if command -v obs-gamecapture > /dev/null; then
-    __env_tools="${__env_tools} obs-gamecapture"
+  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
+    unset GAME_MODE
+    printf -- '[gametime] Do not enable gamemode: "%s"\n' "${FLATPAK_ID}"
+  else
+    # Game mode
+    # https://github.com/nowrep/obs-vkcapture
+    #
+    # Run using gamemode for slightly more performance
+    if command -v gamemoderun > /dev/null; then
+      __env_tools="${__env_tools} gamemoderun"
+    fi
+  fi
+
+  if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -eq 1 ]; then
+    unset GAME_OBS
+    # OBS VKCapture
+    # https://github.com/nowrep/obs-vkcapture
+    #
+    # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
+    if command -v obs-gamecapture > /dev/null; then
+      __env_tools="${__env_tools} obs-gamecapture"
+    fi
+  else
+    printf -- '[gametime] Do not enable OBS capture: "%s"\n' "${FLATPAK_ID}"
   fi
 
   return 0
 }
 
-_enable_gamemode()
+_enable_game_tools()
 {
-  # Game mode
-  # https://github.com/nowrep/obs-vkcapture
-  #
-  # Run using gamemode for slightly more performance
-  if command -v gamemoderun > /dev/null; then
-    __env_tools="${__env_tools} gamemoderun"
-  fi
-
-  return 0
-}
-
-_enable_mangohud()
-{
-  # Mangohud
-  # https://github.com/flightlessmango/MangoHud#hud-configuration
-  #
-  # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
-  # We must use gamescope to run mangohud, and then use mangohud to run our command.
-  if command -v mangohud > /dev/null; then
-    __game_tools="${__game_tools} mangohud --dlsym"
-
-    export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
+  if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -eq 1 ]; then
+    unset GAME_HUD
+    # Mangohud
+    # https://github.com/flightlessmango/MangoHud#hud-configuration
+    #
+    # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
+    # We must use gamescope to run mangohud, and then use mangohud to run our command.
+    if command -v mangohud > /dev/null; then
+      __game_tools="${__game_tools} mangohud --dlsym"
+      export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
+    fi
+  else
+    printf -- '[gametime] Do not enable Mangohud: "%s"\n' "${FLATPAK_ID}"
   fi
 
   return 0
@@ -243,23 +268,18 @@ main()
     return 1
   }
 
-  _enable_gamemode || {
-    printf -- '[gametime] Unable to enable gamemode\n'
+  _enable_env_tools || {
+    printf -- '[gametime] Unable to setup __env_tools\n'
     return 1
   }
 
-  _enable_obs || {
-    printf -- '[gametime] Unable to enable OBS\n'
+  _enable_game_tools || {
+    printf -- '[gametime] Unable to setup __game_tools\n'
     return 1
   }
 
-  _enable_vkbasalt || {
-    printf -- '[gametime] Unable to enable vkBasalt\n'
-    return 1
-  }
-
-  _enable_mangohud || {
-    printf -- '[gametime] Unable to enable mangohud\n'
+  _enable_game_env || {
+    printf -- '[gametime] Unable to setup __game_environment\n'
     return 1
   }
 
