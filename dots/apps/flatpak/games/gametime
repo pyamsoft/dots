@@ -150,7 +150,7 @@ _enable_game_env()
     fi
   fi
 
-  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 0 ]; then
+  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
     unset GAME_ZINK
     # Zink OpenGL
     # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
