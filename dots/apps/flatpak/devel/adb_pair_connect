@@ -1,0 +1,66 @@
+#!/bin/sh
+
+_usage()
+{
+  printf -- '%s\n' "$(cat <<EOF
+adb_pair_connect <IP> <PAIR-PORT> <CONNECT-PORT>
+
+<IP> is your device's IP address on the Wireless Debugging page.
+<PAIR-PORT> is your device's port displayed in the 'Pair with Code' window
+<CONNECT-PORT> is your device's port on the Wireless Debugging page.
+
+Example:
+
+  $ adb_pair_connect 192.168.1.2 1337 42069
+
+EOF
+)"
+}
+
+main()
+{
+  _ip="$1"
+  _pair_port="$2"
+  _connect_port="$3"
+
+  if ! command -v adb > /dev/null; then
+    printf -- 'E: adb not in PATH\n'
+    return 1
+  fi
+
+  if [ -z "${_ip}" ]; then
+    printf -- 'E: Must provide IP address as first argument.\n'
+    _usage || return 1
+    return 1
+  fi
+
+  if [ -z "${_pair_port}" ]; then
+    printf -- 'E: Must provide pairing port as first argument.\n'
+    _usage || return 1
+    return 1
+  fi
+
+  if [ -z "${_connect_port}" ]; then
+    printf -- 'E: Must provide connect port as first argument.\n'
+    _usage || return 1
+    return 1
+  fi
+
+  adb pair "${_ip}":"${_pair_port}" || {
+    printf -- 'E: Failed to pair device to ADB %s:%s\n' "${_ip}" "${_pair_port}"
+    return 1
+  }
+
+  adb connect "${_ip}":"${_connect_port}" || {
+    printf -- 'E: Failed to connect device to ADB %s:%s\n' "${_ip}" "${_connect_port}"
+    return 1
+  }
+
+  adb devices || {
+    printf -- 'E: Failed to list ADB connected devices to ADB\n'
+    return 1
+  }
+}
+
+main "$@" || exit 1
+exit 0
