@@ -43,7 +43,7 @@ _poke()
   printf -- 'Attempting to poke monitor via xrandr: %s\n' "${DISPLAY}"
   while [ "${_count}" -gt 0 ]; do
     printf -- 'Poke: %s...\n' "${_count}"
-    xrandr > /dev/null || {
+    xrandr > /dev/null 2>&1 || {
       printf -- 'Failed to poke monitor with xrandr: %s\n' "${DISPLAY}"
 
       unset DISPLAY
