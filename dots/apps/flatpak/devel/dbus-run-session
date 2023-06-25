@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# This script is needed so that black and black[d] can install
+# because the build step requires the use of dbus-run-sesion
+#
+# Install as ${HOME}/data/python/bin/dbus-run-session inside of the flatpak.
+
+exit 0
