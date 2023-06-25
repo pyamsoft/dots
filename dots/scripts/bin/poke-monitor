@@ -5,21 +5,31 @@
 #
 # https://wiki.archlinux.org/title/Xrandr_
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this script as your normal user, not root!\n'
-  exit 1
-fi
+_setup()
+{
+  _uid="$(id -u)"
+  if [ "${_uid}" -eq 0 ]; then
+    printf -- 'You must run this script as your normal user, not root!\n'
+    exit 1
+  fi
 
-# Make an assumption about our Xorg environment
-readonly XAUTHORITY="${HOME}/.Xauthority"
-export XAUTHORITY
+  # Make an assumption about our Xorg environment
+  if [ -f "/run/user/${_uid}/gdm/Xauthority" ]; then
+    printf -- 'Use GDM Xauthority\n'
+    XAUTHORITY="/run/user/${_uid}/gdm/Xauthority"
+  else
+    printf -- 'Use User Xauthority\n'
+    XAUTHORITY="${HOME}/.Xauthority"
+  fi
 
-# Wait between pokes
-readonly WAIT_TIME=1
+  printf -- 'Adopt XAUTH file: %s\n' "${XAUTHORITY}"
+  export XAUTHORITY
+}
+
 
 ##
 # Poke with display
-poke()
+_poke()
 {
   _display="$1"
 
@@ -28,23 +38,27 @@ poke()
   export DISPLAY
 
   # Attempt countdown
-  count=2
+  _count=2
 
-  printf -- 'Attempting to poke monitor via xrandr.\n'
-  while [ "${count}" -gt 0 ]; do
-    printf -- 'Poke: %s...\n' "${count}"
+  printf -- 'Attempting to poke monitor via xrandr: %s\n' "${DISPLAY}"
+  while [ "${_count}" -gt 0 ]; do
+    printf -- 'Poke: %s...\n' "${_count}"
     xrandr > /dev/null || {
-      printf -- 'Failed to poke monitors with xrandr.\n'
+      printf -- 'Failed to poke monitor with xrandr: %s\n' "${DISPLAY}"
 
       unset DISPLAY
       unset _display
       return 1
     }
-    sleep "${WAIT_TIME}"
-    count=$((count - 1))
+
+    # Wait before trying again
+    sleep 1
+    _count=$((_count - 1))
   done
 
-  printf -- 'Monitor has been poked.\n'
+
+  printf -- 'Monitor has been poked: %s\n' "${DISPLAY}"
+
   unset DISPLAY
   unset _display
   return 0
@@ -53,18 +67,31 @@ poke()
 main()
 {
   # Try poking common monitor DISPLAY connections
+  _setup || {
+    printf -- 'Failed setup\n'
+    return 1
+  }
 
   # Raw console startx
-  poke ":0" && return 0
+  _poke ":0" && {
+    printf -- 'Poked monitor :0\n'
+    return 0
+  }
 
   # GDM
-  poke ":1" && return 0
+  _poke ":1" && {
+    printf -- 'Poked monitor :1\n'
+    return 0
+  }
 
   # LightDM
-  poke ":7" && return 0
+  _poke ":7" && {
+    printf -- 'Poked monitor :7\n'
+    return 0
+  }
 
   # Nothing worked
-  printf -- 'Failed all attempts to poke monitor\n'
+  printf -- 'Failed all attempts to poke monitor :0 :1 :7\n'
   return 1
 }
 

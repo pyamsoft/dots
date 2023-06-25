@@ -15,8 +15,14 @@ _kill_firewall()
   return 0
 }
 
-main()
+_restart()
 {
+  _display="$1"
+
+  # So that firewall-applet works
+  export DISPLAY="${_display}"
+  printf -- 'Attempt Sunshine restart on display: %s\n' "${DISPLAY}"
+
   printf -- 'Stopping old sunshine service...\n'
   systemctl --user stop sunshine > /dev/null 2>&1
 
@@ -39,7 +45,37 @@ main()
     # And start a new one
     firewall-applet > /dev/null 2>&1 &
   fi
+
+  unset DISPLAY
+  unset _display
   return 0
+}
+
+main()
+{
+  if _restart ":0"; then
+    printf -- 'Restarted sunshine service on display :0\n'
+    return 0
+  else
+    printf -- 'Failed to restart sunshine using display :0\n'
+  fi
+
+  if _restart ":1"; then
+    printf -- 'Restarted sunshine service on display :1\n'
+    return 0
+  else
+    printf -- 'Failed to restart sunshine using display :1\n'
+  fi
+
+  if _restart ":1"; then
+    printf -- 'Restarted sunshine service on display :7\n'
+    return 0
+  else
+    printf -- 'Failed to restart sunshine using display :7\n'
+  fi
+
+  printf -- 'Failed to restart sunshine using ony display :0 :1 :7\n'
+  return 1
 }
 
 if command -v sunshine > /dev/null 2>&1; then
