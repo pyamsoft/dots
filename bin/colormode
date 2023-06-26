@@ -39,7 +39,7 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "mocha"/' ~/.config/tmux/tmux.conf
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
-    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
+    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to dark mode'
   else
     # Linux is GNU sed
     sed -i '0,/catppuccin-latte/s//catppuccin-mocha/' ~/.config/lvim/config.lua
