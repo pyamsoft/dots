@@ -9,7 +9,7 @@ readonly _image="docker.io/alpine/httpie"
 
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd

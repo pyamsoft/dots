@@ -19,7 +19,7 @@ readonly _image="localhost/pyamsoft/stonk-bot"
 
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd

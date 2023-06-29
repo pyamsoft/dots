@@ -1,22 +1,19 @@
 #!/bin/sh
 
-_remove_devices()
-{
+_remove_devices() {
   printf -- 'Remove old sunshine devices...\n'
-  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" > /dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_mouse" > /dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" > /dev/null 2>&1
+  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" >/dev/null 2>&1
+  rm -f "${HOME}/.config/sunshine/sunshine_mouse" >/dev/null 2>&1
+  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" >/dev/null 2>&1
   return 0
 }
 
-_kill_firewall()
-{
-  killall firewall-applet > /dev/null 2>&1
+_kill_firewall() {
+  killall firewall-applet >/dev/null 2>&1
   return 0
 }
 
-_restart()
-{
+_restart() {
   _display="$1"
 
   # So that firewall-applet works
@@ -24,15 +21,15 @@ _restart()
   printf -- 'Attempt Sunshine restart on display: %s\n' "${DISPLAY}"
 
   printf -- 'Stopping old sunshine service...\n'
-  systemctl --user stop sunshine > /dev/null 2>&1
+  systemctl --user stop sunshine >/dev/null 2>&1
 
   # Kill any potentially bad symlinks
   _remove_devices || return 1
 
   printf -- 'Starting new sunshine service...\n'
-  systemctl --user restart sunshine > /dev/null 2>&1
+  systemctl --user restart sunshine >/dev/null 2>&1
 
-  if command -v firewall-applet > /dev/null 2>&1; then
+  if command -v firewall-applet >/dev/null 2>&1; then
     # Wait a bit
     sleep 2
 
@@ -43,7 +40,7 @@ _restart()
     _kill_firewall || return 1
 
     # And start a new one
-    firewall-applet > /dev/null 2>&1 &
+    firewall-applet >/dev/null 2>&1 &
   fi
 
   unset DISPLAY
@@ -51,8 +48,7 @@ _restart()
   return 0
 }
 
-main()
-{
+main() {
   if _restart ":0"; then
     printf -- 'Restarted sunshine service on display :0\n'
     return 0
@@ -78,7 +74,7 @@ main()
   return 1
 }
 
-if command -v sunshine > /dev/null 2>&1; then
+if command -v sunshine >/dev/null 2>&1; then
   main "$@" || exit 1
   exit 0
 else

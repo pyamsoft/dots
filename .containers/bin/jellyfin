@@ -33,7 +33,7 @@ mkdir -p "${_mount4}" || exit 1
 # Use docker or podman (priority podman)
 _cmd="docker"
 _userns=""
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 
   # Need this userns option that is podman specific or we have random OCI permission error
@@ -70,4 +70,3 @@ exec ${_cmd} run ${_how} \
   ${_health} \
   ${_userns} \
   "${_image}" "$@"
-

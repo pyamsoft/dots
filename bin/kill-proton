@@ -3,8 +3,7 @@
 # Don't kill ourselves
 readonly self_pid="$$"
 
-killa()
-{
+killa() {
   _process="$1"
 
   my_pid="$(pgrep -f "${_process}")"

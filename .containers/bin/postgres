@@ -24,7 +24,7 @@ mkdir -p "${_mount1}" || exit 1
 
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd

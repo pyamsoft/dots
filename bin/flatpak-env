@@ -1,12 +1,10 @@
 #!/bin/sh
 
-
 # Runs flatpak with the given data prepended to an existing ENV var
 
 ##
 # Attempt to source the existing env var if it exists
-__source_existing_env()
-{
+__source_existing_env() {
   __src_flatpak="$1"
   __src_env_var="$2"
 
@@ -20,8 +18,7 @@ __source_existing_env()
 
 ##
 # Compile environment
-__compile_env()
-{
+__compile_env() {
   __compile_env_flatpak="$1"
   __compile_env_var="$2"
   __compile_env_arg="$3"
@@ -70,9 +67,8 @@ __compile_env()
 
 ##
 # Main
-main()
-{
-  if ! command -v flatpak > /dev/null; then
+main() {
+  if ! command -v flatpak >/dev/null; then
     printf -- 'You must install "flatpak"\n'
     return 1
   fi
@@ -102,9 +98,9 @@ main()
 
       # Compile the environment
       if [ -z "${__fp_env}" ]; then
-        __fp_env="$(__compile_env "${__flatpak}" "$1" "$2" "$3" )"
+        __fp_env="$(__compile_env "${__flatpak}" "$1" "$2" "$3")"
       else
-        __fp_env="${__fp_env} $(__compile_env "${__flatpak}" "$1" "$2" "$3" )"
+        __fp_env="${__fp_env} $(__compile_env "${__flatpak}" "$1" "$2" "$3")"
       fi
 
       # Eat the arguments

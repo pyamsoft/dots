@@ -17,7 +17,7 @@ fi
 
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 
   # Need this userns option that is podman specific or we have random OCI permission error

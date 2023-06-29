@@ -24,4 +24,3 @@ if [ -n "${my_pid}" ]; then
 else
   printf -- 'GradleDaemon not running.\n'
 fi
-

@@ -29,7 +29,7 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
     sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC/' ~/.config/xfce4/terminal/terminalrc
 
     # GNOME Desktop
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"    # GTK-3
     gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
   fi
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
@@ -56,7 +56,7 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#45475A;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#BAC2DE;#585B70;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#A6ADC8/' ~/.config/xfce4/terminal/terminalrc
 
     # GNOME Desktop
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"   # GTK-3
     gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
   fi
 else
