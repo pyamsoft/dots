@@ -14,8 +14,8 @@ readonly _image="docker.io/cloudflare/cloudflared"
 
 # On MacOS we use a VM, make sure it is rootful to bind to port 53
 if [ "$(uname)" = "Darwin" ]; then
-    printf -- 'Not ready on MacOS\n'
-    exit 1
+  printf -- 'Not ready on MacOS\n'
+  exit 1
 else
   if [ "$(id -u)" -ne 0 ]; then
     printf -- 'You must run this as a rootful container\n'
@@ -28,10 +28,9 @@ else
   mkdir -p "${_mount1}" || exit 1
 fi
 
-
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd

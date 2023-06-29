@@ -68,4 +68,3 @@ installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 
 installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 
 exit 0
-

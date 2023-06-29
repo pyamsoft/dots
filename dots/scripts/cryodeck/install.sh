@@ -1,7 +1,6 @@
 #!/bin/sh
 
-main()
-{
+main() {
   sudo cp ./cryodeck /usr/local/bin/cryodeck || {
     printf -- 'Failed to install cryodeck\n'
     return 1

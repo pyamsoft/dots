@@ -1,8 +1,8 @@
 #!/bin/sh
 
-_usage()
-{
-  printf -- '%s\n' "$(cat <<EOF
+_usage() {
+  printf -- '%s\n' "$(
+    cat <<EOF
 adb_pair_connect <IP> <PAIR-PORT> <CONNECT-PORT>
 
 <IP> is your device's IP address on the Wireless Debugging page.
@@ -14,16 +14,15 @@ Example:
   $ adb_pair_connect 192.168.1.2 1337 42069
 
 EOF
-)"
+  )"
 }
 
-main()
-{
+main() {
   _ip="$1"
   _pair_port="$2"
   _connect_port="$3"
 
-  if ! command -v adb > /dev/null; then
+  if ! command -v adb >/dev/null; then
     printf -- 'E: adb not in PATH\n'
     return 1
   fi

@@ -4,7 +4,8 @@ proxy="$1"
 
 if [ -z "${proxy}" ]; then
   # We log to stderr to avoid polluting a shell in eval mode
-  printf -- '%s\n' "$(cat <<EOF
+  printf -- '%s\n' "$(
+    cat <<EOF
 apply-http-proxy
 
 clear   - Reset proxy
@@ -16,7 +17,7 @@ $ eval "\$(apply-http-proxy clear)"
 $ eval "\$(apply-http-proxy default)"
 $ eval "\$(apply-http-proxy 192.168.49.1:8228)"
 EOF
-)" 1>&2
+  )" 1>&2
   exit 1
 elif [ "${proxy}" = "clear" ]; then
   # We log to stderr to avoid polluting a shell in eval mode

@@ -23,7 +23,7 @@ if [ "$(uname)" = "Darwin" ]; then
   # This is okay I guess, since it only controls logs
   #
   # readonly _mount2="${HOME}/.local/etc/containers/${_name}/work"
-  
+
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/conf"
   mkdir -p "${_mount1}" || exit 1
   _mounts="--mount type=bind,source=${_mount1},target=/opt/adguardhome/conf"
@@ -65,10 +65,9 @@ readonly _mounts
 readonly _ports
 readonly _caps
 
-
 # Use docker or podman (priority podman)
 _cmd="docker"
-if command -v podman > /dev/null; then
+if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd

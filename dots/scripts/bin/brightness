@@ -2,9 +2,8 @@
 
 readonly DDC_BRIGHTNESS_CODE=10
 
-main()
-{
-  if ! command -v ddcutil > /dev/null; then
+main() {
+  if ! command -v ddcutil >/dev/null; then
     printf -- 'Must install "ddcutil"\n'
     return 1
   fi
@@ -20,7 +19,7 @@ main()
 
   # If we are in the i2c group attempt a brightness change without root
   needs_sudo=1
-  if id -G -n | grep -q i2c ; then
+  if id -G -n | grep -q i2c; then
     needs_sudo=0
   fi
 

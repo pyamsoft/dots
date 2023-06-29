@@ -16,7 +16,7 @@ dotfiles config --local status.showUntrackedFiles no
 
 printf -- 'When you are ready, press Enter:\n'
 
-read -r _ > /dev/null 2>&1
+read -r _ >/dev/null 2>&1
 
 # Mark our repo as not bare
 dotfiles config --local --bool core.bare false

@@ -3,24 +3,23 @@
 # Pulled from cryo utilities for Steam deck
 # https://github.com/CryoByte33/steam-deck-utilities
 
-main()
-{
-  if [ "$(id -u )" -ne 0 ]; then
+main() {
+  if [ "$(id -u)" -ne 0 ]; then
     printf -- 'You must be root.\n'
     return 1
   fi
 
-  echo "always" > /sys/kernel/mm/transparent_hugepage/enabled || {
+  echo "always" >/sys/kernel/mm/transparent_hugepage/enabled || {
     printf -- 'Failed to change hugepages\n'
     return 1
   }
 
-  echo "advise" > /sys/kernel/mm/transparent_hugepage/shmem_enabled || {
+  echo "advise" >/sys/kernel/mm/transparent_hugepage/shmem_enabled || {
     printf -- 'Failed to change hugepages shmem\n'
     return 1
   }
 
-  echo "0" > /sys/kernel/mm/transparent_hugepage/khugepaged/defrag || {
+  echo "0" >/sys/kernel/mm/transparent_hugepage/khugepaged/defrag || {
     printf -- 'Failed to change hugepages defrag\n'
     return 1
   }

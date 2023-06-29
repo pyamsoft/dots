@@ -6,8 +6,7 @@ __game_environment=""
 __game_tools=""
 __env_tools=""
 
-_export_gaming_environment()
-{
+_export_gaming_environment() {
   # Fix weird texture bugs
   # https://github.com/Plagman/gamescope/issues/320
   export AMD_DEBUG=nodcc
@@ -20,11 +19,10 @@ _export_gaming_environment()
   return 0
 }
 
-_get_hostname()
-{
-  if command -v hostnamectl > /dev/null; then
+_get_hostname() {
+  if command -v hostnamectl >/dev/null; then
     __hostname="$(hostnamectl hostname)"
-  elif command -v hostname > /dev/null; then
+  elif command -v hostname >/dev/null; then
     __hostname="$(hostname)"
   fi
 
@@ -37,9 +35,8 @@ _get_hostname()
 # --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
 # You must use Proton-GE from within a flatpak, since Steam pressure-vessel messes up gamescope
 # You must use Super+U to enable FSR in game
-_prepare_gamescope()
-{
-  if command -v gamescope > /dev/null; then
+_prepare_gamescope() {
+  if command -v gamescope >/dev/null; then
     # gamescope
     # https://github.com/Plagman/gamescope
     #
@@ -121,7 +118,6 @@ _prepare_gamescope()
       __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
     fi
 
-
   fi
 
   unset output_width
@@ -135,8 +131,7 @@ _prepare_gamescope()
   return 0
 }
 
-_enable_game_env()
-{
+_enable_game_env() {
   if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -eq 0 ]; then
     unset GAME_VKB
     printf -- '[gametime] Do not enable vkBasalt: "%s"\n' "${FLATPAK_ID}"
@@ -154,7 +149,7 @@ _enable_game_env()
     unset GAME_ZINK
     # Zink OpenGL
     # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
-    __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa" 
+    __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa"
     __game_environment="${__game_environment} MESA_LOADER_DRIVER_OVERRIDE=zink"
     __game_environment="${__game_environment} GALLIUM_DRIVER=zink"
   else
@@ -164,8 +159,7 @@ _enable_game_env()
   return 0
 }
 
-_enable_env_tools()
-{
+_enable_env_tools() {
   if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
     unset GAME_MODE
     printf -- '[gametime] Do not enable gamemode: "%s"\n' "${FLATPAK_ID}"
@@ -174,7 +168,7 @@ _enable_env_tools()
     # https://github.com/nowrep/obs-vkcapture
     #
     # Run using gamemode for slightly more performance
-    if command -v gamemoderun > /dev/null; then
+    if command -v gamemoderun >/dev/null; then
       __env_tools="${__env_tools} gamemoderun"
     fi
   fi
@@ -185,7 +179,7 @@ _enable_env_tools()
     # https://github.com/nowrep/obs-vkcapture
     #
     # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
-    if command -v obs-gamecapture > /dev/null; then
+    if command -v obs-gamecapture >/dev/null; then
       __env_tools="${__env_tools} obs-gamecapture"
     fi
   else
@@ -195,8 +189,7 @@ _enable_env_tools()
   return 0
 }
 
-_enable_game_tools()
-{
+_enable_game_tools() {
   if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -eq 1 ]; then
     unset GAME_HUD
     # Mangohud
@@ -204,7 +197,7 @@ _enable_game_tools()
     #
     # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
     # We must use gamescope to run mangohud, and then use mangohud to run our command.
-    if command -v mangohud > /dev/null; then
+    if command -v mangohud >/dev/null; then
       __game_tools="${__game_tools} mangohud --dlsym"
       export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18,no_display"
     fi
@@ -215,11 +208,10 @@ _enable_game_tools()
   return 0
 }
 
-_enable_flatpak_options()
-{
+_enable_flatpak_options() {
   # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
   if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-    if command -v gamescope > /dev/null; then
+    if command -v gamescope >/dev/null; then
       __gamescope_options="${__gamescope_options} --steam"
     fi
   fi
@@ -227,11 +219,10 @@ _enable_flatpak_options()
   return 0
 }
 
-_execute()
-{
+_execute() {
   unset __hostname
 
-  if command -v gamescope > /dev/null; then
+  if command -v gamescope >/dev/null; then
     printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
       "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
     # shellcheck disable=SC2086
@@ -246,8 +237,7 @@ _execute()
   return 0
 }
 
-main()
-{
+main() {
   if [ -z "${FLATPAK_ID}" ]; then
     printf -- "[gametime] Must run inside flatpak.\n"
     return
