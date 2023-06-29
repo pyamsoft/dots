@@ -74,6 +74,9 @@ main()
 {
   _clear_logs || return 1
 
+  # Wait a little bit
+  sleep 5 || return 1
+
   _startup_programs || return 1
 
   unset _log_path
