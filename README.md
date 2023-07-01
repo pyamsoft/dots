@@ -21,20 +21,7 @@ Use `podman` instead of `docker` to avoid the root daemon
 
 ### Steam (Flatpak)
 
-Sometimes Steam loses the location of game libraries in the "Storage" menu. Going back in to add them
-opens the document portal, which incorrectly adds a /run/user temp path (due to document exporting).
-Make sure you:
-
-1. Have allowed --filesystem access to the library path
-2. Add the library in Steams UI to create the library entry. It will not work but thats fine, we just
-   need it to update a config file.
-3. Close steam once all paths are added
-4. Go into <LIBRARY_PATH>/libraryfolder.vdf and see what the "contentid" is.
-5. Go into <STEAM_ROOT>/steamapps/libraryfolders.vdf and correct the paths of your folder entries.
-   Make sure the "contentid" matches the path of your chosen folder.
-6. Go into <STEAM_ROOT>/config/libraryfolders.vdf and correct the paths of your folder entries.
-   Make sure the "contentid" matches the path of your chosen folder.
-7. Restart steam, should work?
+See notes in `dots/apps/flatpak/games/notes.txt`
 
 ## Flatpak
 
