@@ -1,0 +1,5 @@
+In order to have the test paths show up, you must have an .iml
+file in the root of the module which includes valid data.
+
+The IDE runs just fine without an iml file but will not pick up various configuration
+bits without one.
