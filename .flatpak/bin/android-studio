@@ -8,9 +8,9 @@ readonly self
 
 path="${HOME}/.local/bin"
 path="${path}:/app/extra/android-studio/jre/bin"
-path="${path}:/storage/${self}/devel/android/sdk/emulator"
-path="${path}:/storage/${self}/devel/android/sdk/cdmline-tools/latest/bin"
-path="${path}:/storage/${self}/devel/android/sdk/platform-tools"
+path="${path}:/storage/${self}/devel/sdk/android/emulator"
+path="${path}:/storage/${self}/devel/sdk/android/cdmline-tools/latest/bin"
+path="${path}:/storage/${self}/devel/sdk/android/platform-tools"
 readonly path
 
 cmd=""
@@ -23,6 +23,7 @@ readonly cmd
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="/storage/${self}/devel/android" \
+  --filesystem="/storage/${self}/devel/sdk/android" \
+  --filesystem="/storage/${self}/devel/project" \
   "$@" || exit 1
 exit 0

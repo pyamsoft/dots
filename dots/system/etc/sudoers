@@ -24,8 +24,8 @@ Defaults env_keep += "*_proxy *_PROXY"
 
 root ALL=(ALL:ALL) ALL
 
-# Let pyamsoft run as root
-pyamsoft ALL=(root) ALL
+# Let user 1000 run as root (the # below is not a comment, it indicates a user-ID)
+#1000 ALL=(root) ALL
 
 ## Read drop-in files from /etc/sudoers.d
 ## (the '#' here does not indicate a comment)
