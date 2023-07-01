@@ -77,7 +77,7 @@ _prepare_gamescope() {
       window_type="--borderless"
       output_height=972
       output_width=
-      nested_height=600
+      nested_height=648
       nested_width=
     elif [ "${__hostname}" = "nerd2" ]; then
       printf -- '[gametime] Using nerd2 gamescope defaults\n'
