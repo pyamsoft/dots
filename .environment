@@ -31,7 +31,7 @@ __setup_java()
   if [ "$(uname)" = "Darwin" ] && [ -d "${HOME}/Library/Application Support/Jetbrains/Toolbox" ]; then
     # Java on MacOS is provided by Jetbrains Toolbox
     # This path will change if AS updates.
-    export JAVA_HOME="${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/222.4459.24.2221.10121639/Android Studio.app/Contents/jbr/Contents/Home/"
+    export JAVA_HOME="${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/"*"/Android Studio.app/Contents/jbr/Contents/Home/"
   fi
 }
 

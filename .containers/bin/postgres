@@ -47,7 +47,7 @@ set -xeu
 #
 # shellcheck disable=SC2086
 exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" --pull never \
+  --name "${_name}" --hostname "${_name}" \
   --security-opt no-new-privileges:true --cap-drop ALL \
   --mount type=bind,source="${_mount1}",target=/var/lib/postgresql/data \
   -p 127.0.0.1:5432:5432/tcp \

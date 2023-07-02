@@ -24,7 +24,6 @@ set -xeu
 #
 # shellcheck disable=SC2086
 exec ${_cmd} run \
-  --pull never \
   --security-opt no-new-privileges:true --cap-drop ALL \
   --rm \
   -i -t \

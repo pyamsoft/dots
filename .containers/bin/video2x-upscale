@@ -37,7 +37,6 @@ set -xeu
 #
 # shellcheck disable=SC2086
 exec ${_cmd} run --rm \
-  --pull never \
   --security-opt no-new-privileges:true --cap-drop ALL \
   --device=/dev/dri \
   --mount type=bind,source="$(pwd)",target=/host \
