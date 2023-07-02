@@ -57,16 +57,6 @@ __setup_locale()
 
 __setup_path()
 {
-  # Git tracked scripts
-  if [ -d "${HOME}/bin" ]; then
-    PATH="${HOME}/bin:${PATH}"
-  fi
-
-  # Local scripts that are not git tracked
-  if [ -d "${HOME}/.local/bin" ]; then
-    PATH="${HOME}/.local/bin:${PATH}"
-  fi
-
   # bubblewrap-wrap scripts
   if command -v bww > /dev/null; then
     if [ -d "${HOME}/.bww/bin" ]; then
@@ -97,6 +87,16 @@ __setup_path()
   # Add Jetbrains Toolbox scripts (generally MacOS)
   if [ -d /opt/jetbrains ]; then
     PATH="/opt/jetbrains:${PATH}"
+  fi
+
+  # Git tracked scripts
+  if [ -d "${HOME}/bin" ]; then
+    PATH="${HOME}/bin:${PATH}"
+  fi
+
+  # Local scripts that are not git tracked
+  if [ -d "${HOME}/.local/bin" ]; then
+    PATH="${HOME}/.local/bin:${PATH}"
   fi
 
   # Export the PATH
