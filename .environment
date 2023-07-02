@@ -10,9 +10,20 @@ __setup_systemd()
 __setup_editor()
 {
   # Setup system editors
-  export EDITOR=vim
-  export SYSTEMD_EDITOR=vim
-  export SUDO_EDITOR=vim
+  # Use absolute path to editor
+  _editors="/usr/bin/nvim /usr/bin/vim /usr/bin/vi"
+  for e in ${_editors}; do
+    if [ -f "${e}" ]; then
+      export EDITOR="${e}"
+      export SYSTEMD_EDITOR="${e}"
+      export SUDO_EDITOR="${e}"
+      break
+    fi
+  done;
+
+  unset _editors
+
+  return 0
 }
 
 __setup_java()
