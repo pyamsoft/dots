@@ -16,6 +16,7 @@ readonly _how
 
 readonly _name="syncthing"
 readonly _image="docker.io/syncthing/syncthing"
+readonly _tag="1.23"
 
 readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
 
@@ -76,4 +77,4 @@ exec ${_cmd} run ${_how} \
   ${_health} \
   ${_user} \
   ${_userns} \
-  "${_image}" "$@"
+  "${_image}:${_tag}" "$@"

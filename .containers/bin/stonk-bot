@@ -16,6 +16,7 @@ readonly _how
 
 readonly _name="stonk-bot"
 readonly _image="localhost/pyamsoft/stonk-bot"
+readonly _tag="latest"
 
 # Use docker or podman (priority podman)
 _cmd="docker"
@@ -36,4 +37,4 @@ exec ${_cmd} run ${_how} \
   --name "${_name}" --hostname "${_name}" --pull never \
   --security-opt no-new-privileges:true --cap-drop ALL \
   --init \
-  "${_image}" "$@"
+  "${_image}:${_tag}" "$@"

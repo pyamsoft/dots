@@ -15,7 +15,8 @@ fi
 readonly _how
 
 readonly _name="uptime-kuma"
-readonly _image="docker.io/louislam/uptime-kuma:1"
+readonly _image="docker.io/louislam/uptime-kuma"
+readonly _tag="1"
 
 readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 
@@ -51,4 +52,4 @@ exec ${_cmd} run ${_how} \
   --net=host \
   --cap-add SETGID \
   ${_health} \
-  "${_image}" "$@"
+  "${_image}:${_tag}" "$@"

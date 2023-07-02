@@ -15,7 +15,8 @@ fi
 readonly _how
 
 readonly _name="postgres"
-readonly _image="docker.io/postgres:15"
+readonly _image="docker.io/postgres"
+readonly _tag="15"
 
 readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 
@@ -56,4 +57,4 @@ exec ${_cmd} run ${_how} \
   --cap-add SETUID \
   -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
   ${_user} \
-  "${_image}" "$@"
+  "${_image}:${_tag}" "$@"

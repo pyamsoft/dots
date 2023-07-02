@@ -15,6 +15,9 @@ if [ -z "$2" ]; then
   exit 1
 fi
 
+readonly _image="ghcr.io/k4yt3x/video2x"
+readonly _tag="5.0.0-beta6"
+
 # Use docker or podman (priority podman)
 _cmd="docker"
 if command -v podman >/dev/null; then
@@ -40,4 +43,4 @@ exec ${_cmd} run --rm \
   --mount type=bind,source="$(pwd)",target=/host \
   -i -t \
   ${_userns} \
-  ghcr.io/k4yt3x/video2x:5.0.0-beta6 -i "$1" -o "upscaled-$1" -p3 upscale -h "$2" -a waifu2x -n3
+  "${_image}:${_tag}" -i "$1" -o "upscaled-$1" -p3 upscale -h "$2" -a waifu2x -n3
