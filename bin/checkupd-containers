@@ -56,7 +56,8 @@ _get_latest_tags() {
 }
 
 _check_containers() {
-  _with_root="$1"
+  _amt="$1"
+  _with_root="$2"
 
   _cmd="sudo docker"
   if command -v podman >/dev/null; then
@@ -79,17 +80,19 @@ _check_containers() {
     _ver="$(printf -- '%s' "${_containers}" | awk '{ print $2 }' )"
     _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
 
-    _get_latest_tags "${_name}" "${_ver}" 5 || return 1
+    _get_latest_tags "${_name}" "${_ver}" "${_amt}" || return 1
   done
 }
 
 main() {
-  _check_containers || return 1
+  _count="$1"
+
+  _check_containers "${_count}" || return 1
 
   if [ "$(uname)" != "Darwin" ]; then
     # Check again for root containers
     # We don't do this on MacOS since it runs a VM as root
-    _check_containers "sudo" || return 1
+    _check_containers "${_count}" "sudo" || return 1
   fi
   return 0
 }
