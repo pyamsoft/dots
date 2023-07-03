@@ -1,0 +1,98 @@
+#!/bin/sh
+
+_get_latest_tags() {
+  _container="$1"
+  _version="$2"
+  _number_of_tags="$3"
+
+  if [ -z "${_container}" ] || [ -z "${_version}" ]; then
+    printf -- 'Missing required container or version: %s %s\n' "${_container}" "${_version}"
+    unset _container
+    unset _number_of_tags
+    unset _version
+    return 1
+  fi
+
+  if [ -z "${_number_of_tags}" ]; then
+    _number_of_tags=10
+  fi
+
+  _split_up="$(printf -- '%s' "${_container}" | tr '/' ' ')"
+  _org="$(printf -- '%s' "${_split_up}" | awk '{ print $2 }')"
+  _image="$(printf -- '%s' "${_split_up}" | awk '{ print $3 }')"
+
+  if [ -z "${_org}" ] || [ -z "${_image}" ]; then
+    printf -- 'Invalid container format: %s\n' "${_container}"
+
+    unset _container
+    unset _number_of_tags
+    unset _version
+    unset _split_up
+    unset _org
+    unset _image
+    return 1
+  fi
+
+  printf -- '\nContainer: %s/%s (%s)\n' "${_org}" "${_image}" "${_version}"
+  curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' || {
+    printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
+
+    unset _container
+    unset _number_of_tags
+    unset _version
+    unset _split_up
+    unset _org
+    unset _image
+    return 1
+  }
+
+  unset _container
+  unset _number_of_tags
+  unset _version
+  unset _split_up
+  unset _org
+  unset _image
+  return 0
+}
+
+_check_containers() {
+  _with_root="$1"
+
+  _cmd="sudo docker"
+  if command -v podman >/dev/null; then
+    _cmd="podman"
+  fi
+
+  # Attach root if needed
+  _cmd="${_with_root} ${_cmd}"
+
+  # A string of <name> <version> <name> <version>
+  # shellcheck disable=SC2086
+  _containers="$(${_cmd} images | grep '^docker.io' | awk '{ printf $1 " " $2 " " }')"
+
+  while :; do
+    if [ -z "${_containers}" ]; then
+      break;
+    fi
+
+    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }' )"
+    _ver="$(printf -- '%s' "${_containers}" | awk '{ print $2 }' )"
+    _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
+
+    _get_latest_tags "${_name}" "${_ver}" 5 || return 1
+  done
+}
+
+main() {
+  _check_containers || return 1
+
+  if [ "$(uname)" != "Darwin" ]; then
+    # Check again for root containers
+    # We don't do this on MacOS since it runs a VM as root
+    _check_containers "sudo" || return 1
+  fi
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
