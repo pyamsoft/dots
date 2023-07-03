@@ -11,7 +11,7 @@ __setup_editor()
 {
   # Setup system editors
   # Use absolute path to editor
-  _editors="/opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
+  _editors="${HOME}/.containers/bin ${HOME}/.local/bin /opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
   for e in ${_editors}; do
     if [ -f "${e}" ]; then
       export EDITOR="${e}"
