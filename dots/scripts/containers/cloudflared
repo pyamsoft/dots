@@ -1,5 +1,16 @@
 #!/bin/sh
 
+readonly _name="cloudflared"
+readonly _image="docker.io/cloudflare/cloudflared"
+readonly _tag="1414-cb4bd8d06572"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+fi
+readonly _cmd
+
 # Let it daemonize
 if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
   shift
@@ -8,10 +19,6 @@ else
   _how="--rm"
 fi
 readonly _how
-
-readonly _name="cloudflared"
-readonly _image="docker.io/cloudflare/cloudflared"
-readonly _tag="1414-cb4bd8d06572"
 
 # On MacOS we use a VM, make sure it is rootful to bind to port 53
 if [ "$(uname)" = "Darwin" ]; then
@@ -22,19 +29,11 @@ else
     printf -- 'You must run this as a rootful container\n'
     exit 1
   fi
-
-  readonly _mount1="/usr/local/etc/containers/${_name}/tunnel"
-
-  # Prep the directories
-  mkdir -p "${_mount1}" || exit 1
 fi
 
-# Use docker or podman (priority podman)
-_cmd="docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
+# Prep the directories
+readonly _mount1="/usr/local/etc/containers/${_name}/tunnel"
+mkdir -p "${_mount1}" || exit 1
 
 # We need DAC_OVERRIDE since the tunnel runs as non-rot
 # but our host files are owned by root

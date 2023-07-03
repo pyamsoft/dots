@@ -1,5 +1,16 @@
 #!/bin/sh
 
+readonly _name="uptime-kuma"
+readonly _image="docker.io/louislam/uptime-kuma"
+readonly _tag="1.22.0"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+fi
+readonly _cmd
+
 if [ "$(id -u)" -eq 0 ]; then
   printf -- 'You must run this as a rootless container\n'
   exit 1
@@ -14,21 +25,9 @@ else
 fi
 readonly _how
 
-readonly _name="uptime-kuma"
-readonly _image="docker.io/louislam/uptime-kuma"
-readonly _tag="1"
-
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-
 # Prep the directories
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 mkdir -p "${_mount1}" || exit 1
-
-# Use docker or podman (priority podman)
-_cmd="docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
 
 # systemd --user does not like the healthcheck command
 # disable it.

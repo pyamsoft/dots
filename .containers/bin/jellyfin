@@ -1,9 +1,34 @@
 #!/bin/sh
 
+readonly _name="jellyfin"
+readonly _image="docker.io/jellyfin/jellyfin"
+readonly _tag="10.7.7"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+_userns=""
+if command -v podman >/dev/null; then
+  _cmd="podman"
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  _userns="--userns keep-id"
+fi
+readonly _cmd
+
 if [ "$(id -u)" -eq 0 ]; then
   printf -- 'You must run this as a rootless container\n'
   exit 1
 fi
+
+# Prep the directories
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
+readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
+readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
+readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache" # Transcode shader cache
+mkdir -p "${_mount1}" || exit 1
+mkdir -p "${_mount2}" || exit 1
+mkdir -p "${_mount3}" || exit 1
+mkdir -p "${_mount4}" || exit 1
 
 # Let it daemonize
 if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
@@ -13,34 +38,6 @@ else
   _how="--rm"
 fi
 readonly _how
-
-readonly _name="jellyfin"
-readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.7.7"
-
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
-readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
-
-# Transcode shader cache
-readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache"
-
-# Prep the directories
-mkdir -p "${_mount1}" || exit 1
-mkdir -p "${_mount2}" || exit 1
-mkdir -p "${_mount3}" || exit 1
-mkdir -p "${_mount4}" || exit 1
-
-# Use docker or podman (priority podman)
-_cmd="docker"
-_userns=""
-if command -v podman >/dev/null; then
-  _cmd="podman"
-
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
-fi
-readonly _cmd
 
 # systemd --user does not like the healthcheck command
 # disable it.

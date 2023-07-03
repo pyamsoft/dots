@@ -1,5 +1,18 @@
 #!/bin/sh
 
+readonly _image="ghcr.io/k4yt3x/video2x"
+readonly _tag="5.0.0-beta6"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  _userns="--userns keep-id"
+fi
+readonly _cmd
+
 # Upscale an arbitrary video using video2x container
 #
 # $1 the video file (will be output as upscaled-<NAME>)
@@ -14,19 +27,6 @@ if [ -z "$2" ]; then
   printf -- 'Need a target resolution to upscale\n'
   exit 1
 fi
-
-readonly _image="ghcr.io/k4yt3x/video2x"
-readonly _tag="5.0.0-beta6"
-
-# Use docker or podman (priority podman)
-_cmd="docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
-fi
-readonly _cmd
 
 # Log the commands we use next
 # Fail on errors

@@ -1,9 +1,24 @@
 #!/bin/sh
 
+readonly _name="postgres"
+readonly _image="docker.io/postgres"
+readonly _tag="15.3"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+fi
+readonly _cmd
+
 if [ "$(id -u)" -eq 0 ]; then
   printf -- 'You must run this as a rootless container\n'
   exit 1
 fi
+
+# Prep the directories
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
+mkdir -p "${_mount1}" || exit 1
 
 # Let it daemonize
 if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
@@ -13,22 +28,6 @@ else
   _how="--rm"
 fi
 readonly _how
-
-readonly _name="postgres"
-readonly _image="docker.io/postgres"
-readonly _tag="15"
-
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-
-# Prep the directories
-mkdir -p "${_mount1}" || exit 1
-
-# Use docker or podman (priority podman)
-_cmd="docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
 
 # On MacOS we need to own the files to chown them
 # because just VM things

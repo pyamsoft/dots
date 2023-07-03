@@ -1,30 +1,11 @@
 #!/bin/sh
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
-
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d"
-else
-  _how="--rm"
-fi
-readonly _how
-
 readonly _name="syncthing"
 readonly _image="docker.io/syncthing/syncthing"
-readonly _tag="1.23"
-
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
-
-# Prep the directories
-mkdir -p "${_mount1}" || exit 1
+readonly _tag="1.23.6"
 
 # Use docker or podman (priority podman)
-_cmd="docker"
+_cmd="sudo docker"
 _userns=""
 if command -v podman >/dev/null; then
   _cmd="podman"
@@ -36,6 +17,24 @@ if command -v podman >/dev/null; then
   fi
 fi
 readonly _cmd
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf -- 'You must run this as a rootless container\n'
+  exit 1
+fi
+
+# Prep the directories
+readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
+mkdir -p "${_mount1}" || exit 1
+
+# Let it daemonize
+if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+  shift
+  _how="-d"
+else
+  _how="--rm"
+fi
+readonly _how
 
 # On MacOS we need to own the files to chown them
 # because just VM things

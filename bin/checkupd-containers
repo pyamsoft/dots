@@ -13,10 +13,6 @@ _get_latest_tags() {
     return 1
   fi
 
-  if [ -z "${_number_of_tags}" ]; then
-    _number_of_tags=10
-  fi
-
   _split_up="$(printf -- '%s' "${_container}" | tr '/' ' ')"
   _org="$(printf -- '%s' "${_split_up}" | awk '{ print $2 }')"
   _image="$(printf -- '%s' "${_split_up}" | awk '{ print $3 }')"
@@ -65,11 +61,19 @@ _check_containers() {
   fi
 
   # Attach root if needed
-  _cmd="${_with_root} ${_cmd}"
+  if [ -n "${_with_root}" ]; then
+    _cmd="${_with_root} ${_cmd}"
+  fi
+  unset _with_root
 
   # A string of <name> <version> <name> <version>
   # shellcheck disable=SC2086
-  _containers="$(${_cmd} images | grep '^docker.io' | awk '{ printf $1 " " $2 " " }')"
+  _containers="$(${_cmd} images | grep -e '^docker\.io' -e '^ghcr\.io' | awk '{ printf $1 " " $2 " " }')"
+
+  if [ -z "${_amt}" ]; then
+    printf -- 'Default to the latest 10 tags.\n'
+    _amt=10
+  fi
 
   while :; do
     if [ -z "${_containers}" ]; then
@@ -81,7 +85,13 @@ _check_containers() {
     _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
 
     _get_latest_tags "${_name}" "${_ver}" "${_amt}" || return 1
+    unset _name
+    unset _ver
   done
+
+  unset _amt
+  unset _containers
+  return 0
 }
 
 main() {
@@ -94,6 +104,8 @@ main() {
     # We don't do this on MacOS since it runs a VM as root
     _check_containers "${_count}" "sudo" || return 1
   fi
+
+  unset _count
   return 0
 }
 

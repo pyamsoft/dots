@@ -1,19 +1,19 @@
 #!/bin/sh
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
-
 readonly _image="docker.io/alpine/httpie"
 readonly _tag="3.2.2"
 
 # Use docker or podman (priority podman)
-_cmd="docker"
+_cmd="sudo docker"
 if command -v podman >/dev/null; then
   _cmd="podman"
 fi
 readonly _cmd
+
+if [ "$(id -u)" -eq 0 ]; then
+  printf -- 'You must run this as a rootless container\n'
+  exit 1
+fi
 
 # Log the commands we use next
 # Fail on errors

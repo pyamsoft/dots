@@ -1,5 +1,16 @@
 #!/bin/sh
 
+readonly _name="mousewatch"
+readonly _image="localhost/pyamsoft/mousewatch"
+readonly _tag="latest"
+
+# Use docker or podman (priority podman)
+_cmd="sudo docker"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+fi
+readonly _cmd
+
 if [ "$(id -u)" -eq 0 ]; then
   printf -- 'You must run this as a rootless container\n'
   exit 1
@@ -13,17 +24,6 @@ else
   _how="--rm"
 fi
 readonly _how
-
-readonly _name="mousewatch"
-readonly _image="localhost/pyamsoft/mousewatch"
-readonly _tag="latest"
-
-# Use docker or podman (priority podman)
-_cmd="docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
 
 # Log the commands we use next
 # Fail on errors
