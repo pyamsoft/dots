@@ -3,7 +3,7 @@ Description=Service to set Cryodeck tweaks
 After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
-ExecStart=/usr/local/bin/cryodeck
+ExecStart=/usr/local/sbin/cryodeck
 Type=oneshot
 
 [Install]

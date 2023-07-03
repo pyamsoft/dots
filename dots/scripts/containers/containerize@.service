@@ -4,7 +4,7 @@ After=network-online.target docker.service tailscaled.service mullvad-vpn.servic
 Wants=network-online.target
 
 [Service]
-ExecStart=/bin/sh -c 'podman stop %i; podman rm %i; /usr/local/bin/%i'
+ExecStart=/bin/sh -c 'podman stop %i; podman rm %i; /usr/local/sbin/%i'
 ExecStop=/bin/sh -c 'podman stop %i && podman rm %i'
 
 [Install]
