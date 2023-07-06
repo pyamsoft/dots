@@ -16,7 +16,7 @@ _podman_rootful()
   podman stop adguardhome >> "${_log_path}/adguardhome" 2>&1
   podman rm adguardhome >> "${_log_path}/adguardhome" 2>&1
 
-  /usr/local/bin/adguardhome >> "${_log_path}/adguardhome" 2>&1 &
+  /usr/local/sbin/adguardhome >> "${_log_path}/adguardhome" 2>&1 &
 }
 
 _podman_rootless()
