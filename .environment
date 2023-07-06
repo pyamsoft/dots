@@ -57,6 +57,14 @@ __setup_locale()
 
 __setup_path()
 {
+  # MacOS doesn't have /usr/local/sbin by default.
+  # If we made it, add it
+  if [ "$(uname)" = "Darwin" ]; then
+    if [ -d "/usr/local/sbin" ]; then
+      PATH="/usr/local/sbin:${PATH}"
+    fi  
+  fi
+
   # bubblewrap-wrap scripts
   if command -v bww > /dev/null; then
     if [ -d "${HOME}/.bww/bin" ]; then
@@ -81,7 +89,11 @@ __setup_path()
   # Add local npm repository: used for things like bash-language-server
   # Set the local npm global path with "npm config set prefix ~/.npm/global"
   if command -v npm > /dev/null; then
-    PATH="$(npm config get prefix)/bin:${PATH}"
+    # Don't add the path if we double up on homebrew
+    _npm_path="$(npm config get prefix)"
+    if [ "${_npm_path}" != "/opt/homebrew" ]; then
+      PATH="${_npm_path}/bin:${PATH}"
+    fi
   fi
 
   # Add Jetbrains Toolbox scripts (generally MacOS)
