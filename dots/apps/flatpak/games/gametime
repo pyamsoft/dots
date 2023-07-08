@@ -117,7 +117,9 @@ _prepare_gamescope() {
     if [ -n "${nested_width}" ]; then
       __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
     fi
-
+    printf -- '[gametime] gamescope renderer: YES\n'
+  else
+    printf -- '[gametime] gamescope renderer: NO\n'
   fi
 
   unset output_width
@@ -134,7 +136,7 @@ _prepare_gamescope() {
 _enable_game_env() {
   if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -eq 0 ]; then
     unset GAME_VKB
-    printf -- '[gametime] Do not enable vkBasalt: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] vkBasalt post processing: NO\n'
   else
     # vkBasalt
     # https://github.com/DadSchoorse/vkBasalt
@@ -142,18 +144,23 @@ _enable_game_env() {
     # Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
     if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
       __game_environment="${__game_environment} ENABLE_VKBASALT=1"
+      printf -- '[gametime] vkBasalt post processing: YES\n'
+    else
+      printf -- '[gametime] vkBasalt post processing: NO\n'
     fi
   fi
 
   if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
     unset GAME_ZINK
+
+    printf -- '[gametime] Zink for OpenGL over Vulkan: YES\n'
     # Zink OpenGL
     # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
     __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa"
     __game_environment="${__game_environment} MESA_LOADER_DRIVER_OVERRIDE=zink"
     __game_environment="${__game_environment} GALLIUM_DRIVER=zink"
   else
-    printf -- '[gametime] Do not enable Zink over OpenGL: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] Zink for OpenGL over Vulkan: NO\n'
   fi
 
   return 0
@@ -162,14 +169,17 @@ _enable_game_env() {
 _enable_env_tools() {
   if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
     unset GAME_MODE
-    printf -- '[gametime] Do not enable gamemode: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] GameMode performance tweaks: NO\n'
   else
     # Game mode
     # https://github.com/nowrep/obs-vkcapture
     #
     # Run using gamemode for slightly more performance
     if command -v gamemoderun >/dev/null; then
+      printf -- '[gametime] GameMode performance tweaks: YES\n'
       __env_tools="${__env_tools} gamemoderun"
+    else
+      printf -- '[gametime] GameMode performance tweaks: NO\n'
     fi
   fi
 
@@ -181,9 +191,12 @@ _enable_env_tools() {
     # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
     if command -v obs-gamecapture >/dev/null; then
       __env_tools="${__env_tools} obs-gamecapture"
+      printf -- '[gametime] OBS Game Capture: YES\n'
+    else
+      printf -- '[gametime] OBS Game Capture: NO\n'
     fi
   else
-    printf -- '[gametime] Do not enable OBS capture: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] OBS Game Capture: NO\n'
   fi
 
   return 0
@@ -200,9 +213,12 @@ _enable_game_tools() {
     if command -v mangohud >/dev/null; then
       __game_tools="${__game_tools} mangohud --dlsym"
       export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18"
+      printf -- '[gametime] MangoHud performance overlay: YES\n'
+    else
+      printf -- '[gametime] MangoHud performance overlay: NO\n'
     fi
   else
-    printf -- '[gametime] Do not enable Mangohud: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] MangoHud performance overlay: NO\n'
   fi
 
   return 0
@@ -213,7 +229,12 @@ _enable_flatpak_options() {
   if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
     if command -v gamescope >/dev/null; then
       __gamescope_options="${__gamescope_options} --steam"
+      printf -- '[gametime] Steam specific gamescope options: YES\n'
+    else
+      printf -- '[gametime] Steam specific gamescope options: NO\n'
     fi
+  else
+    printf -- '[gametime] Steam specific gamescope options: NO\n'
   fi
 
   return 0
