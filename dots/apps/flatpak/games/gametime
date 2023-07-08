@@ -71,23 +71,16 @@ _prepare_gamescope() {
     if [ "${__hostname}" = "nerd1" ]; then
       printf -- '[gametime] Using nerd1 gamescope defaults\n'
 
-      # For nerd1, since we only have an iGPU, we use a nested res of 1152x648 which is a true res,
-      # and upscale it to an output of 1.5x=972
-
-      window_type="--borderless"
+      # For nerd1, since we only have an iGPU, we use a nested res of 720p for game
+      # compatibility, and upscale it to an output of 927 (not 1080 as it taxes too much)
       output_height=972
-      output_width=
-      nested_height=648
-      nested_width=
     elif [ "${__hostname}" = "nerd2" ]; then
       printf -- '[gametime] Using nerd2 gamescope defaults\n'
+
+      # nerd2 we just play in fullscreen
       window_type="--fullscreen"
-      output_height=1080
-      output_width=
-      nested_height=720
-      nested_width=
     else
-      printf -- '[gametime] Hostname "%s" unknown, use 1080p defaults\n' "${__hostname}"
+      printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
     fi
 
     if [ -n "${GAME_RES}" ]; then
@@ -113,7 +106,10 @@ _prepare_gamescope() {
     __gamescope_options="${__gamescope_options} ${window_type}"
     __gamescope_options="${__gamescope_options} --output-height ${output_height}"
     __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
-    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 20"
+
+    # Apply most sharpness through gamescope so it works for OpenGL
+    # Then use vkBasalt for any slight extra
+    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 2"
 
     if [ -n "${output_width}" ]; then
       __gamescope_options="${__gamescope_options} --output-width ${output_width}"
