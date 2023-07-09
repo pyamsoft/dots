@@ -14,6 +14,12 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly cmd
 
+# Sometimes steam messes up and deletes our library paths
+# https://wiki.archlinux.org/title/Steam/Troubleshooting#Cannot_browse_filesystem_to_add_a_library_folder_or_library_folder_appears_as_empty
+
+touch "/storage/${self}/games/steam" || return 1
+touch "/storage/${self}/games2/steam" || return 1
+
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
