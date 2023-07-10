@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Add Android tools to the PATH
+PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
+PATH="${HOME}/devel/sdk/android/cmdline-tools/latest/bin:${PATH}"
+export PATH
+
+# Java on MacOS is provided by Jetbrains Toolbox
+for version in "${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/"*; do
+  export JAVA_HOME="${version}/Android Studio.app/Contents/jbr/Contents/Home/"
+  break
+done
+
+if [ -z "${JAVA_HOME}" ]; then
+  printf -- 'Could not find JAVA_HOME in %s\n' "${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0"
+  exit 1
+fi
+
+# Launch Android Studio
+exec open "${HOME}/Applications/JetBrains Toolbox/Android Studio.app"

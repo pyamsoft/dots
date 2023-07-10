@@ -21,7 +21,7 @@ Use `podman` instead of `docker` to avoid the root daemon
 
 ### Steam (Flatpak)
 
-See notes in `dots/apps/flatpak/games/notes.txt`
+See notes in `dots/apps/linux/flatpak/games/notes.txt`
 
 ## Flatpak
 
