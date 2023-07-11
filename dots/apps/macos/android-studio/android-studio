@@ -1,13 +1,10 @@
 #!/bin/sh
 
-# Add Android tools to the PATH
-PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
-PATH="${HOME}/devel/sdk/android/cmdline-tools/latest/bin:${PATH}"
-export PATH
-
 # Java on MacOS is provided by Jetbrains Toolbox
+AS_PATH=""
 for version in "${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/"*; do
-  export JAVA_HOME="${version}/Android Studio.app/Contents/jbr/Contents/Home/"
+  AS_PATH="${version}/Android Studio.app/Contents"
+  export JAVA_HOME="${AS_PATH}/jbr/Contents/Home/"
   break
 done
 
@@ -16,5 +13,18 @@ if [ -z "${JAVA_HOME}" ]; then
   exit 1
 fi
 
-# Launch Android Studio
-exec open "${HOME}/Applications/JetBrains Toolbox/Android Studio.app"
+# Add Android tools to the PATH
+PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
+PATH="${HOME}/devel/sdk/android/cmdline-tools/latest/bin:${PATH}"
+
+# Kotlin tools
+PATH="${AS_PATH}/plugins/Kotlin/kotlinc/bin:${PATH}"
+export PATH
+
+if [ "$1" = "--shell" ]; then
+  shift
+  exec bash "$@"
+else
+  # Launch Android Studio
+  exec open "${HOME}/Applications/JetBrains Toolbox/Android Studio.app" "$@"
+fi
