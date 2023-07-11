@@ -16,9 +16,12 @@ readonly cmd
 
 # Sometimes steam messes up and deletes our library paths
 # https://wiki.archlinux.org/title/Steam/Troubleshooting#Cannot_browse_filesystem_to_add_a_library_folder_or_library_folder_appears_as_empty
-
-touch "/storage/${self}/games/steam" || return 1
-touch "/storage/${self}/games2/steam" || return 1
+if [ -e "/storage/${self}/games/steam" ]; then
+  touch "/storage/${self}/games/steam" || return 1
+fi
+if [ -e "/storage/${self}/games2/steam" ]; then
+  touch "/storage/${self}/games2/steam" || return 1
+fi
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \

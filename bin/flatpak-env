@@ -16,6 +16,32 @@ __source_existing_env() {
   return 0
 }
 
+_pass_through_proxy_env() {
+  if [ -n "${http_proxy}" ]; then
+    __fp_env="${__fp_env} --env=http_proxy=${http_proxy}"
+  fi
+
+  if [ -n "${https_proxy}" ]; then
+    __fp_env="${__fp_env} --env=https_proxy=${https_proxy}"
+  fi
+
+  if [ -n "${no_proxy}" ]; then
+    __fp_env="${__fp_env} --env=no_proxy=${no_proxy}"
+  fi
+
+  if [ -n "${HTTP_PROXY}" ]; then
+    __fp_env="${__fp_env} --env=HTTP_PROXY=${HTTP_PROXY}"
+  fi
+
+  if [ -n "${HTTPS_PROXY}" ]; then
+    __fp_env="${__fp_env} --env=HTTPS_PROXY=${HTTPS_PROXY}"
+  fi
+
+  if [ -n "${NO_PROXY}" ]; then
+    __fp_env="${__fp_env} --env=NO_PROXY=${NO_PROXY}"
+  fi
+}
+
 ##
 # Compile environment
 __compile_env() {
@@ -97,33 +123,34 @@ main() {
       shift
 
       # Compile the environment
-      if [ -z "${__fp_env}" ]; then
-        __fp_env="$(__compile_env "${__flatpak}" "$1" "$2" "$3")"
-      else
-        __fp_env="${__fp_env} $(__compile_env "${__flatpak}" "$1" "$2" "$3")"
-      fi
+      __fp_env="${__fp_env} $(__compile_env "${__flatpak}" "$1" "$2" "$3")"
 
       # Eat the arguments
       shift
       shift
       shift
     else
-      if [ -z "${__fp_env}" ]; then
-        __fp_env="$1"
-      else
-        __fp_env="${__fp_env} $1"
-      fi
+      __fp_env="${__fp_env} $1"
 
       # Eat argument
       shift
     fi
   done
 
+  # Capture proxy environment
+  _pass_through_proxy_env
+
   # Run the flatpak or a shell in the flatpak (use /bin/sh, if you need bash, run it in shell)
-  printf -- 'Running flatpak [%s] with "%s"\n' "${__flatpak}" "${__fp_env}"
   if [ "${__run_shell}" -eq 1 ]; then
     __fp_env="${__fp_env} --command=/bin/sh"
   fi
+
+  if [ -z "${__fp_env}" ]; then
+    printf -- 'Running flatpak [%s]\n' "${__flatpak}"
+  else
+    printf -- 'Running flatpak [%s] with "%s"\n' "${__flatpak}" "${__fp_env}"
+  fi
+
 
   # shellcheck disable=SC2086
   exec flatpak run ${__fp_env} "${__flatpak}" || return 1
