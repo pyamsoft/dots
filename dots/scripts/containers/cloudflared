@@ -2,7 +2,7 @@
 
 readonly _name="cloudflared"
 readonly _image="docker.io/cloudflare/cloudflared"
-readonly _tag="1414-cb4bd8d06572"
+readonly _tag="2023.7.0"
 
 # Use docker or podman (priority podman)
 _cmd="sudo docker"
