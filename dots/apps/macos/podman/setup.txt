@@ -1,0 +1,14 @@
+You will need to setup the podman machine as rootful for AdguardHome
+
+$ podman machine init --rootful
+
+Then once setup you must start the machine and SSH into it
+
+podman machine ssh
+
+Once inside coreos, you must edit systemd-resolved at /etc/systemd/resolved.conf
+to not run a local stub listener `DNSStubListener=no`.
+
+Unlink `/etc/resolv.conf` and add a file pointing to `nameserver 127.0.0.1`
+
+Then restart systemd-resolved, and you can launch adguardhome
