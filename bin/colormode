@@ -46,14 +46,14 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
 
     # XFCE4 terminal
-    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#1E1E2E/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#11111B/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#585B70/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#585B70/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FAB387/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#45475A;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#BAC2DE;#585B70;#F38BA8;#A6E3A1;#F9E2AF;#89B4FA;#F5C2E7;#94E2D5;#A6ADC8/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#24273A/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#181926/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#F5A97F/' ~/.config/xfce4/terminal/terminalrc
+    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#494D64;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#B8C0E0;#5B6078;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#A5ADCB/' ~/.config/xfce4/terminal/terminalrc
 
     # GNOME Desktop
     gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"   # GTK-3
