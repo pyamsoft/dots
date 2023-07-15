@@ -32,10 +32,12 @@ rng-tools
 rofi
 sane-airscan
 simple-scan
+smartmontools
 socat
 starship
 tailscale
 tmux
+tree-sitter-cli
 ttf-cascadia-code-nerd
 ttf-liberation
 xdg-user-dirs
