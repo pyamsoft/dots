@@ -12,7 +12,7 @@ import iterm2
 
 # Change according to your preferences
 LIGHT_COLOR_PRESET = 'catppuccin-latte'
-DARK_COLOR_PRESET  = 'catppuccin-mocha'
+DARK_COLOR_PRESET  = 'catppuccin-macchiato'
 
 
 async def set_theme(connection: iterm2.connection.Connection, dark: bool):

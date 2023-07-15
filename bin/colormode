@@ -8,15 +8,15 @@ fi
 if [ "$1" = "light" ] || [ "$1" = "l" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    sed -i '' 's/catppuccin-mocha/catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '' 's/@catppuccin_flavour "mocha"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' ~/.config/lvim/config.lua
+    sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
   else
     # Linux is GNU sed
-    sed -i '0,/catppuccin-mocha/s//catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '0,/@catppuccin_flavour "mocha"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' ~/.config/lvim/config.lua
+    sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
 
     # XFCE4 terminal
     sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
@@ -35,15 +35,15 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    sed -i '' 's/catppuccin-latte/catppuccin-mocha/' ~/.config/lvim/config.lua
-    sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "mocha"/' ~/.config/tmux/tmux.conf
+    sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' ~/.config/lvim/config.lua
+    sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to dark mode'
   else
     # Linux is GNU sed
-    sed -i '0,/catppuccin-latte/s//catppuccin-mocha/' ~/.config/lvim/config.lua
-    sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "mocha"/' ~/.config/tmux/tmux.conf
+    sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' ~/.config/lvim/config.lua
+    sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
 
     # XFCE4 terminal
     sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CDD6F4/' ~/.config/xfce4/terminal/terminalrc

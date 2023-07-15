@@ -4,7 +4,7 @@ lvim.format_on_save = false
 lvim.transparent_window = false -- For transparent windows
 
 -- Theme
-lvim.colorscheme = "catppuccin-mocha"
+lvim.colorscheme = "catppuccin-macchiato"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
@@ -85,4 +85,7 @@ lvim.builtin.which_key.mappings["q"] = { "<cmd>q<CR>", "Quit" }
 lvim.builtin.which_key.mappings["Q"] = { "<cmd>q!<CR>", "Quit without Saving" }
 lvim.builtin.which_key.mappings["d"] = { "<cmd>bdelete<CR>", "Delete Buffer" }
 lvim.builtin.which_key.mappings["D"] = { "<cmd>bdelete!<CR>", "Delete Buffer without Saving" }
+
+-- Telescope on Leader+; (we don't use alpha)
+lvim.builtin.which_key.mappings[";"] = { "<cmd>Telescope<CR>", "Telescope" }
 
