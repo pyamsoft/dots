@@ -9,11 +9,12 @@ _mounts=""
 _options="--shell"
 _cmd_opt=""
 
-# If the config exists, mount it
-_config="${HOME}/.config/lvim/config.lua"
-if [ -f "${_config}" ]; then
-  _options="${_options} --bind-if-exists ${_config}"
-fi
+# Bind existing files
+_options="${_options} --bind-if-exists ${HOME}/.config/lvim/config.lua"
+
+# For tmux compatibility
+_options="${_options} --bind-if-exists ${HOME}/.config/tmux/tmux.conf"
+_options="${_options} --bind-if-exists /tmp/tmux-1000/default"
 
 # Export lunarvim environment
 if [ -n "${LUNARVIM_RUNTIME_DIR}" ]; then
@@ -85,9 +86,17 @@ _res="$?"
 # Clean up jail files (they are now empty in the host system)
 for f in ${_jail_files}; do
   ff="${HOME}/.local/etc/bubblewrap/nvim/home/$f"
-  rm -f "${ff}" || { 
-    printf -- 'Failed to clean up bound file: %s\n' "$ff"
-  }
+  if [ -f "${ff}" ]; then
+    rm -f "${ff}" || {
+      printf -- 'Failed to clean up bound file: %s\n' "${ff}"
+    }
+  elif [ -d "${ff}" ]; then
+    rmdir -f "${ff}" || {
+      printf -- 'Failed to clean up bound directory: %s\n' "${ff}"
+    }
+  else
+    printf -- 'Unable to cleanup bound target: %s\n' "${ff}"
+  fi
   unset ff
   unset f
 done
@@ -95,9 +104,9 @@ done
 # Clean up
 for f in ${_rm_files}; do
   if file "$f" | grep -q '^.*: empty$'; then
-  rm -f "$f" || { 
-    printf -- 'Failed to clean up empty file: %s\n' "$f"
-  }
+    rm -f "$f" || {
+      printf -- 'Failed to clean up empty file: %s\n' "$f"
+    }
   fi
   unset f
 done
