@@ -1,0 +1,88 @@
+#!/bin/sh
+
+readonly command_name="/usr/bin/nvim"
+
+_rm_files=""
+_files=""
+_mounts=""
+_options="--shell"
+_cmd_opt=""
+
+# If the config exists, mount it
+_config="${HOME}/.config/lvim/config.lua"
+if [ -f "${_config}" ]; then
+  _options="${_options} --bind-if-exists ${_config}"
+fi
+
+# Export lunarvim environment
+if [ -n "${LUNARVIM_RUNTIME_DIR}" ]; then
+  _options="${_options} --setenv LUNARVIM_RUNTIME_DIR ${LUNARVIM_RUNTIME_DIR}"
+fi
+if [ -n "${LUNARVIM_CONFIG_DIR}" ]; then
+  _options="${_options} --setenv LUNARVIM_CONFIG_DIR ${LUNARVIM_CONFIG_DIR}"
+fi
+if [ -n "${LUNARVIM_CACHE_DIR}" ]; then
+  _options="${_options} --setenv LUNARVIM_CACHE_DIR ${LUNARVIM_CACHE_DIR}"
+fi
+if [ -n "${LUNARVIM_BASE_DIR}" ]; then
+  _options="${_options} --setenv LUNARVIM_BASE_DIR ${LUNARVIM_BASE_DIR}"
+fi
+
+# For each file passed in, create a bind random mount
+for f in "$@"; do
+  _full_path=""
+  case "$f" in
+    -*)
+      # Option
+      _cmd_opt="${_cmd_opt} $f"
+      continue;
+      ;;
+    /*)
+      # Absolute path
+      _full_path="$f"
+      ;;
+    *)
+      # Relative path
+      _full_path="$(pwd)/$f"
+      ;;
+  esac
+
+  # Ensure the file exists (in case we are making a new file)
+  touch "${_full_path}" && {
+    _filename=$(basename -- "${_full_path}")
+    _extension="${_filename##*.}"
+    _rel_jail_path="bind-$(cat /proc/sys/kernel/random/uuid).${_extension}"
+    _jail_path="${HOME}/${_rel_jail_path}"
+    _options="${_options} --bind ${_full_path} ${_jail_path}"
+    _files="${_files} ${_jail_path}"
+    _rm_files="${_rm_files} ${_rel_jail_path}"
+  }
+
+  unset _filename
+  unset _extension
+  unset _jail_path
+  unset _full_path
+  unset f
+done
+
+
+# shellcheck disable=SC2086
+bww ${_options} ${_mounts} "${command_name}" ${_cmd_opt} -c "${HOME}/.local/bin/lvim ${_files}"
+
+# Clean up
+for f in ${_rm_files}; do
+  ff="${HOME}/.local/etc/bubblewrap/nvim/home/$f"
+  rm -f "${ff}" || { 
+  printf -- 'Failed to clean up bound file: %s\n' "$ff"
+}
+  unset ff
+  unset f
+done
+
+unset _rm_files
+unset _files
+unset _mounts
+unset _options
+unset _cmd_opt
+
+exit 0
