@@ -3,6 +3,7 @@
 readonly command_name="/usr/bin/nvim"
 
 _rm_files=""
+_jail_files=""
 _files=""
 _mounts=""
 _options="--shell"
@@ -49,17 +50,16 @@ for f in "$@"; do
 
   # Ensure the file exists (in case we are making a new file)
   touch "${_full_path}" && {
-    _filename=$(basename -- "${_full_path}")
-    _extension="${_filename##*.}"
-    _rel_jail_path="bind-$(cat /proc/sys/kernel/random/uuid).${_extension}"
+    _filename="$(basename -- "${_full_path}")"
+    _rel_jail_path="bind-$(cat /proc/sys/kernel/random/uuid)-${_filename}"
     _jail_path="${HOME}/${_rel_jail_path}"
     _options="${_options} --bind ${_full_path} ${_jail_path}"
     _files="${_files} ${_jail_path}"
-    _rm_files="${_rm_files} ${_rel_jail_path}"
+    _jail_files="${_jail_files} ${_rel_jail_path}"
+    _rm_files="${_rm_files} ${_full_path}"
   }
 
   unset _filename
-  unset _extension
   unset _jail_path
   unset _full_path
   unset f
@@ -68,21 +68,23 @@ done
 
 # shellcheck disable=SC2086
 bww ${_options} ${_mounts} "${command_name}" ${_cmd_opt} -c "${HOME}/.local/bin/lvim ${_files}"
+_res="$?"
 
 # Clean up
-for f in ${_rm_files}; do
+for f in ${_jail_files}; do
   ff="${HOME}/.local/etc/bubblewrap/nvim/home/$f"
   rm -f "${ff}" || { 
-  printf -- 'Failed to clean up bound file: %s\n' "$ff"
-}
+    printf -- 'Failed to clean up bound file: %s\n' "$ff"
+  }
   unset ff
   unset f
 done
 
 unset _rm_files
+unset _jail_files
 unset _files
 unset _mounts
 unset _options
 unset _cmd_opt
 
-exit 0
+exit "${_res}"
