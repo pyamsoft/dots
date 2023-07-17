@@ -6,7 +6,7 @@ _rm_files=""
 _jail_files=""
 _files=""
 _mounts=""
-_options="--shell"
+_options=""
 _cmd_opt=""
 
 # Bind existing files
@@ -15,20 +15,6 @@ _options="${_options} --bind-if-exists ${HOME}/.config/lvim/config.lua"
 # For tmux compatibility
 _options="${_options} --bind-if-exists ${HOME}/.config/tmux/tmux.conf"
 _options="${_options} --bind-if-exists /tmp/tmux-1000/default"
-
-# Export lunarvim environment
-if [ -n "${LUNARVIM_RUNTIME_DIR}" ]; then
-  _options="${_options} --setenv LUNARVIM_RUNTIME_DIR ${LUNARVIM_RUNTIME_DIR}"
-fi
-if [ -n "${LUNARVIM_CONFIG_DIR}" ]; then
-  _options="${_options} --setenv LUNARVIM_CONFIG_DIR ${LUNARVIM_CONFIG_DIR}"
-fi
-if [ -n "${LUNARVIM_CACHE_DIR}" ]; then
-  _options="${_options} --setenv LUNARVIM_CACHE_DIR ${LUNARVIM_CACHE_DIR}"
-fi
-if [ -n "${LUNARVIM_BASE_DIR}" ]; then
-  _options="${_options} --setenv LUNARVIM_BASE_DIR ${LUNARVIM_BASE_DIR}"
-fi
 
 # For each file passed in, create a bind random mount
 for f in "$@"; do
@@ -79,9 +65,16 @@ for f in "$@"; do
 done
 
 
-# shellcheck disable=SC2086
-bww ${_options} ${_mounts} "${command_name}" ${_cmd_opt} -c "${HOME}/.local/bin/lvim ${_files}"
-_res="$?"
+if [ -f "${HOME}/.local/etc/bubblewrap/nvim/home/.local/bin/lvim" ]; then
+  _options="${_options} --shell"
+  # shellcheck disable=SC2086
+  bww ${_options} ${_mounts} "${command_name}" ${_cmd_opt} -c "${HOME}/.local/bin/lvim ${_files}"
+  _res="$?"
+else
+  # shellcheck disable=SC2086
+  bww ${_options} ${_mounts} "${command_name}" ${_cmd_opt} ${_files}
+  _res="$?"
+fi
 
 # Clean up jail files (they are now empty in the host system)
 for f in ${_jail_files}; do
