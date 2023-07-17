@@ -11,7 +11,7 @@ __setup_editor()
 {
   # User editor can be from a local script
   # Use absolute path to editor
-  _editors="${HOME}/.local/bin/nvim ${HOME}/.containers/bin/nvim ${HOME}/.bww/bin/nvim /opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
+  _editors="${HOME}/.local/bin/lvim ${HOME}/.containers/bin/nvim ${HOME}/.bww/bin/nvim /opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
   for e in ${_editors}; do
     if [ -f "${e}" ]; then
       export EDITOR="${e}"
