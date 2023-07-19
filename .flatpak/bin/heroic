@@ -14,9 +14,20 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly cmd
 
+# Gamescope LD_LIBRARY_PATH fix
+readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib"
+_def_ld_path=""
+if [ -n "${LD_LIBRARY_PATH}" ]; then
+  _def_ld_path=":${LD_LIBRARY_PATH}"
+else
+  _def_ld_path=""
+fi
+readonly _def_ld_path
+
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
+  --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --filesystem="/home/${self}/games/heroic" \
   --filesystem="/storage/${self}/games/heroic" \
   --filesystem="/storage/${self}/games2/heroic" \
