@@ -36,91 +36,87 @@ _get_hostname() {
 # You must use Proton-GE from within a flatpak, since Steam pressure-vessel messes up gamescope
 # You must use Super+U to enable FSR in game
 _prepare_gamescope() {
-  if command -v gamescope >/dev/null; then
-    # gamescope
-    # https://github.com/Plagman/gamescope
-    #
-    # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
-    # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
-    #
-    # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-    #
-    # NOTE: If we only provide a height, gamescope will assume the width as 16x9
-    #
-    # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
-    #       If you open the settings in game, your FPS will go to 2.
-    #       Run it with GAME_FSR=1
-    #
-    # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
-    #       Or run it with GAME_FSR=1
-    #
-    # NOTE: FSR performance is 2.0x nested resolution.
-    # NOTE: FSR balanced is 1.7x nested resolution.
-    # NOTE: FSR quality is 1.5x nested resolution.
-    #
-    # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
-    # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+  # gamescope
+  # https://github.com/Plagman/gamescope
+  #
+  # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
+  # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
+  #
+  # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
+  #
+  # NOTE: If we only provide a height, gamescope will assume the width as 16x9
+  #
+  # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
+  #       If you open the settings in game, your FPS will go to 2.
+  #       Run it with GAME_FSR=1
+  #
+  # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
+  #       Or run it with GAME_FSR=1
+  #
+  # NOTE: FSR performance is 2.0x nested resolution.
+  # NOTE: FSR balanced is 1.7x nested resolution.
+  # NOTE: FSR quality is 1.5x nested resolution.
+  #
+  # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
+  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 
-    # Defaults to 1080p
-    window_type="--borderless"
-    output_height=1080
-    output_width=
-    nested_height=720
-    nested_width=
+  # Defaults to 1080p
+  window_type="--borderless"
+  output_height=1080
+  output_width=
+  nested_height=720
+  nested_width=
 
-    if [ "${__hostname}" = "nerd1" ]; then
-      printf -- '[gametime] Using nerd1 gamescope defaults\n'
+  if [ "${__hostname}" = "nerd1" ]; then
+    printf -- '[gametime] Using nerd1 gamescope defaults\n'
 
-      # For nerd1, since we only have an iGPU, we use a nested res of 720p for game
-      # compatibility, and upscale it to an output of 927 (not 1080 as it taxes too much)
-      output_height=972
-    elif [ "${__hostname}" = "nerd2" ]; then
-      printf -- '[gametime] Using nerd2 gamescope defaults\n'
+    # For nerd1, since we only have an iGPU, we use a nested res of 720p for game
+    # compatibility, and upscale it to an output of 927 (not 1080 as it taxes too much)
+    output_height=972
+  elif [ "${__hostname}" = "nerd2" ]; then
+    printf -- '[gametime] Using nerd2 gamescope defaults\n'
 
-      # nerd2 we just play in fullscreen
-      window_type="--fullscreen"
-    else
-      printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
-    fi
-
-    if [ -n "${GAME_RES}" ]; then
-      output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
-      output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
-      unset GAME_RES
-    fi
-
-    # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
-    # gametime so that gamescope will not apply its rougher implementation of FSR1.
-    if [ -n "${GAME_FSR}" ] && [ "${GAME_FSR}" -ne 0 ]; then
-      unset GAME_FSR
-
-      # Game has its own FSR, or does not want FSR
-      nested_height="${output_height}"
-      if [ -n "${output_width}" ]; then
-        nested_width="${output_width}"
-      fi
-    fi
-
-    # Options passed to gamescope session
-    # 0 is max sharpness, 20 is min sharpness
-    __gamescope_options="${__gamescope_options} ${window_type}"
-    __gamescope_options="${__gamescope_options} --output-height ${output_height}"
-    __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
-
-    # Apply most sharpness through gamescope so it works for OpenGL
-    # Then use vkBasalt for any slight extra
-    __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 2"
-
-    if [ -n "${output_width}" ]; then
-      __gamescope_options="${__gamescope_options} --output-width ${output_width}"
-    fi
-    if [ -n "${nested_width}" ]; then
-      __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
-    fi
-    printf -- '[gametime] gamescope renderer: YES\n'
+    # nerd2 we just play in fullscreen
+    window_type="--fullscreen"
   else
-    printf -- '[gametime] gamescope renderer: NO\n'
+    printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
   fi
+
+  if [ -n "${GAME_RES}" ]; then
+    output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
+    output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
+    unset GAME_RES
+  fi
+
+  # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
+  # gametime so that gamescope will not apply its rougher implementation of FSR1.
+  if [ -n "${GAME_FSR}" ] && [ "${GAME_FSR}" -ne 0 ]; then
+    unset GAME_FSR
+
+    # Game has its own FSR, or does not want FSR
+    nested_height="${output_height}"
+    if [ -n "${output_width}" ]; then
+      nested_width="${output_width}"
+    fi
+  fi
+
+  # Options passed to gamescope session
+  # 0 is max sharpness, 20 is min sharpness
+  __gamescope_options="${__gamescope_options} ${window_type}"
+  __gamescope_options="${__gamescope_options} --output-height ${output_height}"
+  __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
+
+  # Apply most sharpness through gamescope so it works for OpenGL
+  # Then use vkBasalt for any slight extra
+  __gamescope_options="${__gamescope_options} --fsr-upscaling --fsr-sharpness 2"
+
+  if [ -n "${output_width}" ]; then
+    __gamescope_options="${__gamescope_options} --output-width ${output_width}"
+  fi
+  if [ -n "${nested_width}" ]; then
+    __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
+  fi
+  printf -- '[gametime] gamescope renderer: YES\n'
 
   unset output_width
   unset output_height
@@ -227,12 +223,8 @@ _enable_game_tools() {
 _enable_flatpak_options() {
   # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
   if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-    if command -v gamescope >/dev/null; then
-      __gamescope_options="${__gamescope_options} --steam"
-      printf -- '[gametime] Steam specific gamescope options: YES\n'
-    else
-      printf -- '[gametime] Steam specific gamescope options: NO\n'
-    fi
+    __gamescope_options="${__gamescope_options} --steam"
+    printf -- '[gametime] Steam specific gamescope options: YES\n'
   else
     printf -- '[gametime] Steam specific gamescope options: NO\n'
   fi
@@ -243,17 +235,10 @@ _enable_flatpak_options() {
 _execute() {
   unset __hostname
 
-  if command -v gamescope >/dev/null; then
-    printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
-      "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
-    # shellcheck disable=SC2086
-    exec env ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
-  else
-    printf -- '[gametime] env %s %s %s %s' \
-      "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
-    # shellcheck disable=SC2086
-    exec env ${__env_tools} ${__game_environment} ${__game_tools} "$@"
-  fi
+  printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
+    "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+  # shellcheck disable=SC2086
+  exec env ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
 
   return 0
 }
@@ -262,6 +247,11 @@ main() {
   if [ -z "${FLATPAK_ID}" ]; then
     printf -- "[gametime] Must run inside flatpak.\n"
     return
+  fi
+
+  if ! command -v gamescope > /dev/null; then
+    printf -- '[gametime] Unable to find gamescope binary\n'
+    return 1
   fi
 
   _export_gaming_environment || {
