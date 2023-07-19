@@ -5,7 +5,7 @@ readonly self
 
 readonly pak="io.openrct2.OpenRCT2"
 readonly def_path="/app/bin:/usr/bin"
-readonly path="${HOME}/.local/bin"
+readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin"
 
 cmd=""
 if [ "$1" = "--shell" ]; then
