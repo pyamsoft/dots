@@ -32,7 +32,6 @@ boost-libs
 brotli
 bubblewrap
 bzip2
-c-ares
 ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
@@ -415,7 +414,6 @@ netavark
 nettle
 networkmanager
 nftables
-nodejs
 noto-fonts-cjk
 noto-fonts-emoji
 npth
