@@ -65,6 +65,9 @@ _check_health() {
 }
 
 _containerize() {
+  # Add extra env before the set -x
+  _env="-e PUID=$(id -u) -e PGID=$(id -g)"
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -75,8 +78,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    -e PUID="$(id -u)" \
-    -e PGID="$(id -g)" \
+    ${_env} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
