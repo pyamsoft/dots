@@ -31,7 +31,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:3001:3001/tcp"
+  # No ports, we need --net=host to watch other services on the machine
 
   readonly _ports
   return 0
@@ -78,6 +78,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --net=host \
     ${_env} \
     ${_mounts} \
     ${_ports} \
