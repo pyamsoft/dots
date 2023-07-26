@@ -43,8 +43,14 @@ _check_user() {
     return 1
   fi
 
-  _userns=""
-  # No user namespace
+  # On MacOS we need to own the files to chown them
+  # because just VM things
+  if [ "$(uname)" = "Darwin" ]; then
+    _userns="--user=$(id -u):$(id -g)"
+  else
+    # Otherwise we keep OCI
+    _userns="--userns keep-id"
+  fi
   readonly _userns
 
   return 0
@@ -68,7 +74,6 @@ _containerize() {
   #
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
-    --security-opt no-new-privileges:true --cap-drop ALL \
     -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
     ${_mounts} \
     ${_ports} \
