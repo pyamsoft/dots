@@ -64,8 +64,9 @@ _check_user() {
     fi
   fi
 
-  _userns=""
-  # No user namespace
+  # Expects to be root (since the cert file is owned by root)
+  _userns="--user 0:0"
+
   readonly _userns
 
   return 0
