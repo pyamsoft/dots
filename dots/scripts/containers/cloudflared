@@ -2,64 +2,130 @@
 
 readonly _name="cloudflared"
 readonly _image="docker.io/cloudflare/cloudflared"
-readonly _tag="2023.7.0"
+readonly _tag="2023.7.1"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
+# Use podman, don't use docker
+readonly _cmd="podman"
 
-# On MacOS we use a VM, make sure it is rootful to bind to port 53
-if [ "$(uname)" = "Darwin" ]; then
-  printf -- 'Not ready on MacOS\n'
-  exit 1
-else
-  if [ "$(id -u)" -ne 0 ]; then
-    printf -- 'You must run this as a rootful container\n'
-    exit 1
+_prep_mounts() {
+  _root_path="/usr/local"
+
+  # On MacOS the VM is rootful but we run locally
+  if [ "$(uname)" = "Darwin" ]; then
+    _root_path="${HOME}/.local"
   fi
-fi
+  readonly _root_path
 
-# Prep the directories
-readonly _mount1="/usr/local/etc/containers/${_name}/tunnel"
-mkdir -p "${_mount1}" || exit 1
+  readonly _mount1="${_root_path}/etc/containers/${_name}/tunnel"
 
-# We need DAC_OVERRIDE since the tunnel runs as non-rot
-# but our host files are owned by root
-_caps="--cap-add DAC_OVERRIDE"
+  # Prep the directories
+  mkdir -p "${_mount1}" || return 1
 
-# If no cmd args are passed, run the default tunnel
-if [ "$#" -le 0 ]; then
-  _run="tunnel run containers"
-else
-  _run="$*"
-fi
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/etc/cloudflared"
+  readonly _mounts
+  return 0
+}
 
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d --restart=unless-stopped"
-else
-  _how="--rm"
-fi
-readonly _how
+_prep_caps() {
+  _caps=""
+  _caps="${_caps} --cap-add NET_BIND_SERVICE"
+  _caps="${_caps} --cap-add NET_ADMIN"
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+  # Need these extra caps on MacOS
+  if [ "$(uname)" = "Darwin" ]; then
+    _caps="${_caps} --cap-add DAC_OVERRIDE"
+  fi
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --mount type=bind,source=${_mount1},target=/etc/cloudflared \
-  --net=host \
-  --cap-add NET_BIND_SERVICE \
-  --cap-add NET_ADMIN \
-  ${_caps} \
-  "${_image}:${_tag}" ${_run}
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # No ports
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  # On MacOS we use a VM, make sure it is rootful to bind to port 53
+  if [ "$(uname)" = "Darwin" ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+      printf -- 'You must run this as a normal user with a rootful VM\n'
+      return 1
+    fi
+  else
+    if [ "$(id -u)" -ne 0 ]; then
+      printf -- 'You must run this as a rootful container\n'
+      return 1
+    fi
+  fi
+
+  _userns=""
+  # No user namespace
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+  # No healthcheck
+  readonly _health
+
+  return 0
+}
+
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --net=host \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" ${_run}
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  # If no cmd args are passed, run the default tunnel
+  if [ "$#" -le 0 ]; then
+    _run="tunnel run containers"
+  else
+    _run="$*"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

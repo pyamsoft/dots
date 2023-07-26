@@ -3,43 +3,114 @@
 readonly _image="ghcr.io/k4yt3x/video2x"
 readonly _tag="5.0.0-beta6"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  _mounts=""
+
+  # Bind just the working directory
+  _mounts="${_mounts} --mount type=bind,source=$(pwd),target=/host"
+
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # No caps
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # No ports
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns=""
 
   # Need this userns option that is podman specific or we have random OCI permission error
   _userns="--userns keep-id"
-fi
-readonly _cmd
 
-# Upscale an arbitrary video using video2x container
-#
-# $1 the video file (will be output as upscaled-<NAME>)
-# $2 the target resolution (output ratio will be honored) like 720 or 1080
+  readonly _userns
 
-if [ -z "$1" ]; then
-  printf -- 'Need a target video to upscale\n'
-  exit 1
-fi
+  return 0
+}
 
-if [ -z "$2" ]; then
-  printf -- 'Need a target resolution to upscale\n'
-  exit 1
-fi
+_check_health() {
+  _health=""
+  # No healthcheck
+  readonly _health
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+  return 0
+}
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run --rm \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --device=/dev/dri \
-  --mount type=bind,source="$(pwd)",target=/host \
-  -i -t \
-  ${_userns} \
-  "${_image}:${_tag}" -i "$1" -o "upscaled-$1" -p3 upscale -h "$2" -a waifu2x -n3
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --device=/dev/dri \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" ${_run}
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # Upscale an arbitrary video using video2x container
+  #
+  # $1 the video file (will be output as upscaled-<NAME>)
+  # $2 the target resolution (output ratio will be honored) like 720 or 1080
+
+  if [ -z "$1" ]; then
+    printf -- 'Need a target video to upscale\n'
+    return 1
+  fi
+
+  if [ -z "$2" ]; then
+    printf -- 'Need a target resolution to upscale\n'
+    return 1
+  fi
+
+  # Build command
+  readonly _run="-i $1 -o upscaled-$1 -p3 upscale -h $2 -a waifu2x -n3"
+
+  # How do we run?
+  _how="--rm -i -t"
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+
+main "$@" || exit 1
+exit 0

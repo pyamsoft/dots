@@ -4,51 +4,101 @@ readonly _name="uptime-kuma"
 readonly _image="docker.io/louislam/uptime-kuma"
 readonly _tag="1.22.1"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
+# Use podman, don't use docker
+readonly _cmd="podman"
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d"
-else
-  _how="--rm"
-fi
-readonly _how
+  mkdir -p "${_mount1}" || return 1
 
-# Prep the directories
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-mkdir -p "${_mount1}" || exit 1
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/app/data"
+  readonly _mounts
+  return 0
+}
 
-# systemd --user does not like the healthcheck command
-# disable it.
-_health=""
-if [ "$(uname)" != "Darwin" ]; then
-  _health="--health-cmd none"
-fi
+_prep_caps() {
+  _caps=""
+  _caps="${_caps} --cap-add SETGID"
+  readonly _caps
+  return 0
+}
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+_prep_ports() {
+  _ports=""
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --mount type=bind,source="${_mount1}",target=/app/data \
-  --net=host \
-  --cap-add SETGID \
-  ${_health} \
-  "${_image}:${_tag}" "$@"
+  # No ports
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns=""
+  # No user namespace
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+
+  # systemd does not like spawning this healthcheck
+  if [ "$(uname)" != "Darwin" ]; then
+    _health="--health-cmd none"
+  fi
+
+  readonly _health
+
+  return 0
+}
+
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --net=host \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

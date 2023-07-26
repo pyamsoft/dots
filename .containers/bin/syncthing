@@ -4,76 +4,112 @@ readonly _name="syncthing"
 readonly _image="docker.io/syncthing/syncthing"
 readonly _tag="1.23.6"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-_userns=""
-if command -v podman >/dev/null; then
-  _cmd="podman"
+# Use podman, don't use docker
+readonly _cmd="podman"
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  # Can't apply on Mac because our VM runs as root for adguardhome
-  if [ "$(uname)" != "Darwin" ]; then
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
+
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/var/syncthing"
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:8384:8384/tcp"
+  _ports="${_ports} -p 127.0.0.1:22000:22000/tcp"
+  _ports="${_ports} -p 127.0.0.1:22000:22000/udp"
+  _ports="${_ports} -p 127.0.0.1:21027:21027/udp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns=""
+
+  # On MacOS we need to own the files to chown them
+  # because just VM things
+  if [ "$(uname)" = "Darwin" ]; then
+    _userns="--user=$(id -u):$(id -g)"
+  else
+    # Otherwise we keep OCI
     _userns="--userns keep-id"
   fi
-fi
-readonly _cmd
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
+  readonly _userns
 
-# Prep the directories
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/work"
-mkdir -p "${_mount1}" || exit 1
+  return 0
+}
 
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d"
-else
-  _how="--rm"
-fi
-readonly _how
+_check_health() {
+  _health=""
+  # No healthcheck
+  readonly _health
 
-# On MacOS we need to own the files to chown them
-# because just VM things
-if [ "$(uname)" = "Darwin" ]; then
-  _user="--user=$(id -u):$(id -g)"
-else
-  _user=""
-fi
+  return 0
+}
 
-# systemd --user does not like the healthcheck command
-# disable it.
-_health=""
-if [ "$(uname)" != "Darwin" ]; then
-  _health="--health-cmd none"
-fi
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    -e STGUIADDRESS= \
+    -e STNODEFAULTFOLDER=1 \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --mount type=bind,source="${_mount1}",target=/var/syncthing \
-  -p 127.0.0.1:8384:8384/tcp \
-  -p 127.0.0.1:22000:22000/tcp \
-  -p 127.0.0.1:22000:22000/udp \
-  -p 127.0.0.1:21027:21027/udp \
-  --cap-add DAC_OVERRIDE \
-  --cap-add CHOWN \
-  --cap-add SETGID \
-  --cap-add SETUID \
-  -e STGUIADDRESS= \
-  -e STNODEFAULTFOLDER=1 \
-  ${_health} \
-  ${_user} \
-  ${_userns} \
-  "${_image}:${_tag}" "$@"
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

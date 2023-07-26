@@ -4,37 +4,89 @@ readonly _name="stonk-bot"
 readonly _image="localhost/pyamsoft/stonk-bot"
 readonly _tag="latest"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-if command -v podman >/dev/null; then
-  _cmd="podman"
-fi
-readonly _cmd
+# Use podman, don't use docker
+readonly _cmd="podman"
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
+_prep_mounts() {
+  # No mounts
+  readonly _mounts
+  return 0
+}
 
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d"
-else
-  _how="--rm"
-fi
-readonly _how
+_prep_caps() {
+  _caps=""
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+  # No caps
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --init \
-  "${_image}:${_tag}" "$@"
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # No ports
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns=""
+  # No user namespace
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+  # No healthcheck
+  readonly _health
+
+  return 0
+}
+
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --init \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  _how="--rm -i -t"
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+
+main "$@" || exit 1
+exit 0

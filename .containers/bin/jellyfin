@@ -4,67 +4,115 @@ readonly _name="jellyfin"
 readonly _image="docker.io/jellyfin/jellyfin"
 readonly _tag="10.7.7"
 
-# Use docker or podman (priority podman)
-_cmd="sudo docker"
-_userns=""
-if command -v podman >/dev/null; then
-  _cmd="podman"
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache" # Transcode shader cache
+
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/cache"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/config"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/media"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/.cache"
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # No caps
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:8096:8096/tcp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
 
   # Need this userns option that is podman specific or we have random OCI permission error
   _userns="--userns keep-id"
-fi
-readonly _cmd
+  readonly _userns
 
-if [ "$(id -u)" -eq 0 ]; then
-  printf -- 'You must run this as a rootless container\n'
-  exit 1
-fi
+  return 0
+}
 
-# Prep the directories
-readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
-readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
-readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache" # Transcode shader cache
-mkdir -p "${_mount1}" || exit 1
-mkdir -p "${_mount2}" || exit 1
-mkdir -p "${_mount3}" || exit 1
-mkdir -p "${_mount4}" || exit 1
+_check_health() {
+  _health=""
 
-# Let it daemonize
-if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-  shift
-  _how="-d"
-else
-  _how="--rm"
-fi
-readonly _how
+  # systemd does not like spawning this healthcheck
+  if [ "$(uname)" != "Darwin" ]; then
+    _health="--health-cmd none"
+  fi
 
-# systemd --user does not like the healthcheck command
-# disable it.
-_health=""
-if [ "$(uname)" != "Darwin" ]; then
-  _health="--health-cmd none"
-fi
+  readonly _health
 
-# Log the commands we use next
-# Fail on errors
-# Fail on unassigned
-set -xeu
+  return 0
+}
 
-# Don't quote so that if user is empty it still expands
-#
-# shellcheck disable=SC2086
-exec ${_cmd} run ${_how} \
-  --name "${_name}" --hostname "${_name}" \
-  --security-opt no-new-privileges:true --cap-drop ALL \
-  --mount type=bind,source="${_mount1}",target=/cache \
-  --mount type=bind,source="${_mount2}",target=/config \
-  --mount type=bind,source="${_mount3}",target=/media \
-  --mount type=bind,source="${_mount4}",target=/.cache \
-  -p 127.0.0.1:8096:8096/tcp \
-  --group-add=989 \
-  --device /dev/dri/renderD128:/dev/dri/renderD128 \
-  --device /dev/dri/card0:/dev/dri/card0 \
-  ${_health} \
-  ${_userns} \
-  "${_image}:${_tag}" "$@"
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --group-add=989 \
+    --device /dev/dri/renderD128:/dev/dri/renderD128 \
+    --device /dev/dri/card0:/dev/dri/card0 \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
