@@ -29,14 +29,6 @@ else
 fi
 readonly _how
 
-# On MacOS we need to own the files to chown them
-# because just VM things
-if [ "$(uname)" = "Darwin" ]; then
-  _user="--user=$(id -u):$(id -g)"
-else
-  _user=""
-fi
-
 # Log the commands we use next
 # Fail on errors
 # Fail on unassigned
@@ -55,5 +47,4 @@ exec ${_cmd} run ${_how} \
   --cap-add SETGID \
   --cap-add SETUID \
   -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
-  ${_user} \
   "${_image}:${_tag}" "$@"

@@ -18,22 +18,8 @@ if [ "$(uname)" = "Darwin" ]; then
     exit 1
   fi
 
-  # On MacOS for some reason we are unable to write to the work/sessions.db
-  # This is okay I guess, since it only controls logs
-  #
-  # readonly _mount2="${HOME}/.local/etc/containers/${_name}/work"
-
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/conf"
-  mkdir -p "${_mount1}" || exit 1
-  _mounts="--mount type=bind,source=${_mount1},target=/opt/adguardhome/conf"
-
-  # On MacOS we can't use 127.0.0.1 syntax for ports
-  #
-  # NOTE: On MacOS in order to bind to port 53, you need to edit the VM
-  #
-  # Use podman machine ssh to enter the VM shell, and edit /etc/systemd/resolved.conf
-  # to turn off the Stub listener or it will occupy port 53 of the VM
-  _ports="-p 53:53/tcp -p 53:53/udp -p 81:81/tcp"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/work"
 
   # On MacOS we need these extra caps
   _caps="--cap-add DAC_OVERRIDE --cap-add FOWNER"
@@ -46,28 +32,27 @@ else
   readonly _mount1="/usr/local/etc/containers/${_name}/conf"
   readonly _mount2="/usr/local/etc/containers/${_name}/work"
 
-  # Prep the directories
-  mkdir -p "${_mount1}" || exit 1
-  mkdir -p "${_mount2}" || exit 1
-  _mounts="--mount type=bind,source=${_mount1},target=/opt/adguardhome/conf \
-    --mount type=bind,source=${_mount2},target=/opt/adguardhome/work"
-
-  # Ports on Linux can use 127 syntax
-  _ports="-p 127.0.0.1:53:53/tcp \
-    -p 127.0.0.1:53:53/udp \
-    -p 127.0.0.1:81:81/tcp"
-
   # No extra caps on Linux
   _caps=""
 fi
-readonly _mounts
-readonly _ports
+
+# Prep the directories
+mkdir -p "${_mount1}" || exit 1
+mkdir -p "${_mount2}" || exit 1
+readonly _mounts="--mount type=bind,source=${_mount1},target=/opt/adguardhome/conf \
+  --mount type=bind,source=${_mount2},target=/opt/adguardhome/work"
+
+# Ports on Linux can use 127 syntax
+readonly _ports="-p 127.0.0.1:53:53/tcp \
+  -p 127.0.0.1:53:53/udp \
+  -p 127.0.0.1:81:81/tcp"
+
 readonly _caps
 
 # Let it daemonize
 if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
   shift
-  _how="-d"
+  _how="-d --restart=unless-stopped"
 else
   _how="--rm"
 fi
