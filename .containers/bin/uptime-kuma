@@ -20,7 +20,10 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
   readonly _caps
   return 0
 }
@@ -28,7 +31,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # No ports
+  _ports="${_ports} -p 127.0.0.1:3001:3001/tcp"
 
   readonly _ports
   return 0
@@ -40,8 +43,9 @@ _check_user() {
     return 1
   fi
 
-  _userns=""
-  # No user namespace
+  # On MacOS we need to own the files to chown them
+  # because just VM things
+  _userns="--userns keep-id"
   readonly _userns
 
   return 0
@@ -71,7 +75,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --net=host \
+    -e PUID="$(id -u)" \
+    -e PGID="$(id -g)" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

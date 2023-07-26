@@ -7,6 +7,7 @@ readonly _tag="3.2.2"
 readonly _cmd="podman"
 
 _prep_mounts() {
+  _mounts=""
   # No mounts
   readonly _mounts
   return 0

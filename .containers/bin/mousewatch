@@ -8,6 +8,7 @@ readonly _tag="latest"
 readonly _cmd="podman"
 
 _prep_mounts() {
+  _mounts=""
   # No mounts
   readonly _mounts
   return 0
