@@ -78,7 +78,14 @@ __bash_qol()
   unset _functions
 
   # Set LS_COLORS
-  if command -v gdircolors > /dev/null; then
+  if command -v vivid > /dev/null; then
+    # We are dark if tmux identifies our theme as "macchiato"
+    if grep -q \"macchiato\" "${HOME}/.config/tmux/tmux.conf"; then
+      export LS_COLORS="$(vivid generate catppuccin-macchiato)"
+    else
+      export LS_COLORS="$(vivid generate catppuccin-latte)"
+    fi
+  elif command -v gdircolors > /dev/null; then
     eval "$(gdircolors -b)" || return 1
   elif command -v dircolors > /dev/null; then
     eval "$(dircolors -b)" || return 1
