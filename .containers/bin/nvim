@@ -88,6 +88,8 @@ _prep_caps() {
   _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
+  _caps="${_caps} --cap-add FOWNER"
+  _caps="${_caps} --cap-add FSETID"
 
   readonly _caps
   return 0
