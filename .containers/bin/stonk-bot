@@ -59,6 +59,8 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
+  # Need --init or we hang on exit
+
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086

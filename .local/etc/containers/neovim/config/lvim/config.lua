@@ -1,4 +1,3 @@
---
 lvim.log.level = "warn"
 lvim.format_on_save = false
 lvim.transparent_window = false -- For transparent windows

@@ -1,0 +1,174 @@
+#!/bin/sh
+
+readonly _name="neovim"
+readonly _image="localhost/pyamsoft/neovim"
+readonly _tag="latest"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_resolve_container_path() {
+  _host_path="$1"
+
+  case "${_host_path}" in
+    "${HOME}"*)
+      # Replace the ${HOME} with /root for the container
+      _container_path="$(printf -- '%s' "${_host_path}" | sed "s|${HOME}|\/root|")"
+      ;;
+    *)
+      _container_path="${_host_path}"
+      ;;
+  esac
+
+  printf -- '%s' "${_container_path}"
+
+  unset _container_path
+  unset _host_path
+  return 0
+}
+
+_bind_map_absolute_path() {
+  _path="$1"
+
+  _final_path="$(_resolve_container_path "${_path}")"
+
+  # Add the bind
+  _mounts="${_mounts} --mount type=bind,source=${_path},target=${_final_path}"
+  _files="${_files} ${_final_path}"
+
+  unset _final_path
+  unset _path
+  return 0
+}
+
+_prep_mounts() {
+  _mounts=""
+  _files=""
+
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/data"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/config"
+
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/root/.cache"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/root/.local"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/root/.config"
+
+  for f in "$@"; do
+    # For each file, we map the file over
+    # Namely, if it is an absolute path, we replace the user's $HOME directory with
+    # /root in the container
+    #
+    # And if it is a relative path, we make sure we set the container WORKDIR to our host $(pwd)
+    # and map the HOME again
+
+    case "$f" in
+      /*)
+        _bind_map_absolute_path "$f" || return 1
+        ;;
+      *)
+        _bind_map_absolute_path "$(realpath "$f")" || return 1
+        ;;
+    esac
+  done
+
+  readonly _files
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # No ports
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns="--user=$(id -u):$(id -g) --userns keep-id"
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+  # No healthcheck
+  readonly _health
+
+  return 0
+}
+
+_containerize() {
+  readonly _lunarvim="${HOME}/.local/etc/containers/${_name}/data/bin/lvim"
+
+  # If we have lunarvim
+  if [ -x "${_lunarvim}" ]; then
+    _entry="/root/.local/bin/lvim"
+  else
+    _entry="/usr/bin/nvim"
+  fi
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Need --init or we hang on :q
+  # Set the workdir to our current directory
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --init \
+    --entrypoint "${_entry}" \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts "$@" || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  _how="--rm -i -t"
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+
+main "$@" || exit 1
+exit 0

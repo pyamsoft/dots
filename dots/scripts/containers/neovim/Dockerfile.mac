@@ -1,0 +1,37 @@
+# Pull from Fedora for ARM64
+FROM docker.io/arm64v8/fedora:latest as BUILDER
+
+# Environment
+ENV TERM=screen-256color
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_COLLATE=en_US.UTF-8
+ENV LC_ADDRESS=en_US.UTF-8
+ENV LC_CTYPE=en_US.UTF-8
+ENV LC_IDENTIFICATION=en_US.UTF-8
+ENV LC_MEASUREMENT=en_US.UTF-8
+ENV LC_MESSAGES=en_US.UTF-8
+ENV LC_MONETARY=en_US.UTF-8
+ENV LC_NAME=en_US.UTF-8
+ENV LC_NUMERIC=en_US.UTF-8
+ENV LC_PAPER=en_US.UTF-8
+ENV LC_TELEPHONE=en_US.UTF-8
+ENV LC_TIME=en_US.UTF-8
+
+# Set runpath
+ENV PATH=/root/.local/bin:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+# Permissions
+RUN umask 0022
+
+# Install neovim and friends
+RUN dnf -y update && dnf -y upgrade && dnf -y install neovim curl git python-neovim rustc cargo nodejs npm gcc gcc-c++ ripgrep fd
+
+# Set globals to work with root user
+RUN npm config set prefix /root/.local/share/npm
+
+# Start in root home by default
+WORKDIR /root
+
+# Enter neovim
+ENTRYPOINT [ "/bin/bash" ]

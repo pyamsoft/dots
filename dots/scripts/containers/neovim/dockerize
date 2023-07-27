@@ -1,0 +1,24 @@
+#!/bin/sh
+
+readonly _cmd="podman"
+
+if [ "$(uname)" = "Darwin" ]; then
+  # shellcheck disable=SC2086
+  exec ${_cmd} build . \
+    -t pyamsoft/neovim \
+    -f ./Dockerfile.mac \
+    --rm \
+    --layers \
+    --force-rm \
+    "$@"
+else
+  # shellcheck disable=SC2086
+  exec ${_cmd} build . \
+    -t pyamsoft/neovim \
+    -f ./Dockerfile.linux \
+    --rm \
+    --layers \
+    --force-rm \
+    "$@"
+fi
+
