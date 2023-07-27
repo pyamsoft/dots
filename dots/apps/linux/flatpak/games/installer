@@ -25,18 +25,20 @@ installer() {
       return 2
     }
 
-    cp -f "${current_directory}/$script" "${target}/${script}" || {
+    t="${target}/$(basename "${script}")"
+
+    cp -f "${current_directory}/$script" "$t" || {
       printf -- 'Failed to copy script %s into %s directory for app: %s\n' "${script}" "${target}" "${app_name}"
       return 3
     }
 
     if [ "${mark}" -eq 1 ]; then
-      chmod +x "${target}/${script}" || {
+      chmod +x "$t" || {
         printf -- 'Failed to mark script %s executable for app: %s\n' "${script}" "${app_name}"
         return 4
       }
     else
-      chmod -x "${target}/${script}" || {
+      chmod -x "$t" || {
         printf -- 'Failed to mark script %s unexecutable for app: %s\n' "${script}" "${app_name}"
         return 4
       }
@@ -49,6 +51,7 @@ installer() {
 
     printf -- '    %s installed for flatpak app %s\n' "${script}" "${app_name}"
 
+    unset t
     unset app_name
     unset target
     unset script
@@ -66,5 +69,7 @@ installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
 installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+
+installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
 
 exit 0
