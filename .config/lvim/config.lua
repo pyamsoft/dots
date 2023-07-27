@@ -47,6 +47,15 @@ lvim.plugins = {
     -- Catppuccin Theme
     "catppuccin/nvim",
   },
+  {
+    -- lsp diagnostics highlight groups for non lsp colorschemes
+    "folke/lsp-colors.nvim",
+    event = "BufRead",
+  },
+  {
+    -- Vim Surround
+    "tpope/vim-surround",
+  },
 }
 
 -- Treesitter
