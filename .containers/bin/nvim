@@ -83,6 +83,7 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
+
   _caps="${_caps} --cap-add DAC_OVERRIDE"
   _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
@@ -107,7 +108,12 @@ _check_user() {
     return 1
   fi
 
-  _userns="--user=$(id -u):$(id -g) --userns keep-id"
+  _userns=""
+  if [ "$(uname)" = "Darwin" ]; then
+    _userns="--user=$(id -u):$(id -g)"
+  else
+    _userns="--userns keep-id"
+  fi
   readonly _userns
 
   return 0

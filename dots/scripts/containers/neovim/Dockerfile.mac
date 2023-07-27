@@ -25,7 +25,7 @@ ENV PATH=/root/.local/bin:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/s
 RUN umask 0022
 
 # Install neovim and friends
-RUN dnf -y update && dnf -y upgrade && dnf -y install neovim curl git python-neovim rustc cargo nodejs npm gcc gcc-c++ ripgrep fd
+RUN dnf -y update && dnf -y upgrade && dnf -y install neovim curl git python-neovim rustc cargo nodejs npm gcc gcc-c++ ripgrep fd-find
 
 # Set globals to work with root user
 RUN npm config set prefix /root/.local/share/npm
@@ -34,4 +34,4 @@ RUN npm config set prefix /root/.local/share/npm
 WORKDIR /root
 
 # Enter neovim
-ENTRYPOINT [ "/bin/bash" ]
+ENTRYPOINT [ "/usr/bin/nvim" ]

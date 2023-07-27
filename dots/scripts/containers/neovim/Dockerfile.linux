@@ -25,7 +25,7 @@ ENV PATH=/root/.local/bin:/root/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/s
 RUN umask 0022
 
 # Install neovim and friends
-RUN pacman -Syu --noconfirm curl neovim python-neovim python-pip nodejs npm fd ripgrep tree-sitter-cli rust git
+RUN pacman -Syu --noconfirm curl neovim python-neovim python-pip nodejs npm fd ripgrep tree-sitter-cli rust git base-devel
 
 # Set globals to work with root user
 RUN npm config set prefix /root/.local/share/npm
@@ -34,4 +34,4 @@ RUN npm config set prefix /root/.local/share/npm
 WORKDIR /root
 
 # Enter neovim
-ENTRYPOINT [ "/bin/bash" ]
+ENTRYPOINT [ "/usr/bin/nvim" ]
