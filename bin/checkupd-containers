@@ -2,14 +2,12 @@
 
 _get_latest_tags() {
   _container="$1"
-  _version="$2"
-  _number_of_tags="$3"
+  _number_of_tags="$2"
 
-  if [ -z "${_container}" ] || [ -z "${_version}" ]; then
-    printf -- 'Missing required container or version: %s %s\n' "${_container}" "${_version}"
+  if [ -z "${_container}" ]; then
+    printf -- 'Missing required container name\n'
     unset _container
     unset _number_of_tags
-    unset _version
     return 1
   fi
 
@@ -22,20 +20,18 @@ _get_latest_tags() {
 
     unset _container
     unset _number_of_tags
-    unset _version
     unset _split_up
     unset _org
     unset _image
     return 1
   fi
 
-  printf -- '\nContainer: %s/%s (%s)\n' "${_org}" "${_image}" "${_version}"
+  printf -- '\nContainer: %s/%s\n' "${_org}" "${_image}"
   curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' || {
     printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
 
     unset _container
     unset _number_of_tags
-    unset _version
     unset _split_up
     unset _org
     unset _image
@@ -44,7 +40,6 @@ _get_latest_tags() {
 
   unset _container
   unset _number_of_tags
-  unset _version
   unset _split_up
   unset _org
   unset _image
@@ -55,11 +50,8 @@ _check_containers() {
   _amt="$1"
   _with_root="$2"
 
-  _cmd="sudo docker"
-  if command -v podman >/dev/null; then
-    _cmd="podman"
-  fi
-
+  # Don't mark readonly
+  _cmd="podman"
   # Attach root if needed
   if [ -n "${_with_root}" ]; then
     _cmd="${_with_root} ${_cmd}"
@@ -75,18 +67,35 @@ _check_containers() {
     _amt=10
   fi
 
+  # Don't look up the same container but with different versions more than once
+  # This would happen if we were running hello-world:1 and pulled down hello-world:2
+  # which podman sees as 2 container images
+  _already_seen=""
+
   while :; do
     if [ -z "${_containers}" ]; then
       break;
     fi
 
     _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }' )"
-    _ver="$(printf -- '%s' "${_containers}" | awk '{ print $2 }' )"
     _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
 
-    _get_latest_tags "${_name}" "${_ver}" "${_amt}" || return 1
+    # Check that we haven't already done this
+    _skip=0
+    for _c in ${_already_seen}; do
+      if [ "${_name}" = "${_c}" ]; then
+        _skip=1
+        break;
+      fi
+    done
+
+    # Keep track
+    if [ "${_skip}" -eq 0 ]; then
+      _already_seen="${_already_seen} ${_name}"
+      _get_latest_tags "${_name}" "${_amt}" || return 1
+    fi
+
     unset _name
-    unset _ver
   done
 
   unset _amt
