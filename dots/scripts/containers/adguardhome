@@ -2,7 +2,7 @@
 
 readonly _name="adguardhome"
 readonly _image="docker.io/adguard/adguardhome"
-readonly _tag="v0.107.34"
+readonly _tag="v0.107.35"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
