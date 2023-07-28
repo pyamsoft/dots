@@ -12,7 +12,7 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
     sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
-    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to not dark mode'
+    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to no'
   else
     # Linux is GNU sed
     sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' ~/.config/lvim/config.lua
@@ -39,7 +39,7 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
-    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to dark mode'
+    osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to yes'
   else
     # Linux is GNU sed
     sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' ~/.config/lvim/config.lua
