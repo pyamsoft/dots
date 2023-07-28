@@ -5,9 +5,9 @@ _usage() {
     cat <<EOF
 adb_pair_connect <IP> <PAIR-PORT> <CONNECT-PORT>
 
-<IP> is your device's IP address on the Wireless Debugging page.
-<PAIR-PORT> is your device's port displayed in the 'Pair with Code' window
-<CONNECT-PORT> is your device's port on the Wireless Debugging page.
+<IP> is your device IP address on the Wireless Debugging page.
+<PAIR-PORT> is your devices port displayed in the [Pair with Code] window
+<CONNECT-PORT> is your device port on the Wireless Debugging page.
 
 Example:
 
