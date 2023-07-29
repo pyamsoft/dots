@@ -3,7 +3,7 @@
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
-adb_pair_connect <IP> <PAIR-PORT> <CONNECT-PORT>
+adb_pair_connect <IP> <CONNECT-PORT> <PAIR-PORT>
 
 <IP> is your device IP address on the Wireless Debugging page.
 <PAIR-PORT> is your devices port displayed in the [Pair with Code] window
@@ -19,8 +19,8 @@ EOF
 
 main() {
   _ip="$1"
-  _pair_port="$2"
-  _connect_port="$3"
+  _connect_port="$2"
+  _pair_port="$3"
 
   if ! command -v adb >/dev/null; then
     printf -- 'E: adb not in PATH\n'
@@ -33,14 +33,14 @@ main() {
     return 1
   fi
 
-  if [ -z "${_pair_port}" ]; then
-    printf -- 'E: Must provide pairing port as first argument.\n'
+  if [ -z "${_connect_port}" ]; then
+    printf -- 'E: Must provide connect port as second argument.\n'
     _usage || return 1
     return 1
   fi
 
-  if [ -z "${_connect_port}" ]; then
-    printf -- 'E: Must provide connect port as first argument.\n'
+  if [ -z "${_pair_port}" ]; then
+    printf -- 'E: Must provide pairing port as third argument.\n'
     _usage || return 1
     return 1
   fi
