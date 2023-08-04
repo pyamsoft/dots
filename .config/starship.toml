@@ -16,3 +16,9 @@ disabled = true
 
 [git_status]
 disabled = true
+
+# Battery module has some bugs and we
+# don't have any devices that use a battery
+# anyway
+[battery]
+disabled = true
