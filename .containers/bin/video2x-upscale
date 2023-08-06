@@ -52,7 +52,12 @@ _check_user() {
 
 _check_health() {
   _health=""
-  # No healthcheck
+
+  # systemd does not like spawning this healthcheck
+  if [ "$(uname)" != "Darwin" ]; then
+    _health="--health-cmd none"
+  fi
+
   readonly _health
 
   return 0
