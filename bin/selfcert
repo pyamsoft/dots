@@ -7,15 +7,17 @@ _cleanup() {
     rm -f "${__config}" || return 1
   fi
 
+  unset __config
+
   return 0
 }
 
 _make_cert() {
-
-  _name="$1-$2"
+  _host="$1"
+  _name="${_host}-$2"
 
   __config="$(mktemp)"
-  printf -- '[dn]\nCN=%s\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:%s\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth' "${_name}" "${_name}" > "${__config}"
+  printf -- '[dn]\nCN=%s\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:%s\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth' "${_host}" "${_name}" > "${__config}"
 
   trap _cleanup INT TERM
 
@@ -23,11 +25,15 @@ _make_cert() {
     -out "${_name}.crt" \
     -keyout "${_name}.key" \
     -newkey rsa:4096 -nodes -sha256 \
-    -subj "/CN=${_name}" \
+    -subj "/CN=${_host}" \
     -extensions EXT \
     -config "${__config}" || return 1
 
   _cleanup || return 1
+
+  unset _host
+  unset _name
+
   return 0
 }
 
@@ -53,6 +59,10 @@ main() {
   fi
 
   _make_cert "${_hostname}" "${_what}" || return 1
+
+  unset _hostname
+  unset _what
+
   return 0
 }
 
