@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1.0.0">
+  <short>homebridge</short>
+  <description>Homebridge</description>
+  <port port="51791" protocol="tcp"/>
+  <port port="59271" protocol="tcp"/>
+  <port port="53011" protocol="tcp"/>
+  <port port="8581" protocol="tcp"/>
+</service>
