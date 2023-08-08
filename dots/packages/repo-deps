@@ -150,6 +150,7 @@ gupnp
 gupnp-igd
 gvfs
 gvfs-mtp
+gvfs-smb
 gzip
 harfbuzz
 harfbuzz-icu
