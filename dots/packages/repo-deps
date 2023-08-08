@@ -65,12 +65,14 @@ debugedit
 default-cursors
 desktop-file-utils
 device-mapper
+dhcpcd
 diffutils
 dnssec-anchors
 dosfstools
 double-conversion
 duktape
 e2fsprogs
+ell
 enchant
 exiv2
 expat
@@ -167,6 +169,7 @@ iptables-nft
 iputils
 iso-codes
 iw
+iwd
 jansson
 jbig2dec
 jitterentropy

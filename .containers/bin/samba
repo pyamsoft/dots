@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="file-browser"
-readonly _image="docker.io/filebrowser/filebrowser"
-readonly _tag="v2.24.1"
+readonly _name="samba"
+readonly _image="docker.io/crazymax/samba"
+readonly _tag="4.18.3"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -10,17 +10,30 @@ readonly _cmd="podman"
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/shares"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
-
-  # filebrowser needs these files to exist when mounted for the first time
-  # mount path is defined in the default config.json
-  touch "${_mount2}/database.db" || return 1
+  mkdir -p "${_mount3}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/srv"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2}/database.db,target=/database.db"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba"
+
+  # Mount config if possible
+  if [ -f "${_mount2}/config.yml" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount2}/config.yml,target=/data/config.yml"
+  fi
+
+  # Mount password files if possible
+  for f in "${_mount2}/passwd".*; do
+    _f_name="$(basename "$f")"
+    _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name}"
+    unset _f_name
+    unset _f
+  done
+  unset _f_name
+  unset _f
 
   readonly _mounts
   return 0
@@ -29,10 +42,13 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # To mount the database "again" once it has been run more than once
+  # For file permissions
   _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
 
-  # Server runs on port 80
+  # Server runs on port 137-139 and 445
   _caps="${_caps} --cap-add NET_BIND_SERVICE"
 
   readonly _caps
@@ -44,7 +60,7 @@ _prep_ports() {
 
   # Bind to our Tailscale interface and ourselves
   for _ip in 127.0.0.1 100.122.254.80; do
-    _ports="${_ports} -p ${_ip}:1337:80/tcp"
+    _ports="${_ports} -p ${_ip}:1445:445/tcp"
   done
 
   readonly _ports
@@ -57,7 +73,9 @@ _check_user() {
     return 1
   fi
 
-  _userns="--user=$(id -u):$(id -g) --userns keep-id"
+  # Need to explicitly set user as "root" in the container to run samba
+  # but keep the user name space ID so created files are owned by us
+  _userns="--user=0:0 --userns keep-id"
 
   readonly _userns
 
@@ -89,6 +107,8 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --init \
+    -e SAMBA_LOG_LEVEL=2 \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -119,3 +139,4 @@ main() {
 
 main "$@" || exit 1
 exit 0
+
