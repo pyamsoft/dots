@@ -12,24 +12,18 @@ _clear_logs()
 
 _podman_rootful()
 {
-  touch "${_log_path}/adguardhome" || return 1
-  podman stop adguardhome >> "${_log_path}/adguardhome" 2>&1
-  podman rm adguardhome >> "${_log_path}/adguardhome" 2>&1
-
-  /usr/local/sbin/adguardhome >> "${_log_path}/adguardhome" 2>&1 &
+  touch "${_log_path}/$1" || return 1
+  podman stop "$1" >> "${_log_path}/$1" 2>&1
+  podman rm "$1" >> "${_log_path}/$1" 2>&1
+  "/usr/local/sbin/$1" >> "${_log_path}/$1" 2>&1 &
 }
 
 _podman_rootless()
 {
-  touch "${_log_path}/postgres" || return 1
-  podman stop postgres >> "${_log_path}/postgres" 2>&1
-  podman rm postgres >> "${_log_path}/postgres" 2>&1
-  "${HOME}"/.containers/bin/postgres >> "${_log_path}/postgres" 2>&1 &
-
-  touch "${_log_path}/syncthing" || return 1
-  podman stop syncthing >> "${_log_path}/syncthing" 2>&1
-  podman rm syncthing >> "${_log_path}/syncthing" 2>&1
-  "${HOME}"/.containers/bin/syncthing >> "${_log_path}/syncthing" 2>&1 &
+  touch "${_log_path}/$1" || return 1
+  podman stop "$1" >> "${_log_path}/$1" 2>&1
+  podman rm "$1" >> "${_log_path}/$1" 2>&1
+  "${HOME}/.containers/bin/$1" >> "${_log_path}/$1" 2>&1 &
 }
 
 _podman()
@@ -54,8 +48,8 @@ _podman()
   podman machine stop >> "${_log_path}/podman" 2>&1 || return 1
   podman machine start >> "${_log_path}/podman" 2>&1 || return 1
 
-  _podman_rootful || return 1
-  _podman_rootless || return 1
+  _podman_rootful "adguardhome" || return 1
+  _podman_rootless "postgres" || return 1
 
   return 0
 }
