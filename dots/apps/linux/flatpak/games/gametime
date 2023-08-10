@@ -7,10 +7,16 @@ __game_tools=""
 __env_tools=""
 
 _export_gaming_environment() {
-  # Fix weird texture bugs
-  # https://github.com/Plagman/gamescope/issues/320
-  export AMD_DEBUG=nodcc
-  export RADV_DEBUG=nodcc
+  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
+    printf -- '[gametime] Applying AMD driver fixes: YES\n'
+
+    # Fix weird texture bugs
+    # https://github.com/Plagman/gamescope/issues/320
+    export AMD_DEBUG=nodcc
+    export RADV_DEBUG=nodcc
+  else
+    printf -- '[gametime] Applying AMD driver fixes: NO\n'
+  fi
 
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
@@ -146,7 +152,7 @@ _enable_game_env() {
     fi
   fi
 
-  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -eq 1 ]; then
+  if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
     unset GAME_ZINK
 
     printf -- '[gametime] Zink for OpenGL over Vulkan: YES\n'
@@ -163,7 +169,7 @@ _enable_game_env() {
 }
 
 _enable_env_tools() {
-  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 1 ]; then
+  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -ne 0 ]; then
     unset GAME_MODE
     # Game mode
     # https://github.com/nowrep/obs-vkcapture
@@ -179,7 +185,7 @@ _enable_env_tools() {
     printf -- '[gametime] GameMode performance tweaks: NO\n'
   fi
 
-  if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -eq 1 ]; then
+  if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
     unset GAME_OBS
     # OBS VKCapture
     # https://github.com/nowrep/obs-vkcapture
@@ -199,7 +205,7 @@ _enable_env_tools() {
 }
 
 _enable_game_tools() {
-  if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -eq 1 ]; then
+  if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -ne 0 ]; then
     unset GAME_HUD
     # Mangohud
     # https://github.com/flightlessmango/MangoHud#hud-configuration
