@@ -1,4 +1,4 @@
-#!/bin/sh
+!/bin/sh
 
 # Variables
 __gamescope_options=""
@@ -21,6 +21,10 @@ _export_gaming_environment() {
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
+
+  # Unset SDL_VIDEODRIVER as it causes issues with EAC
+  export SDL_VIDEODRIVER=
+  unset SDL_VIDEODRIVER
 
   return 0
 }

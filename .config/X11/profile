@@ -4,9 +4,11 @@ __setup_sdl()
 {
   # SDL Options
   # Use pulse audio for SDL audio
-  # Use X11 for SDL video
   export SDL_AUDIODRIVER=pulse
-  export SDL_VIDEODRIVER=x11
+
+  # Do not set the SDL_VIDEODRIVER option as it causes weird Steam issues
+  export SDL_VIDEODRIVER=
+  unset SDL_VIDEODRIVER
 }
 
 __setup_gpu()
