@@ -34,3 +34,5 @@ killa() {
 
 killa "proton"
 killa "gamescope"
+killa "wineserver"
+killa "winedevice.exe"
