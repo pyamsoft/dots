@@ -41,5 +41,6 @@ exec flatpak-env ${cmd} "${pak}" \
   --filesystem="/storage/${self}/games/steam" \
   --filesystem="/storage/${self}/games2/steam" \
   --unset-env=SDL_VIDEODRIVER \
+  --unset-env=SDL_AUDIODRIVER \
   "$@" || exit 1
 exit 0

@@ -26,12 +26,13 @@ readonly _def_ld_path
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
+  --command="${HOME}/.local/bin/gametime-openrct2" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --filesystem="/home/${self}/games/steam" \
   --filesystem="/storage/${self}/games/steam" \
   --filesystem="/storage/${self}/games2/steam" \
   --unset-env=SDL_VIDEODRIVER \
-  --command="${HOME}/.local/bin/gametime-openrct2" \
+  --unset-env=SDL_AUDIODRIVER \
   "$@" || exit 1
 exit 0
