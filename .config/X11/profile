@@ -2,9 +2,9 @@
 
 __setup_sdl()
 {
-  # SDL Options
-  # Use pulse audio for SDL audio
-  export SDL_AUDIODRIVER=pulse
+  # Do not set the SDL_AUDIODRIVER option as it causes weird Steam issues
+  export SDL_AUDIODRIVER=
+  unset SDL_AUDIODRIVER
 
   # Do not set the SDL_VIDEODRIVER option as it causes weird Steam issues
   export SDL_VIDEODRIVER=

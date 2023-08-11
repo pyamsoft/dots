@@ -2,7 +2,8 @@
 devices=all;shm;
 features=devel;multiarch;
 filesystems=!xdg-run/app/com.discordapp.Discord;
-unset-environment=SDL_VIDEODRIVER;
+unset-environment=SDL_VIDEODRIVER;SDL_AUDIODRIVER;
 
 [Environment]
 SDL_VIDEODRIVER=
+SDL_AUDIODRIVER=

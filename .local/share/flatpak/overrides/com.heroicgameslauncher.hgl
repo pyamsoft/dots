@@ -2,3 +2,8 @@
 devices=all;
 features=devel;multiarch;
 filesystems=!~/Games/Heroic;
+unset-environment=SDL_VIDEODRIVER;SDL_AUDIODRIVER;
+
+[Environment]
+SDL_VIDEODRIVER=
+SDL_AUDIODRIVER=
