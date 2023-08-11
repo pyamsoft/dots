@@ -15,3 +15,7 @@ Make sure you:
    Make sure the "contentid" matches the path of your chosen folder.
 7. Restart steam, should work?
 
+
+#### Games don't launch
+EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
+Make sure you unset it via --unset-env override in the flatpak file
