@@ -4,7 +4,7 @@
 
 See `installer` in the `dots/` folder
 
-# Structure
+## Structure
 
 Most of the dotfiles are in the bare repository, so they are
 already a part of the real HOME directory
