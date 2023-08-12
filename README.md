@@ -19,15 +19,22 @@ For video acceleration in docker, make sure you
 
 Use `podman` instead of `docker` to avoid the root daemon
 
-### Steam (Flatpak)
-
-See notes in `dots/apps/linux/flatpak/games/notes.txt`
-
-## Flatpak
-
+### Flatpak
 For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
 You will need to install `MangoHud` `vkBasalt` `gamescope` `proton-GE` and `Adwaita-dark` manually
+
+#### Steam (Flatpak)
+See notes in `dots/apps/linux/flatpak/games/notes.txt`
+
+#### Moonlight
+You can run moonlight in gamescope via the `gametime-moonlight` script.
+Note to capture keys you'll need to use the Grab command in gamescope, which is `Super+G`
+You will not need to use the moonlight Fullscreen (Ctrl+Shift+X) or capture (Ctrl+Shift+Z)
+as these are handled by gamescope. Exit is still possible via (Ctrl+Shift+Q) but may hang on final
+window kill
+
+## Tweaks
 
 ### FS performance
 Enable [fast_commit for ext4](https://wiki.archlinux.org/title/Ext4#Enabling_fast_commit_in_existing_filesystems)
