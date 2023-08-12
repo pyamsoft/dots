@@ -22,9 +22,11 @@ _export_gaming_environment() {
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
 
-  # Unset SDL_VIDEODRIVER as it causes issues with EAC
+  # Unset these vars as they cause issues with EAC
   export SDL_VIDEODRIVER=
+  export SDL_AUDIODRIVER=
   unset SDL_VIDEODRIVER
+  unset SDL_AUDIODRIVER
 
   return 0
 }
