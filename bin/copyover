@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec rsync -hrtplu --progress "$1" nerd@nerd2:/home/nerd/media/jellyfin/media/Movies
