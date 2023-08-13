@@ -7,17 +7,6 @@ __game_tools=""
 __env_tools=""
 
 _export_gaming_environment() {
-  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
-    printf -- '[gametime] Applying AMD driver fixes: YES\n'
-
-    # Fix weird texture bugs
-    # https://github.com/Plagman/gamescope/issues/320
-    export AMD_DEBUG=nodcc
-    export RADV_DEBUG=nodcc
-  else
-    printf -- '[gametime] Applying AMD driver fixes: NO\n'
-  fi
-
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
@@ -30,7 +19,21 @@ _export_gaming_environment() {
 
   # Setup for WAYLAND for gamescope-wl
   # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
-  export WAYLAND_DISPLAY=""
+  if [ -z "${WAYLAND_DISPLAY}" ]; then
+    export WAYLAND_DISPLAY=""
+  fi
+
+  # Optional fixes for messy graphics
+  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
+    printf -- '[gametime] Applying AMD driver fixes: YES\n'
+
+    # Fix weird texture bugs
+    # https://github.com/Plagman/gamescope/issues/320
+    export AMD_DEBUG=nodcc
+    export RADV_DEBUG=nodcc
+  else
+    printf -- '[gametime] Applying AMD driver fixes: NO\n'
+  fi
 
   return 0
 }
