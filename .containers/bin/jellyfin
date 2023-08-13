@@ -83,9 +83,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --group-add=989 \
-    --device /dev/dri/renderD128:/dev/dri/renderD128 \
-    --device /dev/dri/card0:/dev/dri/card0 \
+    --device /dev/dri:/dev/dri \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
