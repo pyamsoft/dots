@@ -28,6 +28,10 @@ _export_gaming_environment() {
   unset SDL_VIDEODRIVER
   unset SDL_AUDIODRIVER
 
+  # Setup for WAYLAND for gamescope-wl
+  # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
+  export WAYLAND_DISPLAY=""
+
   return 0
 }
 
