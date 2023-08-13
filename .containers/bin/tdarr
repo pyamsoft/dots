@@ -34,7 +34,10 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # No caps
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
 
   readonly _caps
   return 0
@@ -56,8 +59,9 @@ _check_user() {
     return 1
   fi
 
+  # Must run as root in container
   # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  _userns="--user=0:0 --userns keep-id"
   readonly _userns
 
   return 0
