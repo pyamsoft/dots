@@ -3,24 +3,53 @@
 # Don't kill ourselves
 readonly self_pid="$$"
 
-my_pid="$(pgrep -f 'GradleDaemon')"
-if [ -n "${my_pid}" ]; then
-  clean_pids=""
-  for pid in ${my_pid}; do
-    if [ "${pid}" != "${self_pid}" ]; then
-      clean_pids="${pid} ${clean_pids}"
-    fi
-  done
+_killa() {
+  _process="$1"
+  _really="$2"
 
-  if [ -n "${clean_pids}" ]; then
-    printf -- 'Killing GradleDaemon process %s\n' "${clean_pids}"
-    # Don't quote so that multiple PIDs can be killed
-    # shellcheck disable=SC2086
-    kill ${clean_pids}
+  my_pid="$(pgrep -f "${_process}")"
+  if [ -n "${my_pid}" ]; then
+
+    clean_pids=""
+    for pid in ${my_pid}; do
+      if [ "${pid}" != "${self_pid}" ]; then
+        clean_pids="${pid} ${clean_pids}"
+      fi
+    done
+
+    if [ -n "${clean_pids}" ]; then
+      printf -- 'Killing process %s\n' "${_process}" "${clean_pids}"
+      # Don't quote so that multiple PIDs can be killed
+      if [ "${_really}" = "force" ]; then
+        # shellcheck disable=SC2086
+        kill -9 ${clean_pids} || return 1
+      else
+        # shellcheck disable=SC2086
+        kill ${clean_pids} || return 1
+      fi
+    else
+      printf -- '%s not running.\n' "${_process}"
+    fi
+
+    unset my_pid
+    unset clean_pids
+  else
+    printf -- '%s not running.\n' "${_process}"
   fi
 
-  unset my_pid
-  unset clean_pids
-else
-  printf -- 'GradleDaemon not running.\n'
-fi
+  unset _process
+  unset _really
+  return 0
+}
+
+main() {
+  _force="$1"
+
+  _killa "GradleDaemon" "${_force}" || return 1
+
+  unset _force
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
