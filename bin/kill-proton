@@ -3,8 +3,9 @@
 # Don't kill ourselves
 readonly self_pid="$$"
 
-killa() {
+_killa() {
   _process="$1"
+  _really="$2"
 
   my_pid="$(pgrep -f "${_process}")"
   if [ -n "${my_pid}" ]; then
@@ -19,8 +20,15 @@ killa() {
     if [ -n "${clean_pids}" ]; then
       printf -- 'Killing process %s\n' "${_process}" "${clean_pids}"
       # Don't quote so that multiple PIDs can be killed
-      # shellcheck disable=SC2086
-      kill ${clean_pids}
+      if [ "${_really}" = "force" ]; then
+        # shellcheck disable=SC2086
+        kill -9 ${clean_pids} || return 1
+      else
+        # shellcheck disable=SC2086
+        kill ${clean_pids} || return 1
+      fi
+    else
+      printf -- '%s not running.\n' "${_process}"
     fi
 
     unset my_pid
@@ -30,9 +38,21 @@ killa() {
   fi
 
   unset _process
+  unset _really
+  return 0
 }
 
-killa "proton"
-killa "gamescope"
-killa "wineserver"
-killa "winedevice.exe"
+main() {
+  _force="$1"
+
+  _killa "proton" "${_force}" || return 1
+  _killa "gamescope" "${_force}" || return 1
+  _killa "wineserver" "${_force}" || return 1
+  _killa "winedevice.exe" "${_force}" || return 1
+
+  unset _force
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
