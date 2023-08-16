@@ -1,17 +1,7 @@
 #!/bin/sh
 
 # Java on MacOS is provided by Jetbrains Toolbox
-AS_PATH=""
-for version in "${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/"*; do
-  AS_PATH="${version}/Android Studio.app/Contents"
-  export JAVA_HOME="${AS_PATH}/jbr/Contents/Home/"
-  break
-done
-
-if [ -z "${JAVA_HOME}" ]; then
-  printf -- 'Could not find JAVA_HOME in %s\n' "${HOME}/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0"
-  exit 1
-fi
+export JAVA_HOME="${HOME}/Applications/Android Studio.app/Contents/jbr/Contents/Home/"
 
 # Add Android tools to the PATH
 PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
@@ -26,5 +16,5 @@ if [ "$1" = "--shell" ]; then
   exec bash "$@"
 else
   # Launch Android Studio
-  exec open "${HOME}/Applications/JetBrains Toolbox/Android Studio.app" "$@"
+  exec open "${HOME}/Applications/Android Studio.app" "$@"
 fi
