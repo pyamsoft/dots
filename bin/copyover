@@ -1,3 +1,11 @@
 #!/bin/sh
 
-exec rsync -hrtplu --progress "$1" nerd@nerd2:/home/nerd/media/Movies
+_path=""
+if [ "$1" = "-2" ]; then
+  _path="media2"
+  shift
+else
+  _path="media"
+fi
+
+exec rsync -hrtplu --progress "$1" "nerd@nerd2:/home/nerd/${_path}/Movies"
