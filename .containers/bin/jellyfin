@@ -10,19 +10,22 @@ readonly _cmd="podman"
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
-  readonly _mount4="${HOME}/.local/etc/containers/${_name}/.cache" # Transcode shader cache
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/transcodes"
+  readonly _mount4="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount5="${HOME}/.local/etc/containers/${_name}/media2"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
   mkdir -p "${_mount4}" || return 1
+  mkdir -p "${_mount5}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/cache"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/config"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/media"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/.cache"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/.cache"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/media"
+  _mounts="${_mounts} --mount type=bind,source=${_mount5},target=/media2"
   readonly _mounts
   return 0
 }
