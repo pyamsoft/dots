@@ -8,11 +8,13 @@ if [ -z "${proxy}" ]; then
     cat <<EOF
 apply-http-proxy
 
-clear   - Reset proxy
-default - Apply default proxy values
+clear             - Reset proxy
+default           - Apply default proxy values
+systemd-apply     - Export current proxy values to systemd environment
+systemd-clear     - Reset systemd environment proxy values
+<HOSTNAME>:<PORT> - Apply custom proxy values
 
-Must specify a proxy in format hostname:port
-
+[Example]
 $ eval "\$(apply-http-proxy clear)"
 $ eval "\$(apply-http-proxy default)"
 $ eval "\$(apply-http-proxy 192.168.49.1:8228)"
@@ -35,14 +37,18 @@ elif [ "${proxy}" = "clear" ]; then
   printf -- '%s\n' "unset NO_PROXY"
 elif [ "${proxy}" = "systemd-apply" ]; then
   if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'Export proxy definition to systemd environment\n'
     exec systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
   else
+    printf -- 'Export proxy definition to systemd environment\n'
     exec sudo systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
   fi
 elif [ "${proxy}" = "systemd-clear" ]; then
   if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'Remove proxy definition from systemd environment\n'
     exec systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
   else
+    printf -- 'Remove proxy definition from systemd environment\n'
     exec sudo systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
   fi
 else
