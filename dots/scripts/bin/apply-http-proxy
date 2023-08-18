@@ -16,6 +16,8 @@ Must specify a proxy in format hostname:port
 $ eval "\$(apply-http-proxy clear)"
 $ eval "\$(apply-http-proxy default)"
 $ eval "\$(apply-http-proxy 192.168.49.1:8228)"
+$ apply-http-proxy systemd-apply
+$ apply-http-proxy systemd-clear
 EOF
   )" 1>&2
   exit 1
@@ -31,6 +33,18 @@ elif [ "${proxy}" = "clear" ]; then
 
   printf -- '%s\n' "unset no_proxy"
   printf -- '%s\n' "unset NO_PROXY"
+elif [ "${proxy}" = "systemd-apply" ]; then
+  if [ "$(id -u)" -eq 0 ]; then
+    exec systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+  else
+    exec sudo systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+  fi
+elif [ "${proxy}" = "systemd-clear" ]; then
+  if [ "$(id -u)" -eq 0 ]; then
+    exec systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+  else
+    exec sudo systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+  fi
 else
   if [ "${proxy}" = "default" ]; then
     proxy="192.168.49.1:8228"
