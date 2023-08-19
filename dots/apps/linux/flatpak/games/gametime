@@ -90,8 +90,8 @@ _prepare_gamescope() {
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
 
     # For nerd1, since we only have an iGPU, we use a nested res of 720p for game
-    # compatibility, and upscale it to an output of 927 (not 1080 as it taxes too much)
-    output_height=972
+    # compatibility, and upscale it to an output of 900 (not 1080 as it taxes too much)
+    output_height=900
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
 
