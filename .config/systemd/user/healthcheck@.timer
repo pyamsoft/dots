@@ -1,0 +1,10 @@
+[Unit]
+Description=Healthcheck ping on boot and on internal %I
+
+[Timer]
+OnBootSec=10
+OnUnitActiveSec=120
+Unit=healthcheck@%I.service
+
+[Install]
+WantedBy=timers.target

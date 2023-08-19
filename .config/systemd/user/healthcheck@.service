@@ -1,0 +1,6 @@
+[Unit]
+Description=Healthcheck ping @ healthcheck.io %I
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/curl -s 'https://hc-ping.com/%I'
