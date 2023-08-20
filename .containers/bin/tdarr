@@ -62,9 +62,8 @@ _check_user() {
     return 1
   fi
 
-  # Must run as root in container
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--user=0:0 --userns keep-id"
+  # Don't use keep-id so that we run as root in the container like we need to
+  _userns=""
   readonly _userns
 
   return 0

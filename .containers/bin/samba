@@ -73,9 +73,8 @@ _check_user() {
     return 1
   fi
 
-  # Need to explicitly set user as "root" in the container to run samba
-  # but keep the user name space ID so created files are owned by us
-  _userns="--user=0:0 --userns keep-id"
+  # Don't use keep-id so that we run as root in the container like we need to
+  _userns=""
 
   readonly _userns
 
