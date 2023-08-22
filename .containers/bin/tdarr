@@ -82,7 +82,24 @@ _check_health() {
   return 0
 }
 
+_get_gid_for_group() {
+  _grp="$1"
+  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
+
+  printf -- '%s' "${_gid}"
+
+  unset _grp
+  unset _gid
+  return 0
+}
+
 _containerize() {
+  # Needed for GPU rendering
+  _groups=""
+  _groups="${_groups} --group-add=$(_get_gid_for_group "render")"
+  _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
+  readonly _groups
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -100,6 +117,7 @@ _containerize() {
     -e "webUIPort=8265" \
     -e "internalNode=true" \
     -e "inContainer=true" \
+    ${_groups} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
