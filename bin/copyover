@@ -8,7 +8,9 @@ else
   _path="media"
 fi
 
-# Remove a trailing space to copy over folders
-_file="${1%/}"
+for f in "$@"; do
+  # Remove a trailing space to copy over folders
+  _file="${f%/}"
+  rsync -hrtplu --progress "${_file}" "nerd@nerd2:/home/nerd/${_path}/Movies"
+done
 
-exec rsync -hrtplu --progress "${_file}" "nerd@nerd2:/home/nerd/${_path}/Movies"
