@@ -62,8 +62,8 @@ _check_user() {
     return 1
   fi
 
-  # Don't use keep-id so that we run as root in the container like we need to
-  _userns=""
+  # We need this specifically odd configuration of run as root but keep id
+  _userns="--user=0:0 --userns keep-id"
   readonly _userns
 
   return 0
