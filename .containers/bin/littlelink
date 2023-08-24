@@ -88,13 +88,13 @@ _containerize() {
     -e NAME="pooteypie" \
     -e BUTTON_ORDER="STATUS,JELLYFIN,RIDE-ROULETTE,STONK,MOUSEWATCH" \
     -e CUSTOM_BUTTON_NAME="STATUS,JELLYFIN,RIDE-ROULETTE,STONK,MOUSEWATCH" \
-    -e CUSTOM_BUTTON_TEXT="Status,Jellyfin,Ride Roulette,Discord: Stock Bot,Discord: Disneyland Bot" \
+    -e CUSTOM_BUTTON_TEXT="Status,Media Server,Ride Roulette,Discord: Stock Bot,Discord: Disneyland Bot" \
     -e CUSTOM_BUTTON_ALT_TEXT="View Server Status,Jellyfin Media Server,I Don't Know What To Do At Disneyland,Discord: Stock Bot,Discord: Disneyland Bot" \
     -e CUSTOM_BUTTON_URL="https://uptime.pooteypie.cf,https://jellyfin.pooteypie.cf,https://ride-roulette.web.app,https://www.github.com/pyamsoft/stonk,https://github.com/pyamsoft/mousewatch" \
     -e CUSTOM_BUTTON_COLOR="#5CDD8B,#007CA6,#000000,#000000,#000000" \
     -e CUSTOM_BUTTON_TEXT_COLOR="#4C4C4C,#FFFFFF,#FFFFFF,#FFFFFF,#FFFFFF" \
     -e CUSTOM_BUTTON_ICON="fas server,fas compact-disc,fas dice,fab github,fab github" \
-    -e FOOTER="pooteypie © ${_year}" \
+    -e FOOTER="pyamsoft © ${_year}" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
