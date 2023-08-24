@@ -38,7 +38,8 @@ _get_latest_tags() {
       _gh_token="$(curl -s "https://ghcr.io/token?scope=repository:${_org}/${_image}:pull" | tr ':' ' ' | sed 's/"//g' | sed 's/}//g' | awk '{ print $2 }')"
 
       # And then we do this - oh baby!
-      curl -s -H "Authorization: Bearer ${_gh_token}" "https://ghcr.io/v2/${_org}/${_image}/tags/list" | grep --color -o '\[.*\]' | sed 's/\[//g' | sed 's/\]//g' | sed 's/"//g' | tr ',' '\n' | head -n "${_number_of_tags}" | grep --color '.*' || {
+      # Tail instead of head because ghcr puts newest containers LAST
+      curl -s -H "Authorization: Bearer ${_gh_token}" "https://ghcr.io/v2/${_org}/${_image}/tags/list" | grep --color -o '\[.*\]' | sed 's/\[//g' | sed 's/\]//g' | sed 's/"//g' | tr ',' '\n' | tail -n "${_number_of_tags}" | grep --color '.*' || {
         printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
       }
       ;;
