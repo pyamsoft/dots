@@ -86,14 +86,14 @@ _containerize() {
     -e THEME="Dark" \
     -e THEME_OS=true \
     -e NAME="pooteypie" \
-    -e BUTTON_ORDER="STATUS,JELLYFIN" \
-    -e CUSTOM_BUTTON_NAME="STATUS,JELLYFIN" \
-    -e CUSTOM_BUTTON_TEXT="Status,Jellyfin" \
-    -e CUSTOM_BUTTON_ALT_TEXT="View Server Status,Jellyfin Media Server" \
-    -e CUSTOM_BUTTON_URL="https://uptime.pooteypie.cf,https://jellyfin.pooteypie.cf" \
-    -e CUSTOM_BUTTON_COLOR="#5CDD8B,#007CA6" \
-    -e CUSTOM_BUTTON_TEXT_COLOR="#4C4C4C,#FFFFFF" \
-    -e CUSTOM_BUTTON_ICON="fas fa-server,fas fa-compact-disc" \
+    -e BUTTON_ORDER="STATUS,JELLYFIN,RIDE-ROULETTE" \
+    -e CUSTOM_BUTTON_NAME="STATUS,JELLYFIN,RIDE-ROULETTE" \
+    -e CUSTOM_BUTTON_TEXT="Status,Jellyfin,Ride Roulette" \
+    -e CUSTOM_BUTTON_ALT_TEXT="View Server Status,Jellyfin Media Server,I Don't Know What To Do At Disneyland" \
+    -e CUSTOM_BUTTON_URL="https://uptime.pooteypie.cf,https://jellyfin.pooteypie.cf,https://ride-roulette.web.app" \
+    -e CUSTOM_BUTTON_COLOR="#5CDD8B,#007CA6,#000000" \
+    -e CUSTOM_BUTTON_TEXT_COLOR="#4C4C4C,#FFFFFF,#FFFFFF" \
+    -e CUSTOM_BUTTON_ICON="fas fa-server,fas fa-compact-disc,fas fa-dice" \
     -e FOOTER="pooteypie © ${_year}" \
     ${_mounts} \
     ${_ports} \
