@@ -1,0 +1,127 @@
+#!/bin/sh
+
+readonly _name="littlelink"
+readonly _image="ghcr.io/techno-tim/littlelink-server"
+readonly _tag="latest"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  _mounts=""
+
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:8420:3000/tcp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  # We need this specifically odd configuration of run as root but keep id
+  _userns=""
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+
+  # systemd does not like spawning this healthcheck
+  if [ "$(uname)" != "Darwin" ]; then
+    _health="--health-cmd none"
+  fi
+
+  readonly _health
+
+  return 0
+}
+
+_containerize() {
+  # Get current year
+  _year="$(date +%Y)"
+  readonly _year
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # You need to add a CUSTOM_BUTTON_* for each new link
+  # All CUSTOM_BUTTON_* FIELDS REQUIRED
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --init \
+    -e META_TITLE="pooteypie" \
+    -e META_DESCRIPTION="pooteypie Links" \
+    -e META_AUTHOR="pooteypie" \
+    -e META_KEYWORDS="pooteypie" \
+    -e META_INDEX_STATUS="noindex" \
+    -e LANG="en" \
+    -e THEME="Dark" \
+    -e THEME_OS=true \
+    -e NAME="pooteypie" \
+    -e BUTTON_ORDER="STATUS,JELLYFIN" \
+    -e CUSTOM_BUTTON_NAME="STATUS,JELLYFIN" \
+    -e CUSTOM_BUTTON_TEXT="Status,Jellyfin" \
+    -e CUSTOM_BUTTON_ALT_TEXT="View Server Status,Jellyfin Media Server" \
+    -e CUSTOM_BUTTON_URL="https://uptime.pooteypie.cf,https://jellyfin.pooteypie.cf" \
+    -e CUSTOM_BUTTON_COLOR="#5CDD8B,#007CA6" \
+    -e CUSTOM_BUTTON_TEXT_COLOR="#4C4C4C,#FFFFFF" \
+    -e CUSTOM_BUTTON_ICON="fas fa-server,fas fa-compact-disc" \
+    -e FOOTER="pooteypie © ${_year}" \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
