@@ -29,13 +29,6 @@ _get_latest_tags() {
   printf -- '\nContainer: %s/%s\n' "${_org}" "${_image}"
   curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' || {
     printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
-
-    unset _container
-    unset _number_of_tags
-    unset _split_up
-    unset _org
-    unset _image
-    return 1
   }
 
   unset _container
