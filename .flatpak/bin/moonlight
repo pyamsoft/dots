@@ -1,10 +1,7 @@
 #!/bin/sh
 
-self="$(id -un)"
-readonly self
-
-readonly pak="com.valvesoftware.Steam"
-readonly def_path="/app/bin:/app/utils/bin:/usr/bin"
+readonly pak="com.moonlight_stream.Moonlight"
+readonly def_path="/app/bin:/usr/bin"
 readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin"
 
 cmd=""
@@ -24,22 +21,11 @@ else
 fi
 readonly _def_ld_path
 
-# Sometimes steam messes up and deletes our library paths
-# https://wiki.archlinux.org/title/Steam/Troubleshooting#Cannot_browse_filesystem_to_add_a_library_folder_or_library_folder_appears_as_empty
-if [ -e "/storage/${self}/games/steam" ]; then
-  touch "/storage/${self}/games/steam" || return 1
-fi
-if [ -e "/storage/${self}/games2/steam" ]; then
-  touch "/storage/${self}/games2/steam" || return 1
-fi
-
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
+  --command="${HOME}/.local/bin/gametime-moonlight" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --filesystem="/home/${self}/games/steam" \
-  --filesystem="/storage/${self}/games/steam" \
-  --filesystem="/storage/${self}/games2/steam" \
   --unset-env=SDL_VIDEODRIVER \
   --unset-env=SDL_AUDIODRIVER \
   "$@" || exit 1
