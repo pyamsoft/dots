@@ -1,4 +1,0 @@
-### More SDK support
-Ensure you have `org.freedesktop.Platform.Compat.i386` `org.freedesktop.Platform.ffmpeg_full.i386`
-`org.freedesktop.Sdk.Compat.i386` `org.freedesktop.Sdk.Extension.toolchain-i386` installed.
-Run the flatpak with the `android-studio` flatpak/bin script to include the SDK on your $PATH
