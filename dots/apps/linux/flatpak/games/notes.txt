@@ -19,3 +19,9 @@ Make sure you:
 #### Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
+
+### Runtime mods
+Ensure you have `org.freedesktop.Platform.Compat.i386` `org.freedesktop.Platform.ffmpeg_full.i386`
+`org.freedesktop.Sdk.Compat.i386` `org.freedesktop.Sdk.Extension.toolchain-i386` installed.
+Run the flatpak with either `--runtime=org.freedesktop.Sdk` or use the `steam` flatpak/bin script
+that does this for you.
