@@ -31,7 +31,5 @@ exec flatpak-env ${cmd} "${pak}" \
   --filesystem="/home/${self}/games/heroic" \
   --filesystem="/storage/${self}/games/heroic" \
   --filesystem="/storage/${self}/games2/heroic" \
-  --unset-env=SDL_VIDEODRIVER \
-  --unset-env=SDL_AUDIODRIVER \
   "$@" || exit 1
 exit 0

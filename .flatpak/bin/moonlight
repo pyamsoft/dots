@@ -26,7 +26,5 @@ exec flatpak-env ${cmd} "${pak}" \
   --command="${HOME}/.local/bin/gametime-moonlight" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --unset-env=SDL_VIDEODRIVER \
-  --unset-env=SDL_AUDIODRIVER \
   "$@" || exit 1
 exit 0
