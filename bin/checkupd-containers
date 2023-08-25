@@ -29,7 +29,7 @@ _get_latest_tags() {
   printf -- '\nContainer: %s/%s\n' "${_org}" "${_image}"
   case "${_container}" in
     docker.io/*)
-      curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' || {
+      curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' | head -n "${_number_of_tags}" | grep --color '.*' || {
         printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
       }
       ;;
