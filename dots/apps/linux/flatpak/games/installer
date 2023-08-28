@@ -65,6 +65,7 @@ installer() {
 installer "com.heroicgameslauncher.hgl" ".local/bin" "gametime" 1 || exit 1
 installer "com.valvesoftware.Steam" ".local/bin" "gametime" 1 || exit 1
 installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
+installer "com.moonlight_stream.Moonlight" ".local/bin" "gametime" 1 || exit 1
 
 installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
