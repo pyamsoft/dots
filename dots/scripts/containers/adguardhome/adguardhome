@@ -24,8 +24,8 @@ _priv_port_drop() {
   # After a few seconds, close them back up.
   #
   # Since we run this overall script as root, we are "trusted" to open this
-  sysctl net.ipv4.ip_unprivileged_port_start=53 || return 1
-  (sleep 3 && sysctl net.ipv4.ip_unprivileged_port_start=1024) &
+  sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
+  (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
 }
 
 _prep_mounts() {
