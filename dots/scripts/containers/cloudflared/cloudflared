@@ -20,12 +20,17 @@ _get_env() {
 }
 
 _priv_port_drop() {
-  # Open privileged ports for non-root users
-  # After a few seconds, close them back up.
-  #
-  # Since we run this overall script as root, we are "trusted" to open this
-  sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
-  (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+  if [ "$(uname)" != "Darwin" ]; then
+    # Open privileged ports for non-root users
+    # After a few seconds, close them back up.
+    #
+    # Since we run this overall script as root, we are "trusted" to open this
+    sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
+    (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    return 0
+  fi
+
+  return 0
 }
 
 _prep_mounts() {
