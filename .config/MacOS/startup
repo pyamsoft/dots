@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# MacOS environment
-_log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs"
-
 _clear_logs()
 {
   rm -rf "${_log_path}" || return 1
@@ -15,7 +12,7 @@ _podman_rootful()
   touch "${_log_path}/$1" || return 1
   podman stop "$1" >> "${_log_path}/$1" 2>&1
   podman rm "$1" >> "${_log_path}/$1" 2>&1
-  "/usr/local/sbin/$1" >> "${_log_path}/$1" 2>&1 &
+  "/usr/local/sbin/$1" "${_user}" >> "${_log_path}/$1" 2>&1 &
 }
 
 _podman_rootless()
@@ -66,6 +63,10 @@ _startup_programs()
 
 main()
 {
+  # MacOS environment
+  _log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs"
+  _user="$(id -un)"
+
   _clear_logs || return 1
 
   # Wait a little bit
@@ -74,6 +75,7 @@ main()
   _startup_programs || return 1
 
   unset _log_path
+  unset _user
   return 0
 }
 
