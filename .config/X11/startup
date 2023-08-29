@@ -3,15 +3,13 @@
 # X11 environment
 _log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/logs"
 
-_clear_logs()
-{
+_clear_logs() {
   rm -rf "${_log_path}" || return 1
   mkdir -p "${_log_path}" || return 1
   return 0
 }
 
-_x_setup()
-{
+_x_setup() {
   # Setup xhost for localhost
   if command -v whoami > /dev/null 2>&1 && command -v xhost > /dev/null 2>&1; then
     # Do not run in background, this must be complete before continuing
@@ -35,8 +33,7 @@ _x_setup()
   return 0
 }
 
-_startup_programs()
-{
+_startup_programs() {
   # XBindkeys
   if command -v xbindkeys > /dev/null 2>&1; then
     xbindkeys > "${_log_path}/xbindkeys" 2>&1 &
@@ -56,8 +53,7 @@ _startup_programs()
   return 0
 }
 
-main()
-{
+main() {
   # Wait just a bit for X settings to apply from Gnome or other daemon
   sleep 1 || return 1
 

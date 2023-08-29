@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 
-__set_shopt_options()
-{
+__set_shopt_options() {
   if ! command -v shopt > /dev/null; then
     return 0
   fi
@@ -26,8 +25,7 @@ __set_shopt_options()
   shopt -s dotglob
 }
 
-__setup_shell_env()
-{
+__setup_shell_env() {
   # Disable the bash_history file
   export HISTCONTROL=ignoreboth
   export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
@@ -36,8 +34,7 @@ __setup_shell_env()
   export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
 }
 
-__restrict_umask()
-{
+__restrict_umask() {
   # Strict umask
   if command -v umask > /dev/null; then
     umask 077
@@ -46,15 +43,13 @@ __restrict_umask()
   return 0
 }
 
-__bashrc()
-{
+__bashrc() {
   [ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
 
   return 0
 }
 
-__ensure_env()
-{
+__ensure_env() {
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
     # shellcheck disable=SC1091
@@ -64,8 +59,7 @@ __ensure_env()
   return 0
 }
 
-__bash_profile()
-{
+__bash_profile() {
   __ensure_env || return 1
   __restrict_umask || return 1
   __set_shopt_options || return 1

@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 
-__launch_starship()
-{
+__launch_starship() {
   if command -v starship > /dev/null; then
     eval "$(starship init bash)" || return 1
   else
@@ -12,8 +11,7 @@ __launch_starship()
   return 0
 }
 
-__increase_ulimit()
-{
+__increase_ulimit() {
   if command -v ulimit > /dev/null; then
     # ulimit is normally something like 1024 on Linux or 256 on MacOS
     # This can lead to errors like postgres:too many files open
@@ -28,8 +26,7 @@ __increase_ulimit()
   return 0
 }
 
-__enable_bash_completion()
-{
+__enable_bash_completion() {
   # Enable bash completion
   _bcomp="/usr/share/bash-completion/bash_completion"
 
@@ -61,8 +58,7 @@ __enable_bash_completion()
   return 0
 }
 
-__bash_qol()
-{
+__bash_qol() {
   _aliases="${XDG_CONFIG_HOME}/bash/aliases"
   [ -f "${_aliases}" ] && {
     # shellcheck disable=SC1090
@@ -94,8 +90,7 @@ __bash_qol()
   return 0
 }
 
-__ensure_env()
-{
+__ensure_env() {
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
     [ -f "${HOME}"/.bash_profile ] && {
@@ -107,8 +102,7 @@ __ensure_env()
   return 0
 }
 
-__direnv()
-{
+__direnv() {
   # Source bash_profile if the environment is not setup
   if command -v direnv > /dev/null; then
     eval "$(direnv hook bash)" || return 1
@@ -117,8 +111,16 @@ __direnv()
   return 0
 }
 
-__bashrc()
-{
+__correct_term_macos() {
+  # tmux-256color is not on MacOS, use screen-256color instead
+  if [ "$(uname)" = "Darwin" ] && [ "${TERM}" = "tmux-256color" ]; then
+    export TERM="screen-256color"
+  fi
+
+  return 0
+}
+
+__bashrc() {
   __ensure_env || {
     printf -- '[bashrc] Failed to setup environment\n'
     return 0
@@ -144,6 +146,11 @@ __bashrc()
     return 0
   }
 
+  __correct_term_macos || {
+    printf -- '[bashrc] Failed to correct TERM\n'
+    return 0
+  }
+
   __launch_starship || {
     printf -- '[bashrc] Failed to launch starship\n'
     return 0
@@ -165,5 +172,6 @@ unset -f __launch_starship
 unset -f __bash_qol
 unset -f __ensure_env
 unset -f __direnv
+unset -f __correct_term_macos
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:

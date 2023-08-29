@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 
-__setup_sdl()
-{
+__setup_sdl() {
   # Do not set the SDL_AUDIODRIVER option as it causes weird Steam issues
   export SDL_AUDIODRIVER=
   unset SDL_AUDIODRIVER
@@ -11,8 +10,7 @@ __setup_sdl()
   unset SDL_VIDEODRIVER
 }
 
-__setup_gpu()
-{
+__setup_gpu() {
   # Hardware Accel
   #
   # For AMD
@@ -23,20 +21,17 @@ __setup_gpu()
   export MESA_DISK_CACHE_SINGLE_FILE=1
 }
 
-__setup_audio()
-{
+__setup_audio() {
   # Help with Pulse audio crackling in some programs
   export PULSE_LATENCY_MSEC=60
 }
 
-__setup_accessibility()
-{
+__setup_accessibility() {
   # No AT accessibility bus
   export NO_AT_BRIDGE=1
 }
 
-__setup_qt()
-{
+__setup_qt() {
   # Use QT5CT
   if command -v qt5ct > /dev/null 2>&1; then
     export QT_QPA_PLATFORMTHEME=qt5ct
@@ -46,8 +41,7 @@ __setup_qt()
   fi
 }
 
-__xprofile()
-{
+__xprofile() {
   # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 
