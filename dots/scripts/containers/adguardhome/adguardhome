@@ -7,19 +7,35 @@ readonly _tag="v0.107.36"
 # Use podman, don't use docker
 readonly _cmd="podman"
 
-_prep_mounts() {
-  _root_path="/usr/local"
+_runas() {
+  sudo -u "${_user}" -- "$@" || return 1
+  return 0
+}
 
-  # On MacOS the VM is rootful but we run locally
-  if [ "$(uname)" = "Darwin" ]; then
-    _root_path="${HOME}/.local"
-  fi
+_get_env() {
+  _runas env | grep "^${1}=" | tr '=' ' ' | awk '{ print $2 }' || return 1
+
+  unset _env_user
+  return 0
+}
+
+_priv_port_drop() {
+  # Open privileged ports for non-root users
+  # After a few seconds, close them back up.
+  #
+  # Since we run this overall script as root, we are "trusted" to open this
+  sysctl net.ipv4.ip_unprivileged_port_start=53 || return 1
+  (sleep 3 && sysctl net.ipv4.ip_unprivileged_port_start=1024) &
+}
+
+_prep_mounts() {
+  _root_path="$(_get_env "HOME")/.local"
   readonly _root_path
 
   readonly _mount1="${_root_path}/etc/containers/${_name}/conf"
 
   # Prep the directories
-  mkdir -p "${_mount1}" || return 1
+  _runas mkdir -m 700 -p "${_mount1}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/opt/adguardhome/conf"
@@ -31,7 +47,7 @@ _prep_mounts() {
   # -> [error] AdGuard Home cannot be initialized due to an incompatible file system.
   if [ "$(uname)" != "Darwin" ]; then
     readonly _mount2="${_root_path}/etc/containers/${_name}/work"
-    mkdir -p "${_mount2}" || return 1
+    _runas mkdir -m 700 -p "${_mount2}" || return 1
     _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/opt/adguardhome/work"
   fi
 
@@ -113,6 +129,9 @@ _check_health() {
 }
 
 _containerize() {
+  # Open ports to non-root users
+  _priv_port_drop || return 1
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -121,7 +140,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run ${_how} \
+  _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_mounts} \
@@ -133,6 +152,24 @@ _containerize() {
 }
 
 main() {
+  # Make sure the target user is provided
+  _user="$1"
+  readonly _user
+
+  if [ -z "${_user}" ]; then
+    printf -- 'Must provide target runas user\n'
+    return 1
+  fi
+
+  # Consume the used var
+  shift
+
+  # Check that we are not targeting root
+  if [ "$(id -u "${_user}")" -eq 0 ]; then
+    printf -- 'Your target user must not be root: %s\n' "${_user}"
+    return 1
+  fi
+
   _check_user || return 1
   _check_health || return 1
   _prep_mounts || return 1

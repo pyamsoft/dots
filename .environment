@@ -15,16 +15,6 @@ __setup_editor()
   for e in ${_editors}; do
     if [ -f "${e}" ]; then
       export EDITOR="${e}"
-      break
-    fi
-  done;
-  unset _editors
-
-  # Setup system editors
-  # Use absolute path to editor
-  _editors="/opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
-  for e in ${_editors}; do
-    if [ -f "${e}" ]; then
       export SYSTEMD_EDITOR="${e}"
       export SUDO_EDITOR="${e}"
       break
