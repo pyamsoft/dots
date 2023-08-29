@@ -1,20 +1,26 @@
 #!/bin/sh
 
-readonly _name="gluetun"
-readonly _image="docker.io/qmcgaw/gluetun"
-readonly _tag="v3.35.0"
+readonly _name="bazarr"
+readonly _image="ghcr.io/linuxserver/bazarr"
+readonly _tag="1.2.4"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
 
 _prep_mounts() {
-  readonly _mount1="${_root_path}/etc/containers/${_name}/data"
+  readonly _mount1="${_root_path}/etc/containers/${_name}/config"
+  readonly _mount2="${_root_path}/etc/containers/${_name}/media"
+  readonly _mount3="${_root_path}/etc/containers/${_name}/media2"
 
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/gluetun"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/media"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/media2"
   readonly _mounts
   return 0
 }
@@ -22,14 +28,9 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  _caps="${_caps} --cap-add NET_BIND_SERVICE"
-  _caps="${_caps} --cap-add NET_ADMIN"
-
-  # For unbound
-  _caps="${_caps} --cap-add CHOWN"
-
-  # Files
+  # Needed for s6
   _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
 
@@ -40,11 +41,9 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Expose healthcheck port
-  _ports="${_ports} -p 127.0.0.1:9999:9999/tcp"
-
-  # Bazarr
-  _ports="${_ports} -p 127.0.0.1:6767:6767/tcp"
+  # Ports are not exposed in this service.
+  # They should be exposed by the gluetun service.
+  # _ports="${_ports} -p 127.0.0.1:6767:6767/tcp"
 
   readonly _ports
   return 0
@@ -64,8 +63,8 @@ _check_user() {
     fi
   fi
 
-  # Expects to be root (since the cert file is owned by root)
-  _userns="--user 0:0"
+  # Expects to be root for s6
+  _userns=""
 
   readonly _userns
 
@@ -86,25 +85,13 @@ _check_health() {
 }
 
 _containerize() {
-  # Gluetun runtime config variable
-  _gt=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${_root_path}/etc/containers/gluetun/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
-  unset _runconf
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
   set -xeu
+
+  # This container uses the gluetun VPN network stack.
+  # Gluetun must be running before this container.
 
   # Don't quote so that if user is empty it still expands
   #
@@ -112,11 +99,10 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --device=/dev/net/tun:/dev/net/tun \
-    -e VPN_SERVICE_PROVIDER="mullvad" \
-    -e VPN_TYPE="wireguard" \
-    -e COUNTRY="JAPAN" \
-    ${_gt} \
+    --network container:gluetun \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e TZ="US/Pacific" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -155,3 +141,4 @@ main() {
 
 main "$@" || exit 1
 exit 0
+
