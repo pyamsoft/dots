@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 ExecStart=/bin/sh -c '_arg="%i"; _cont="$${_arg%:*}"; _user="$${_arg#*:}"; podman stop "$${_cont}"; podman rm "$${_cont}"; /usr/local/sbin/"$${_cont}" "$${_user}"'
-ExecStop=/bin/sh -c '_arg="%i"; _cont="$${_arg%:*}"; podman stop "$${_cont}" && podman rm "$${_cont}"'
+ExecStop=/bin/sh -c '_arg="%i"; _cont="$${_arg%:*}"; podman stop "$${_cont}" && podman rm "$${_cont}" || exit 0'
 
 [Install]
 WantedBy=multi-user.target
