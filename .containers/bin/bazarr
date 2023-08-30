@@ -50,17 +50,9 @@ _prep_ports() {
 }
 
 _check_user() {
-  # On MacOS we use a VM, make sure it is rootful to bind to port 53
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ "$(id -u)" -eq 0 ]; then
-      printf -- 'You must run this as a normal user with a rootful VM\n'
-      return 1
-    fi
-  else
-    if [ "$(id -u)" -eq 0 ]; then
-      printf -- 'You must run this as a normal user\n'
-      return 1
-    fi
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
   fi
 
   # Expects to be root for s6
