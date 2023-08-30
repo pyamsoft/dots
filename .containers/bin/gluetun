@@ -8,7 +8,7 @@ readonly _tag="v3.35.0"
 readonly _cmd="podman"
 
 _prep_mounts() {
-  readonly _mount1="${_root_path}/etc/containers/${_name}/data"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
@@ -90,7 +90,7 @@ _containerize() {
   _gt=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${_root_path}/etc/containers/gluetun/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/gluetun/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
@@ -126,14 +126,6 @@ _containerize() {
 }
 
 main() {
-  _root_path="${HOME}/.local"
-
-  # On MacOS the VM is rootful but we run locally
-  if [ "$(uname)" = "Darwin" ]; then
-    _root_path="${HOME}/.local"
-  fi
-  readonly _root_path
-
   _check_user || return 1
   _check_health || return 1
   _prep_mounts || return 1

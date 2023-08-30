@@ -8,9 +8,9 @@ readonly _tag="1.2.4"
 readonly _cmd="podman"
 
 _prep_mounts() {
-  readonly _mount1="${_root_path}/etc/containers/${_name}/config"
-  readonly _mount2="${_root_path}/etc/containers/${_name}/media"
-  readonly _mount3="${_root_path}/etc/containers/${_name}/media2"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media2"
 
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
@@ -112,13 +112,6 @@ _containerize() {
 }
 
 main() {
-  _root_path="${HOME}/.local"
-
-  # On MacOS the VM is rootful but we run locally
-  if [ "$(uname)" = "Darwin" ]; then
-    _root_path="${HOME}/.local"
-  fi
-  readonly _root_path
 
   _check_user || return 1
   _check_health || return 1
