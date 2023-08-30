@@ -83,41 +83,63 @@ _prepare_gamescope() {
   window_type="--borderless"
   output_height=1080
   output_width=
-  nested_height=720
-  nested_width=
+
+  # Default to FSR quality
+  fsr_amount=15
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
+    window_type="--borderless"
 
-    # For nerd1, since we only have an iGPU, we use a nested res of 720p for game
-    # compatibility, and upscale it to an output of 972 (not 1080 as it taxes too much)
-    output_height=972
+    # Slightly more than balanced but not quite performance
+    fsr_amount=18
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
 
     # nerd2 we just play in fullscreen
     window_type="--fullscreen"
+
+    # Quality
+    fsr_amount=15
   else
     printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
   fi
 
+  # If an output resolution is defined as GAME_RES=WxH, then use it here
   if [ -n "${GAME_RES}" ]; then
     output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
     output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
     unset GAME_RES
   fi
 
-  # If a game supports FSR natively, pass `GAME_FSR=1` to the environment when running
-  # gametime so that gamescope will not apply its rougher implementation of FSR1.
-  if [ -n "${GAME_FSR}" ] && [ "${GAME_FSR}" -ne 0 ]; then
+  # If we have a custom GAME_FSR amount passed in, use it
+  if [ -n "${GAME_FSR}" ]; then
+    if [ "${GAME_FSR}" -eq 0 ]; then
+      fsr_amount=0
+    else
+      fsr_amount="${GAME_FSR}"
+    fi
     unset GAME_FSR
+  fi
 
+  # Calculate the nested resolution by mathing the set fsr_amount
+  # fsr_amount of 0 means no FSR
+  nested_height=
+  nested_width=
+  if [ "${fsr_amount}" -eq 0 ]; then
     # Game has its own FSR, or does not want FSR
     nested_height="${output_height}"
     if [ -n "${output_width}" ]; then
       nested_width="${output_width}"
     fi
+  else
+    # Calculate nested resolution by applying FSR
+    nested_height="$((output_height / fsr_amount * 10))"
+    if [ -n "${output_width}" ]; then
+      nested_width="$((output_width / fsr_amount * 10))"
+    fi
   fi
+
 
   # Options passed to gamescope session
   # 0 is max sharpness, 20 is min sharpness
