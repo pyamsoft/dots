@@ -132,7 +132,7 @@ _containerize() {
 
 main() {
   # Make sure the target user is provided
-  _user="$1"
+  _user="$(id -un "$1")"
   readonly _user
 
   if [ -z "${_user}" ]; then
