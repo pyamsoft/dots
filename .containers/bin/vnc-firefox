@@ -116,7 +116,6 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --cap-drop ALL \
     --security-opt no-new-privileges:true \
-    --security-opt seccomp:unconfined \
     --device /dev/dri:/dev/dri \
     --shm-size="1gb" \
     --network=container:gluetun \
