@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="vnc-firefox"
-readonly _image="lscr.io/linuxserver/firefox"
-readonly _tag="116.0.3"
+readonly _name="firefox-jp"
+readonly _image="localhost/pyamsoft/firefox-jp"
+readonly _tag="latest"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -90,7 +90,7 @@ _containerize() {
   _ff=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/vnc-firefox/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/firefox-jp/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
@@ -116,6 +116,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --cap-drop ALL \
     --security-opt no-new-privileges:true \
+    --security-opt seccomp:unconfined \
     --device /dev/dri:/dev/dri \
     --shm-size="1gb" \
     --network=container:gluetun \
@@ -124,7 +125,6 @@ _containerize() {
     -e DRINODE=/dev/dri/renderD128 \
     -e DISABLE_IPV6=true \
     -e TZ=US/Pacific \
-    -e LC_ALL=en_US.UTF-8 \
     ${_ff} \
     ${_mounts} \
     ${_groups} \

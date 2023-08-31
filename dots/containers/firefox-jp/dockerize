@@ -1,0 +1,15 @@
+#!/bin/sh
+
+_cmd="sudo docker"
+if command -v podman > /dev/null; then
+  _cmd="podman"
+fi
+
+# shellcheck disable=SC2086
+exec ${_cmd} build . \
+  -t pyamsoft/firefox-jp \
+  -f ./Dockerfile \
+  --rm \
+  --layers \
+  --force-rm \
+  "$@"
