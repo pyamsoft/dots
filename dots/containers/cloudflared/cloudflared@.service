@@ -1,0 +1,19 @@
+# Runs the cloudflared container when the target user logs in
+#
+# Should be enabled as `systemctl enable cloudflared@UID.service`
+# where UID is the UID of the target user you want to run the container
+#
+# Generally this is 1000 for "your user"
+
+[Unit]
+Description=CloudflareD container for %i
+After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service
+Wants=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service
+Requires=user@%i.service
+
+[Service]
+ExecStart=/bin/sh -c '_c="cloudflared"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/sbin/"$${_c}" "%i"'
+ExecStop=/bin/sh -c '_c="cloudflared"; podman stop "$${_c}"; podman rm "$${_c}"; exit 0'
+
+[Install]
+WantedBy=user@%i.service
