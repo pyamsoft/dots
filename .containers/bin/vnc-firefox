@@ -1,0 +1,161 @@
+#!/bin/sh
+
+readonly _name="vnc-firefox"
+readonly _image="lscr.io/linuxserver/firefox"
+readonly _tag="116.0.3"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+
+  # Prep the directories
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # Needed for s6
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # Ports are handled in gluetun
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  # Expects to be root for s6
+  _userns="--user=0:0 --userns keep-id"
+
+  readonly _userns
+
+  return 0
+}
+
+_check_health() {
+  _health=""
+
+  # systemd does not like spawning this healthcheck
+  if [ "$(uname)" != "Darwin" ]; then
+    _health="--health-cmd none"
+  fi
+
+  readonly _health
+
+  return 0
+}
+
+_get_gid_for_group() {
+  _grp="$1"
+  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
+
+  printf -- '%s' "${_gid}"
+
+  unset _grp
+  unset _gid
+  return 0
+}
+
+_containerize() {
+  # Needed for GPU rendering
+  _groups=""
+  _groups="${_groups} --group-add=$(_get_gid_for_group "render")"
+  _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
+  readonly _groups
+
+  # Firefox runtime config variable
+  _ff=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/vnc-firefox/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # This container uses the gluetun VPN network stack.
+  # Gluetun must be running before this container.
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --cap-drop ALL \
+    --security-opt no-new-privileges:true \
+    --security-opt seccomp:unconfined \
+    --device /dev/dri:/dev/dri \
+    --shm-size="1gb" \
+    --network=container:gluetun \
+    -e PUID=1000 \
+    -e PGID=1000 \
+    -e DRINODE=/dev/dri/renderD128 \
+    -e DISABLE_IPV6=true \
+    -e TZ=US/Pacific \
+    -e LC_ALL=en_US.UTF-8 \
+    ${_ff} \
+    ${_mounts} \
+    ${_groups} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    ${_health} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _check_health || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
+
