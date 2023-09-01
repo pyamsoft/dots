@@ -1,6 +1,6 @@
 #!/bin/sh
 
-readonly _name="gluetun"
+readonly _name="gluetun-jp"
 readonly _image="docker.io/qmcgaw/gluetun"
 readonly _tag="v3.35.0"
 
@@ -82,7 +82,7 @@ _containerize() {
   _gt=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/gluetun/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
