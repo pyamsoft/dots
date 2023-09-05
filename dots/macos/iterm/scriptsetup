@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p "${HOME}/Library/Application Support/iTerm2/Scripts/AutoLaunch"
+cp -v ./sync_theme.py "${HOME}/Library/Application Support/iTerm2/Scripts/AutoLaunch"
