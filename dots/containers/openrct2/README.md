@@ -1,4 +1,4 @@
 # openrct2-dedicated
 
-Launches openrct2 dedicated server instance in a docker
-container.
+You need Roller Coaster Tycoon gamefiles in
+`\${HOME}/.local/etc/containers/openrct2-dedicated/gamefiles`
