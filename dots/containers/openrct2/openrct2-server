@@ -118,7 +118,7 @@ main() {
 
   # Correct the path if it is absolute
   # Corrects something like ${HOME}/games/openrct2/save/Park.park => save/Park.park
-  park="${park#*/openrct2-server/gamefiles/}"
+  park="${park#*/openrct2-server/config/}"
 
   _containerize "$@" || return 1
   return 0
