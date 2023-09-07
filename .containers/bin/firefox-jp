@@ -90,7 +90,7 @@ _containerize() {
   _ff=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/firefox-jp/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
@@ -100,6 +100,10 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+
+  # Bind to the gluetun network
+  _network="${_name#*-}"
+  readonly _network="--network=container:gluetun-${_network}"
 
   # Log the commands we use next
   # Fail on errors
@@ -119,12 +123,12 @@ _containerize() {
     --security-opt seccomp:unconfined \
     --device /dev/dri:/dev/dri \
     --shm-size="1gb" \
-    --network=container:gluetun \
     -e PUID=1000 \
     -e PGID=1000 \
     -e DRINODE=/dev/dri/renderD128 \
     -e DISABLE_IPV6=true \
     -e TZ=US/Pacific \
+    ${_network} \
     ${_ff} \
     ${_mounts} \
     ${_groups} \
