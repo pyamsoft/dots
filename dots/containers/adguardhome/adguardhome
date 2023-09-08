@@ -157,6 +157,11 @@ _containerize() {
 }
 
 main() {
+  if [ -z "$1" ]; then
+    printf -- 'Must provide target runas user\n'
+    return 1
+  fi
+
   # Make sure the target user is provided
   _user="$(id -un "$1")"
   readonly _user
