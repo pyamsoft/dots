@@ -100,6 +100,7 @@ _containerize() {
     -e CUSTOM_BUTTON_ALT_TEXT="${_CUSTOM_BUTTON_ALT_TEXT}" \
     -e CUSTOM_BUTTON_ICON="${_CUSTOM_BUTTON_ICON}" \
     -e FOOTER="${_FOOTER}" \
+    -e META_DESCRIPTION="${_META_DESCRIPTION}" \
     ${_ll} \
     ${_mounts} \
     ${_ports} \
