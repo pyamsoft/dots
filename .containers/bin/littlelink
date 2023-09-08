@@ -77,10 +77,6 @@ _containerize() {
   . "${_runconf}" || return 1
   unset _runconf
 
-  # Get current year
-  _year="$(date +%Y)"
-  readonly _year
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
