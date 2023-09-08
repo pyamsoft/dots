@@ -96,6 +96,10 @@ _containerize() {
     -e LANG="en" \
     -e THEME="Dark" \
     -e THEME_OS=true \
+    -e CUSTOM_BUTTON_TEXT="${_CUSTOM_BUTTON_TEXT}" \
+    -e CUSTOM_BUTTON_ALT_TEXT="${_CUSTOM_BUTTON_ALT_TEXT}" \
+    -e CUSTOM_BUTTON_ICON="${_CUSTOM_BUTTON_ICON}" \
+    -e FOOTER="${_FOOTER}" \
     ${_ll} \
     ${_mounts} \
     ${_ports} \
