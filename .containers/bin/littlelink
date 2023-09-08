@@ -58,6 +58,21 @@ _check_health() {
 }
 
 _containerize() {
+  # Littlelink runtime config variable
+  _ll=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
   # Get current year
   _year="$(date +%Y)"
   readonly _year
@@ -77,24 +92,11 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
-    -e META_TITLE="pooteypie" \
-    -e META_DESCRIPTION="pooteypie Links" \
-    -e META_AUTHOR="pooteypie" \
-    -e META_KEYWORDS="pooteypie" \
     -e META_INDEX_STATUS="noindex" \
     -e LANG="en" \
     -e THEME="Dark" \
     -e THEME_OS=true \
-    -e NAME="pooteypie" \
-    -e BUTTON_ORDER="STATUS,JELLYFIN,RIDE-ROULETTE,STONK,MOUSEWATCH" \
-    -e CUSTOM_BUTTON_NAME="STATUS,JELLYFIN,RIDE-ROULETTE,STONK,MOUSEWATCH" \
-    -e CUSTOM_BUTTON_TEXT="Status,Media Server,Ride Roulette,Discord: Stock Bot,Discord: Disneyland Bot" \
-    -e CUSTOM_BUTTON_ALT_TEXT="View Server Status,Jellyfin Media Server,I Don't Know What To Do At Disneyland,Discord: Stock Bot,Discord: Disneyland Bot" \
-    -e CUSTOM_BUTTON_URL="https://uptime.pooteypie.cf,https://jellyfin.pooteypie.cf,https://ride-roulette.web.app,https://www.github.com/pyamsoft/stonk,https://github.com/pyamsoft/mousewatch" \
-    -e CUSTOM_BUTTON_COLOR="#5CDD8B,#007CA6,#000000,#000000,#000000" \
-    -e CUSTOM_BUTTON_TEXT_COLOR="#4C4C4C,#FFFFFF,#FFFFFF,#FFFFFF,#FFFFFF" \
-    -e CUSTOM_BUTTON_ICON="fas server,fas compact-disc,fas dice,fab github,fab github" \
-    -e FOOTER="pyamsoft © ${_year}" \
+    ${_ll} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
