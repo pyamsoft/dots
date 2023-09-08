@@ -58,7 +58,7 @@ __setup_path()
   # Linux stuff
   if [ "$(uname)" = "Linux" ]; then
     # bubblewrap-wrap scripts
-    if command -v bubblewrap > /dev/null; then
+    if command -v bwrap > /dev/null; then
       if [ -d "${HOME}/.bww/bin" ]; then
         PATH="${HOME}/.bww/bin:${PATH}"
       fi
