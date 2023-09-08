@@ -8,8 +8,12 @@ readonly _tag="latest"
 readonly _cmd="podman"
 
 _prep_mounts() {
-  _mounts=""
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
 
+  # Prep the directories
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
   readonly _mounts
   return 0
 }
