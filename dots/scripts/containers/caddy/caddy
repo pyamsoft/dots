@@ -7,13 +7,42 @@ readonly _tag="latest"
 # Use podman, don't use docker
 readonly _cmd="podman"
 
-_prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _caddyfile="${HOME}/.local/etc/containers/${_name}/Caddyfile"
+_runas() {
+  sudo -u "${_user}" -- "$@" || return 1
+  return 0
+}
 
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
+_get_env() {
+  _runas env | grep "^${1}=" | tr '=' ' ' | awk '{ print $2 }' || return 1
+
+  unset _env_user
+  return 0
+}
+
+_priv_port_drop() {
+  if [ "$(uname)" != "Darwin" ]; then
+    # Open privileged ports for non-root users
+    # After a few seconds, close them back up.
+    #
+    # Since we run this overall script as root, we are "trusted" to open this
+    sysctl -q net.ipv4.ip_unprivileged_port_start=80 || return 1
+    (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    return 0
+  fi
+
+  return 0
+}
+
+_prep_mounts() {
+  _root_path="$(_get_env "HOME")/.local"
+  readonly _root_path
+
+  readonly _mount1="${_root_path}/etc/containers/${_name}/data"
+  readonly _mount2="${_root_path}/etc/containers/${_name}/config"
+  readonly _caddyfile="${_root_path}/etc/containers/${_name}/Caddyfile"
+
+  _runas mkdir -m 700 -p "${_mount1}" || return 1
+  _runas mkdir -m 700 -p "${_mount2}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
@@ -26,8 +55,13 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
+  _caps="${_caps} --cap-add NET_BIND_SERVICE"
+  _caps="${_caps} --cap-add NET_ADMIN"
 
-  # No caps
+  # Need these extra caps on MacOS
+  if [ "$(uname)" = "Darwin" ]; then
+    _caps="${_caps} --cap-add DAC_OVERRIDE"
+  fi
 
   readonly _caps
   return 0
@@ -36,21 +70,30 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
+  # No ports
+
   readonly _ports
   return 0
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'You must run this as a rootless container\n'
-    return 1
+  # On MacOS we use a VM, make sure it is rootful to bind to port 53
+  if [ "$(uname)" = "Darwin" ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+      printf -- 'You must run this as a normal user with a rootful VM\n'
+      return 1
+    fi
+  else
+    if [ "$(id -u)" -ne 0 ]; then
+      printf -- 'You must run this as a rootful container\n'
+      return 1
+    fi
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
-  readonly _userns
+  # Expects to be root (since the cert file is owned by root)
+  _userns="--user 0:0"
 
-  return 0
+  readonly _userns
 }
 
 _check_health() {
@@ -67,6 +110,9 @@ _check_health() {
 }
 
 _containerize() {
+  # Open ports to non-root users
+  _priv_port_drop || return 1
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -88,6 +134,29 @@ _containerize() {
 }
 
 main() {
+  if [ -z "$1" ]; then
+    printf -- 'Must provide target runas user\n'
+    return 1
+  fi
+
+  # Make sure the target user is provided
+  _user="$(id -un "$1")"
+  readonly _user
+
+  if [ -z "${_user}" ]; then
+    printf -- 'Must provide target runas user\n'
+    return 1
+  fi
+
+  # Consume the used var
+  shift
+
+  # Check that we are not targeting root
+  if [ "$(id -u "${_user}")" -eq 0 ]; then
+    printf -- 'Your target user must not be root: %s\n' "${_user}"
+    return 1
+  fi
+
   _check_user || return 1
   _check_health || return 1
   _prep_mounts || return 1
