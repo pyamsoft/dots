@@ -1,8 +1,8 @@
 #!/bin/sh
 
 readonly _name="caddy"
-readonly _image="localhost/pyamsoft/caddy"
-readonly _tag="latest"
+readonly _image="docker.io/caddy"
+readonly _tag="2.7.4"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
