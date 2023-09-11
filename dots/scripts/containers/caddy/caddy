@@ -12,20 +12,32 @@ _prep_mounts() {
 
   readonly _mount1="${_root_path}/etc/containers/${_name}/data"
   readonly _mount2="${_root_path}/etc/containers/${_name}/config"
-  readonly _mount3="${_root_path}/etc/containers/${_name}/logs"
-  readonly _caddyfile="/etc/caddy/Caddyfile"
-  readonly _binary="/opt/caddy/bin/caddy"
+  readonly _mount3="${_root_path}/etc/containers/${_name}/serve"
+  readonly _mount4="${_root_path}/etc/containers/${_name}/logs"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/config"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/var/log/caddy"
-  _mounts="${_mounts} --mount type=bind,source=${_caddyfile},target=/etc/caddy/Caddyfile"
-  _mounts="${_mounts} --mount type=bind,source=${_binary},target=/usr/bin/caddy"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/serve"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/var/log/caddy"
+
+
+  _caddyfile="/etc/caddy/Caddyfile"
+  if [ -f "${_caddyfile}" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_caddyfile},target=/etc/caddy/Caddyfile"
+  fi
+  unset _caddyfile
+
+  _binary="/opt/caddy/bin/caddy"
+  if [ -f "${_binary}" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_binary},target=/usr/bin/caddy"
+  fi
+  unset _binary
 
   readonly _mounts
   return 0
