@@ -1,12 +1,11 @@
 [Unit]
 Description=Caddy container
-After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service
-Wants=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service
-Requires=user@%i.service
+After=docker.service tailscaled.service mullvad-vpn.service firewalld.service 
+Wants=docker.service tailscaled.service mullvad-vpn.service firewalld.service
 
 [Service]
 ExecStart=/bin/sh -c '_c="caddy"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}"'
 ExecStop=/bin/sh -c '_c="caddy"; podman stop "$${_c}"; podman rm "$${_c}"; exit 0'
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network-online.target
