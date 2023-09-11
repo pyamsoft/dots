@@ -13,7 +13,7 @@ Requires=user@%i.service
 
 [Service]
 ExecStart=/bin/sh -c '_c="caddy"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}" "%i"'
-ExecStop=/bin/sh -c '_c="caddy" _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop "$${_c}"; sudo -u "$${_u}" podman rm "$${_c}"; exit 0'
+ExecStop=/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop "$${_c}"; sudo -u "$${_u}" podman rm "$${_c}"; exit 0'
 
 [Install]
 WantedBy=user@%i.service
