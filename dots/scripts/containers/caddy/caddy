@@ -41,7 +41,7 @@ _prep_mounts() {
   readonly _mount2="${_root_path}/etc/containers/${_name}/config"
   readonly _mount3="${_root_path}/etc/containers/${_name}/logs"
   readonly _caddyfile="${_root_path}/etc/containers/${_name}/Caddyfile"
-  readonly _binary="/usr/local/bin/caddy"
+  readonly _binary="/opt/caddy/bin/caddy"
 
   _runas mkdir -m 700 -p "${_mount1}" || return 1
   _runas mkdir -m 700 -p "${_mount2}" || return 1
