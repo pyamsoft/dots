@@ -16,9 +16,9 @@ _prep_mounts() {
   readonly _caddyfile="/etc/caddy/Caddyfile"
   readonly _binary="/opt/caddy/bin/caddy"
 
-  _runas mkdir -m 700 -p "${_mount1}" || return 1
-  _runas mkdir -m 700 -p "${_mount2}" || return 1
-  _runas mkdir -m 700 -p "${_mount3}" || return 1
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
