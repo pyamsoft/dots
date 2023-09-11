@@ -63,8 +63,9 @@ _prep_caps() {
   _caps="${_caps} --cap-add NET_BIND_SERVICE"
   _caps="${_caps} --cap-add NET_ADMIN"
 
-  # To read the Caddyfile
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  if [ "$(uname)" = "Darwin" ]; then
+    _caps="${_caps} --cap-add DAC_OVERRIDE"
+  fi
 
   readonly _caps
   return 0
@@ -127,7 +128,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run ${_how} \
+  _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --cap-drop ALL \
     --net=host \
