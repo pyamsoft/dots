@@ -73,8 +73,8 @@ _check_user() {
     return 1
   fi
 
-  # Don't use keep-id so that we run as root in the container like we need to
-  _userns=""
+  # Run with root for samba binding but also keep-id for /var/cache/samba/msg.lock
+  _userns="--user=0:0 --userns keep-id"
 
   readonly _userns
 
