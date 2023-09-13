@@ -1,1 +1,1 @@
-alias ssh="ssh -F ${HOME}/.config/ssh/config "
+alias ssh="ssh -o UserKnownHostsFile=${HOME}/.config/ssh/known_hosts -F ${HOME}/.config/ssh/config "
