@@ -40,7 +40,7 @@ _get_latest_tags() {
       # And then we do this - oh baby!
       # tail instead of head because ghcr puts newest containers LAST
       # sort -r to put newest on top
-      curl -s -H "Authorization: Bearer ${_gh_token}" "https://ghcr.io/v2/${_org}/${_image}/tags/list" | grep --color -o '\[.*\]' | sed 's/\[//g' | sed 's/\]//g' | sed 's/"//g' | tr ',' '\n' | tail -n "${_number_of_tags}" | sort -r | grep --color '.*' || {
+      curl -s -H "Authorization: Bearer ${_gh_token}" "https://ghcr.io/v2/${_org}/${_image}/tags/list" | grep --color -o '\[.*\]' | sed 's/\[//g' | sed 's/\]//g' | sed 's/"//g' | tr ',' '\n' | grep -v '\.sig$' | tail -n "${_number_of_tags}" | sort -r | grep --color '.*' || {
         printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
       }
       ;;
