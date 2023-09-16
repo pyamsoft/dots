@@ -6,6 +6,7 @@ Wants=docker.service tailscaled.service mullvad-vpn.service firewalld.service
 [Service]
 ExecStart=/bin/sh -c '_c="caddy"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}"'
 ExecStop=/bin/sh -c '_c="caddy"; podman stop "$${_c}"; podman rm "$${_c}"; exit 0'
+ExecReload=/bin/sh -c '_c="caddy"; podman exec "$${_c}" caddy reload --config /etc/caddy/Caddyfile'
 
 [Install]
 WantedBy=network-online.target
