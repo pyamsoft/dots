@@ -2,15 +2,18 @@
 
 _path=""
 if [ "$1" = "-2" ]; then
-  _path="media2"
+  _path="nerd@nerd2:/home/nerd/media2/Movies"
   shift
+elif [ "$1" = "-1" ]; then
+  _path="nerd@nerd2:/home/nerd/media/Movies"
 else
-  _path="media"
+  _path="nerd@nerd2:/home/nerd/videos"
 fi
+readonly _path
 
 for f in "$@"; do
   # Remove a trailing space to copy over folders
   _file="${f%/}"
-  rsync -hrtplu --progress "${_file}" "nerd@nerd2:/home/nerd/${_path}/Movies"
+  rsync -hrtplu --progress "${_file}" "${_path}"
 done
 
