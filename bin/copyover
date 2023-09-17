@@ -6,6 +6,7 @@ if [ "$1" = "-2" ]; then
   shift
 elif [ "$1" = "-1" ]; then
   _path="nerd@nerd2:/home/nerd/media/Movies"
+  shift
 else
   _path="nerd@nerd2:/home/nerd/videos"
 fi
