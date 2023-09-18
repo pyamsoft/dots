@@ -19,6 +19,11 @@ _prep_mounts() {
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/etc/crowdsec"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/var/lib/crowdsec/data"
 
+  # Bouncers should live at their real directory for systemd service scripts to handle them
+  if [ -d "/etc/crowdsec/bouncers" ]; then
+    _mounts="${_mounts} --mount type=bind,source=/etc/crowdsec/bouncers,target=/etc/crowdsec/bouncers"
+  fi
+
   readonly _mounts
   return 0
 }
