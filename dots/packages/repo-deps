@@ -757,7 +757,6 @@ xcb-util-xrm
 xclip
 xdg-dbus-proxy
 xdg-desktop-portal
-xdg-desktop-portal-gtk
 xdg-desktop-portal-kde
 xdg-utils
 xf86-input-libinput
