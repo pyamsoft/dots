@@ -54,14 +54,14 @@ _setup_path() {
   # Linux stuff
   if [ "$(uname)" = "Linux" ]; then
     # bubblewrap-wrap scripts
-    if command -v bwrap > /dev/null; then
+    if command -v bwrap >/dev/null; then
       if [ -d "${HOME}/.bww/bin" ]; then
         PATH="${HOME}/.bww/bin:${PATH}"
       fi
     fi
 
     # Flatpak scrips
-    if command -v flatpak > /dev/null; then
+    if command -v flatpak >/dev/null; then
       if [ -d "${HOME}/.flatpak/bin" ]; then
         PATH="${HOME}/.flatpak/bin:${PATH}"
       fi
@@ -69,7 +69,7 @@ _setup_path() {
   fi
 
   # Docker scrips
-  if command -v docker > /dev/null || command -v podman > /dev/null; then
+  if command -v docker >/dev/null || command -v podman >/dev/null; then
     if [ -d "${HOME}/.containers/bin" ]; then
       PATH="${HOME}/.containers/bin:${PATH}"
     fi
@@ -77,7 +77,7 @@ _setup_path() {
 
   # Add local npm repository: used for things like bash-language-server
   # Set the local npm global path with "npm config set prefix ~/.npm/global"
-  if command -v npm > /dev/null; then
+  if command -v npm >/dev/null; then
     # Don't add the path if we double up on homebrew
     _npm_path="$(npm config get prefix)"
     if [ "${_npm_path}" != "/opt/homebrew" ]; then
@@ -132,7 +132,7 @@ _setup_ssh() {
   # We do not have an already running auth sock
   if [ -n "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
     # Check if an SSH agent is already running
-    if ! pgrep -u "$(id -un)" ssh-agent > /dev/null; then
+    if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
       # Launch a new agent and save the details in this runtime file
       ssh-agent -s >"${XDG_RUNTIME_DIR}/ssh-agent.env"
     fi
