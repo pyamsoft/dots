@@ -8,61 +8,97 @@ fi
 if [ "$1" = "light" ] || [ "$1" = "l" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
+      sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' ~/.config/lvim/config.lua
+    fi
+    if [ -n "${TMUX}" ]; then
+      sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    fi
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to no'
   else
     # Linux is GNU sed
-    sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' ~/.config/lvim/config.lua
-    sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
+      sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' ~/.config/lvim/config.lua
+    fi
+    if [ -n "${TMUX}" ]; then
+      sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+    fi
 
     # XFCE4 terminal
-    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FE640B/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC/' ~/.config/xfce4/terminal/terminalrc
+    if [ -f "${HOME}/.config/xfce4/terminal/terminalrc" ]; then
+      sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#EFF1F5/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#4C4F69/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#ACB0BE/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#FE640B/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC/' ~/.config/xfce4/terminal/terminalrc
+    fi
 
     # GNOME Desktop
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"    # GTK-3
-    gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "gnome" ]; then
+      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"    # GTK-3
+      gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
+    fi
+
+    # KDE
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
+      lookandfeeltool -a "org.kde.breeze.desktop"
+    fi
   fi
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' ~/.config/lvim/config.lua
-    sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
+      sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' ~/.config/lvim/config.lua
+    fi
+    if [ -n "${TMUX}" ]; then
+      sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+    fi
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to yes'
   else
     # Linux is GNU sed
-    sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' ~/.config/lvim/config.lua
-    sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
+      sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' ~/.config/lvim/config.lua
+    fi
+    if [ -n "${TMUX}" ]; then
+      sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+    fi
 
     # XFCE4 terminal
-    sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#24273A/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#181926/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#F5A97F/' ~/.config/xfce4/terminal/terminalrc
-    sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#494D64;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#B8C0E0;#5B6078;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#A5ADCB/' ~/.config/xfce4/terminal/terminalrc
+    if [ -f "${HOME}/.config/xfce4/terminal/terminalrc" ]; then
+      sed -i '0,/^ColorForeground=.*$/s//ColorForeground=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorBackground=.*$/s//ColorBackground=#24273A/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorCursorForeground=.*$/s//ColorCursorForeground=#181926/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorCursorBackground=.*$/s//ColorCursorBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorSelection=.*$/s//ColorSelection=#CAD3F5/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorSelectionBackground=.*$/s//ColorSelectionBackground=#5B6078/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^TabActivityColor=.*$/s//TabActivityColor=#F5A97F/' ~/.config/xfce4/terminal/terminalrc
+      sed -i '0,/^ColorPalette=.*$/s//ColorPalette=#494D64;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#B8C0E0;#5B6078;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#A5ADCB/' ~/.config/xfce4/terminal/terminalrc
+    fi
 
     # GNOME Desktop
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"   # GTK-3
-    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "gnome" ]; then
+      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"   # GTK-3
+      gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
+    fi
+
+    # KDE
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
+      lookandfeeltool -a "org.kde.breezedark.desktop"
+    fi
   fi
 else
   printf -- 'Must provide either "light" or "dark" mode\n'
   exit 1
 fi
 
-# Re-source tmux
-tmux source-file ~/.config/tmux/tmux.conf
+if [ -n "${TMUX}" ]; then
+  # Re-source tmux
+  tmux source-file ~/.config/tmux/tmux.conf
+fi
