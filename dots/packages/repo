@@ -25,12 +25,11 @@ pacman-contrib
 papirus-icon-theme
 podman
 proxychains-ng
-qgnomeplatform-qt5
-qgnomeplatform-qt6
 reflector
 rng-tools
 rofi
 sane-airscan
+shellcheck
 simple-scan
 smartmontools
 socat
