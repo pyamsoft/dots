@@ -29,8 +29,8 @@ _export_gaming_environment() {
 
     # Fix weird texture bugs
     # https://github.com/Plagman/gamescope/issues/320
-    export AMD_DEBUG=nodcc
-    export RADV_DEBUG=nodcc
+    export AMD_DEBUG=nodisplaydcc
+    export RADV_DEBUG=nodisplaydcc
   else
     printf -- '[gametime] Applying AMD driver fixes: NO\n'
   fi
