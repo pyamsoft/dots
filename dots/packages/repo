@@ -5,6 +5,7 @@ base-devel
 bluedevil
 cups-pdf
 ddcutil
+dolphin
 flatpak
 gentium-plus-font
 hplip
@@ -35,7 +36,6 @@ sane-airscan
 sddm
 sddm-kcm
 shellcheck
-simple-scan
 smartmontools
 socat
 sshpass
@@ -46,7 +46,6 @@ tree-sitter-cli
 ttf-cascadia-code-nerd
 ttf-liberation
 xdg-user-dirs
-xfce4-terminal
 xorg-xrandr
 yakuake
 yt-dlp

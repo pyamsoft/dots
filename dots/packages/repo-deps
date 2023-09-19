@@ -24,6 +24,7 @@ autoconf
 automake
 avahi
 baloo
+baloo-widgets
 bash
 bash-completion
 binutils
@@ -48,8 +49,6 @@ catatonit
 cdparanoia
 cifs-utils
 clinfo
-colord
-colord-sane
 confuse
 conmon
 containers-common
@@ -90,6 +89,7 @@ faad2
 fakeroot
 ffmpeg
 ffmpeg4.4
+ffmpegthumbs
 file
 filesystem
 findutils
@@ -100,6 +100,7 @@ flex
 fontconfig
 foomatic-db-engine
 frameworkintegration
+freeglut
 freetype2
 fribidi
 fuse-common
@@ -111,7 +112,6 @@ gc
 gcab
 gcc
 gcc-libs
-gcr
 gd
 gdbm
 gdk-pixbuf2
@@ -147,9 +147,6 @@ gstreamer
 gtk-update-icon-cache
 gtk3
 guile
-gvfs
-gvfs-mtp
-gvfs-smb
 gzip
 harfbuzz
 haskell-aeson
@@ -213,6 +210,7 @@ iso-codes
 iw
 iwd
 jansson
+jasper
 jbig2dec
 jbigkit
 jitterentropy
@@ -238,6 +236,8 @@ kde-cli-tools
 kdeclarative
 kdecoration
 kded
+kdegraphics-mobipocket
+kdegraphics-thumbnailers
 kdelibs4support
 kdesu
 kdnssd
@@ -254,6 +254,7 @@ kiconthemes
 kidletime
 kinfocenter
 kio
+kio-admin
 kio-extras
 kio-fuse
 kirigami-addons
@@ -276,6 +277,7 @@ kpty
 kquickcharts
 krb5
 krunner
+kscreen
 kscreenlocker
 kservice
 ksystemstats
@@ -317,8 +319,6 @@ libcanberra
 libcap
 libcap-ng
 libcbor
-libcdio
-libcdio-paranoia
 libcloudproviders
 libcolord
 libcups
@@ -352,10 +352,8 @@ libgirepository
 libglvnd
 libgpg-error
 libgphoto2
-libgtop
 libgudev
 libgusb
-libhandy
 libheif
 libical
 libice
@@ -370,6 +368,7 @@ libisl
 libjcat
 libjpeg-turbo
 libjxl
+libkdcraw
 libkexiv2
 libksba
 libkscreen
@@ -424,6 +423,7 @@ libqaccessibilityclient
 libqalculate
 libqmi
 libqrtr-glib
+libraw
 libraw1394
 librsvg
 libsasl
@@ -481,8 +481,6 @@ libxdamage
 libxdg-basedir
 libxdmcp
 libxext
-libxfce4ui
-libxfce4util
 libxfixes
 libxfont2
 libxft
@@ -658,6 +656,7 @@ qt5-location
 qt5-multimedia
 qt5-quickcontrols
 qt5-quickcontrols2
+qt5-sensors
 qt5-speech
 qt5-svg
 qt5-tools
@@ -734,8 +733,6 @@ vid.stab
 vlc
 vmaf
 volume_key
-vte-common
-vte3
 vulkan-headers
 vulkan-icd-loader
 vulkan-radeon
@@ -764,7 +761,6 @@ xdg-desktop-portal-gtk
 xdg-desktop-portal-kde
 xdg-utils
 xf86-input-libinput
-xfconf
 xkeyboard-config
 xorg-fonts-encodings
 xorg-server
