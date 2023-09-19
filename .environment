@@ -1,14 +1,12 @@
 # shellcheck shell=bash
 
-__setup_systemd()
-{
+_setup_systemd() {
   # If systemd assumes we have 256 colors, it displays a weird yellow for example.
   # Our terminal color scheme only handles 16
   export SYSTEMD_COLORS=16
 }
 
-__setup_editor()
-{
+_setup_editor() {
   # User editor can be from a local script
   # Use absolute path to editor
   _editors="${HOME}/.local/bin/lvim ${HOME}/.containers/bin/nvim ${HOME}/.bww/bin/nvim /opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
@@ -25,8 +23,7 @@ __setup_editor()
   return 0
 }
 
-__setup_locale()
-{
+_setup_locale() {
   # Incase LANG is not defined since Java and other tools nolikey POSIX
   # May be UserLand related on Android
   export LANG="en_US.UTF-8"
@@ -45,8 +42,7 @@ __setup_locale()
   export LC_IDENTIFICATION="en_US.UTF-8"
 }
 
-__setup_path()
-{
+_setup_path() {
   # MacOS doesn't have /usr/local/sbin by default.
   # If we made it, add it
   if [ "$(uname)" = "Darwin" ]; then
@@ -108,16 +104,14 @@ __setup_path()
   export PATH
 }
 
-__setup_homebrew()
-{
+_setup_homebrew() {
   # Add homebrew scripts (generally MacOS)
   if [ -e /opt/homebrew/bin/brew ]; then
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
 }
 
-__setup_xdg()
-{
+_setup_xdg() {
   # Define XDG directories
   export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
   export XDG_CACHE_HOME="${XDG_CACHE_HOME:-${HOME}/.cache}"
@@ -125,8 +119,7 @@ __setup_xdg()
   export XDG_STATE_HOME="${XDG_STATE_HOME:-${HOME}/.local/state}"
 }
 
-__setup_homedir()
-{
+_setup_homedir() {
   # Suggestions from xdg-ninja
   export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
   export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
@@ -134,22 +127,39 @@ __setup_homedir()
   export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 }
 
-__environment()
-{
+_setup_ssh() {
+  # Systemd has set us a runtime dir
+  # We do not have an already running auth sock
+  if [ -z "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
+    # Check if an SSH agent is already running
+    if ! pgrep -u "$(id -un)" ssh-agent > /dev/null; then
+      # Launch a new agent and save the details in this runtime file
+      ssh-agent -s >"${XDG_RUNTIME_DIR}/ssh-agent.env"
+    fi
+
+    if [ -f "${XDG_RUNTIME_DIR}/ssh-agent.env" ]; then
+      # shellcheck disable=SC1091
+      . "${XDG_RUNTIME_DIR}/ssh-agent.env" >/dev/null 2>&1
+    fi
+  fi
+}
+
+_environment() {
   # If we have already been sourced, exit out
   if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
     return 0
   fi
 
-  __setup_homebrew || return 1
-  __setup_path || return 1
-  __setup_xdg || return 1
-  __setup_systemd || return 1
-  __setup_editor || return 1
-  __setup_locale || return 1
+  _setup_homebrew || return 1
+  _setup_path || return 1
+  _setup_xdg || return 1
+  _setup_systemd || return 1
+  _setup_editor || return 1
+  _setup_locale || return 1
+  _setup_ssh || return 1
 
   # Expect XDG to be setup
-  __setup_homedir || return 1
+  _setup_homedir || return 1
 
   # Mark environment as set up
   export PYAMSOFT_ENVIRONMENT=1
@@ -157,15 +167,16 @@ __environment()
   return 0
 }
 
-__environment
+_environment
 
-unset -f __environment
-unset -f __setup_homebrew
-unset -f __setup_xdg
-unset -f __setup_path
-unset -f __setup_locale
-unset -f __setup_editor
-unset -f __setup_homedir
-unset -f __setup_systemd
+unset -f _environment
+unset -f _setup_ssh
+unset -f _setup_homebrew
+unset -f _setup_xdg
+unset -f _setup_path
+unset -f _setup_locale
+unset -f _setup_editor
+unset -f _setup_homedir
+unset -f _setup_systemd
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
