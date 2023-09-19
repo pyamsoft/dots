@@ -130,7 +130,7 @@ _setup_homedir() {
 _setup_ssh() {
   # Systemd has set us a runtime dir
   # We do not have an already running auth sock
-  if [ -z "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
+  if [ -n "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
     # Check if an SSH agent is already running
     if ! pgrep -u "$(id -un)" ssh-agent > /dev/null; then
       # Launch a new agent and save the details in this runtime file
