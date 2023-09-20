@@ -14,6 +14,8 @@ inter-font
 kde-gtk-config
 kdeconnect
 kernel-modules-hook
+khotkeys
+kwallet-pam
 linux-lts
 man-db
 man-pages
