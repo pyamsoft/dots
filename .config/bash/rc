@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-__launch_starship() {
+_launch_starship() {
   if command -v starship > /dev/null; then
     eval "$(starship init bash)" || return 1
   else
@@ -11,7 +11,7 @@ __launch_starship() {
   return 0
 }
 
-__increase_ulimit() {
+_increase_ulimit() {
   if command -v ulimit > /dev/null; then
     # ulimit is normally something like 1024 on Linux or 256 on MacOS
     # This can lead to errors like postgres:too many files open
@@ -26,7 +26,7 @@ __increase_ulimit() {
   return 0
 }
 
-__enable_bash_completion() {
+_enable_bash_completion() {
   # Enable bash completion
   _bcomp="/usr/share/bash-completion/bash_completion"
 
@@ -58,7 +58,7 @@ __enable_bash_completion() {
   return 0
 }
 
-__bash_qol() {
+_bash_qol() {
   _aliases="${XDG_CONFIG_HOME}/bash/aliases"
   [ -f "${_aliases}" ] && {
     # shellcheck disable=SC1090
@@ -90,7 +90,7 @@ __bash_qol() {
   return 0
 }
 
-__ensure_env() {
+_ensure_env() {
   # Source bash_profile if the environment is not setup
   if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
     [ -f "${HOME}"/.bash_profile ] && {
@@ -102,7 +102,7 @@ __ensure_env() {
   return 0
 }
 
-__direnv() {
+_direnv() {
   # Source bash_profile if the environment is not setup
   if command -v direnv > /dev/null; then
     eval "$(direnv hook bash)" || return 1
@@ -111,7 +111,7 @@ __direnv() {
   return 0
 }
 
-__correct_term_macos() {
+_correct_term_macos() {
   # tmux-256color is not on MacOS, use screen-256color instead
   if [ "$(uname)" = "Darwin" ] && [ "${TERM}" = "tmux-256color" ]; then
     export TERM="screen-256color"
@@ -120,38 +120,60 @@ __correct_term_macos() {
   return 0
 }
 
-__bashrc() {
-  __ensure_env || {
+_setup_ssh() {
+  # Systemd has set us a runtime dir
+  # We do not have an already running auth sock
+  if [ -n "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
+    # Check if an SSH agent is already running
+    if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
+      # Launch a new agent and save the details in this runtime file
+      ssh-agent -s >"${XDG_RUNTIME_DIR}/ssh-agent.env"
+    fi
+
+    if [ -f "${XDG_RUNTIME_DIR}/ssh-agent.env" ]; then
+      # shellcheck disable=SC1091
+      . "${XDG_RUNTIME_DIR}/ssh-agent.env" >/dev/null 2>&1
+    fi
+  fi
+}
+
+_bashrc() {
+  _ensure_env || {
     printf -- '[bashrc] Failed to setup environment\n'
     return 0
   }
 
-  __bash_qol || {
+  _bash_qol || {
     printf -- '[bashrc] Failed to setup bash QOL features\n'
     return 0
   }
 
-  __enable_bash_completion || {
+  _enable_bash_completion || {
     printf -- '[bashrc] Failed to setup bash shell completion\n'
     return 0
   }
 
-  __direnv || {
+  _direnv || {
     printf -- '[bashrc] Failed direnv setup\n'
     return 0
   }
 
-  __increase_ulimit || {
+  _increase_ulimit || {
     printf -- '[bashrc] Failed to increase ulimit\n'
     return 0
   }
 
-  __correct_term_macos || {
+  _setup_ssh || {
+    printf -- '[bashrc] Failed to attach or launch ssh-agent\n'
+    return 0
+  }
+
+  _correct_term_macos || {
     printf -- '[bashrc] Failed to correct TERM\n'
     return 0
   }
 
-  __launch_starship || {
+  _launch_starship || {
     printf -- '[bashrc] Failed to launch starship\n'
     return 0
   }
@@ -160,18 +182,19 @@ __bashrc() {
 }
 
 # Never return bad from here, bashrc must never fail
-__bashrc || {
+_bashrc || {
     printf -- '[bashrc] Error during setup\n'
 }
 
 # Do not export the functions
-unset -f __bashrc
-unset -f __increase_ulimit
-unset -f __enable_bash_completion
-unset -f __launch_starship
-unset -f __bash_qol
-unset -f __ensure_env
-unset -f __direnv
-unset -f __correct_term_macos
+unset -f _bashrc
+unset -f _increase_ulimit
+unset -f _enable_bash_completion
+unset -f _launch_starship
+unset -f _bash_qol
+unset -f _ensure_env
+unset -f _direnv
+unset -f _correct_term_macos
+unset -f _setup_ssh
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
