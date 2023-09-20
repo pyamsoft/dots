@@ -46,6 +46,10 @@ _prep_ports() {
   # Expose healthcheck port
   _ports="${_ports} -p 127.0.0.1:9999:9999/tcp"
 
+  # Firefox
+  _ports="${_ports} -p 127.0.0.1:7184:3000/tcp"
+  _ports="${_ports} -p 172.28.80.203:7184:3000/tcp"
+
   readonly _ports
   return 0
 }
