@@ -47,6 +47,13 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
     # KDE
     if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
       lookandfeeltool -a "org.kde.breeze.desktop"
+
+      # Re-apply the icon theme
+      printf -- '%s' "$(cat <<EOF
+[Icons]
+Theme=Papirus
+EOF
+)" >> "${XDG_CONFIG_HOME}/kdeglobals"
     fi
   fi
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
@@ -91,6 +98,13 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     # KDE
     if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
       lookandfeeltool -a "org.kde.breezedark.desktop"
+
+      # Re-apply the icon theme
+      printf -- '%s' "$(cat <<EOF
+[Icons]
+Theme=Papirus-Dark
+EOF
+)" >> "${XDG_CONFIG_HOME}/kdeglobals"
     fi
   fi
 else
