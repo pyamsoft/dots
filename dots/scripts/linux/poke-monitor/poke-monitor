@@ -92,26 +92,15 @@ main() {
     return 1
   }
 
-  # Raw console startx
-  _poke ":0" && {
-    printf -- 'Poked monitor :0\n'
-    return 0
-  }
-
-  # GDM
-  _poke ":1" && {
-    printf -- 'Poked monitor :1\n'
-    return 0
-  }
-
-  # LightDM
-  _poke ":7" && {
-    printf -- 'Poked monitor :7\n'
-    return 0
-  }
+  for _m in $(seq 0 7); do
+    _poke ":${_m}" && {
+      printf -- 'Poked monitor :%s\n' "${_m}"
+      return 0
+    }
+  done
 
   # Nothing worked
-  printf -- 'Failed all attempts to poke monitor :0 :1 :7\n'
+  printf -- 'Failed all attempts to poke monitor :0 - :7\n'
   return 1
 }
 
