@@ -37,21 +37,10 @@ __setup_x() {
   fi
 }
 
-__setup_qt() {
-  # Use QT5CT
-  if command -v qt5ct > /dev/null 2>&1; then
-    export QT_QPA_PLATFORMTHEME=qt5ct
-  elif command -v kvantummanager > /dev/null 2>&1; then
-    # Else use Kvantum if available
-    export QT_STYLE_OVERRIDE=kvantum
-  fi
-}
-
 __xprofile() {
   # shellcheck disable=SC1091
   [ -f "${HOME}"/.bash_profile ] && . "${HOME}"/.bash_profile
 
-  __setup_qt
   __setup_gpu
   __setup_sdl
   __setup_audio
@@ -68,7 +57,6 @@ __xprofile() {
 __xprofile
 
 unset -f __xprofile
-unset -f __setup_qt
 unset -f __setup_gpu
 unset -f __setup_sdl
 unset -f __setup_audio
