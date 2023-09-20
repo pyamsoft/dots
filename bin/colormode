@@ -54,6 +54,14 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
 Theme=Papirus
 EOF
 )" >> "${XDG_CONFIG_HOME}/kdeglobals"
+
+      # Re-apply the splash screen
+      printf -- '%s' "$(cat <<EOF
+[KSplash]
+Engine=none
+Theme=None
+EOF
+)" >> "${XDG_CONFIG_HOME}/ksplashrc"
     fi
   fi
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
@@ -105,6 +113,14 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
 Theme=Papirus-Dark
 EOF
 )" >> "${XDG_CONFIG_HOME}/kdeglobals"
+
+      # Re-apply the splash screen
+      printf -- '%s' "$(cat <<EOF
+[KSplash]
+Engine=none
+Theme=None
+EOF
+)" >> "${XDG_CONFIG_HOME}/ksplashrc"
     fi
   fi
 else
