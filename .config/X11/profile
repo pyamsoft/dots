@@ -31,6 +31,12 @@ __setup_accessibility() {
   export NO_AT_BRIDGE=1
 }
 
+__setup_x() {
+  if command -v xset >/dev/null; then
+    xset r rate 300 60 &
+  fi
+}
+
 __setup_qt() {
   # Use QT5CT
   if command -v qt5ct > /dev/null 2>&1; then
@@ -50,6 +56,7 @@ __xprofile() {
   __setup_sdl
   __setup_audio
   __setup_accessibility
+  __setup_x
 
   # Run startup programs
   _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
@@ -66,3 +73,4 @@ unset -f __setup_gpu
 unset -f __setup_sdl
 unset -f __setup_audio
 unset -f __setup_accessibility
+unset -f __setup_x
