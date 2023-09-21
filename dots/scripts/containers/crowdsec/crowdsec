@@ -2,7 +2,7 @@
 
 readonly _name="crowdsec"
 readonly _image="docker.io/crowdsecurity/crowdsec"
-readonly _tag="v1.5.3"
+readonly _tag="v1.5.4"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
