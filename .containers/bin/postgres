@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Migrating major version data:
+# https://www.cloudytuts.com/tutorials/docker/how-to-upgrade-postgresql-in-docker-and-kubernetes
+
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
 readonly _tag="16.0"
