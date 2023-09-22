@@ -12,7 +12,7 @@ _podman_rootful()
   touch "${_log_path}/$1" || return 1
   podman stop "$1" >> "${_log_path}/$1" 2>&1
   podman rm "$1" >> "${_log_path}/$1" 2>&1
-  "/usr/local/sbin/$1" "${_user}" >> "${_log_path}/$1" 2>&1 &
+  "/usr/local/bin/$1" "${_user}" >> "${_log_path}/$1" 2>&1 &
 }
 
 _podman_rootless()
@@ -56,6 +56,30 @@ _startup_programs()
   _podman || {
     # Don't return 1 here, we don't want to die just because podman failed
     printf -- 'podman failed to initialize.\n' >> "${_log_path}/podman"
+  }
+
+  open "/Applications/Rectangle.app" || {
+    printf -- 'Failed to open Rectangle.\n' >> "${_log_path}/rectangle"
+  }
+
+  open "/Applications/Easy Move+Resize.app" || {
+    printf -- 'Failed to open Easy Move+Resize.\n' >> "${_log_path}/easy_move_resize"
+  }
+
+  open "/Applications/Quicksilver.app" || {
+    printf -- 'Failed to open Quicksilver.\n' >> "${_log_path}/quicksilver"
+  }
+
+  open "/Applications/Tailscale.app" || {
+    printf -- 'Failed to open Tailscale.\n' >> "${_log_path}/tailscale"
+  }
+
+  open "/Applications/iTerm.app" || {
+    printf -- 'Failed to open iTerm.\n' >> "${_log_path}/iterm"
+  }
+
+  open "/Applications/kdeconnect-indicator.app" || {
+    printf -- 'Failed to open kdeconnect.\n' >> "${_log_path}/kdeconnect"
   }
 
   return 0
