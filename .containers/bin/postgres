@@ -2,18 +2,21 @@
 
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
-readonly _tag="15.3"
+readonly _tag="16.0"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/dumps"
 
   mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/var/lib/postgresql/data"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/dumps"
   readonly _mounts
   return 0
 }
