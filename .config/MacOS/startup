@@ -70,10 +70,6 @@ _startup_programs()
     printf -- 'Failed to open Quicksilver.\n' >> "${_log_path}/quicksilver"
   }
 
-  open "/Applications/Tailscale.app" || {
-    printf -- 'Failed to open Tailscale.\n' >> "${_log_path}/tailscale"
-  }
-
   open "/Applications/iTerm.app" || {
     printf -- 'Failed to open iTerm.\n' >> "${_log_path}/iterm"
   }
