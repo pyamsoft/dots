@@ -53,6 +53,10 @@ _podman()
 
 _startup_programs()
 {
+  # Sudo startup
+  # Can run with no password
+  sudo /usr/local/sbin/sudostartup peter "${_log_path}"
+
   _podman || {
     # Don't return 1 here, we don't want to die just because podman failed
     printf -- 'podman failed to initialize.\n' >> "${_log_path}/podman"

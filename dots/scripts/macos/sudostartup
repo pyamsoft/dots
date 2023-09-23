@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# A file that runs approved programs as root on startup
+# To use, set the path to this script as NOPASSWD in sudo
+
+_run() {
+  _run_program="$1"
+  _run_user="$2"
+  _run_logdir="$3"
+
+  # Delete old log
+  rm -f "${_run_logdir}/${_run_program}"
+
+  # Create new log
+  touch "${_run_logdir}/${_run_program}"
+
+  # Owned by user
+  chown "${_user}" "${_run_logdir}/${_run_program}"
+  chmod 600 "${_run_logdir}/${_run_program}"
+
+  # Exec program
+  ${_run_program} >>"${_run_logdir}/${_run_program}" 2>&1 &
+
+  unset _run_program
+  unset _run_user
+  unset _run_logdir
+  return 0
+}
+
+
+main() {
+  _user="$1"
+  _logdir="$2"
+
+  if [ "$(id -u )" -ne 0 ]; then
+    printf -- 'You must run this as root.\n'
+
+    unset _user
+    unset _logdir
+    return 1
+  fi
+
+  if [ -z "${_user}" ]; then
+    printf -- 'You must provide a target user.\n'
+
+    unset _user
+    unset _logdir
+    return 1
+  fi
+
+  if [ -z "${_logdir}" ]; then
+    printf -- 'You must provide a target user.\n'
+
+    unset _user
+    unset _logdir
+    return 1
+  fi
+
+  # Run tailscaled as root, output log
+  _run "tailscaled" "${_user}" "${_logdir}"
+
+  unset _user
+  unset _logdir
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
