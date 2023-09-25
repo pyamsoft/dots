@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly _name="audiobookshelf"
-readonly _image="docker.io/jellyfin/jellyfin"
+readonly _image="ghcr.io/advplyr/audiobookshelf"
 readonly _tag="2.4.3"
 
 # Use podman, don't use docker
