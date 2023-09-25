@@ -30,7 +30,8 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # No caps
+  # Server runs on port 80
+  _caps="${_caps} --cap-add NET_BIND_SERVICE"
 
   readonly _caps
   return 0
