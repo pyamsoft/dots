@@ -8,22 +8,25 @@ _run() {
   _run_user="$2"
   _run_logdir="$3"
 
+  _log_name="$(basename "${_run_program}")"
+
   # Delete old log
-  rm -f "${_run_logdir}/${_run_program}"
+  rm -f "${_run_logdir}/${_log_name}"
 
   # Create new log
-  touch "${_run_logdir}/${_run_program}"
+  touch "${_run_logdir}/${_log_name}"
 
   # Owned by user
-  chown "${_user}" "${_run_logdir}/${_run_program}"
-  chmod 600 "${_run_logdir}/${_run_program}"
+  chown "${_user}" "${_run_logdir}/${_log_name}"
+  chmod 600 "${_run_logdir}/${_log_name}"
 
   # Exec program
-  ${_run_program} >>"${_run_logdir}/${_run_program}" 2>&1 &
+  ${_run_program} >>"${_run_logdir}/${_log_name}" 2>&1 &
 
   unset _run_program
   unset _run_user
   unset _run_logdir
+  unset _log_name
   return 0
 }
 
@@ -57,7 +60,7 @@ main() {
   fi
 
   # Run tailscaled as root, output log
-  _run "tailscaled" "${_user}" "${_logdir}"
+  _run "/opt/homebrew/bin/tailscaled" "${_user}" "${_logdir}"
 
   unset _user
   unset _logdir
