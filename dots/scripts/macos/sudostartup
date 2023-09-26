@@ -52,7 +52,7 @@ main() {
   fi
 
   if [ -z "${_logdir}" ]; then
-    printf -- 'You must provide a target user.\n'
+    printf -- 'You must provide a target log directory.\n'
 
     unset _user
     unset _logdir
