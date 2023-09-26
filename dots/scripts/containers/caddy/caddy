@@ -27,9 +27,9 @@ _prep_mounts() {
   _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/var/log/caddy"
 
 
-  _caddyfile="/etc/caddy/Caddyfile"
-  if [ -f "${_caddyfile}" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_caddyfile},target=/etc/caddy/Caddyfile"
+  _caddyfile="/etc/caddy"
+  if [ -d "${_caddyfile}" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_caddyfile},target=/etc/caddy"
   fi
   unset _caddyfile
 
