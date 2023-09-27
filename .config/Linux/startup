@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# X11 environment
-_log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/logs"
+_log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/Linux/logs"
 
 _clear_logs() {
   rm -rf "${_log_path}" || return 1
@@ -17,7 +16,7 @@ _x_setup() {
   fi
 
   # Clean source xrdb config
-  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/X11/resources"
+  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/Linux/resources"
   if command -v xrdb > /dev/null 2>&1 && [ -f "${_xrdb_path}" ]; then
     # Do not run in background, this must be complete before continuing
     xrdb "${_xrdb_path}" > "${_log_path}/xrdb" 2>&1
@@ -25,9 +24,10 @@ _x_setup() {
   unset _xrdb_path
 
   # Disable the terminal bell noise
+  # Set keyboard repeat rate to 300[60]
   if command -v xset > /dev/null 2>&1; then
     # Do not run in background, this must be complete before continuing
-    xset -b > "${_log_path}/xset" 2>&1
+    xset -b r rate 300 60 > "${_log_path}/xset" 2>&1
   fi
 
   return 0
