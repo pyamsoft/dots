@@ -20,9 +20,6 @@ _setup() {
     elif [ -f "${HOME}/.Xauthority" ]; then
       XAUTHORITY="${HOME}/.Xauthority"
       printf -- 'Use User Xauthority %s\n' "${XAUTHORITY}"
-    elif [ -f "${HOME}/.Xauthority" ]; then
-      XAUTHORITY="${HOME}/.Xauthority"
-      printf -- 'Use User Xauthority %s\n' "${XAUTHORITY}"
     else
       # With SDDM, looks like its a random file like /tmp/xauth_*
       for f in /tmp/xauth_*; do
@@ -37,6 +34,22 @@ _setup() {
             ;;
         esac
       done
+
+      if [ -z "${XAUTHORITY}" ]; then
+        # Mutter on Xwayland
+        for f in /run/user/"${_uid}"/.mutter-Xwaylandauth*; do
+          case "$f" in
+            /run/user/"${_uid}"/.mutter-Xwaylandauth\*)
+              # Did not exist
+              ;;
+            /run/user/"${_uid}"/.mutter-Xwaylandauth*)
+              # Found one
+              XAUTHORITY="$f"
+              printf -- 'Use /run/user/%s/.mutter-Xwaylandauth Xauthority %s\n' "${_uid}" "${XAUTHORITY}"
+              ;;
+          esac
+        done
+      fi
     fi
   fi
 
