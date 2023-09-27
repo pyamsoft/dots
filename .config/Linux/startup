@@ -37,7 +37,7 @@ _startup_programs() {
   # If we have firewall applet
   if command -v firewall-applet >/dev/null 2>&1; then
     # Wait a little bit (sometimes it crashes)
-    sleep 1
+    sleep 5
 
     # And its not currently running
     if pgrep -u "${_USER}" firewall-applet >/dev/null; then
