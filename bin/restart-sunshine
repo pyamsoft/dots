@@ -1,5 +1,7 @@
 #!/bin/sh
 
+_TYPE=""
+
 _remove_devices() {
   printf -- 'Remove old sunshine devices...\n'
   rm -f "${HOME}/.config/sunshine/sunshine_keyboard" >/dev/null 2>&1
@@ -17,15 +19,14 @@ _restart() {
   _display="$1"
 
   # So that firewall-applet works
-  if [ "${_type}" = "wayland" ]; then
+  if [ "${_TYPE}" = "wayland" ]; then
     export WAYLAND_DISPLAY="wayland-${_display}"
     printf -- 'Attempt Sunshine restart on wayland: %s\n' "${WAYLAND_DISPLAY}"
-  elif [ "${_type}" = "x11" ]; then
+  elif [ "${_TYPE}" = "x11" ]; then
     export DISPLAY=":${_display}"
     printf -- 'Attempt Sunshine restart on x11: %s\n' "${DISPLAY}"
   else
-    printf -- 'Unknown session type: %s\n' "${_type}"
-    unset _type
+    printf -- 'Unknown session type: %s\n' "${_TYPE}"
     return 1
   fi
 
@@ -54,24 +55,35 @@ _restart() {
 
   unset DISPLAY
   unset WAYLAND_DISPLAY
-  unset _type
   unset _display
   return 0
 }
 
 main() {
   if [ -n "${XDG_SESSION_TYPE}" ]; then
-    _type="${XDG_SESSION_TYPE}"
+    _TYPE="${XDG_SESSION_TYPE}"
   else
     if [ -z "$1" ]; then
       printf -- 'Must provide a session type: "wayland" or "x11"\n'
       return 1
     fi
-    _type="$1"
+    _TYPE="$1"
   fi
+
+  # Must be a recognized type
+  case "${_TYPE}" in
+    wayland|x11)
+      ;;
+    *)
+      printf -- 'Unknown session type: %s. Must be one of "wayland" "x11"\n' "${_TYPE}"
+      return 1
+      ;;
+  esac
 
   if _restart "0"; then
     printf -- 'Restarted sunshine service on display :0\n'
+
+    unset _TYPE
     return 0
   else
     printf -- 'Failed to restart sunshine using display 0\n'
@@ -79,6 +91,8 @@ main() {
 
   if _restart "1"; then
     printf -- 'Restarted sunshine service on display 1\n'
+
+    unset _TYPE
     return 0
   else
     printf -- 'Failed to restart sunshine using display 1\n'
@@ -86,12 +100,15 @@ main() {
 
   if _restart "7"; then
     printf -- 'Restarted sunshine service on display 7\n'
+
+    unset _TYPE
     return 0
   else
     printf -- 'Failed to restart sunshine using display 7\n'
   fi
 
   printf -- 'Failed to restart sunshine using display 0 1 7\n'
+  unset _TYPE
   return 1
 }
 
