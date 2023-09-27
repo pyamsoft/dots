@@ -115,7 +115,7 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     # GNOME Desktop
     if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "gnome" ]; then
       gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
-      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
+      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
       gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
     fi
 
