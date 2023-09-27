@@ -92,7 +92,7 @@ _prepare_gamescope() {
     window_type="--borderless"
 
     # Slightly more than balanced but not quite performance
-    fsr_amount=18
+    fsr_amount=15
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
 
