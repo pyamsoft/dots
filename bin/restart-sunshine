@@ -13,79 +13,21 @@ _kill_firewall() {
   return 0
 }
 
-_adopt_xauth() {
-  _uid="$(id -u)"
-
-  # Make an assumption about our Xorg environment
-  if [ -z "${XAUTHORITY}" ]; then
-    # Gnome on Xwayland
-    for f in /run/user/"${_uid}"/.mutter-Xwaylandauth*; do
-      case "$f" in
-        /run/user/"${_uid}"/.mutter-Xwaylandauth\*)
-          # Did not exist
-          ;;
-        /run/user/"${_uid}"/.mutter-Xwaylandauth*)
-          # Found one
-          XAUTHORITY="$f"
-          printf -- 'Use /run/user/%s/.mutter-Xwaylandauth Xauthority %s\n' "${_uid}" "${XAUTHORITY}"
-          ;;
-      esac
-    done
-  fi
-
-  # Gnome on Xorg
-  if [ -z "${XAUTHORITY}" ]; then
-    if [ -f "/run/user/${_uid}/gdm/Xauthority" ]; then
-      XAUTHORITY="/run/user/${_uid}/gdm/Xauthority"
-      printf -- 'Use GDM Xauthority %s\n' "${XAUTHORITY}"
-    fi
-  fi
-
-  # With SDDM, looks like its a random file like /tmp/xauth_*
-  if [ -z "${XAUTHORITY}" ]; then
-    for f in /tmp/xauth_*; do
-      case "$f" in
-        /tmp/xauth_\*)
-          # Did not exist
-          ;;
-        /tmp/xauth_*)
-          # Found one
-          XAUTHORITY="$f"
-          printf -- 'Use /tmp Xauthority %s\n' "${XAUTHORITY}"
-          ;;
-      esac
-    done
-  fi
-
-  # Console Xorg
-  if [ -z "${XAUTHORITY}" ]; then
-    if [ -f "${HOME}/.Xauthority" ]; then
-      XAUTHORITY="${HOME}/.Xauthority"
-      printf -- 'Use User Xauthority %s\n' "${XAUTHORITY}"
-    fi
-  fi
-
-  if [ -z "${XAUTHORITY}" ]; then
-    printf -- 'Could not find a valid Xauthority file to poke xrandr with\n'
-    return 1
-  fi
-
-  printf -- 'Adopt XAUTH file: %s\n' "${XAUTHORITY}"
-  export XAUTHORITY
-  return 0
-}
-
 _restart() {
   _display="$1"
 
   # So that firewall-applet works
-  export DISPLAY="${_display}"
-  printf -- 'Attempt Sunshine restart on display: %s\n' "${DISPLAY}"
-
-  _adopt_xauth || {
-    printf -- 'Failed to adopt XAUTHORITY\n'
+  if [ "${_type}" = "wayland" ]; then
+    export WAYLAND_DISPLAY="wayland-${_display}"
+    printf -- 'Attempt Sunshine restart on wayland: %s\n' "${WAYLAND_DISPLAY}"
+  elif [ "${_type}" = "x11" ]; then
+    export DISPLAY=":${_display}"
+    printf -- 'Attempt Sunshine restart on x11: %s\n' "${DISPLAY}"
+  else
+    printf -- 'Unknown session type: %s\n' "${_type}"
+    unset _type
     return 1
-  }
+  fi
 
   printf -- 'Stopping old sunshine service...\n'
   systemctl --user stop sunshine >/dev/null 2>&1
@@ -111,33 +53,45 @@ _restart() {
   fi
 
   unset DISPLAY
+  unset WAYLAND_DISPLAY
+  unset _type
   unset _display
   return 0
 }
 
 main() {
-  if _restart ":0"; then
+  if [ -n "${XDG_SESSION_TYPE}" ]; then
+    _type="${XDG_SESSION_TYPE}"
+  else
+    if [ -z "$1" ]; then
+      printf -- 'Must provide a session type: "wayland" or "x11"\n'
+      return 1
+    fi
+    _type="$1"
+  fi
+
+  if _restart "0"; then
     printf -- 'Restarted sunshine service on display :0\n'
     return 0
   else
-    printf -- 'Failed to restart sunshine using display :0\n'
+    printf -- 'Failed to restart sunshine using display 0\n'
   fi
 
-  if _restart ":1"; then
-    printf -- 'Restarted sunshine service on display :1\n'
+  if _restart "1"; then
+    printf -- 'Restarted sunshine service on display 1\n'
     return 0
   else
-    printf -- 'Failed to restart sunshine using display :1\n'
+    printf -- 'Failed to restart sunshine using display 1\n'
   fi
 
-  if _restart ":1"; then
-    printf -- 'Restarted sunshine service on display :7\n'
+  if _restart "7"; then
+    printf -- 'Restarted sunshine service on display 7\n'
     return 0
   else
-    printf -- 'Failed to restart sunshine using display :7\n'
+    printf -- 'Failed to restart sunshine using display 7\n'
   fi
 
-  printf -- 'Failed to restart sunshine using ony display :0 :1 :7\n'
+  printf -- 'Failed to restart sunshine using display 0 1 7\n'
   return 1
 }
 

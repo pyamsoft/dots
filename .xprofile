@@ -2,9 +2,6 @@
 #
 # Source xprofile
 
-_cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
-
-# shellcheck disable=SC1091
-[ -f "${_cfg}/Linux/profile" ] && . "${_cfg}/Linux/profile"
-
-unset _cfg
+# This used to launch start up programs, but now
+# we do so using the systemd user unit login-autostart
+# which is display backend agnostic

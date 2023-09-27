@@ -1,8 +1,0 @@
-[Desktop Entry]
-Name=Wayland Startup
-Comment=Wayland Startup
-Exec=/bin/sh -c '[ "${XDG_SESSION_TYPE}" = "wayland" ] && "${HOME}/.xprofile"'
-Icon=sh
-Type=Application
-Categories=Utility
-StartupNotify=true
