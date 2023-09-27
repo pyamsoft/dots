@@ -5,6 +5,6 @@
 _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
 # shellcheck disable=SC1091
-[ -f "${_cfg}/X11/profile" ] && . "${_cfg}/X11/profile"
+[ -f "${_cfg}/Linux/profile" ] && . "${_cfg}/Linux/profile"
 
 unset _cfg
