@@ -1,11 +1,5 @@
 # shellcheck shell=bash
 
-_setup_systemd() {
-  # If systemd assumes we have 256 colors, it displays a weird yellow for example.
-  # Our terminal color scheme only handles 16
-  export SYSTEMD_COLORS=16
-}
-
 _setup_editor() {
   # User editor can be from a local script
   # Use absolute path to editor
@@ -21,25 +15,6 @@ _setup_editor() {
   unset _editors
 
   return 0
-}
-
-_setup_locale() {
-  # Incase LANG is not defined since Java and other tools nolikey POSIX
-  # May be UserLand related on Android
-  export LANG="en_US.UTF-8"
-  export LANGUAGE="en_US.UTF-8"
-  export LC_CTYPE="en_US.UTF-8"
-  export LC_NUMERIC="en_US.UTF-8"
-  export LC_TIME="en_US.UTF-8"
-  export LC_COLLATE="en_US.UTF-8"
-  export LC_MONETARY="en_US.UTF-8"
-  export LC_MESSAGES="en_US.UTF-8"
-  export LC_PAPER="en_US.UTF-8"
-  export LC_NAME="en_US.UTF-8"
-  export LC_ADDRESS="en_US.UTF-8"
-  export LC_TELEPHONE="en_US.UTF-8"
-  export LC_MEASUREMENT="en_US.UTF-8"
-  export LC_IDENTIFICATION="en_US.UTF-8"
 }
 
 _setup_path() {
@@ -136,9 +111,7 @@ _environment() {
   _setup_homebrew || return 1
   _setup_path || return 1
   _setup_xdg || return 1
-  _setup_systemd || return 1
   _setup_editor || return 1
-  _setup_locale || return 1
 
   # Expect XDG to be setup
   _setup_homedir || return 1
@@ -155,9 +128,7 @@ unset -f _environment
 unset -f _setup_homebrew
 unset -f _setup_xdg
 unset -f _setup_path
-unset -f _setup_locale
 unset -f _setup_editor
 unset -f _setup_homedir
-unset -f _setup_systemd
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:

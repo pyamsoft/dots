@@ -12,14 +12,6 @@ _x_setup() {
     xhost "+si:localuser:${_USER}"
   fi
 
-  # Clean source xrdb config
-  _xrdb_path="${XDG_CONFIG_HOME:-${HOME}/.config}/Linux/resources"
-  if command -v xrdb >/dev/null 2>&1 && [ -f "${_xrdb_path}" ]; then
-    # Do not run in background, this must be complete before continuing
-    xrdb "${_xrdb_path}"
-  fi
-  unset _xrdb_path
-
   # Disable the terminal bell noise
   # Set keyboard repeat rate to 300[60]
   if command -v xset >/dev/null 2>&1; then
