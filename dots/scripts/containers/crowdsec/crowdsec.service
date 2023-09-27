@@ -3,8 +3,9 @@ Description=Crowdsec container
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
-ExecStart=/bin/sh -c '_c="crowdsec"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}"'
-ExecStop=/bin/sh -c '_c="crowdsec"; podman stop "$${_c}"; podman rm "$${_c}"; exit 0'
+ExecStartPre=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+ExecStart=/bin/sh -c '_c="crowdsec"; /usr/local/bin/"$${_c}"'
+ExecStop=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
 ExecReload=/bin/sh -c '_c="crowdsec"; podman exec -i -t "$${_c}" /bin/sh -c "kill -HUP 1"'
 
 [Install]
