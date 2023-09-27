@@ -60,13 +60,14 @@ _restart() {
 }
 
 main() {
-  if [ -n "${XDG_SESSION_TYPE}" ]; then
-    _TYPE="${XDG_SESSION_TYPE}"
-  else
-    if [ -z "$1" ]; then
+  if [ -z "$1" ]; then
+    if [ -n "${XDG_SESSION_TYPE}" ]; then
+      _TYPE="${XDG_SESSION_TYPE}"
+    else
       printf -- 'Must provide a session type: "wayland" or "x11"\n'
       return 1
     fi
+  else
     _TYPE="$1"
   fi
 
