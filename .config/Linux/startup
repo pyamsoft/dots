@@ -1,10 +1,12 @@
 #!/bin/sh
 
+_USER=""
+
 _x_setup() {
   # Setup xhost for localhost
   if command -v xhost >/dev/null 2>&1; then
     # Do not run in background, this must be complete before continuing
-    xhost "+si:localuser:$(id -un)"
+    xhost "+si:localuser:${_USER}"
   fi
 
   # Clean source xrdb config
@@ -32,18 +34,41 @@ _startup_programs() {
     restart-sunshine
   fi
 
+  # If we have firewall applet
+  if command -v firewall-applet >/dev/null 2>&1; then
+    # Wait a little bit (sometimes it crashes)
+    sleep 1
+
+    # And its not currently running
+    if pgrep -u "${_USER}" firewall-applet >/dev/null; then
+      # Start a new one
+      firewall-applet >/dev/null 2>&1 &
+    fi
+  fi
+
   return 0
 }
 
 main() {
+  _USER="$(id -un)"
+
   if [ "${XDG_SESSION_TYPE}" = "x11" ]; then
     # Setup X11 generic
-    _x_setup || return 1
+    _x_setup || {
+
+      unset _USER
+      return 1
+    }
   fi
 
   # Then execute startup programs
-  _startup_programs || return 1
+  _startup_programs || {
 
+    unset _USER
+    return 1
+  }
+
+  unset _USER
   return 0
 }
 
