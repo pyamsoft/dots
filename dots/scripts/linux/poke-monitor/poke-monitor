@@ -14,42 +14,50 @@ _setup() {
 
   # Make an assumption about our Xorg environment
   if [ -z "${XAUTHORITY}" ]; then
+    # Gnome on Xwayland
+    for f in /run/user/"${_uid}"/.mutter-Xwaylandauth*; do
+      case "$f" in
+        /run/user/"${_uid}"/.mutter-Xwaylandauth\*)
+          # Did not exist
+          ;;
+        /run/user/"${_uid}"/.mutter-Xwaylandauth*)
+          # Found one
+          XAUTHORITY="$f"
+          printf -- 'Use /run/user/%s/.mutter-Xwaylandauth Xauthority %s\n' "${_uid}" "${XAUTHORITY}"
+          ;;
+      esac
+    done
+  fi
+
+  # Gnome on Xorg
+  if [ -z "${XAUTHORITY}" ]; then
     if [ -f "/run/user/${_uid}/gdm/Xauthority" ]; then
       XAUTHORITY="/run/user/${_uid}/gdm/Xauthority"
       printf -- 'Use GDM Xauthority %s\n' "${XAUTHORITY}"
-    elif [ -f "${HOME}/.Xauthority" ]; then
+    fi
+  fi
+
+  # With SDDM, looks like its a random file like /tmp/xauth_*
+  if [ -z "${XAUTHORITY}" ]; then
+    for f in /tmp/xauth_*; do
+      case "$f" in
+        /tmp/xauth_\*)
+          # Did not exist
+          ;;
+        /tmp/xauth_*)
+          # Found one
+          XAUTHORITY="$f"
+          printf -- 'Use /tmp Xauthority %s\n' "${XAUTHORITY}"
+          ;;
+      esac
+    done
+  fi
+
+  # Console Xorg
+  if [ -z "${XAUTHORITY}" ]; then
+    if [ -f "${HOME}/.Xauthority" ]; then
       XAUTHORITY="${HOME}/.Xauthority"
       printf -- 'Use User Xauthority %s\n' "${XAUTHORITY}"
-    else
-      # With SDDM, looks like its a random file like /tmp/xauth_*
-      for f in /tmp/xauth_*; do
-        case "$f" in
-          /tmp/xauth_\*)
-            # Did not exist
-            ;;
-          /tmp/xauth_*)
-            # Found one
-            XAUTHORITY="$f"
-            printf -- 'Use /tmp Xauthority %s\n' "${XAUTHORITY}"
-            ;;
-        esac
-      done
-
-      if [ -z "${XAUTHORITY}" ]; then
-        # Mutter on Xwayland
-        for f in /run/user/"${_uid}"/.mutter-Xwaylandauth*; do
-          case "$f" in
-            /run/user/"${_uid}"/.mutter-Xwaylandauth\*)
-              # Did not exist
-              ;;
-            /run/user/"${_uid}"/.mutter-Xwaylandauth*)
-              # Found one
-              XAUTHORITY="$f"
-              printf -- 'Use /run/user/%s/.mutter-Xwaylandauth Xauthority %s\n' "${_uid}" "${XAUTHORITY}"
-              ;;
-          esac
-        done
-      fi
     fi
   fi
 

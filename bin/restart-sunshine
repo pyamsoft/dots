@@ -13,12 +13,79 @@ _kill_firewall() {
   return 0
 }
 
+_adopt_xauth() {
+  _uid="$(id -u)"
+
+  # Make an assumption about our Xorg environment
+  if [ -z "${XAUTHORITY}" ]; then
+    # Gnome on Xwayland
+    for f in /run/user/"${_uid}"/.mutter-Xwaylandauth*; do
+      case "$f" in
+        /run/user/"${_uid}"/.mutter-Xwaylandauth\*)
+          # Did not exist
+          ;;
+        /run/user/"${_uid}"/.mutter-Xwaylandauth*)
+          # Found one
+          XAUTHORITY="$f"
+          printf -- 'Use /run/user/%s/.mutter-Xwaylandauth Xauthority %s\n' "${_uid}" "${XAUTHORITY}"
+          ;;
+      esac
+    done
+  fi
+
+  # Gnome on Xorg
+  if [ -z "${XAUTHORITY}" ]; then
+    if [ -f "/run/user/${_uid}/gdm/Xauthority" ]; then
+      XAUTHORITY="/run/user/${_uid}/gdm/Xauthority"
+      printf -- 'Use GDM Xauthority %s\n' "${XAUTHORITY}"
+    fi
+  fi
+
+  # With SDDM, looks like its a random file like /tmp/xauth_*
+  if [ -z "${XAUTHORITY}" ]; then
+    for f in /tmp/xauth_*; do
+      case "$f" in
+        /tmp/xauth_\*)
+          # Did not exist
+          ;;
+        /tmp/xauth_*)
+          # Found one
+          XAUTHORITY="$f"
+          printf -- 'Use /tmp Xauthority %s\n' "${XAUTHORITY}"
+          ;;
+      esac
+    done
+  fi
+
+  # Console Xorg
+  if [ -z "${XAUTHORITY}" ]; then
+    if [ -f "${HOME}/.Xauthority" ]; then
+      XAUTHORITY="${HOME}/.Xauthority"
+      printf -- 'Use User Xauthority %s\n' "${XAUTHORITY}"
+    fi
+  fi
+
+  if [ -z "${XAUTHORITY}" ]; then
+    printf -- 'Could not find a valid Xauthority file to poke xrandr with\n'
+    return 1
+  fi
+
+  printf -- 'Adopt XAUTH file: %s\n' "${XAUTHORITY}"
+  export XAUTHORITY
+  return 0
+}
+
 _restart() {
   _display="$1"
 
   # So that firewall-applet works
   export DISPLAY="${_display}"
   printf -- 'Attempt Sunshine restart on display: %s\n' "${DISPLAY}"
+
+  _adopt_xauth || {
+    printf -- 'Failed to adopt XAUTHORITY\n'
+    return 1
+  }
 
   printf -- 'Stopping old sunshine service...\n'
   systemctl --user stop sunshine >/dev/null 2>&1

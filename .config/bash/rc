@@ -125,7 +125,7 @@ _setup_ssh() {
   # We do not have an already running auth sock
   if [ -n "${XDG_RUNTIME_DIR}" ] && [ -z "${SSH_AUTH_SOCK}" ]; then
     # Gnome Keyring owns SSH when it runs
-    if [ -f "${XDG_RUNTIME_DIR}/keyring/ssh" ]; then
+    if [ -S "${XDG_RUNTIME_DIR}/keyring/ssh" ]; then
       export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/keyring/ssh"
     else
       # Check if an SSH agent is already running
