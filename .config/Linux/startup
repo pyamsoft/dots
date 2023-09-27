@@ -2,6 +2,9 @@
 
 _USER=""
 
+# Crashes right after with some QT session error
+readonly _LAUNCH_FW_APPLET=0
+
 _x_setup() {
   # Setup xhost for localhost
   if command -v xhost >/dev/null 2>&1; then
@@ -35,14 +38,16 @@ _startup_programs() {
   fi
 
   # If we have firewall applet
-  if command -v firewall-applet >/dev/null 2>&1; then
-    # Wait a little bit (sometimes it crashes)
-    sleep 5
+  if [ "${_LAUNCH_FW_APPLET}" -ne 0 ]; then
+    if command -v firewall-applet >/dev/null 2>&1; then
+      # Wait a little bit (sometimes it crashes)
+      sleep 5
 
-    # And its not currently running
-    if pgrep -u "${_USER}" firewall-applet >/dev/null; then
-      # Start a new one
-      firewall-applet >/dev/null 2>&1 &
+      # And its not currently running
+      if pgrep -u "${_USER}" firewall-applet >/dev/null; then
+        # Start a new one
+        firewall-applet >/dev/null 2>&1 &
+      fi
     fi
   fi
 
