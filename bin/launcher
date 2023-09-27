@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+  # Need normal window to launch on Xwayland
+  exec rofi -normal-window -show run "$@"
+else
+  exec rofi -show run "$@"
+fi
