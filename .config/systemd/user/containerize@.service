@@ -2,8 +2,9 @@
 Description=On %u login, start container %i
 
 [Service]
-ExecStart=/bin/sh -c 'podman stop %i; podman rm %i; %h/.containers/bin/%i'
-ExecStop=/bin/sh -c 'podman stop %i && podman rm %i || exit 0'
+ExecStartPre=/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i'
+ExecStart=/bin/sh -c '%h/.containers/bin/%i'
+ExecStop=/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i'
 
 [Install]
 WantedBy=default.target
