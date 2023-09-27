@@ -134,9 +134,9 @@ _prepare_gamescope() {
     fi
   else
     # Calculate nested resolution by applying FSR
-    nested_height="$((output_height / fsr_amount * 10))"
+    nested_height="$((output_height * 10 / fsr_amount))"
     if [ -n "${output_width}" ]; then
-      nested_width="$((output_width / fsr_amount * 10))"
+      nested_width="$((output_width * 10 / fsr_amount))"
     fi
   fi
 
