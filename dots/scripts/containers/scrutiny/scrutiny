@@ -10,16 +10,19 @@ readonly _cmd="podman"
 _prep_mounts() {
   readonly _mount1="/usr/local/etc/containers/${_name}/config"
   readonly _mount2="/usr/local/etc/containers/${_name}/db"
-  readonly _mount3="/usr/local/etc/containers/${_name}/scripts"
+  readonly _mount3="/usr/local/etc/containers/${_name}/logs"
+  readonly _mount4="/usr/local/etc/containers/${_name}/scripts"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/opt/scrutiny/config"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/opt/scrutiny/influxdb"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/scripts"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/opt/scrutiny/logs"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/scripts"
 
   # Needs udev from host
   _mounts="${_mounts} --mount type=bind,source=/run/udev,target=/run/udev:ro"

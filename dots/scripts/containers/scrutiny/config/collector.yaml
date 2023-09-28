@@ -1,0 +1,5 @@
+# https://raw.githubusercontent.com/AnalogJ/scrutiny/master/example.collector.yaml
+
+log:
+  file: '/opt/scrutiny/logs/collector.log'
+  level: INFO
