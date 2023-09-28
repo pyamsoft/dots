@@ -8,9 +8,9 @@ readonly _tag="v0.7.1-omnibus"
 readonly _cmd="podman"
 
 _prep_mounts() {
-  readonly _mount1="${_root}/${_name}/config"
-  readonly _mount2="${_root}/${_name}/db"
-  readonly _mount3="${_root}/${_name}/scripts"
+  readonly _mount1="/usr/local/etc/containers/${_name}/config"
+  readonly _mount2="/usr/local/etc/containers/${_name}/db"
+  readonly _mount3="/usr/local/etc/containers/${_name}/scripts"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
@@ -52,22 +52,10 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ "$(id -u)" -eq 0 ]; then
-      printf -- 'You must run this as a normal user with a rootful VM\n'
-      return 1
-    fi
-
-    _root="${HOME}/.local/etc/containers"
-  else
-    if [ "$(id -u)" -ne 0 ]; then
-      printf -- 'You must run this as a rootful container\n'
-      return 1
-    fi
-
-    _root="/usr/local/etc/containers"
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'You must run this as a rootfull container\n'
+    return 1
   fi
-  readonly _root
 
   # Expects to be root
   _userns="--user=0:0"
@@ -95,7 +83,7 @@ _containerize() {
   _sc=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${_root}/${_name}/runconfig.env"
+  _runconf="/usr/local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
