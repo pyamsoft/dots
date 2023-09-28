@@ -116,6 +116,11 @@ _containerize() {
 }
 
 main() {
+  if [ "$(uname)" = "Darwin" ]; then
+    printf -- '%s is not supported on MacOS\n' "${_name}"
+    return 1
+  fi
+
   _check_user || return 1
   _check_health || return 1
   _prep_mounts || return 1
