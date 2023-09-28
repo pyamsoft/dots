@@ -8,22 +8,27 @@ fi
 if [ "$1" = "light" ] || [ "$1" = "l" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
-      sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' ~/.config/lvim/config.lua
+    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+      sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
     fi
     if [ -n "${TMUX}" ]; then
-      sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+      sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
     fi
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to no'
   else
     # Linux is GNU sed
-    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
-      sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' ~/.config/lvim/config.lua
+    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+      sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
     fi
     if [ -n "${TMUX}" ]; then
-      sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' ~/.config/tmux/tmux.conf
+      sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+    fi
+
+    # Rofi
+    if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
+      sed -i '0,/@theme "rounded-catppuccin-mocha"/s//@theme "rounded-catppuccin-latte"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
     fi
 
     # XFCE4 terminal
@@ -75,22 +80,27 @@ EOF
 elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
   if [ "$(uname)" = "Darwin" ]; then
     # MacOS sed is BSD
-    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
-      sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' ~/.config/lvim/config.lua
+    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+      sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
     fi
     if [ -n "${TMUX}" ]; then
-      sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+      sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
     fi
 
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to yes'
   else
     # Linux is GNU sed
-    if [ -f "${HOME}/.config/lvim/config.lua" ]; then
-      sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' ~/.config/lvim/config.lua
+    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+      sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
     fi
     if [ -n "${TMUX}" ]; then
-      sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' ~/.config/tmux/tmux.conf
+      sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+    fi
+
+    # Rofi
+    if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
+      sed -i '0,/@theme "rounded-catppuccin-latte"/s//@theme "rounded-catppuccin-mocha"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
     fi
 
     # XFCE4 terminal
@@ -146,5 +156,5 @@ fi
 
 if [ -n "${TMUX}" ]; then
   # Re-source tmux
-  tmux source-file ~/.config/tmux/tmux.conf
+  tmux source-file "${XDG_CONFIG_HOME}/tmux/tmux.conf"
 fi
