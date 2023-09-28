@@ -1,0 +1,12 @@
+[Unit]
+Description=Scrutiny container
+After=docker.service
+Wants=docker.service
+
+[Service]
+ExecStartPre=/bin/sh -c '_c="scrutiny"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+ExecStart=/bin/sh -c '_c="scrutiny"; /usr/local/bin/"$${_c}"'
+ExecStop=/bin/sh -c '_c="scrutiny"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+
+[Install]
+WantedBy=multi-user.target
