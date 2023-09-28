@@ -1,5 +1,4 @@
 [Context]
 shared=!network
 sockets=!ssh-auth
-devices=!all
 filesystems=~/.keepass;

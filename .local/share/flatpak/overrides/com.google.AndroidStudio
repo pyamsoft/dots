@@ -1,6 +1,5 @@
 [Context]
-devices=all;shm;kvm
-features=multiarch;devel
+features=devel;
 filesystems=!xdg-run/keyring;
 
 [Environment]
