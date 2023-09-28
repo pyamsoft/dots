@@ -1,0 +1,14 @@
+#!/bin/sh
+
+main() {
+  _all="$(brew bundle dump --file -)"
+  printf -- '%s' "${_all}" | grep '^tap'  | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- >taps
+  printf -- '%s' "${_all}" | grep '^brew' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- >brews
+  printf -- '%s' "${_all}" | grep '^cask' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- >casks
+
+  unset _all
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
