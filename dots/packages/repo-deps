@@ -13,6 +13,7 @@ aom
 appstream
 archlinux-keyring
 argon2
+argyllcms
 at-spi2-core
 attr
 audit
@@ -59,9 +60,11 @@ dav1d
 db
 db5.3
 dbus
+dbus-glib
 dbus-python
 dconf
 debugedit
+debuginfod
 default-cursors
 desktop-file-utils
 device-mapper
@@ -143,6 +146,7 @@ gsettings-desktop-schemas
 gsm
 gsound
 gssdp
+gst-plugin-libcamera
 gst-plugin-pipewire
 gst-plugins-bad-libs
 gst-plugins-base-libs
@@ -338,6 +342,7 @@ libmanette
 libmd
 libmfx
 libmicrodns
+libmicrohttpd
 libmm-glib
 libmnl
 libmodplug
@@ -380,6 +385,7 @@ libproxy
 libpsl
 libpulse
 libpwquality
+libqb
 libraqm
 libraw1394
 librest
@@ -417,6 +423,7 @@ libuv
 libva
 libva-mesa-driver
 libvdpau
+libvdpau-va-gl
 libverto
 libvorbis
 libvpx
@@ -427,6 +434,7 @@ libwebp
 libwireplumber
 libwpe
 libx11
+libx86
 libxau
 libxcb
 libxcomposite
@@ -456,6 +464,7 @@ libxrandr
 libxrender
 libxshmfence
 libxslt
+libxss
 libxt
 libxtst
 libxv
@@ -592,7 +601,9 @@ qt5-base
 qt5-translations
 raptor
 rav1e
+read-edid
 readline
+rrdtool
 rsync
 rtkit
 rtl-sdr
@@ -638,11 +649,13 @@ tpm2-tss
 tracker3
 tree-sitter
 tslib
+ttf-dejavu
 twolame
 tzdata
 udisks2
 unibilium
 upower
+usbguard
 usbmuxd
 util-linux
 util-linux-libs
@@ -653,6 +666,7 @@ volume_key
 vte-common
 vte3
 vulkan-icd-loader
+vulkan-mesa-layers
 vulkan-radeon
 wavpack
 wayland
