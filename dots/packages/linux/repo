@@ -11,8 +11,6 @@ gnome-shell
 gnome-shell-extension-appindicator
 gnome-themes-extra
 gnome-tweaks
-gst-libav
-gst-plugins-bad
 hplip
 htop
 inter-font
@@ -31,7 +29,6 @@ proxychains-ng
 reflector
 rng-tools
 rofi
-sane-airscan
 shellcheck
 simple-scan
 smartmontools
@@ -41,9 +38,7 @@ starship
 tailscale
 tmux
 tree-sitter-cli
-ttf-cascadia-code-nerd
 ttf-liberation
-unzip
 xdg-user-dirs
 xfce4-terminal
 xorg-xrandr

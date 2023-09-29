@@ -146,8 +146,10 @@ gsettings-desktop-schemas
 gsm
 gsound
 gssdp
+gst-libav
 gst-plugin-libcamera
 gst-plugin-pipewire
+gst-plugins-bad
 gst-plugins-bad-libs
 gst-plugins-base-libs
 gst-plugins-good
@@ -609,6 +611,7 @@ rtkit
 rtl-sdr
 rtmpdump
 sane
+sane-airscan
 sbc
 sdl2
 sed
@@ -649,11 +652,13 @@ tpm2-tss
 tracker3
 tree-sitter
 tslib
+ttf-cascadia-code-nerd
 ttf-dejavu
 twolame
 tzdata
 udisks2
 unibilium
+unzip
 upower
 usbguard
 usbmuxd
