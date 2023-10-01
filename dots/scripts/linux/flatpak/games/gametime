@@ -38,15 +38,20 @@ _export_gaming_environment() {
   # Disable vertical blank
   export vlank_mode=0
 
-  # nerd1 is an iGPU, we apply even more performance tweaks
-  if [ "${__hostname}" = "nerd1" ]; then
-    # https://www.basnieuwenhuizen.nl/a-first-foray-into-rendering-less/
-    # https://linux-gaming.kwindu.eu/index.php?title=Improving_performance#Minor_tweaks
-    #
-    # where we used to render 1 pixel using 1 pixel of info, we now render 2 pixels (it's like halving the resolution in a way)
-    export RADV_FORCE_VRS=2x2
-    export RADV_DEBUG=novrsflatshading
-    printf -- '[gametime] Applying nerd1 tweaks\n'
+  # Optional performance tweaks for shit graphics
+  if [ -n "${GAME_TWEAK}" ] && [ "${GAME_TWEAK}" -eq 0 ]; then
+      printf -- '[gametime] Turn off hostname specific tweaks (GAME_TWEAK=%s)\n' "${GAME_TWEAK}"
+  else
+    # nerd1 is an iGPU, we apply even more performance tweaks
+    if [ "${__hostname}" = "nerd1" ]; then
+      # https://www.basnieuwenhuizen.nl/a-first-foray-into-rendering-less/
+      # https://linux-gaming.kwindu.eu/index.php?title=Improving_performance#Minor_tweaks
+      #
+      # where we used to render 1 pixel using 1 pixel of info, we now render 2 pixels (it's like halving the resolution in a way)
+      export RADV_FORCE_VRS=2x2
+      export RADV_DEBUG=novrsflatshading
+      printf -- '[gametime] Applying %s tweaks (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
+    fi
   fi
 
   unset GAME_FIX
