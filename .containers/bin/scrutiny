@@ -54,19 +54,6 @@ _check_user() {
   return 0
 }
 
-_check_health() {
-  _health=""
-
-  # systemd does not like spawning this healthcheck
-  if [ "$(uname)" != "Darwin" ]; then
-    _health="--health-cmd none"
-  fi
-
-  readonly _health
-
-  return 0
-}
-
 _containerize() {
   # scrutiny runtime config variable
   _sc=""
@@ -99,13 +86,11 @@ _containerize() {
     ${_ports} \
     ${_caps} \
     ${_userns} \
-    ${_health} \
     "${_image}:${_tag}" "$@"
 }
 
 main() {
   _check_user || return 1
-  _check_health || return 1
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
