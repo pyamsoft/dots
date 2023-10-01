@@ -1,0 +1,10 @@
+[Unit]
+Description=Scrutiny Collector Metrics Daily Timer
+
+[Timer]
+OnCalendar=daily
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
