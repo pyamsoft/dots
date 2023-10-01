@@ -1,0 +1,24 @@
+#!/bin/sh
+
+readonly pak="org.mozilla.firefox"
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# Run as wayland if we are
+_env=""
+if [ -n "${WAYLAND_DISPLAY}" ]; then
+  _env="--env=MOZ_ENABLE_WAYLAND=1 --socket=wayland"
+fi
+readonly _env
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  ${_env} \
+  "$@" || exit 1
+exit 0
+
