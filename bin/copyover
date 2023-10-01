@@ -15,6 +15,6 @@ readonly _path
 for f in "$@"; do
   # Remove a trailing space to copy over folders
   _file="${f%/}"
-  rsync -hrtplu --progress "${_file}" "${_path}"
+  sshpass -p iamanerd rsync -hrtplu --progress "${_file}" "${_path}"
 done
 
