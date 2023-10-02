@@ -277,6 +277,7 @@ libcdio-paranoia
 libcloudproviders
 libcolord
 libcups
+libcupsfilters
 libdaemon
 libdatrie
 libdbusmenu-glib
@@ -383,6 +384,7 @@ libplist
 libpng
 libportal
 libportal-gtk4
+libppd
 libproxy
 libpsl
 libpulse
@@ -622,6 +624,7 @@ shared-mime-info
 slang
 slirp4netns
 smbclient
+socat
 sord
 sound-theme-freedesktop
 soundtouch

@@ -32,7 +32,6 @@ rofi
 shellcheck
 simple-scan
 smartmontools
-socat
 sshpass
 starship
 tailscale
