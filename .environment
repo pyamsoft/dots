@@ -28,13 +28,6 @@ _setup_path() {
 
   # Linux stuff
   if [ "$(uname)" = "Linux" ]; then
-    # bubblewrap-wrap scripts
-    if command -v bwrap >/dev/null; then
-      if [ -d "${HOME}/.bww/bin" ]; then
-        PATH="${HOME}/.bww/bin:${PATH}"
-      fi
-    fi
-
     # Flatpak scrips
     if command -v flatpak >/dev/null; then
       if [ -d "${HOME}/.flatpak/bin" ]; then
