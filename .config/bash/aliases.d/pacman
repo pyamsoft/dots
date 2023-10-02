@@ -1,3 +1,3 @@
 # shellcheck shell=bash
 
-alias paccache="paccache -v "
+alias paccache="paccache -v"
