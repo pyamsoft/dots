@@ -8,13 +8,17 @@ elif [ "$1" = "-1" ]; then
   _path="nerd@nerd2:/home/nerd/media/Movies"
   shift
 else
-  _path="nerd@nerd2:/home/nerd/videos"
+  _path="nerd@nerd2:/home/nerd"
 fi
 readonly _path
 
 for f in "$@"; do
   # Remove a trailing space to copy over folders
   _file="${f%/}"
-  sshpass -p iamanerd rsync -hrtplu --progress "${_file}" "${_path}"
+  if command -v sshpass >/dev/null; then
+    sshpass -f "${HOME}/.nerd2-passwd" rsync -hrtplu --progress "${_file}" "${_path}"
+  else
+    rsync -hrtplu --progress "${_file}" "${_path}"
+  fi
 done
 
