@@ -2,8 +2,8 @@
 Description=Scrutiny Collector Metrics Daily Timer
 
 [Timer]
-OnCalendar=daily
-AccuracySec=1h
+OnCalendar=hourly
+AccuracySec=10s
 Persistent=true
 
 [Install]
