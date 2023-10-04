@@ -7,7 +7,6 @@ ddcutil
 flatpak
 gdm
 gentium-plus-font
-gnome-shell
 gnome-shell-extension-appindicator
 gnome-themes-extra
 gnome-tweaks
@@ -25,7 +24,6 @@ otf-cascadia-code
 pacman-contrib
 papirus-icon-theme
 podman
-proxychains-ng
 reflector
 rng-tools
 rofi

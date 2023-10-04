@@ -132,6 +132,7 @@ gnome-keyring
 gnome-online-accounts
 gnome-session
 gnome-settings-daemon
+gnome-shell
 gnupg
 gnutls
 gobject-introspection-runtime
