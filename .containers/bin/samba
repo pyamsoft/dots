@@ -65,10 +65,8 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Bind to our Tailscale interface and ourselves
-  for _ip in 127.0.0.1 100.122.254.80; do
-    _ports="${_ports} -p ${_ip}:1445:445/tcp"
-  done
+  # More ports in runconfig.env
+  _ports="${_ports} -p 127.0.0.1:1445:445/tcp"
 
   readonly _ports
   return 0
@@ -89,6 +87,21 @@ _check_user() {
 }
 
 _containerize() {
+  # Samba runtime config variable
+  _smb=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -101,7 +114,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
-    -e SAMBA_LOG_LEVEL=2 \
+    ${_smb} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
