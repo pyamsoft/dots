@@ -43,7 +43,6 @@ _prep_ports() {
   _ports=""
 
   _ports="${_ports} -p 127.0.0.1:8096:8096/tcp"
-  _ports="${_ports} -p 172.28.80.203:8096:8096/tcp"
 
   readonly _ports
   return 0
@@ -80,6 +79,20 @@ _containerize() {
   _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
   readonly _groups
 
+  _jf=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -92,6 +105,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --device /dev/dri:/dev/dri \
+    ${_jf} \
     ${_groups} \
     ${_mounts} \
     ${_ports} \
