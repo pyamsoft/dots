@@ -54,6 +54,9 @@ _export_gaming_environment() {
     fi
   fi
 
+  # Don't close the window
+  export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+
   unset GAME_FIX
   return 0
 }
@@ -100,7 +103,7 @@ _prepare_gamescope() {
   # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
 
   # Defaults to 1080p
-  window_type=""
+  window_type="--fullscreen"
   output_height=1080
   output_width=
 
@@ -109,20 +112,8 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
-    window_type=""
-
-    # Quality
-    #
-    # For games that need performance, adjust this
-    fsr_amount=15
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
-
-    # nerd2 we just play in fullscreen
-    window_type="--fullscreen"
-
-    # Quality
-    fsr_amount=15
   else
     printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
   fi
@@ -135,11 +126,7 @@ _prepare_gamescope() {
 
   # If we have a custom GAME_FSR amount passed in, use it
   if [ -n "${GAME_FSR}" ]; then
-    if [ "${GAME_FSR}" -eq 0 ]; then
-      fsr_amount=0
-    else
-      fsr_amount="${GAME_FSR}"
-    fi
+    fsr_amount="${GAME_FSR}"
   fi
 
   # Calculate the nested resolution by mathing the set fsr_amount
