@@ -68,11 +68,16 @@ _setup_path() {
   # Add local npm repository: used for things like bash-language-server
   # Set the local npm global path with "npm config set prefix ~/.npm/global"
   if command -v npm >/dev/null; then
-    # Don't add the path if we double up on homebrew
-    _npm_path="$(npm config get prefix)"
-    if [ "${_npm_path}" != "/opt/homebrew" ]; then
-      PATH="${_npm_path}/bin:${PATH}"
-    fi
+    _npm_path="${HOME}/.npm/global"
+
+    # Set the global path
+    npm config set prefix "${_npm_path}"
+
+    # Export it
+    PATH="${_npm_path}/bin:${PATH}"
+
+    # Clean up
+    unset _npm_path
   fi
 
   # Add Jetbrains Toolbox scripts (generally MacOS)
