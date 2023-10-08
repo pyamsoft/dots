@@ -223,7 +223,9 @@ _enable_game_env() {
 }
 
 _enable_env_tools() {
-  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -ne 0 ]; then
+  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
+    printf -- '[gametime] GameMode performance tweaks: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
+  else
     # Game mode
     # https://github.com/nowrep/obs-vkcapture
     #
@@ -234,8 +236,6 @@ _enable_env_tools() {
     else
       printf -- '[gametime] GameMode performance tweaks: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
     fi
-  else
-    printf -- '[gametime] GameMode performance tweaks: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
   fi
 
   if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
