@@ -78,7 +78,9 @@ _run_jail() {
 
   # Clean the path before running
   _clean_path || return 1
-  echo "${PATH}"
+
+  # Log commands
+  set -x
 
   # dev-bind root so everything works the same as it would outside
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
@@ -86,7 +88,6 @@ _run_jail() {
   # mount new proc on /proc
   # Mount a new home
   # Mark the process
-  set -x
   exec bwrap \
     --dev-bind / / \
     --unshare-user-try \
