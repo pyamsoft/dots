@@ -26,8 +26,30 @@ _setup_path() {
     fi  
   fi
 
+  # Source these onto the path first in case other script
+  # directories rely on a command we created
+  #
+  # ex. .jails/bin relies on our script bin/jail
+
+  # Git tracked scripts
+  if [ -d "${HOME}/bin" ]; then
+    PATH="${HOME}/bin:${PATH}"
+  fi
+
+  # Local scripts that are not git tracked
+  if [ -d "${HOME}/.local/bin" ]; then
+    PATH="${HOME}/.local/bin:${PATH}"
+  fi
+
   # Linux stuff
   if [ "$(uname)" = "Linux" ]; then
+    # Jail scripts
+    if command -v bwrap >/dev/null && command -v jail >/dev/null; then
+      if [ -d "${HOME}/.jail/bin" ]; then
+        PATH="${HOME}/.jail/bin:${PATH}"
+      fi
+    fi
+
     # Flatpak scrips
     if command -v flatpak >/dev/null; then
       if [ -d "${HOME}/.flatpak/bin" ]; then
@@ -56,16 +78,6 @@ _setup_path() {
   # Add Jetbrains Toolbox scripts (generally MacOS)
   if [ -d /opt/jetbrains ]; then
     PATH="/opt/jetbrains:${PATH}"
-  fi
-
-  # Git tracked scripts
-  if [ -d "${HOME}/bin" ]; then
-    PATH="${HOME}/bin:${PATH}"
-  fi
-
-  # Local scripts that are not git tracked
-  if [ -d "${HOME}/.local/bin" ]; then
-    PATH="${HOME}/.local/bin:${PATH}"
   fi
 
   # Export the PATH
