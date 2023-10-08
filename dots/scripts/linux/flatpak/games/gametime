@@ -84,23 +84,23 @@ _prepare_gamescope() {
   # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
   # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
   #
-  # NOTE: Shouldn't crash if the environment sets SDL_VIDEODRIVER=x11
-  #
   # NOTE: If we only provide a height, gamescope will assume the width as 16x9
+  #
+  # NOTE: FSR performance is 2.0x nested resolution. (20)
+  # NOTE: FSR balanced is 1.7x nested resolution. (17)
+  # NOTE: FSR quality is 1.5x nested resolution. (15)
+  # NOTE: FSR ultra-quality is 1.3x nested resolution. (13)
+  #
+  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+  #
+  ####
   #
   # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
   #       If you open the settings in game, your FPS will go to 2.
-  #       Run it with GAME_FSR=1
+  #       Run it with GAME_FSR=13
   #
   # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
-  #       Or run it with GAME_FSR=1
-  #
-  # NOTE: FSR performance is 2.0x nested resolution.
-  # NOTE: FSR balanced is 1.7x nested resolution.
-  # NOTE: FSR quality is 1.5x nested resolution.
-  #
-  # NOTE: Do not apply any FSR sharpness with gamescope, we will use vkBasalt for that
-  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
+  #       Or run it with GAME_FSR=15
 
   # Defaults to 1080p
   window_type="--fullscreen"
@@ -112,10 +112,15 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
+    fsr_amount=17
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
   else
     printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
+  fi
+
+  if [ -n "${GAME_WINDOW}" ]; then
+    window_type="${GAME_WINDOW}"
   fi
 
   # If an output resolution is defined as GAME_RES=WxH, then use it here
@@ -156,7 +161,7 @@ _prepare_gamescope() {
 
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
-  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 2"
+  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 8"
 
   if [ -n "${output_width}" ]; then
     __gamescope_options="${__gamescope_options} --output-width ${output_width}"
@@ -165,7 +170,7 @@ _prepare_gamescope() {
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
 
-  printf -- '[gametime] gamescope renderer: YES (GAME_RES=%s, GAME_FSR=%s)\n' "${GAME_RES}" "${GAME_FSR}"
+  printf -- '[gametime] gamescope renderer: YES (GAME_RES=%s, GAME_FSR=%s, GAME_WINDOW=%s)\n' "${GAME_RES}" "${GAME_FSR}" "${GAME_WINDOW}"
 
   unset output_width
   unset output_height
@@ -174,6 +179,7 @@ _prepare_gamescope() {
   unset window_type
   unset GAME_RES
   unset GAME_FSR
+  unset GAME_WINDOW
   return 0
 }
 
