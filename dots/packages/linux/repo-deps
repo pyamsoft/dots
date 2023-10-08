@@ -45,6 +45,7 @@ colord
 colord-gtk-common
 colord-gtk4
 colord-sane
+confuse
 conmon
 containers-common
 coreutils
@@ -74,6 +75,7 @@ dosfstools
 double-conversion
 duktape
 e2fsprogs
+efivar
 ell
 enchant
 exiv2
@@ -88,6 +90,7 @@ filesystem
 findutils
 firewalld
 flac
+flashrom
 flex
 fluidsynth
 fontconfig
@@ -97,8 +100,11 @@ freetype2
 fribidi
 fuse-common
 fuse3
+fwupd
+fwupd-efi
 gawk
 gc
+gcab
 gcc
 gcc-libs
 gcr
@@ -273,6 +279,7 @@ libcamera-ipa
 libcanberra
 libcap
 libcap-ng
+libcbor
 libcdio
 libcdio-paranoia
 libcloudproviders
@@ -302,6 +309,7 @@ libfdk-aac
 libffi
 libfontenc
 libfreeaptx
+libftdi
 libgcrypt
 libgdm
 libgexiv2
@@ -330,6 +338,7 @@ libinih
 libinput
 libinstpatch
 libisl
+libjcat
 libjpeg-turbo
 libjxl
 libkate
@@ -343,6 +352,7 @@ libltc
 libluv
 libmalcontent
 libmanette
+libmbim
 libmd
 libmfx
 libmicrodns
@@ -391,6 +401,8 @@ libpsl
 libpulse
 libpwquality
 libqb
+libqmi
+libqrtr-glib
 libraqm
 libraw1394
 librest
@@ -401,6 +413,7 @@ libsecret
 libshout
 libslirp
 libsm
+libsmbios
 libsndfile
 libsodium
 libsoup
@@ -544,6 +557,7 @@ pam
 pambase
 pango
 parted
+passim
 patch
 pciutils
 pcre

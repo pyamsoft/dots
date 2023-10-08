@@ -1,12 +1,12 @@
 #!/bin/sh
 
 main() {
-  pacman -Qneq >./repo || return 1
-  pacman -Qndq >./repo-deps || return 1
+  pacman -Qneq >./repo
+  pacman -Qndq >./repo-deps
 
-  pacman -Qmeq >./aur || return 1
-  pacman -Qmdq >./aur-deps || return 1
-  flatpak list --app --columns=application >./flatpak || return 1
+  pacman -Qmeq >./aur
+  pacman -Qmdq >./aur-deps
+  flatpak list --app --columns=application >./flatpak
   return 0
 }
 
