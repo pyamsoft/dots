@@ -3,6 +3,7 @@ android-udev
 base
 base-devel
 cups-pdf
+dconf-editor
 ddcutil
 flatpak
 gdm

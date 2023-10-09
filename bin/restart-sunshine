@@ -1,10 +1,13 @@
 #!/bin/sh
 
-_remove_devices() {
+_reset() {
   printf -- 'Remove old sunshine devices...\n'
   rm -f "${HOME}/.config/sunshine/sunshine_keyboard" >/dev/null 2>&1
   rm -f "${HOME}/.config/sunshine/sunshine_mouse" >/dev/null 2>&1
   rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" >/dev/null 2>&1
+
+  printf -- 'Remove old sunshine logs...\n'
+  rm -f "${HOME}/.config/sunshine/sunshine.log" >/dev/null 2>&1
   return 0
 }
 
@@ -13,9 +16,10 @@ _restart() {
   systemctl --user stop sunshine >/dev/null 2>&1
 
   # Kill any potentially bad symlinks
-  _remove_devices || return 1
+  _reset || return 1
 
   printf -- 'Starting new sunshine service...\n'
+
   systemctl --user restart sunshine >/dev/null 2>&1
 
   return 0
