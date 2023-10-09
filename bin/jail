@@ -82,18 +82,20 @@ _run_jail() {
   # Log commands
   set -x
 
-  # dev-bind root so everything works the same as it would outside
+  # Make sure we kill children when bwrap dies
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
+  # dev-bind root so everything works the same as it would outside
   # tmpfs bind /tmp for security
   # mount new proc on /proc
   # Mount a new home
   # Mark the process
   exec bwrap \
-    --dev-bind / / \
+    --die-with-parent \
     --unshare-user-try \
     --unshare-pid \
     --unshare-uts \
     --unshare-cgroup-try \
+    --dev-bind / / \
     --tmpfs /tmp \
     --proc /proc \
     --bind "${_jail}" "${HOME}" \
