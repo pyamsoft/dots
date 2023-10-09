@@ -16,8 +16,8 @@ For other files that are copied into place, see `dots/`
 ### Wayland
 We do not use Wayland yet because of the following critical issues
 - No mouse cursor in Moonlight without SW cursor tweak
-- No mouse cursor in fullscreen when using SW cursor tweak
-- Moonlight does not claim display properly in Wayland with mirrored monitor setup
+- No mouse cursor in fullscreen when using SW cursor tweak   (solved with mesa_glthread=0 for gnome-shell)
+- Moonlight does not claim display properly in Wayland with mirrored monitor setup   (solved with cap_sys_admin tweak)
 
 ### Docker
 For video acceleration in docker, make sure you
