@@ -1,4 +1,0 @@
-#!/bin/sh
-
-# Same as running `r` inside of the gnome-shell `F2` run dialog
-exec killall -3 gnome-shell
