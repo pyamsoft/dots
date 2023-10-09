@@ -112,6 +112,7 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
+    window_type="--borderless"
     fsr_amount=17
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
