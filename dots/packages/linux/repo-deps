@@ -78,6 +78,7 @@ e2fsprogs
 efivar
 ell
 enchant
+evolution-data-server
 exiv2
 expat
 faac
@@ -243,7 +244,7 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
-js102
+js115
 json-c
 json-glib
 kbd
@@ -295,11 +296,13 @@ libdca
 libde265
 libdecor
 libdeflate
+libdisplay-info
 libdrm
 libdv
 libdvdnav
 libdvdread
 libedit
+libei
 libelf
 libepoxy
 libevdev
@@ -389,6 +392,7 @@ libpaper
 libpcap
 libpciaccess
 libpgm
+libphonenumber
 libpipeline
 libpipewire
 libplist
@@ -663,6 +667,7 @@ taglib
 talloc
 tar
 tdb
+tecla
 tevent
 texinfo
 thin-provisioning-tools
