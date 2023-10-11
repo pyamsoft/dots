@@ -22,6 +22,9 @@ Defaults umask_override
 # Keep defined proxies
 Defaults env_keep += "*_proxy *_PROXY"
 
+# Show password feedback
+Defaults pwfeedback
+
 root ALL=(ALL:ALL) ALL
 
 # Let user 1000 run as root (the # below is not a comment, it indicates a user-ID)
