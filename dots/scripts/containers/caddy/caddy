@@ -2,7 +2,7 @@
 
 readonly _name="caddy"
 readonly _image="docker.io/caddy"
-readonly _tag="2.7.4"
+readonly _tag="2.7.5"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
