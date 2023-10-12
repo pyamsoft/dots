@@ -118,7 +118,11 @@ main() {
 
   __fp_env=""
   while [ -n "$1" ]; do
-    if [ "$1" = "--with-env" ]; then
+    if [ "$1" = "--" ]; then
+      shift
+      # Stop processing
+      break
+    elif [ "$1" = "--with-env" ]; then
       # This is an env command
       shift
 
@@ -153,7 +157,7 @@ main() {
 
 
   # shellcheck disable=SC2086
-  exec flatpak run ${__fp_env} "${__flatpak}" || return 1
+  exec flatpak run ${__fp_env} "${__flatpak}" "$@" || return 1
 
   unset __run_shell
   unset __flatpak
