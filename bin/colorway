@@ -51,7 +51,7 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
     fi
 
     # GNOME Desktop
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "gnome" ]; then
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
       gsettings set org.gnome.desktop.interface icon-theme "Papirus"
       gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
       gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
@@ -123,7 +123,7 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
     fi
 
     # GNOME Desktop
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "gnome" ]; then
+    if [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
       gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
       gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
       gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
