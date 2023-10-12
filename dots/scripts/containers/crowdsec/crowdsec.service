@@ -9,4 +9,4 @@ ExecStop=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${
 ExecReload=/bin/sh -c '_c="crowdsec"; podman exec -i -t "$${_c}" /bin/sh -c "kill -HUP 1"'
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network-online.target
