@@ -29,6 +29,11 @@ _startup_programs() {
     restart-sunshine
   fi
 
+  # Corectrl
+  if command -v corectrl >/dev/null 2>&1; then
+    corectrl >/dev/null 2>&1 &
+  fi
+
   # If we have firewall applet
   if [ "${_LAUNCH_FW_APPLET}" -ne 0 ]; then
     if command -v firewall-applet >/dev/null 2>&1; then
