@@ -54,6 +54,9 @@ _startup_programs() {
 main() {
   _USER="$(id -un)"
 
+  # Source the environment
+  [ -f "${HOME}/.environment" ] && . "${HOME}/.environment"
+
   if [ "${XDG_SESSION_TYPE}" = "x11" ]; then
     # Setup X11 generic
     _x_setup || {
