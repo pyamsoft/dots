@@ -5,4 +5,4 @@ Description=On %u login for %i session, run startup script
 ExecStart=/bin/sh -c '%h/.config/Linux/startup'
 
 [Install]
-WantedBy=org.gnome.Shell@%i.service
+WantedBy=%i.target
