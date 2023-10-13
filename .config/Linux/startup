@@ -55,6 +55,7 @@ main() {
   _USER="$(id -un)"
 
   # Source the environment
+  # shellcheck disable=SC1091
   [ -f "${HOME}/.environment" ] && . "${HOME}/.environment"
 
   if [ "${XDG_SESSION_TYPE}" = "x11" ]; then
