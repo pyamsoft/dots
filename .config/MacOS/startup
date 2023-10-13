@@ -91,6 +91,9 @@ main()
   _log_path="${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs"
   _user="$(id -un)"
 
+  # Source environment
+  [ -f "${HOME}/.environment" ] && . "${HOME}/.environment"
+
   _clear_logs || return 1
 
   # Wait a little bit
