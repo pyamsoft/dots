@@ -78,7 +78,6 @@ e2fsprogs
 efivar
 ell
 enchant
-evolution-data-server
 exiv2
 expat
 faac
@@ -148,9 +147,11 @@ gpgme
 gpm
 graphene
 graphite
+graphviz
 grep
 groff
 gsettings-desktop-schemas
+gsfonts
 gsm
 gsound
 gssdp
@@ -165,6 +166,7 @@ gstreamer
 gtk-update-icon-cache
 gtk3
 gtk4
+gts
 guile
 gupnp
 gupnp-igd
@@ -392,7 +394,6 @@ libpaper
 libpcap
 libpciaccess
 libpgm
-libphonenumber
 libpipeline
 libpipewire
 libplist
@@ -528,6 +529,7 @@ ncurses
 neon
 net-snmp
 netavark
+netpbm
 nettle
 networkmanager
 nftables
@@ -610,11 +612,14 @@ python-certifi
 python-distro
 python-gobject
 python-greenlet
+python-lxml
+python-markdown
 python-msgpack
 python-protobuf
 python-pycryptodomex
 python-pycups
 python-pycurl
+python-pygments
 python-pynvim
 python-pyqt5
 python-pyqt5-sip
