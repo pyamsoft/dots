@@ -31,7 +31,8 @@ _startup_programs() {
 
   # Corectrl
   if command -v corectrl >/dev/null 2>&1; then
-    corectrl >/dev/null 2>&1 &
+    printf -- 'Launch corectrl\n'
+    corectrl &
   fi
 
   # If we have firewall applet
@@ -43,7 +44,8 @@ _startup_programs() {
       # And its not currently running
       if pgrep -u "${_USER}" firewall-applet >/dev/null; then
         # Start a new one
-        firewall-applet >/dev/null 2>&1 &
+        printf -- 'Launch firewall-applet\n'
+        firewall-applet &
       fi
     fi
   fi
