@@ -1,9 +1,12 @@
+# Manage Crowdsec in a container
+
 [Unit]
 Description=Crowdsec container
 After=syslog.target network.target remote-fs.target nss-lookup.target
 
 [Service]
-ExecStartPre=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+# Exit 0 out of pre-command so it always succeeds.
+ExecStartPre=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"; exit 0'
 ExecStart=/bin/sh -c '_c="crowdsec"; /usr/local/bin/"$${_c}"'
 ExecStop=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
 ExecReload=/bin/sh -c '_c="crowdsec"; podman exec -i -t "$${_c}" /bin/sh -c "kill -HUP 1"'

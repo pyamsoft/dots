@@ -1,8 +1,10 @@
+# Run a container as a user
 [Unit]
 Description=On %u login, start container %i
 
 [Service]
-ExecStartPre=/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i'
+# Exit 0 out of pre-command so it always succeeds.
+ExecStartPre=/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i; exit 0'
 ExecStart=/bin/sh -c '%h/.containers/bin/%i'
 ExecStop=/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i'
 
