@@ -10,7 +10,7 @@ readonly JAIL_DIR="${JAIL_DIR:-${HOME}/.local/etc/jails}"
 _clean_path() {
   _current_path="${PATH}"
 
-  # The .jails/bin dir holds alias scripts, we want to ignore
+  # The .jail/bin dir holds alias scripts, we want to ignore
   # it when running this
   #
   # Reverse the path so we add back the paths in FIFO order
