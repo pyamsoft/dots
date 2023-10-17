@@ -1,3 +1,5 @@
+# Run collector on a timer
+
 [Unit]
 Description=Scrutiny Collector Metrics Daily Timer
 

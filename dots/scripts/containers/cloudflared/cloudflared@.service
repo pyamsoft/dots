@@ -12,7 +12,7 @@ Wants=network-online.target docker.service tailscaled.service mullvad-vpn.servic
 Requires=user@%i.service
 
 [Service]
-ExecStartPre=/bin/sh -c '_c="cloudflared"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
+ExecStartPre=-/bin/sh -c '_c="cloudflared"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
 ExecStart=/bin/sh -c '_c="cloudflared"; /usr/local/bin/"$${_c}" "%i"'
 ExecStop=/bin/sh -c '_c="cloudflared"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
 

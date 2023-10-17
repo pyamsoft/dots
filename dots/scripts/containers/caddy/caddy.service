@@ -6,8 +6,7 @@ After=docker.service tailscaled.service mullvad-vpn.service firewalld.service
 Wants=docker.service tailscaled.service mullvad-vpn.service firewalld.service
 
 [Service]
-# Exit 0 out of pre-command so it always succeeds.
-ExecStartPre=/bin/sh -c '_c="caddy"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"; exit 0'
+ExecStartPre=-/bin/sh -c '_c="caddy"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
 ExecStart=/bin/sh -c '_c="caddy"; /usr/local/bin/"$${_c}"'
 ExecStop=/bin/sh -c '_c="caddy"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
 ExecReload=/bin/sh -c '_c="caddy"; podman exec "$${_c}" caddy reload --config /etc/caddy/Caddyfile'

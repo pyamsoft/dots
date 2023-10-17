@@ -14,12 +14,15 @@ For other files that are copied into place, see `dots/`
 ## Notes
 
 ### Wayland
-We do not use Wayland yet because of the following critical issues
-- No mouse cursor in fullscreen when using SW cursor tweak   (solved with mesa_glthread=0 for gnome-shell)
 - Moonlight does not claim display properly in Wayland with mirrored monitor setup   (solved with cap_sys_admin tweak)
+- No mouse cursor in fullscreen when using SW cursor tweak
+  - This can be partially remidied by using software cursors and the extension `gnome-shell-extension-disable-unredirect-git`
+  - This allows the use of the SW cursor, while also not making it invisible in an unredirect (fullscreen) window
 - No mouse cursor in Moonlight without SW cursor tweak
   - This can be partially remidied by using software cursors and the extension `gnome-shell-extension-disable-unredirect-git`
   - This allows the use of the SW cursor, while also not making it invisible in an unredirect (fullscreen) window
+- KDE Connect prompts Screen Sharing every time start remote mouse
+  - No real way around this? Not sure if it's Portal or KDEConnect's job to solve.
 
 ### Docker
 For video acceleration in docker, make sure you
