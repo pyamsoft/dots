@@ -5,7 +5,6 @@ base-devel
 cups-pdf
 dconf-editor
 ddcutil
-flatpak
 gdm
 gentium-plus-font
 gnome-shell-extension-appindicator
@@ -14,6 +13,7 @@ gnome-tweaks
 hplip
 htop
 inter-font
+kdeconnect
 kernel-modules-hook
 linux-lts
 man-db

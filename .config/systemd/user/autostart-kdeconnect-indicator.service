@@ -1,0 +1,11 @@
+[Unit]
+Description=Start KDE Connect Indicator on session login
+
+[Service]
+# Need to wait just a little or else core-dump because QT not ready
+ExecStartPre=/usr/bin/sleep 5
+ExecStart=/usr/bin/kdeconnect-indicator
+
+[Install]
+WantedBy=graphical-session.target
+

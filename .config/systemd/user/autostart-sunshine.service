@@ -1,0 +1,8 @@
+[Unit]
+Description=Start Sunshine on session login
+
+[Service]
+ExecStart=%h/bin/restart-sunshine
+
+[Install]
+WantedBy=graphical-session.target
