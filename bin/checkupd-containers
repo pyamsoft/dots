@@ -117,6 +117,11 @@ _check_containers() {
 main() {
   _count="$1"
 
+  if ! command -v podman >/dev/null; then
+    printf -- 'Must install "podman"\n'
+    return 1
+  fi
+
   _check_containers "${_count}" || return 1
 
   if [ "$(uname)" != "Darwin" ]; then
