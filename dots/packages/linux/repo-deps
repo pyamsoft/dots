@@ -363,7 +363,6 @@ libgexiv2
 libgirepository
 libglvnd
 libgme
-libgnomekbd
 libgoa
 libgpg-error
 libgphoto2
@@ -520,7 +519,6 @@ libxinerama
 libxkbcommon
 libxkbcommon-x11
 libxkbfile
-libxklavier
 libxml2
 libxmlb
 libxmu
