@@ -15,6 +15,8 @@ For other files that are copied into place, see `dots/`
 
 ### Wayland
 - Moonlight does not claim display properly in Wayland with mirrored monitor setup   (solved with cap_sys_admin tweak)
+- Sunshine needs cap_sys_admin `sudo setcap cap_sys_admin+p /usr/bin/sunshine`
+- Moonlight may not respect the keyboard input - run `sudo loginctl unlock-sessions` in an SSH session.
 - No mouse cursor in fullscreen when using SW cursor tweak
   - This can be partially remidied by using software cursors and the extension `gnome-shell-extension-disable-unredirect-git`
   - This allows the use of the SW cursor, while also not making it invisible in an unredirect (fullscreen) window
