@@ -20,6 +20,7 @@ audit
 autoconf
 automake
 avahi
+ayatana-ido
 bash
 bash-completion
 binutils
@@ -307,6 +308,8 @@ libatasmart
 libavc1394
 libavif
 libavtp
+libayatana-appindicator
+libayatana-indicator
 libblockdev
 libbluray
 libbpf
