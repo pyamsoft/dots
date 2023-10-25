@@ -1,11 +1,8 @@
 #!/bin/sh
 
 _path=""
-if [ "$1" = "-2" ]; then
-  _path="nerd@nerd2:/home/nerd/media2/Movies"
-  shift
-elif [ "$1" = "-1" ]; then
-  _path="nerd@nerd2:/home/nerd/media/Movies"
+if [ "$1" = "media" ]; then
+  _path="nerd@nerd2:/home/nerd/media/holding"
   shift
 else
   _path="nerd@nerd2:/home/nerd"

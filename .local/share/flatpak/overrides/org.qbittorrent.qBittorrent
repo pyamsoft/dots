@@ -1,2 +1,2 @@
 [Context]
-filesystems=xdg-download;
+filesystems=xdg-download;/storage/peter/games;/storage/peter/games2;
