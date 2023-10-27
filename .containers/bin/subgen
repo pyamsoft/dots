@@ -10,13 +10,19 @@ readonly _cmd="podman"
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/packages"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount4="${HOME}/.local/etc/containers/${_name}/media2"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/subgen"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/usr/local/lib/python3.10/dist-packages"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/media"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/media2"
   readonly _mounts
   return 0
 }
