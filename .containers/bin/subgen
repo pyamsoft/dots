@@ -31,6 +31,9 @@ _prep_caps() {
   _caps=""
 
   # Allow chmod and exec
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add SETUID"
+  _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add FSETID"
 
   readonly _caps
