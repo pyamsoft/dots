@@ -168,8 +168,8 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --output-height ${output_height}"
   __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
 
-  # Grab the cursor and force the window to the size
-  __gamescope_options="${__gamescope_options} --force-grab-cursor --force-windows-fullscreen --scaler auto"
+  # Force the window to the size, auto scaler
+  __gamescope_options="${__gamescope_options} --force-windows-fullscreen --scaler auto"
 
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
