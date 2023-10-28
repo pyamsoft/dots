@@ -49,6 +49,7 @@ main() {
   _killa "wineserver" "${_force}" || return 1
   _killa "winedevice.exe" "${_force}" || return 1
   _killa "gamescope" "${_force}" || return 1
+  _killa "gamescope-brokey" "${_force}" || return 1
   _killa "steam-launch-wrapper" "${_force}" || return 1
 
   unset _force
