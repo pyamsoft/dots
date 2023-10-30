@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Add llvm to path
+PATH="/opt/homebrew/Cellar/llvm@14/14.0.6/bin:${PATH}"
+export PATH
+
+if [ "$1" = "--shell" ]; then
+  shift
+  exec bash "$@"
+else
+  # Launch PYCharm
+  exec open "${HOME}/Applications/PyCharm Community Edition.app" "$@"
+fi
+
