@@ -229,21 +229,6 @@ _enable_game_env() {
 }
 
 _enable_env_tools() {
-  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
-    printf -- '[gametime] GameMode performance tweaks: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
-  else
-    # Game mode
-    # https://github.com/nowrep/obs-vkcapture
-    #
-    # Run using gamemode for slightly more performance
-    if command -v gamemoderun >/dev/null; then
-      printf -- '[gametime] GameMode performance tweaks: YES (GAME_MODE=%s)\n' "${GAME_MODE}"
-      __env_tools="${__env_tools} gamemoderun"
-    else
-      printf -- '[gametime] GameMode performance tweaks: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
-    fi
-  fi
-
   if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
     # OBS VKCapture
     # https://github.com/nowrep/obs-vkcapture
@@ -265,23 +250,24 @@ _enable_env_tools() {
 }
 
 _enable_game_tools() {
-  if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -ne 0 ]; then
-    # Mangohud
-    # https://github.com/flightlessmango/MangoHud#hud-configuration
-    #
-    # We cannot export MANGOHUD=1 before gamescope as it will crash or not report correctly.
-    # We must use gamescope to run mangohud, and then use mangohud to run our command.
-    if command -v mangohud >/dev/null; then
-      __game_tools="${__game_tools} mangohud --dlsym"
-      export MANGOHUD_CONFIG="fps,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,font_size=18"
+  _mangohud_config="fps,frametime,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,core_load,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,fsr,font_size=18"
+
+  if [ -n "${GAME_HUD}" ]; then
+    if [ "${GAME_HUD}" -eq 0 ]; then
+      printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
+      export MANGOHUD_CONFIG="${_mangohud_config},no_display"
+    elif [ "${GAME_HUD}" -eq 1 ]; then
       printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
+      export MANGOHUD_CONFIG="${_mangohud_config}"
     else
-      printf -- '[gametime] MangoHud performance overlay: NO (GAME_HUD=%s)\n' "${GAME_HUD}"
+      printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
     fi
   else
-    printf -- '[gametime] MangoHud performance overlay: NO (GAME_HUD=%s)\n' "${GAME_HUD}"
+    printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
+    export MANGOHUD_CONFIG="${_mangohud_config},no_display"
   fi
 
+  unset _mangohud_config
   unset GAME_HUD
   return 0
 }
