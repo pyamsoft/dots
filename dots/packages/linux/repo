@@ -2,6 +2,7 @@ amd-ucode
 android-udev
 base
 base-devel
+buildah
 cups-pdf
 dconf-editor
 ddcutil

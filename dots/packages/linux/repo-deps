@@ -176,7 +176,6 @@ guile
 gupnp
 gupnp-igd
 gvfs
-gvfs-mtp
 gvfs-smb
 gzip
 harfbuzz
@@ -703,6 +702,7 @@ semver
 serd
 shadow
 shared-mime-info
+skopeo
 slang
 slirp4netns
 smbclient
