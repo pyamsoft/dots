@@ -1,3 +1,5 @@
+ca-certificates
+openssl@3
 awscli
 bash
 bash-completion@2
@@ -7,15 +9,15 @@ ffmpeg
 git
 jq
 neovim
-node@16
+node@18
 pipenv
 qemu
 podman
+poetry
 python@3.8
 shellcheck
 socat
 starship
 tailscale
 tmux
-yarn
 yt-dlp
