@@ -1,24 +1,67 @@
 #!/bin/sh
 
-_reset() {
-  printf -- 'Remove old sunshine devices...\n'
-  rm -f "${HOME}/.config/sunshine/sunshine_keyboard" >/dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_mouse" >/dev/null 2>&1
-  rm -f "${HOME}/.config/sunshine/sunshine_touchscreen" >/dev/null 2>&1
+_stale_unlink() {
+  rm -f "$1" || {
+    printf -- '[ERROR] Failed removing dangling file: %s\n' "$1"
+    return 1
+  }
 
-  printf -- 'Remove old sunshine logs...\n'
-  rm -f "${HOME}/.config/sunshine/sunshine.log" >/dev/null 2>&1
+  return 0
+}
+
+_remove_holdovers() {
+  printf -- 'We remove old device symlinks and logs.\n'
+  printf -- 'Sunshine sometimes has a problem cleaning these up and refuses to start...\n\n'
+
+  # Bad symlinks
+  _stale_unlink "${HOME}/.config/sunshine/sunshine_keyboard" || return 1
+  _stale_unlink "${HOME}/.config/sunshine/sunshine_mouse" || return 1
+  _stale_unlink "${HOME}/.config/sunshine/sunshine_touchscreen" || return 1
+
+  # Logs
+  _stale_unlink "${HOME}/.config/sunshine/sunshine.log" || return 1
+
+  return 0
+}
+
+_unlock_session() {
+  _session_to_unlock="$1"
+
+  loginctl unlock-session "${_session_to_unlock}" || {
+    printf -- '[ERROR] Failed unlocking session: %s\n' "${_session_to_unlock}"
+    return 1
+  }
+
+  unset _session_to_unlock
+  return 0
+}
+
+_unlock_sessions() {
+  printf -- 'We unlock all user-sessions\n'
+  printf -- 'Sunshine will not be able to claim the CPU and GPU for rendering otherwise.\n\n'
+
+  _user_sessions="$(loginctl list-sessions --no-legend | awk '{ print $1 }')"
+
+  for _session_num in ${_user_sessions}; do
+    _unlock_session "${_session_num}" || return 1
+    unset _session_num
+  done
+
+  unset _user_sessions
   return 0
 }
 
 _restart() {
-  printf -- 'Stopping old sunshine service...\n'
+  printf -- 'Stopping old sunshine service...\n\n'
   systemctl --user stop sunshine >/dev/null 2>&1
 
   # Kill any potentially bad symlinks
-  _reset || return 1
+  _remove_holdovers || return 1
 
-  printf -- 'Starting new sunshine service...\n'
+  # Unlock all sessions (if a session is locked, it causes sunshine to be unable to claim the display and GPU/CPU)
+  _unlock_sessions || return 1
+
+  printf -- 'Starting new sunshine service...\n\n'
 
   systemctl --user restart sunshine >/dev/null 2>&1
 
@@ -26,10 +69,11 @@ _restart() {
 }
 
 main() {
+  printf -- 'Restarting Sunshine gamestream...\n'
   if _restart; then
     printf -- 'Restarted sunshine service!\n'
   else
-    printf -- 'Failed to restart sunshine\n'
+    printf -- '[ERROR] Failed to restart sunshine\n'
     return 1
   fi
 
