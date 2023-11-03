@@ -1,6 +1,6 @@
 #!/bin/sh
 
 export LC_ALL=C
-sudo pacman -Qk | grep -i warning
+pacman -Qk | grep -i warning
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
