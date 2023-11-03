@@ -1,6 +1,8 @@
 #!/bin/sh
 
 export LC_ALL=C
-pacman -Qk | grep -i warning
+
+# Need sudo to check if missing files in permission secured directories
+sudo pacman -Qk | grep -i warning
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
