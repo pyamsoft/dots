@@ -2,6 +2,6 @@
 
 export GAME_FSR=15
 export GAME_WINDOW="--borderless"
-export GAME_HUD=0
+export GAME_HUD=2
 
 exec gametime moonlight "$@"
