@@ -196,7 +196,7 @@ _prepare_gamescope() {
   return 0
 }
 
-_enable_game_env() {
+_game_env_vkbasalt() {
   if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -eq 0 ]; then
     printf -- '[gametime] vkBasalt post processing: NO (GAME_VKB=%s)\n' "${GAME_VKB}"
   else
@@ -212,6 +212,11 @@ _enable_game_env() {
     fi
   fi
 
+  unset GAME_VKB
+  return 0
+}
+
+_game_env_zink() {
   if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
     printf -- '[gametime] Zink for OpenGL over Vulkan: YES (GAME_ZINK=%s)\n' "${GAME_ZINK}"
     # Zink OpenGL
@@ -223,12 +228,16 @@ _enable_game_env() {
     printf -- '[gametime] Zink for OpenGL over Vulkan: NO (GAME_ZINK=%s)\n' "${GAME_ZINK}"
   fi
 
-  unset GAME_VKB
   unset GAME_ZINK
   return 0
 }
 
-_enable_env_tools() {
+_env_tool_obs() {
+  if ! command -v obs-gamecapture >/dev/null 2>&1; then
+    printf -- '[gametime] Cannot enable OBS, not installed\n'
+    return 0
+  fi
+
   if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
     # OBS VKCapture
     # https://github.com/nowrep/obs-vkcapture
@@ -244,12 +253,15 @@ _enable_env_tools() {
     printf -- '[gametime] OBS Game Capture: NO (GAME_OBS=%s)\n' "${GAME_OBS}"
   fi
 
-  unset GAME_MODE
   unset GAME_OBS
-  return 0
 }
 
-_enable_game_tools() {
+_game_tool_mangohud() {
+  if ! command -v mangohud >/dev/null 2>&1; then
+    printf -- '[gametime] Cannot enable MangoHud, not installed\n'
+    return 0
+  fi
+
   _mangohud_config="fps,frametime,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,fsr,font_size=18"
 
   if [ -n "${GAME_HUD}" ]; then
@@ -272,6 +284,38 @@ _enable_game_tools() {
 
   unset _mangohud_config
   unset GAME_HUD
+}
+
+_enable_env() {
+  printf -- '[gametime] Preparing host gaming environment...\n'
+
+  _export_gaming_environment || return 1
+
+  return 0
+}
+
+_enable_game_env() {
+  printf -- '[gametime] Preparing scoped gaming environment...\n'
+
+  _game_env_vkbasalt || return 1
+  _game_env_zink || return 1
+
+  return 0
+}
+
+_enable_env_tools() {
+  printf -- '[gametime] Preparing host tools...\n'
+
+  _env_tool_obs || return 1
+
+  return 0
+}
+
+_enable_game_tools() {
+  printf -- '[gametime] Preparing scoped tools...\n'
+
+  _game_tool_mangohud || return 1
+
   return 0
 }
 
@@ -314,7 +358,7 @@ main() {
     __hostname=""
   }
 
-  _export_gaming_environment || {
+  _enable_env || {
     printf -- '[gametime] Unable to export gaming environment\n'
     return 1
   }
