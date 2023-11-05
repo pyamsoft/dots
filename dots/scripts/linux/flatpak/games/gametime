@@ -121,8 +121,9 @@ _prepare_gamescope() {
       window_type="--fullscreen"
     fi
 
-    # Use FSR balanced
-    fsr_amount=17
+    # Lots of games don't like weird resolutions.
+    # FSR quality is 720p
+    fsr_amount=15
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
   else
