@@ -2,7 +2,7 @@
 
 readonly pak="com.moonlight_stream.Moonlight"
 readonly def_path="/app/bin:/usr/bin"
-readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin"
+readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin"
 
 cmd=""
 if [ "$1" = "--shell" ]; then
@@ -12,7 +12,7 @@ fi
 readonly cmd
 
 # Gamescope LD_LIBRARY_PATH fix
-readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib"
+readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib:/usr/lib/extensions/vulkan/MangoHud/lib"
 _def_ld_path=""
 if [ -n "${LD_LIBRARY_PATH}" ]; then
   _def_ld_path=":${LD_LIBRARY_PATH}"
