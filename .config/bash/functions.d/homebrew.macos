@@ -2,5 +2,5 @@
 
 # Update everything
 upall() {
-  brew update && brew upgrade && brew upgrade --greedy
+  brew update && brew upgrade && brew upgrade --greedy && brew autoremove && brew cleanup
 }
