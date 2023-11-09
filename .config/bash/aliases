@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 
 os="$(uname)"
-readonly os
 
 for script in "${HOME}"/.bash_aliases.d/* "${XDG_CONFIG_HOME}"/bash/aliases.d/*; do
   # shellcheck disable=SC1090
@@ -25,3 +24,5 @@ for script in "${HOME}"/.bash_aliases.d/* "${XDG_CONFIG_HOME}"/bash/aliases.d/*;
   unset script
 done
 unset script
+
+unset os

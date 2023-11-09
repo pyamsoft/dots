@@ -1,7 +1,6 @@
 # shellcheck shell=bash
 
 os="$(uname)"
-readonly os
 
 for script in "${HOME}"/.bash_functions.d/* "${XDG_CONFIG_HOME}"/bash/functions.d/*; do
   # shellcheck disable=SC1090
@@ -26,3 +25,4 @@ for script in "${HOME}"/.bash_functions.d/* "${XDG_CONFIG_HOME}"/bash/functions.
 done
 unset script
 
+unset os
