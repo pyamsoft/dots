@@ -1,13 +1,27 @@
 # shellcheck shell=bash
 
-for script in "${HOME}"/.bash_completion.d/*; do
-  # shellcheck disable=SC1090
-  [ -r "${script}" ] && . "${script}"
-done
-unset script
+os="$(uname)"
+readonly os
 
-for script in "${XDG_CONFIG_HOME}"/bash/completion.d/*; do
+for script in "${HOME}"/.bash_completion.d/* "${XDG_CONFIG_HOME}"/bash/completion.d/*; do
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && . "${script}"
+  [ -r "${script}" ] && {
+    case "${script}" in
+      *.linux)
+        if [ "${os}" = "Linux" ]; then
+          . "${script}"
+        fi
+        ;;
+      *.macos)
+        if [ "${os}" = "Darwin" ]; then
+          . "${script}"
+        fi
+        ;;
+      *)
+        . "${script}"
+        ;;
+    esac
+  }
+  unset script
 done
 unset script

@@ -1,0 +1,20 @@
+# shellcheck shell=bash
+
+##
+# Sometimes the archlinux-keyring upgrades and causes pacman PGP errors.
+#
+# This is a very specific problem with a very specific fix.
+# Do not -Sy anywhere else, always -Syu
+fix_pacman_keyring() {
+  sudo pacman -Sy archlinux-keyring && sudo pacman -Syu
+}
+
+
+# Update everything
+upall() {
+  paru -Syu --removemake --devel && sudo flatpak update && sudo flatpak uninstall --unused && {
+    if command -v checkupd-containers >/dev/null; then
+      checkupd-containers
+    fi
+  }
+}

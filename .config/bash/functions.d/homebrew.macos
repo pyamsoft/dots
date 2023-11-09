@@ -1,0 +1,6 @@
+# shellcheck shell=bash
+
+# Update everything
+upall() {
+  brew update && brew upgrade && brew upgrade --greedy
+}

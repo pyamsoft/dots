@@ -1,0 +1,2 @@
+# shellcheck shell=bash
+alias ls="gls -CHh --color=auto"
