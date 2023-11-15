@@ -645,7 +645,6 @@ poppler-data
 poppler-glib
 popt
 portaudio
-power-profiles-daemon
 ppp
 procps-ng
 protobuf
