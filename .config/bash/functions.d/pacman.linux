@@ -12,7 +12,7 @@ fix_pacman_keyring() {
 
 # Update everything
 upall() {
-  paru -Syu --removemake --devel && sudo flatpak update && sudo flatpak uninstall --unused && {
+  paru -Syu --removemake --devel && flatpak update -u && flatpak uninstall -u --unused && {
     if command -v checkupd-containers >/dev/null; then
       checkupd-containers
     fi
