@@ -6,7 +6,7 @@ main() {
 
   pacman -Qmeq >./aur
   pacman -Qmdq >./aur-deps
-  flatpak list --app --columns=application >./flatpak
+  flatpak list -u --app --columns=application >./flatpak
   return 0
 }
 

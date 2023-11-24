@@ -177,6 +177,12 @@ guile
 gupnp
 gupnp-igd
 gvfs
+gvfs-afc
+gvfs-goa
+gvfs-google
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
 gvfs-smb
 gzip
 harfbuzz
@@ -358,6 +364,7 @@ libfontenc
 libfreeaptx
 libftdi
 libgcrypt
+libgdata
 libgdm
 libgexiv2
 libgirepository
@@ -416,6 +423,7 @@ libnet
 libnetfilter_conntrack
 libnewt
 libnfnetlink
+libnfs
 libnftnl
 libnghttp2
 libnice
@@ -478,6 +486,7 @@ libtheora
 libtiff
 libtirpc
 libtool
+libunibreak
 libunistring
 libunwind
 libusb
