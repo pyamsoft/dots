@@ -38,6 +38,7 @@ Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from Obs
 You will need to install `MangoHud` `vkBasalt` `gamescope` `proton-GE` and `Adwaita-dark` manually
 
 Gamescope is currently masked/pinned to a [specific commit](https://github.com/flathub/org.freedesktop.Platform.VulkanLayer.gamescope/issues/49). See also Steam (Flatpak)
+Un-mask when fixed with `flatpak mask -u --remove org.freedesktop.Platform.VulkanLayer.gamescope`
 
 #### Steam (Flatpak)
 See notes in `~dots/scripts/linux/flatpak/games/notes.txt`
