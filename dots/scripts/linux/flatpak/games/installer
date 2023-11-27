@@ -100,6 +100,9 @@ _installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
 _installer "com.moonlight_stream.Moonlight" ".local/bin" "moonlight/gametime-moonlight" 1 || exit 1
 
-_local_install "gametime" || exit 1
+# If we have gamescope locally, maybe we want this script too
+if command -v gamescope >/dev/null; then
+  _local_install "gametime" || exit 1
+fi
 
 exit 0
