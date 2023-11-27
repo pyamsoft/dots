@@ -37,6 +37,8 @@ For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
 You will need to install `MangoHud` `vkBasalt` `gamescope` `proton-GE` and `Adwaita-dark` manually
 
+Gamescope is currently masked/pinned to a [specific commit](https://github.com/flathub/org.freedesktop.Platform.VulkanLayer.gamescope/issues/49)
+
 #### Steam (Flatpak)
 See notes in `dots/apps/linux/flatpak/games/notes.txt`
 
