@@ -131,20 +131,10 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using nerd1 gamescope defaults\n'
-    if [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
-      # On Wayland, we are performant enough to just run in a window (yay compositor)
-      # I visually prefer playing games as "just another window"
-      window_type="--borderless"
-    else
-      # On X11 life sucks, so run in fullscreen explicitly
-      window_type="--fullscreen"
-    fi
-
-    # Lots of games don't like weird resolutions.
-    # FSR quality is 720p
-    fsr_amount=15
+    # None
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using nerd2 gamescope defaults\n'
+    # None
   else
     printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
   fi
