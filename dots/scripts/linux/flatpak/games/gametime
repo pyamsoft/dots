@@ -236,22 +236,24 @@ _prepare_zink() {
 _prepare_mangohud() {
   _mangohud_config="fps,frametime,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,fsr,font_size=18,width=400"
 
-  if [ -n "${GAME_HUD}" ]; then
-    if [ "${GAME_HUD}" -eq 0 ]; then
+  if command -v mangohud >/dev/null; then
+    if [ -n "${GAME_HUD}" ]; then
+      if [ "${GAME_HUD}" -eq 0 ]; then
+        printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
+        export MANGOHUD_CONFIG="${_mangohud_config},no_display"
+        __game_tools="${__game_tools} mangohud --dlsym"
+      elif [ "${GAME_HUD}" -eq 1 ]; then
+        printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
+        export MANGOHUD_CONFIG="${_mangohud_config}"
+        __game_tools="${__game_tools} mangohud --dlsym"
+      else
+        printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
+      fi
+    else
       printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
       export MANGOHUD_CONFIG="${_mangohud_config},no_display"
       __game_tools="${__game_tools} mangohud --dlsym"
-    elif [ "${GAME_HUD}" -eq 1 ]; then
-      printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
-      export MANGOHUD_CONFIG="${_mangohud_config}"
-      __game_tools="${__game_tools} mangohud --dlsym"
-    else
-      printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
     fi
-  else
-    printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
-    export MANGOHUD_CONFIG="${_mangohud_config},no_display"
-    __game_tools="${__game_tools} mangohud --dlsym"
   fi
 
   unset _mangohud_config
@@ -312,6 +314,7 @@ _execute() {
 
   printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
     "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+
   # shellcheck disable=SC2086
   exec env ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
 
@@ -319,11 +322,6 @@ _execute() {
 }
 
 main() {
-  if [ -z "${FLATPAK_ID}" ]; then
-    printf -- "[gametime] Must run inside flatpak.\n"
-    return
-  fi
-
   if ! command -v gamescope > /dev/null; then
     printf -- '[gametime] Unable to find gamescope binary\n'
     return 1
@@ -345,12 +343,12 @@ main() {
   }
 
   _enable_flatpak_options || {
-    printf -- '[gametime] Unable to enable specific flatpak options: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] Unable to enable specific flatpak options\n'
     return 1
   }
 
   _execute "$@" || {
-    printf -- '[gametime] Failed execute: "%s"\n' "${FLATPAK_ID}"
+    printf -- '[gametime] Failed execute\n'
     return 1
   }
 }

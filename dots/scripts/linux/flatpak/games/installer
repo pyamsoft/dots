@@ -5,7 +5,7 @@
 #
 # $1 flatpak app name
 # $2 script to install from this directory
-installer() {
+_installer() {
   app_name="$1"
   target="$2"
   script="$3"
@@ -27,7 +27,7 @@ installer() {
 
     t="${target}/$(basename "${script}")"
 
-    cp -f "${current_directory}/$script" "$t" || {
+    cp -f "${current_directory}/${script}" "$t" || {
       printf -- 'Failed to copy script %s into %s directory for app: %s\n' "${script}" "${target}" "${app_name}"
       return 3
     }
@@ -62,16 +62,44 @@ installer() {
   return 0
 }
 
-installer "com.heroicgameslauncher.hgl" ".local/bin" "gametime" 1 || exit 1
-installer "com.valvesoftware.Steam" ".local/bin" "gametime" 1 || exit 1
-installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
-installer "com.moonlight_stream.Moonlight" ".local/bin" "gametime" 1 || exit 1
+_local_install() {
+  script="$1"
+  current_directory="$(pwd)"
 
-installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
-installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
-installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+  printf -- 'Attempt local install script %s into host\n' "${script}"
 
-installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
-installer "com.moonlight_stream.Moonlight" ".local/bin" "moonlight/gametime-moonlight" 1 || exit 1
+  t="${HOME}/.local/bin/$(basename "${script}")"
+
+  cp -f "${current_directory}/${script}" "$t" || {
+    printf -- 'Failed to copy script %s into host\n' "${script}"
+    return 1
+  }
+
+  chmod 700 "$t" || {
+    printf -- 'Failed to mark script %s executable for host\n' "${script}"
+    return 2
+  }
+
+  printf -- '    %s installed for host\n' "${script}"
+
+  unset t
+  unset script
+  unset current_directory
+  return 0
+}
+
+_installer "com.heroicgameslauncher.hgl" ".local/bin" "gametime" 1 || exit 1
+_installer "com.valvesoftware.Steam" ".local/bin" "gametime" 1 || exit 1
+_installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
+_installer "com.moonlight_stream.Moonlight" ".local/bin" "gametime" 1 || exit 1
+
+_installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+_installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+_installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+
+_installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
+_installer "com.moonlight_stream.Moonlight" ".local/bin" "moonlight/gametime-moonlight" 1 || exit 1
+
+_local_install "gametime" || exit 1
 
 exit 0
