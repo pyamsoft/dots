@@ -115,7 +115,8 @@ _prepare_gamescope() {
     if [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
       # On Wayland, we are performant enough to just run in a window (yay compositor)
       # I visually prefer playing games as "just another window"
-      window_type="--borderless"
+      # But we will use fullscreen for GNOME optimizations
+      window_type="--fullscreen"
     else
       # On X11 life sucks, so run in fullscreen explicitly
       window_type="--fullscreen"
