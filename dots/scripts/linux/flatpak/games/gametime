@@ -258,21 +258,15 @@ _prepare_mangohud() {
 
   if command -v mangohud >/dev/null; then
     if [ -n "${GAME_HUD}" ]; then
-      if [ "${GAME_HUD}" -eq 0 ]; then
+      if [ "${GAME_HUD}" -eq 1 ]; then
         printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
         export MANGOHUD_CONFIG="${_mangohud_config},no_display"
-        __game_tools="${__game_tools} mangohud --dlsym"
-      elif [ "${GAME_HUD}" -eq 1 ]; then
-        printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
-        export MANGOHUD_CONFIG="${_mangohud_config}"
         __game_tools="${__game_tools} mangohud --dlsym"
       else
         printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
       fi
     else
-      printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
-      export MANGOHUD_CONFIG="${_mangohud_config},no_display"
-      __game_tools="${__game_tools} mangohud --dlsym"
+      printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
     fi
   fi
 
