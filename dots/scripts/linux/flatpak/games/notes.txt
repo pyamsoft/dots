@@ -1,3 +1,9 @@
+### Flatpak
+
+Gamescope is pinned to commit `9e2ba1b79351dde28e2984b75b11701cbfba1444ba1b0260b61f45ad159c8c74`
+Commits after this do not work for Moonlight (x11 error crashes)
+and throws some "swap chain" error launching `Ready or Not` on Steam
+
 ### Steam (Flatpak)
 
 Sometimes Steam loses the location of game libraries in the "Storage" menu. Going back in to add them
