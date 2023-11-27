@@ -313,11 +313,11 @@ _enable_flatpak_options() {
 _execute() {
   unset __hostname
 
-  printf -- '[gametime] env %s gamescope %s -- env %s %s %s' \
+  printf -- '[gametime] %s gamescope %s -- env %s %s %s\n' \
     "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
 
   # shellcheck disable=SC2086
-  exec env ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+  exec ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
 
   return 0
 }
