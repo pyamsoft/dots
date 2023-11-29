@@ -44,6 +44,13 @@ Un-mask when fixed with `flatpak mask -u --remove org.freedesktop.Platform.Vulka
 See notes in `~dots/scripts/linux/flatpak/games/notes.txt`
 
 #### Moonlight
+
+Something with gamescope does not grab the keyboard, so gametime-moonlight will not
+work because you are unable to use Super keybinds on the remote system. Use the straight
+flatpak for now, until the fix lands in either gamescope or moonlight.
+
+Sunshine Right-Alt tweak does not work because Wayland GNOME does not respond to the re-bound key.
+
 You can run moonlight in gamescope via the `gametime-moonlight` script.
 Note to capture keys you'll need to use the Grab command in gamescope, which is `Super+G`
 You will not need to use the moonlight Fullscreen (Ctrl+Shift+X) or capture (Ctrl+Shift+Z)
