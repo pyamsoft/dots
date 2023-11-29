@@ -45,9 +45,7 @@ See notes in `~dots/scripts/linux/flatpak/games/notes.txt`
 
 #### Moonlight
 
-Something with gamescope does not grab the keyboard, so gametime-moonlight will not
-work because you are unable to use Super keybinds on the remote system. Use the straight
-flatpak for now, until the fix lands in either gamescope or moonlight.
+Make sure you do not block the X11 or fallback x11 sockets for moonlight or else --grab won't work
 
 Sunshine Right-Alt tweak does not work because Wayland GNOME does not respond to the re-bound key.
 
