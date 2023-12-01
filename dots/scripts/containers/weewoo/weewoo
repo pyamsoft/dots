@@ -1,0 +1,81 @@
+#!/bin/sh
+
+readonly _name="weewoo"
+readonly _image="localhost/pyamsoft/weewoo"
+readonly _tag="latest"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  _mounts=""
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  # Runs as root user on VPS
+
+  # Expects to be root (since the cert file is owned by root)
+  _userns=""
+
+  readonly _userns
+}
+
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # We don't use --security-opt no-new-privileges:true since
+  # the AWS VPS that this runs on does not support that option
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --cap-drop ALL \
+    --init \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
+

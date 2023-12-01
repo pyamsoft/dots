@@ -1,0 +1,12 @@
+[Unit]
+Description=WeeWoo system monitor
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+ExecStart=/bin/sh -c '_c="weewoo"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}"'
+ExecStop=/bin/sh -c '_c="weewoo"; podman stop "$${_c}"; podman rm "$${_c}"; exit 0'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=network-online.target
