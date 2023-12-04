@@ -12,15 +12,6 @@ _prepare_env() {
   export MESA_DISK_CACHE_SINGLE_FILE=1
   __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
 
-  # Unset these vars as they cause issues with EAC
-  export SDL_VIDEODRIVER=
-  unset SDL_VIDEODRIVER
-  __game_environment="${__game_environment} SDL_VIDEODRIVER=${SDL_VIDEODRIVER}"
-
-  export SDL_AUDIODRIVER=
-  unset SDL_AUDIODRIVER
-  __game_environment="${__game_environment} SDL_AUDIODRIVER=${SDL_AUDIODRIVER}"
-
   # Setup for WAYLAND for gamescope-wl
   # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
   if [ -z "${WAYLAND_DISPLAY}" ]; then
@@ -72,9 +63,27 @@ _prepare_env() {
     fi
   fi
 
+  # These SDL vars can cause random issues with some Steam games, so unset them
+  export SDL_VIDEODRIVER=
+  export SDL_VIDEO_DRIVER=
+  export SDL_AUDIODRIVER=
+  export SDL_AUDIO_DRIVER=
+  __game_environment="${__game_environment} SDL_VIDEODRIVER=${SDL_VIDEODRIVER}"
+  __game_environment="${__game_environment} SDL_VIDEO_DRIVER=${SDL_VIDEO_DRIVER}"
+  __game_environment="${__game_environment} SDL_AUDIODRIVER=${SDL_AUDIODRIVER}"
+  __game_environment="${__game_environment} SDL_AUDIO_DRIVER=${SDL_AUDIO_DRIVER}"
+
   # Don't close the window
   export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
   __game_environment="${__game_environment} SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=${SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS}"
+
+  # Wayland exposes a "standard" set of resolutions. Don't do this, only expose our "actual" resolutions
+  export SDL_VIDEO_WAYLAND_MODE_EMULATION=0
+  __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_EMULATION=${SDL_VIDEO_WAYLAND_MODE_EMULATION}"
+
+  # Wayland caling mode none (default stretch)
+  export SDL_VIDEO_WAYLAND_MODE_SCALING=none
+  __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
 
   unset GAME_FIX
   return 0
