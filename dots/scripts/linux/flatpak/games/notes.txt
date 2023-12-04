@@ -25,3 +25,9 @@ Make sure you:
 #### Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
+
+
+#### AMD GPU power profile
+Your AMD gpu may be running on a weaker power profile.
+Check the udev rule in `dots/system/etc/udev/rules.d/30-amdgpu-profile.rules`
+for an example which sets a stronger power profile to avoid throttling.
