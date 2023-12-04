@@ -198,14 +198,14 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --output-height ${output_height}"
   __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
 
-  # Force the window to the size, auto scaler
-  __gamescope_options="${__gamescope_options} --force-windows-fullscreen --scaler auto"
-
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
   # 0 is max sharpness, 20 is min sharpness
-  # default to Steam Deck "2 of 5"
-  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 12"
+  # No additional sharpness by default
+  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 20"
+
+  # Max scale 1
+  __gamescope_options="${__gamescope_options} --max-scale 1"
 
   if [ -n "${output_width}" ]; then
     __gamescope_options="${__gamescope_options} --output-width ${output_width}"
