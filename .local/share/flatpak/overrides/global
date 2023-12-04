@@ -1,6 +1,6 @@
 [Context]
 filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!/tmp;!xdg-music;!xdg-data;!/var/lib/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-documents;!xdg-videos;!host-etc;!xdg-config;!xdg-data/flatpak/app;!xdg-download;!/var/lib/flatpak/app;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-templates;xdg-config/gtk-3.0:ro;!home;!xdg-cache;!/storage;!xdg-pictures;~/.drirc:ro;xdg-cache/mesa_shader_cache_sf;xdg-cache/radv_builtin_shaders64;
-unset-environment=PROMPT_COMMAND;PS1;SDL_VIDEODRIVER;SDL_AUDIODRIVER;
+unset-environment=PROMPT_COMMAND;PS1;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;SDL_AUDIODRIVER;SDL_AUDIO_DRIVER;
 persistent=.;
 
 [Session Bus Policy]
@@ -15,4 +15,6 @@ org.freedesktop.impl.portal.PermissionStore=none
 PROMPT_COMMAND=
 PS1=
 SDL_VIDEODRIVER=
+SDL_VIDEO_DRIVER=
 SDL_AUDIODRIVER=
+SDL_AUDIO_DRIVER=

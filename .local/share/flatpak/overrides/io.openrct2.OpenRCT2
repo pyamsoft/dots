@@ -1,7 +1,9 @@
 [Context]
 filesystems=!xdg-run/app/com.discordapp.Discord;
-unset-environment=SDL_VIDEODRIVER;SDL_AUDIODRIVER;
+unset-environment=SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;SDL_AUDIODRIVER;SDL_AUDIO_DRIVER;
 
 [Environment]
 SDL_VIDEODRIVER=
+SDL_VIDEO_DRIVER=
 SDL_AUDIODRIVER=
+SDL_AUDIO_DRIVER=
