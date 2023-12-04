@@ -285,8 +285,25 @@ _prepare_mangohud() {
 
   unset _mangohud_config
   unset GAME_HUD
+  return 0
 }
 
+_prepare_gamemode() {
+  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
+    printf -- '[gametime] Not using Feral gamemode (GAME_MODE=%s)\n' "${GAME_MODE}"
+  else
+    if command -v gamemoderun >/dev/null; then
+      printf -- '[gametime] Using Feral gamemode (GAME_MODE=%s)\n' "${GAME_MODE}"
+      __env_tools="${__env_tools} gamemoderun"
+      __game_tools="${__game_tools} gamemoderun"
+    else
+      printf -- '[gametime] Wanted Feral gamemode but not found! (GAME_MODE=%s)\n' "${GAME_MODE}"
+    fi
+  fi
+
+  unset GAME_MODE
+  return 0
+}
 
 _prepare_obs() {
   if ! command -v obs-gamecapture >/dev/null 2>&1; then
@@ -316,6 +333,7 @@ _prepare() {
   printf -- '[gametime] Preparing gaming environment...\n'
 
   _prepare_env || return 1
+  _prepare_gamemode || return 1
   _prepare_obs || return 1
   _prepare_vkbasalt || return 1
   _prepare_zink || return 1
