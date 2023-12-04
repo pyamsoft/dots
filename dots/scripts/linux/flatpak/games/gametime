@@ -77,13 +77,13 @@ _prepare_env() {
   export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
   __game_environment="${__game_environment} SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=${SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS}"
 
-  # Wayland exposes a "standard" set of resolutions. Don't do this, only expose our "actual" resolutions
-  export SDL_VIDEO_WAYLAND_MODE_EMULATION=0
-  __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_EMULATION=${SDL_VIDEO_WAYLAND_MODE_EMULATION}"
-
   # Wayland caling mode none (default stretch)
   export SDL_VIDEO_WAYLAND_MODE_SCALING=none
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
+
+  # Potentially fix a fullscreen issue on Gnome
+  export SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=0
+  __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=${SDL_VIDEO_WAYLAND_PREFER_LIBDECOR}"
 
   unset GAME_FIX
   return 0
@@ -194,9 +194,7 @@ _prepare_gamescope() {
 
 
   # Options passed to gamescope session
-  __gamescope_options="${__gamescope_options} ${window_type}"
-  __gamescope_options="${__gamescope_options} --output-height ${output_height}"
-  __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
+  __gamescope_options="${__gamescope_options} ${window_type} --output-height ${output_height} --nested-height ${nested_height}"
 
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
@@ -204,8 +202,13 @@ _prepare_gamescope() {
   # No additional sharpness by default
   __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 20"
 
-  # Max scale 1
-  __gamescope_options="${__gamescope_options} --max-scale 1"
+  # Force resolution
+  __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
+
+  # Expose Wayland
+  if [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+    __gamescope_options="${__gamescope_options} --expose-wayland"
+  fi
 
   if [ -n "${output_width}" ]; then
     __gamescope_options="${__gamescope_options} --output-width ${output_width}"
