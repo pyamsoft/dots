@@ -19,49 +19,9 @@ _prepare_env() {
     __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
   fi
 
-  # Optional fixes for messy graphics
-  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
-    printf -- '[gametime] Applying AMD driver fixes: YES (GAME_FIX=%s)\n' "${GAME_FIX}"
-
-    # Fix weird texture bugs
-    # https://github.com/Plagman/gamescope/issues/320
-    export AMD_DEBUG=nodcc
-    __game_environment="${__game_environment} AMD_DEBUG=${AMD_DEBUG}"
-
-    export RADV_DEBUG=nodcc
-    __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
-  else
-    printf -- '[gametime] Applying AMD driver fixes: NO (GAME_FIX=%s)\n' "${GAME_FIX}"
-  fi
-
   # Disable vertical blank
   export vblank_mode=0
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
-
-  # Optional performance tweaks for shit graphics
-  if [ -n "${GAME_TWEAK}" ] && [ "${GAME_TWEAK}" -eq 0 ]; then
-      printf -- '[gametime] Turn off hostname specific tweaks (GAME_TWEAK=%s)\n' "${GAME_TWEAK}"
-  else
-    # nerd1 is an iGPU, we apply even more performance tweaks
-    if [ "${__hostname}" = "nerd1" ]; then
-      printf -- '[gametime] Applying %s tweaks (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
-
-      # https://www.basnieuwenhuizen.nl/a-first-foray-into-rendering-less/
-      # https://linux-gaming.kwindu.eu/index.php?title=Improving_performance#Minor_tweaks
-      #
-      # where we used to render 1 pixel using 1 pixel of info, we now render 2 pixels (it's like halving the resolution in a way)
-      export RADV_FORCE_VRS=2x2
-      __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
-
-      # If fix is applied, also apply RADV fix
-      if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
-        export RADV_DEBUG=novrsflatshading,nodcc
-      else
-        export RADV_DEBUG=novrsflatshading
-      fi
-      __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
-    fi
-  fi
 
   # These SDL vars can cause random issues with some Steam games, so unset them
   export SDL_VIDEODRIVER=
@@ -84,6 +44,53 @@ _prepare_env() {
   # Potentially fix a fullscreen issue on Gnome
   export SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=0
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=${SDL_VIDEO_WAYLAND_PREFER_LIBDECOR}"
+
+  # Optional fixes for messy graphics
+  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
+    printf -- '[gametime] Applying AMD driver fixes: YES (GAME_FIX=%s)\n' "${GAME_FIX}"
+
+    # Fix weird texture bugs
+    # https://github.com/Plagman/gamescope/issues/320
+    export AMD_DEBUG=nodcc
+    __game_environment="${__game_environment} AMD_DEBUG=${AMD_DEBUG}"
+
+    # If tweaks are not applied, apply game environment RADV_DEBUG here
+    if [ -z "${GAME_FIX}" ] || [ "${GAME_FIX}" -eq 0 ]; then
+      export RADV_DEBUG=nodcc
+      __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
+    fi
+  else
+    printf -- '[gametime] Applying AMD driver fixes: NO (GAME_FIX=%s)\n' "${GAME_FIX}"
+  fi
+
+  # Optional performance tweaks for shit graphics
+  if [ -n "${GAME_TWEAK}" ] && [ "${GAME_TWEAK}" -eq 0 ]; then
+    printf -- '[gametime] Applying %s tweaks: NO (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
+  else
+    # nerd1 is an iGPU, we apply even more performance tweaks
+    if [ "${__hostname}" = "nerd1" ]; then
+      printf -- '[gametime] Applying %s tweaks: YES (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
+
+      # https://www.basnieuwenhuizen.nl/a-first-foray-into-rendering-less/
+      # https://linux-gaming.kwindu.eu/index.php?title=Improving_performance#Minor_tweaks
+      #
+      # where we used to render 1 pixel using 1 pixel of info, we now render 2 pixels (it's like halving the resolution in a way)
+      export RADV_FORCE_VRS=2x2
+      __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
+
+      # Fix weird texture bugs
+      # https://github.com/Plagman/gamescope/issues/320
+      # If fix is applied, also apply RADV fix
+      if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
+        export RADV_DEBUG=novrsflatshading,nodcc
+      else
+        export RADV_DEBUG=novrsflatshading
+      fi
+      __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
+    else
+      printf -- '[gametime] Applying %s tweaks: MISSING (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
+    fi
+  fi
 
   unset GAME_FIX
   return 0
@@ -199,8 +206,8 @@ _prepare_gamescope() {
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
   # 0 is max sharpness, 20 is min sharpness
-  # No additional sharpness by default
-  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 20"
+  # Slight sharpness by default and drop vkbasalt by default
+  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 16"
 
   # Force resolution
   __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
@@ -230,31 +237,31 @@ _prepare_gamescope() {
   return 0
 }
 
+# vkBasalt
+# https://github.com/DadSchoorse/vkBasalt
+#
+# Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
 _prepare_vkbasalt() {
-  if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -eq 0 ]; then
-    printf -- '[gametime] vkBasalt post processing: NO (GAME_VKB=%s)\n' "${GAME_VKB}"
-  else
-    # vkBasalt
-    # https://github.com/DadSchoorse/vkBasalt
-    #
-    # Use with vkBasalt.conf to enable better CAS in games (gamescope has sharpening but it kinda sux)
-    if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
+  if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
+    if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -ne 0 ]; then
       __game_environment="${__game_environment} ENABLE_VKBASALT=1"
       printf -- '[gametime] vkBasalt post processing: YES (GAME_VKB=%s)\n' "${GAME_VKB}"
     else
       printf -- '[gametime] vkBasalt post processing: NO (GAME_VKB=%s)\n' "${GAME_VKB}"
     fi
+  else
+    printf -- '[gametime] vkBasalt post processing: MISSING (GAME_VKB=%s)\n' "${GAME_VKB}"
   fi
 
   unset GAME_VKB
   return 0
 }
 
+# Zink OpenGL
+# https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
 _prepare_zink() {
   if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
     printf -- '[gametime] Zink for OpenGL over Vulkan: YES (GAME_ZINK=%s)\n' "${GAME_ZINK}"
-    # Zink OpenGL
-    # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
     __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa"
     __game_environment="${__game_environment} MESA_LOADER_DRIVER_OVERRIDE=zink"
     __game_environment="${__game_environment} GALLIUM_DRIVER=zink"
@@ -266,21 +273,21 @@ _prepare_zink() {
   return 0
 }
 
+# Mangohud
+# https://github.com/flightlessmango/MangoHud
 _prepare_mangohud() {
   _mangohud_config="fps,frametime,cpu_temp,gpu_temp,ram,vram,swap,cpu_mhz,gpu_core_clock,gpu_mem_clock,resolution,show_fps_limit,vkbasalt,gamemode,fsr,font_size=18,width=400"
 
   if command -v mangohud >/dev/null; then
-    if [ -n "${GAME_HUD}" ]; then
-      if [ "${GAME_HUD}" -eq 1 ]; then
-        printf -- '[gametime] MangoHud performance overlay: HIDDEN (GAME_HUD=%s)\n' "${GAME_HUD}"
-        export MANGOHUD_CONFIG="${_mangohud_config},no_display"
-        __game_tools="${__game_tools} mangohud --dlsym"
-      else
-        printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
-      fi
+    if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -ne 0 ]; then
+      printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
+      export MANGOHUD_CONFIG="${_mangohud_config},no_display"
+      __game_tools="${__game_tools} mangohud --dlsym"
     else
-      printf -- '[gametime] MangoHud performance overlay: OFF (GAME_HUD=%s)\n' "${GAME_HUD}"
+      printf -- '[gametime] MangoHud performance overlay: NO (GAME_HUD=%s)\n' "${GAME_HUD}"
     fi
+  else
+    printf -- '[gametime] MangoHud performance overlay: MISSING (GAME_HUD=%s)\n' "${GAME_HUD}"
   fi
 
   unset _mangohud_config
@@ -289,41 +296,36 @@ _prepare_mangohud() {
 }
 
 _prepare_gamemode() {
-  if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
-    printf -- '[gametime] Not using Feral gamemode (GAME_MODE=%s)\n' "${GAME_MODE}"
-  else
-    if command -v gamemoderun >/dev/null; then
-      printf -- '[gametime] Using Feral gamemode (GAME_MODE=%s)\n' "${GAME_MODE}"
+  if command -v gamemoderun >/dev/null; then
+    if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 0 ]; then
+      printf -- '[gametime] Feral gamemode: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
+    else
+      printf -- '[gametime] Feral gamemode: YES (GAME_MODE=%s)\n' "${GAME_MODE}"
       __env_tools="${__env_tools} gamemoderun"
       __game_tools="${__game_tools} gamemoderun"
-    else
-      printf -- '[gametime] Wanted Feral gamemode but not found! (GAME_MODE=%s)\n' "${GAME_MODE}"
     fi
+  else
+    printf -- '[gametime] Feral gamemode: MISSING (GAME_MODE=%s)\n' "${GAME_MODE}"
   fi
 
   unset GAME_MODE
   return 0
 }
 
+# OBS VKCapture
+# https://github.com/nowrep/obs-vkcapture
+#
+# Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
 _prepare_obs() {
-  if ! command -v obs-gamecapture >/dev/null 2>&1; then
-    printf -- '[gametime] Cannot enable OBS, not installed\n'
-    return 0
-  fi
-
-  if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
-    # OBS VKCapture
-    # https://github.com/nowrep/obs-vkcapture
-    #
-    # Depending on steam vs others, we set te OBS_VKCAPTURE at a different scope
-    if command -v obs-gamecapture >/dev/null; then
-      __env_tools="${__env_tools} obs-gamecapture"
-      printf -- '[gametime] OBS Game Capture: YES (GAME_OBS=%s)\n' "${GAME_OBS}"
-    else
-      printf -- '[gametime] OBS Game Capture: NO (GAME_OBS=%s)\n' "${GAME_OBS}"
-    fi
+  if command -v obs-gamecapture >/dev/null; then
+    if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
+        __env_tools="${__env_tools} obs-gamecapture"
+        printf -- '[gametime] OBS Game Capture: YES (GAME_OBS=%s)\n' "${GAME_OBS}"
+      else
+        printf -- '[gametime] OBS Game Capture: NO (GAME_OBS=%s)\n' "${GAME_OBS}"
+      fi
   else
-    printf -- '[gametime] OBS Game Capture: NO (GAME_OBS=%s)\n' "${GAME_OBS}"
+    printf -- '[gametime] OBS Game Capture: MISSING (GAME_OBS=%s)\n' "${GAME_OBS}"
   fi
 
   unset GAME_OBS
