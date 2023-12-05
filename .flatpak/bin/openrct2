@@ -5,17 +5,10 @@ readonly self
 
 readonly pak="io.openrct2.OpenRCT2"
 readonly def_path="/app/bin:/usr/bin"
-readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin"
-
-cmd=""
-if [ "$1" = "--shell" ]; then
-  cmd="${cmd} --shell"
-  shift
-fi
-readonly cmd
+readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
 
 # Gamescope LD_LIBRARY_PATH fix
-readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib:/usr/lib/extensions/vulkan/MangoHud/lib"
+readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib:/usr/lib/extensions/vulkan/MangoHud/lib:/usr/lib/extensions/vulkan/OBSVkCapture/lib"
 _def_ld_path=""
 if [ -n "${LD_LIBRARY_PATH}" ]; then
   _def_ld_path=":${LD_LIBRARY_PATH}"
@@ -24,11 +17,18 @@ else
 fi
 readonly _def_ld_path
 
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
-  --command="${HOME}/.local/bin/gametime-openrct2" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+  --command="${HOME}/.local/bin/gametime-openrct2" \
   --filesystem="/home/${self}/games/steam" \
   --filesystem="/storage/${self}/games/steam" \
   --filesystem="/storage/${self}/games2/steam" \
