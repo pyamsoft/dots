@@ -2,7 +2,7 @@
 Description=Start Sunshine on session login
 
 [Service]
-ExecStart=%h/bin/restart-sunshine
+ExecStart=%h/.local/bin/restart-sunshine
 
 [Install]
 WantedBy=graphical-session.target
