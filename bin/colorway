@@ -57,6 +57,12 @@ if [ "$1" = "light" ] || [ "$1" = "l" ]; then
       gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
     fi
 
+    # Guake
+    if command -v guake >/dev/null; then
+      # Need to quote the string
+      dconf write '/org/guake/style/font/palette' "'#5c5c5f5f7777:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#acacb0b0bebe:#6f6e6f6e8585:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#bcbcc0c0cccc:#4c4c4f4e6969:#efeff1f1f5f5'"
+    fi
+
     # KDE
     if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
       lookandfeeltool -a "org.kde.breeze.desktop"
@@ -127,6 +133,12 @@ elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
       gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
       gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
       gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
+    fi
+
+    # Guake
+    if command -v guake >/dev/null; then
+      # Need to quote the string
+      dconf write '/org/guake/style/font/palette' "'#49494d4d6464:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#b8b8c0c0e0e0:#5b5a605f7878:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#a5a5adadcbcb:#cacad3d3f5f5:#242427273a3a'"
     fi
 
     # KDE
