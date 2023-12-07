@@ -169,7 +169,6 @@ gst-plugins-base
 gst-plugins-base-libs
 gst-plugins-good
 gstreamer
-gtk-layer-shell
 gtk-update-icon-cache
 gtk3
 gtk4
@@ -397,6 +396,7 @@ libjcat
 libjpeg-turbo
 libjxl
 libkate
+libkeybinder3
 libksba
 liblc3
 libldac
@@ -509,6 +509,7 @@ libwacom
 libwbclient
 libwebp
 libwireplumber
+libwnck3
 libwpe
 libx11
 libx86
@@ -522,8 +523,6 @@ libxdamage
 libxdg-basedir
 libxdmcp
 libxext
-libxfce4ui
-libxfce4util
 libxfixes
 libxfont2
 libxft
@@ -538,6 +537,7 @@ libxmu
 libxpm
 libxrandr
 libxrender
+libxres
 libxshmfence
 libxslt
 libxss
@@ -675,6 +675,7 @@ python-greenlet
 python-lxml
 python-markdown
 python-msgpack
+python-pbr
 python-protobuf
 python-pycryptodomex
 python-pycups
@@ -683,6 +684,7 @@ python-pygments
 python-pynvim
 python-pyqt5
 python-pyqt5-sip
+python-yaml
 qca-qt5
 qpdf
 qqc2-desktop-style5
@@ -808,7 +810,6 @@ xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
 xdg-utils
 xf86-input-libinput
-xfconf
 xkeyboard-config
 xorg-fonts-encodings
 xorg-server

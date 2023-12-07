@@ -12,6 +12,7 @@ gentium-plus-font
 gnome-shell-extension-appindicator
 gnome-themes-extra
 gnome-tweaks
+guake
 hplip
 htop
 inter-font
@@ -42,7 +43,6 @@ tmux
 tree-sitter-cli
 ttf-liberation
 xdg-user-dirs
-xfce4-terminal
 xorg-xrandr
 yt-dlp
 zip
