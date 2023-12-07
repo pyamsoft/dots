@@ -41,10 +41,6 @@ _prepare_env() {
   export SDL_VIDEO_WAYLAND_MODE_SCALING=none
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
 
-  # Potentially fix a fullscreen issue on Gnome
-  export SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=0
-  __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_PREFER_LIBDECOR=${SDL_VIDEO_WAYLAND_PREFER_LIBDECOR}"
-
   # Optional fixes for messy graphics
   if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
     printf -- '[gametime] Applying AMD driver fixes: YES (GAME_FIX=%s)\n' "${GAME_FIX}"

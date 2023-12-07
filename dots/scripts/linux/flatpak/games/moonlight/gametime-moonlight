@@ -9,4 +9,7 @@ export GAME_WINDOW=" "
 # No mangohud
 export GAME_HUD=0
 
+# No gamemode
+export GAME_MODE=0
+
 exec gametime moonlight "$@"
