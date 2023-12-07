@@ -128,6 +128,7 @@ gjs
 glib-networking
 glib2
 glibc
+glslang
 glu
 gmp
 gnome-autoar
@@ -346,6 +347,7 @@ libde265
 libdecor
 libdeflate
 libdisplay-info
+libdovi
 libdrm
 libdv
 libdvdnav
@@ -445,6 +447,7 @@ libpciaccess
 libpgm
 libpipeline
 libpipewire
+libplacebo
 libplist
 libpng
 libportal
@@ -461,6 +464,7 @@ libraqm
 libraw1394
 librest
 librsvg
+libsamplerate
 libsasl
 libseccomp
 libsecret
@@ -703,6 +707,7 @@ rsync
 rtkit
 rtl-sdr
 rtmpdump
+rubberband
 sane
 sane-airscan
 sbc
@@ -710,12 +715,14 @@ sdl2
 sed
 semver
 serd
+shaderc
 shadow
 shared-mime-info
 skopeo
 slang
 slirp4netns
 smbclient
+snappy
 socat
 solid5
 sonnet5
@@ -725,6 +732,7 @@ soundtouch
 spandsp
 speex
 speexdsp
+spirv-tools
 sqlite
 sratom
 srt
