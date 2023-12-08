@@ -1,172 +1,236 @@
 #!/bin/sh
 
-if [ -z "$1" ]; then
-  printf -- 'Must provide either "light" or "dark" mode\n'
-  exit 1
-fi
+_light_macos() {
+  # MacOS sed is BSD
+  
+  # Lunarvim
+  if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+    sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
 
-if [ "$1" = "light" ] || [ "$1" = "l" ]; then
-  if [ "$(uname)" = "Darwin" ]; then
-    # MacOS sed is BSD
-    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
-      sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
-    fi
-    if [ -n "${TMUX}" ]; then
-      sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
-    fi
-
+  # Tmux
+  if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
+    sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
+  
+  # System theme
+  if command -v osascript >/dev/null; then
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to no'
-  else
-    # Linux is GNU sed
-    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
-      sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
-    fi
-    if [ -n "${TMUX}" ]; then
-      sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
-    fi
+  fi
 
-    # Rofi
-    if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
-      sed -i '0,/@theme "rounded-catppuccin-mocha"/s//@theme "rounded-catppuccin-latte"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
-    fi
+  return 0
+}
 
-    # XFCE4 terminal
-    if command -v xfconf-query >/dev/null; then
-      xfconf-query -c xfce4-terminal -p /color-background -s '#EFF1F5'
-      xfconf-query -c xfce4-terminal -p /color-background-vary -s false
-      xfconf-query -c xfce4-terminal -p /color-bold -s ''
-      xfconf-query -c xfce4-terminal -p /color-bold-is-bright -s true
-      xfconf-query -c xfce4-terminal -p /color-bold-use-default -s true
-      xfconf-query -c xfce4-terminal -p /color-cursor -s '#DC8A78'
-      xfconf-query -c xfce4-terminal -p /color-cursor-foreground -s '#EFF1F5'
-      xfconf-query -c xfce4-terminal -p /color-cursor-use-default -s false
-      xfconf-query -c xfce4-terminal -p /color-foreground -s '#4C4F69'
-      xfconf-query -c xfce4-terminal -p /color-palette -s '#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC'
-      xfconf-query -c xfce4-terminal -p /color-selection -s '#4C4F69'
-      xfconf-query -c xfce4-terminal -p /color-selection-background -s '#ACB0BE'
-      xfconf-query -c xfce4-terminal -p /color-selection-use-default -s false
-      xfconf-query -c xfce4-terminal -p /color-use-theme -s false
-      xfconf-query -c xfce4-terminal -p /tab-activity-color -s '#FE640B'
-    fi
+_light_linux() {
+  # Linux is GNU sed
+  
+  # Lunarvim
+  if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+    sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
 
-    # GNOME Desktop
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
-      gsettings set org.gnome.desktop.interface icon-theme "Papirus"
-      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
-      gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
-    fi
+  # Tmux
+  if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
+    sed -i '0,/@catppuccin_flavour "macchiato"/s//@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
 
-    # Guake
-    if command -v guake >/dev/null; then
-      # Need to quote the string
-      dconf write '/org/guake/style/font/palette' "'#5c5c5f5f7777:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#acacb0b0bebe:#6f6e6f6e8585:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#bcbcc0c0cccc:#4c4c4f4e6969:#efeff1f1f5f5'"
-    fi
+  # Rofi
+  if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
+    sed -i '0,/@theme "rounded-catppuccin-mocha"/s//@theme "rounded-catppuccin-latte"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
+  fi
 
-    # KDE
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
-      lookandfeeltool -a "org.kde.breeze.desktop"
+  # XFCE4 terminal
+  if command -v xfconf-query >/dev/null; then
+    xfconf-query -c xfce4-terminal -p /color-background -s '#EFF1F5'
+    xfconf-query -c xfce4-terminal -p /color-background-vary -s false
+    xfconf-query -c xfce4-terminal -p /color-bold -s ''
+    xfconf-query -c xfce4-terminal -p /color-bold-is-bright -s true
+    xfconf-query -c xfce4-terminal -p /color-bold-use-default -s true
+    xfconf-query -c xfce4-terminal -p /color-cursor -s '#DC8A78'
+    xfconf-query -c xfce4-terminal -p /color-cursor-foreground -s '#EFF1F5'
+    xfconf-query -c xfce4-terminal -p /color-cursor-use-default -s false
+    xfconf-query -c xfce4-terminal -p /color-foreground -s '#4C4F69'
+    xfconf-query -c xfce4-terminal -p /color-palette -s '#5C5F77;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#ACB0BE;#6C6F85;#D20F39;#40A02B;#DF8E1D;#1E66F5;#EA76CB;#179299;#BCC0CC'
+    xfconf-query -c xfce4-terminal -p /color-selection -s '#4C4F69'
+    xfconf-query -c xfce4-terminal -p /color-selection-background -s '#ACB0BE'
+    xfconf-query -c xfce4-terminal -p /color-selection-use-default -s false
+    xfconf-query -c xfce4-terminal -p /color-use-theme -s false
+    xfconf-query -c xfce4-terminal -p /tab-activity-color -s '#FE640B'
+  fi
 
-      # Re-apply the icon theme
-      printf -- '%s' "$(cat <<EOF
+  # GNOME Desktop
+  if command -v gsettings >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
+    gsettings set org.gnome.desktop.interface icon-theme "Papirus"
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
+    gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
+  fi
+
+  # Guake
+  if command -v guake >/dev/null && command -v dconf >/dev/null; then
+    # Need to quote the string
+    dconf write '/org/guake/style/font/palette' "'#5c5c5f5f7777:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#acacb0b0bebe:#6f6e6f6e8585:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#bcbcc0c0cccc:#4c4c4f4e6969:#efeff1f1f5f5'"
+  fi
+
+  # KDE
+  if command -v lookandfeeltool >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
+    lookandfeeltool -a "org.kde.breeze.desktop"
+
+    # Re-apply the icon theme
+    printf -- '%s' "$(cat <<EOF
 [Icons]
 Theme=Papirus
 EOF
 )" >> "${XDG_CONFIG_HOME}/kdeglobals"
 
-      # Re-apply the splash screen
-      printf -- '%s' "$(cat <<EOF
+    # Re-apply the splash screen
+    printf -- '%s' "$(cat <<EOF
 [KSplash]
 Engine=none
 Theme=None
 EOF
 )" >> "${XDG_CONFIG_HOME}/ksplashrc"
-    fi
   fi
-elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
-  if [ "$(uname)" = "Darwin" ]; then
-    # MacOS sed is BSD
-    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
-      sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
-    fi
-    if [ -n "${TMUX}" ]; then
-      sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
-    fi
 
+  return 0
+}
+
+_light() {
+  if [ "$(uname)" = "Darwin" ]; then
+    _light_macos || return 1
+  else
+    _light_linux || return 1
+  fi
+
+  return 0
+}
+
+_dark_macos() {
+  # MacOS sed is BSD
+
+  # Lunarvim
+  if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+    sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
+
+  # Tmux
+  if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
+    sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
+
+  # System theme
+  if command -v osascript >/dev/null; then
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
     osascript -e 'tell app "System Events" to tell appearance preferences to set dark mode to yes'
-  else
-    # Linux is GNU sed
-    if [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
-      sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
-    fi
-    if [ -n "${TMUX}" ]; then
-      sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
-    fi
+  fi
 
-    # Rofi
-    if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
-      sed -i '0,/@theme "rounded-catppuccin-latte"/s//@theme "rounded-catppuccin-mocha"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
-    fi
+  return 0
+}
 
-    # XFCE4 terminal
-    if command -v xfconf-query >/dev/null; then
-      xfconf-query -c xfce4-terminal -p /color-background -s '#24273A'
-      xfconf-query -c xfce4-terminal -p /color-background-vary -s false
-      xfconf-query -c xfce4-terminal -p /color-bold -s ''
-      xfconf-query -c xfce4-terminal -p /color-bold-is-bright -s true
-      xfconf-query -c xfce4-terminal -p /color-bold-use-default -s true
-      xfconf-query -c xfce4-terminal -p /color-cursor -s '#F4DBD6'
-      xfconf-query -c xfce4-terminal -p /color-cursor-foreground -s '#181926'
-      xfconf-query -c xfce4-terminal -p /color-cursor-use-default -s false
-      xfconf-query -c xfce4-terminal -p /color-foreground -s '#CAD3F5'
-      xfconf-query -c xfce4-terminal -p /color-palette -s '#494D64;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#B8C0E0;#5B6078;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#A5ADCB'
-      xfconf-query -c xfce4-terminal -p /color-selection -s '#CAD3F5'
-      xfconf-query -c xfce4-terminal -p /color-selection-background -s '#5B6078'
-      xfconf-query -c xfce4-terminal -p /color-selection-use-default -s false
-      xfconf-query -c xfce4-terminal -p /color-use-theme -s false
-      xfconf-query -c xfce4-terminal -p /tab-activity-color -s '#F5A97F'
-    fi
+_dark_linux() {
+  # Linux is GNU sed
 
-    # GNOME Desktop
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
-      gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
-      gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
-      gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
-    fi
+  # Lunarvim
+  if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
+    sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
 
-    # Guake
-    if command -v guake >/dev/null; then
-      # Need to quote the string
-      dconf write '/org/guake/style/font/palette' "'#49494d4d6464:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#b8b8c0c0e0e0:#5b5a605f7878:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#a5a5adadcbcb:#cacad3d3f5f5:#242427273a3a'"
-    fi
+  # Tmux
+  if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
+    sed -i '0,/@catppuccin_flavour "latte"/s//@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
 
-    # KDE
-    if [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
-      lookandfeeltool -a "org.kde.breezedark.desktop"
+  # Rofi
+  if command -v rofi >/dev/null && [ -f "${XDG_CONFIG_HOME}/rofi/config.rasi" ]; then
+    sed -i '0,/@theme "rounded-catppuccin-latte"/s//@theme "rounded-catppuccin-mocha"/' "${XDG_CONFIG_HOME}/rofi/config.rasi"
+  fi
 
-      # Re-apply the icon theme
-      printf -- '%s' "$(cat <<EOF
+  # XFCE4 terminal
+  if command -v xfconf-query >/dev/null; then
+    xfconf-query -c xfce4-terminal -p /color-background -s '#24273A'
+    xfconf-query -c xfce4-terminal -p /color-background-vary -s false
+    xfconf-query -c xfce4-terminal -p /color-bold -s ''
+    xfconf-query -c xfce4-terminal -p /color-bold-is-bright -s true
+    xfconf-query -c xfce4-terminal -p /color-bold-use-default -s true
+    xfconf-query -c xfce4-terminal -p /color-cursor -s '#F4DBD6'
+    xfconf-query -c xfce4-terminal -p /color-cursor-foreground -s '#181926'
+    xfconf-query -c xfce4-terminal -p /color-cursor-use-default -s false
+    xfconf-query -c xfce4-terminal -p /color-foreground -s '#CAD3F5'
+    xfconf-query -c xfce4-terminal -p /color-palette -s '#494D64;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#B8C0E0;#5B6078;#ED8796;#A6DA95;#EED49F;#8AADF4;#F5BDE6;#8BD5CA;#A5ADCB'
+    xfconf-query -c xfce4-terminal -p /color-selection -s '#CAD3F5'
+    xfconf-query -c xfce4-terminal -p /color-selection-background -s '#5B6078'
+    xfconf-query -c xfce4-terminal -p /color-selection-use-default -s false
+    xfconf-query -c xfce4-terminal -p /color-use-theme -s false
+    xfconf-query -c xfce4-terminal -p /tab-activity-color -s '#F5A97F'
+  fi
+
+  # GNOME Desktop
+  if command -v gsettings >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
+    gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
+  fi
+
+  # Guake
+  if command -v dconf >/dev/null && command -v guake >/dev/null; then
+    # Need to quote the string
+    dconf write '/org/guake/style/font/palette' "'#49494d4d6464:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#b8b8c0c0e0e0:#5b5a605f7878:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#a5a5adadcbcb:#cacad3d3f5f5:#242427273a3a'"
+  fi
+
+  # KDE
+  if command -v lookandfeeltool >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && [ "${XDG_SESSION_DESKTOP}" = "KDE" ]; then
+    lookandfeeltool -a "org.kde.breezedark.desktop"
+
+    # Re-apply the icon theme
+    printf -- '%s' "$(cat <<EOF
 [Icons]
 Theme=Papirus-Dark
 EOF
 )" >> "${XDG_CONFIG_HOME}/kdeglobals"
 
-      # Re-apply the splash screen
-      printf -- '%s' "$(cat <<EOF
+    # Re-apply the splash screen
+    printf -- '%s' "$(cat <<EOF
 [KSplash]
 Engine=none
 Theme=None
 EOF
 )" >> "${XDG_CONFIG_HOME}/ksplashrc"
-    fi
   fi
-else
-  printf -- 'Must provide either "light" or "dark" mode\n'
-  exit 1
-fi
 
-if [ -n "${TMUX}" ]; then
-  # Re-source tmux
-  tmux source-file "${XDG_CONFIG_HOME}/tmux/tmux.conf"
-fi
+  return 0
+}
+
+_dark() {
+  if [ "$(uname)" = "Darwin" ]; then
+    _dark_macos || return 1
+  else
+    _dark_linux || return 1
+  fi
+
+  return 0
+}
+
+main() {
+  if [ -z "$1" ]; then
+    printf -- 'Must provide either "light" or "dark" mode\n'
+    return 1
+  fi
+
+  if [ "$1" = "light" ] || [ "$1" = "l" ]; then
+    _light || return 1
+  elif [ "$1" = "dark" ] || [ "$1" = "d" ]; then
+    _dark || return 1
+  else
+    printf -- 'Must provide either "light" or "dark" mode\n'
+    return 1
+  fi
+
+  if [ -n "${TMUX}" ] && command -v tmux >/dev/null; then
+    # Re-source tmux
+    tmux source-file "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
+}
+
+main "$@" || exit 1
+exit 0
+
