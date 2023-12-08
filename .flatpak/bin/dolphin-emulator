@@ -28,6 +28,7 @@ readonly cmd
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+  --command="${HOME}/.local/bin/gametime-dolphin-emu" \
   --filesystem="/home/${self}/games/emulator" \
   --filesystem="/storage/${self}/games/emulator" \
   --filesystem="/storage/${self}/games2/emulator" \

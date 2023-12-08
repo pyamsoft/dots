@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Use a normal window (can't be blank or -n doesn't work)
+export GAME_WINDOW=" "
+
+exec gametime dolphin-emu-wrapper
