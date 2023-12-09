@@ -1,29 +1,34 @@
 #!/bin/sh
 
-readonly _name="uptime-kuma"
-readonly _image="docker.io/louislam/uptime-kuma"
-readonly _tag="1.23.8"
+readonly _name="openaudible"
+readonly _image="docker.io/openaudible/openaudible"
+readonly _tag="latest"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
 
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
 
+  # Prep the directories
   mkdir -p "${_mount1}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/app/data"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config/OpenAudible"
+
   readonly _mounts
   return 0
 }
 
 _prep_caps() {
   _caps=""
+
+  # Needed for s6
   _caps="${_caps} --cap-add DAC_OVERRIDE"
   _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
+
   readonly _caps
   return 0
 }
@@ -31,7 +36,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # No ports, we need --net=host to watch other services on the machine
+  _ports="${_ports} -p 127.0.0.1:6969:3000/tcp"
 
   readonly _ports
   return 0
@@ -43,18 +48,15 @@ _check_user() {
     return 1
   fi
 
-  # On MacOS we need to own the files to chown them
-  # because just VM things
-  _userns="--userns keep-id"
+  # Expects to be root for s6
+  _userns="--user=0:0 --userns keep-id"
+
   readonly _userns
 
   return 0
 }
 
 _containerize() {
-  # Add extra env before the set -x
-  _env="-e PUID=$(id -u) -e PGID=$(id -g)"
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -65,9 +67,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --net=host \
-    ${_env} \
+    -e PUID=1000 \
+    -e PGID=1000 \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -76,6 +77,7 @@ _containerize() {
 }
 
 main() {
+
   _check_user || return 1
   _prep_mounts || return 1
   _prep_ports || return 1
@@ -96,3 +98,4 @@ main() {
 
 main "$@" || exit 1
 exit 0
+
