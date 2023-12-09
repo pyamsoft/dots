@@ -93,19 +93,16 @@ _installer "com.valvesoftware.Steam" ".local/bin" "gametime" 1 || exit 1
 _installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
 _installer "com.moonlight_stream.Moonlight" ".local/bin" "gametime" 1 || exit 1
 _installer "com.pokemmo.PokeMMO" ".local/bin" "gametime" 1 || exit 1
-_installer "org.DolphinEmu.dolphin-emu" ".local/bin" "gametime" 1 || exit 1
 
 _installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "com.moonlight_stream.Moonlight" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "com.pokemmo.PokeMMO" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
-_installer "org.DolphinEmu.dolphin-emu" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 
 _installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
 _installer "com.moonlight_stream.Moonlight" ".local/bin" "moonlight/gametime-moonlight" 1 || exit 1
 _installer "com.pokemmo.PokeMMO" ".local/bin" "pokemmo/gametime-pokemmo" 1 || exit 1
-_installer "org.DolphinEmu.dolphin-emu" ".local/bin" "dolphin-emu/gametime-dolphin-emu" 1 || exit 1
 
 # If we have gamescope locally, maybe we want this script too
 if command -v gamescope >/dev/null; then
