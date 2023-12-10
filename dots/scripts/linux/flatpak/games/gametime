@@ -203,6 +203,14 @@ _prepare_gamescope() {
   # Force resolution
   __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
 
+  # Due to gamescope limiter issues, FPS limit should be double the refresh rate
+  # https://github.com/ValveSoftware/gamescope/issues/995
+  #
+  # Just set something that's so high it won't bother us - limit FPS via in-game options
+  # Keep nested unfocused reasonably high to avoid emulator audio issues when unfocused
+  __gamescope_options="${__gamescope_options} --nested-refresh 300"
+  __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 60"
+
   # Expose Wayland
   if [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
     __gamescope_options="${__gamescope_options} --expose-wayland"
