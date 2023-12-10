@@ -57,24 +57,34 @@ directory.
 
 Jails are located in: ${JAIL_DIR} by default
 
+
+\$ jail [--name <name>] [--shell] <command>
+
+[Options]
+--name <name>    Name the jail (otherwise uses the command name)
+--shell          Open a bash shell in the jail instead of executing the command
+
 EOF
 )"
 }
 
 _run_jail() {
-  _open_shell="$1"
-  _cmd="$2"
-  _jail="$3"
+  _j_open_shell="$1"
+  _j_cmd="$2"
+  _j_name="$3"
+  _j_jail="$4"
 
   # The rest of the arguments are commands
   shift
   shift
   shift
+  shift
 
   # If we are opening a shell, override the command
-  if [ "${_open_shell}" -eq 1 ]; then
-    _cmd="/bin/bash"
+  if [ "${_j_open_shell}" -eq 1 ]; then
+    _j_cmd="/bin/bash"
   fi
+  unset _j_open_shell
 
   # Clean the path before running
   _clean_path || return 1
@@ -98,10 +108,11 @@ _run_jail() {
     --dev-bind / / \
     --tmpfs /tmp \
     --proc /proc \
-    --bind "${_jail}" "${HOME}" \
     --setenv JAIL_PID "$$" \
-    --setenv JAIL_PROGRAM "${_cmd}" \
-    -- "${_cmd}" "$@"
+    --setenv JAIL_NAME "${_j_name}" \
+    --setenv JAIL_PROGRAM "${_j_cmd}" \
+    --bind "${_j_jail}" "${HOME}" \
+    -- "${_j_cmd}" "$@"
 }
 
 _check_prereq() {
@@ -131,6 +142,7 @@ _check_prereq() {
 main() {
   _check_prereq || return 1
 
+  # Assume the first argument is the command to run
   _cmd="$1"
   if [ -z "${_cmd}" ]; then
     printf -- 'Must provide command as first argument.\n'
@@ -141,24 +153,44 @@ main() {
 
   # If we want to open a shell, then the next thing is the command
   if [ "${_cmd}" = "--shell" ]; then
+    # We want to open a shell
     _open_shell=1
+
+    # The next argument is the new command
     _cmd="$1"
-    if [ -z "${_cmd}" ]; then
-      printf -- 'Must provide command as first argument.\n'
-      _usage
-      return 1
-    fi
     shift
   else
     _open_shell=0
   fi
 
-  _jail_dir="${JAIL_DIR}/${_cmd}"
-  _create_home "${_jail_dir}" || return 1
-  _run_jail "${_open_shell}" "${_cmd}" "${_jail_dir}" "$@" || return 1
+  # If we provide a name, use it instead of the command name
+  if [ "${_cmd}" = "--name" ]; then
+    # We've shifted, the current argument is the name
+    _name="$1"
+    shift
 
+    # The next argument is the new command
+    _cmd="$1"
+    shift
+  else
+    _name="${_cmd}"
+  fi
+
+  # Double check the command here after all this proccessing
+  if [ -z "${_cmd}" ]; then
+    printf -- 'Must provide command as first argument.\n'
+    _usage
+    return 1
+  fi
+
+  _jail_dir="${JAIL_DIR}/${_name}"
+  _create_home "${_jail_dir}" || return 1
+  _run_jail "${_open_shell}" "${_cmd}" "${_name}" "${_jail_dir}" "$@" || return 1
+
+  unset _open_shell
   unset _cmd
   unset _jail_dir
+  unset _name
   return 0
 }
 
