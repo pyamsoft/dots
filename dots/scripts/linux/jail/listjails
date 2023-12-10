@@ -8,6 +8,7 @@ _extract_jail() {
 
   _jail_owner="$(printf -- '%s' "${_jail_line}" | awk '{ print $1 }')"
   _jail_program="$(printf -- '%s' "${_jail_line}" | grep -o 'JAIL_PROGRAM [[:alnum:]]* ' | awk '{ print $2 }')"
+  _jail_name="$(printf -- '%s' "${_jail_line}" | grep -o 'JAIL_NAME [[:alnum:]]* ' | awk '{ print $2 }')"
   _jail_pid="$(printf -- '%s' "${_jail_line}" | grep -o 'JAIL_PID [0-9]* ' | awk '{ print $2 }')"
 
   if [ -n "${_jail_pid}" ]; then
@@ -17,18 +18,20 @@ _extract_jail() {
         unset _jail_pid
         unset _jail_program
         unset _jail_line
+        unset _jail_name
         return 0
       fi
     done
   fi
 
   _ALREADY_SEEN_PIDS="${_ALREADY_SEEN_PIDS} ${_jail_pid}"
-  printf -- '[%s] %s %s\n' "${_jail_owner}" "${_jail_pid}" "${_jail_program}"
+  printf -- '[%s] %s %s (%s)\n' "${_jail_owner}" "${_jail_pid}" "${_jail_program}" "${_jail_name}"
 
   unset _jail_owner
   unset _jail_pid
   unset _jail_program
   unset _jail_line
+  unset _jail_name
   return 0
 }
 
