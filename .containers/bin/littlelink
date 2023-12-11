@@ -30,7 +30,6 @@ _prep_ports() {
   _ports=""
 
   _ports="${_ports} -p 127.0.0.1:8420:3000/tcp"
-  _ports="${_ports} -p 172.28.80.203:8420:3000/tcp"
 
   readonly _ports
   return 0
