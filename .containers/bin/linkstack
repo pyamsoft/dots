@@ -70,6 +70,9 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
+  # You need to add a CUSTOM_BUTTON_* for each new link
+  # All CUSTOM_BUTTON_* FIELDS REQUIRED
+
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
@@ -77,6 +80,15 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
+    -e META_INDEX_STATUS="noindex" \
+    -e LANG="en" \
+    -e THEME="Dark" \
+    -e THEME_OS=true \
+    -e CUSTOM_BUTTON_TEXT="${_CUSTOM_BUTTON_TEXT}" \
+    -e CUSTOM_BUTTON_ALT_TEXT="${_CUSTOM_BUTTON_ALT_TEXT}" \
+    -e CUSTOM_BUTTON_ICON="${_CUSTOM_BUTTON_ICON}" \
+    -e FOOTER="${_FOOTER}" \
+    -e META_DESCRIPTION="${_META_DESCRIPTION}" \
     ${_ll} \
     ${_mounts} \
     ${_ports} \
