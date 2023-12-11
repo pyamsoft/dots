@@ -1,7 +1,7 @@
 #!/bin/sh
 
-readonly _name="linkstack"
-readonly _image="docker.io/linkstackorg/linkstack"
+readonly _name="littlelink"
+readonly _image="ghcr.io/techno-tim/littlelink-server"
 readonly _tag="latest"
 
 # Use podman, don't use docker
@@ -13,8 +13,7 @@ _prep_mounts() {
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
 
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/htdocs"
-
+  _mounts=""
   readonly _mounts
   return 0
 }
@@ -31,6 +30,7 @@ _prep_ports() {
   _ports=""
 
   _ports="${_ports} -p 127.0.0.1:8420:3000/tcp"
+  _ports="${_ports} -p 172.28.80.203:8420:3000/tcp"
 
   readonly _ports
   return 0
@@ -50,7 +50,7 @@ _check_user() {
 }
 
 _containerize() {
-  # LinkStack runtime config variable
+  # Littlelink runtime config variable
   _ll=""
 
   # Source the runtime config (so we don't have to hardcode keys)
