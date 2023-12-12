@@ -2,8 +2,6 @@
 Description=Start Sunshine on session login
 
 [Service]
-Type=simple
-RemainAfterExit=true
 ExecStart=%h/.local/bin/restart-sunshine
 
 [Install]
