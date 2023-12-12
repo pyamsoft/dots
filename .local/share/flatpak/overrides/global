@@ -2,7 +2,7 @@
 filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!/tmp;!xdg-videos;!xdg-data;!/var/lib/flatpak/overrides;xdg-cache/mesa_shader_cache;!xdg-documents;!xdg-music;!host-etc;!xdg-config;!xdg-data/flatpak/app;!xdg-run/keyring;!xdg-download;!/var/lib/flatpak/app;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-templates;xdg-config/gtk-3.0:ro;!home;!xdg-cache;!/storage;!xdg-pictures;xdg-cache/radv_builtin_shaders64;~/.drirc:ro;xdg-cache/mesa_shader_cache_sf;
 unset-environment=PROMPT_COMMAND;PS1;SDL_VIDEODRIVER;SDL_AUDIODRIVER;SDL_VIDEO_DRIVER;SDL_AUDIO_DRIVER;
 persistent=.;
-sockets=!ssh-auth;
+sockets=!ssh-auth;!pcsc;!gpg-agent;
 devices=!kvm;!shm;
 features=!canbus;
 
