@@ -3,6 +3,7 @@ filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4
 unset-environment=PROMPT_COMMAND;PS1;SDL_VIDEODRIVER;SDL_AUDIODRIVER;SDL_VIDEO_DRIVER;SDL_AUDIO_DRIVER;
 persistent=.;
 sockets=!ssh-auth;
+devices=!kvm;!shm;
 
 [Session Bus Policy]
 org.freedesktop.Flatpak=none
