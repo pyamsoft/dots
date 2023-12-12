@@ -2,7 +2,7 @@
 Description=Start Sunshine on session login
 
 [Service]
-Type=oneshot
+Type=simple
 RemainAfterExit=true
 ExecStart=%h/.local/bin/restart-sunshine
 
