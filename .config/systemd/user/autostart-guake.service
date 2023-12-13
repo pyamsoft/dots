@@ -1,0 +1,12 @@
+[Unit]
+Description=Start Guake Indicator on session login
+
+[Service]
+# Need to wait just a little
+ExecStartPre=/usr/bin/sleep 5
+ExecStart=/usr/bin/guake -e 'tmux -2u'
+
+[Install]
+WantedBy=graphical-session.target
+
+
