@@ -185,7 +185,7 @@ _prepare_gamescope() {
   # Then use vkBasalt for any slight extra
   # 0 is max sharpness, 20 is min sharpness
   # Slight sharpness by default and drop vkbasalt by default
-  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 12"
+  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 16"
 
   # Force resolution
   __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
