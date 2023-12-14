@@ -62,26 +62,6 @@ _startup_programs()
     printf -- 'podman failed to initialize.\n' >> "${_log_path}/podman"
   }
 
-  open "/Applications/Rectangle.app" || {
-    printf -- 'Failed to open Rectangle.\n' >> "${_log_path}/rectangle"
-  }
-
-  open "/Applications/Easy Move+Resize.app" || {
-    printf -- 'Failed to open Easy Move+Resize.\n' >> "${_log_path}/easy_move_resize"
-  }
-
-  open "/Applications/Quicksilver.app" || {
-    printf -- 'Failed to open Quicksilver.\n' >> "${_log_path}/quicksilver"
-  }
-
-  open "/Applications/iTerm.app" || {
-    printf -- 'Failed to open iTerm.\n' >> "${_log_path}/iterm"
-  }
-
-  open "/Applications/kdeconnect-indicator.app" || {
-    printf -- 'Failed to open kdeconnect.\n' >> "${_log_path}/kdeconnect"
-  }
-
   return 0
 }
 
