@@ -4,3 +4,4 @@ filesystems=!xdg-run/keyring;
 
 [Environment]
 ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
+FLATPAK_ENABLE_SDK_EXT=node18
