@@ -60,9 +60,7 @@ _prepare_env() {
   fi
 
   # Optional performance tweaks for shit graphics
-  if [ -n "${GAME_TWEAK}" ] && [ "${GAME_TWEAK}" -eq 0 ]; then
-    printf -- '[gametime] Applying %s tweaks: NO (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
-  else
+  if [ -n "${GAME_TWEAK}" ] && [ "${GAME_TWEAK}" -eq 1 ]; then
     printf -- '[gametime] Applying %s tweaks: YES (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
 
     # https://www.basnieuwenhuizen.nl/a-first-foray-into-rendering-less/
@@ -81,6 +79,8 @@ _prepare_env() {
       export RADV_DEBUG=novrsflatshading
     fi
     __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
+  else
+    printf -- '[gametime] Applying %s tweaks: NO (GAME_TWEAK=%s)\n' "${__hostname}" "${GAME_TWEAK}"
   fi
 
   unset GAME_FIX
