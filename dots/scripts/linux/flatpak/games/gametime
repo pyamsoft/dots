@@ -138,7 +138,6 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
-    window_type="--borderless"
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
   else
@@ -190,6 +189,9 @@ _prepare_gamescope() {
 
   # Force resolution
   __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
+
+  # Force cursor grab
+  __gamescope_options="${__gamescope_options} --force-grab-cursor --grab"
 
   # Due to gamescope limiter issues, FPS limit should be double the refresh rate
   # https://github.com/ValveSoftware/gamescope/issues/995
