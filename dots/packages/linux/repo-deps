@@ -1,3 +1,4 @@
+a52dec
 aalib
 abseil-cpp
 accountsservice
@@ -168,6 +169,7 @@ gst-plugins-bad-libs
 gst-plugins-base
 gst-plugins-base-libs
 gst-plugins-good
+gst-plugins-ugly
 gstreamer
 gtk-update-icon-cache
 gtk3
@@ -418,6 +420,7 @@ libmnl
 libmodplug
 libmpc
 libmpcdec
+libmpeg2
 libmtp
 libmysofa
 libnautilus-extension
@@ -714,6 +717,7 @@ rubberband
 sane
 sane-airscan
 sbc
+sdl12-compat
 sdl2
 sed
 semver
