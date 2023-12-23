@@ -3,14 +3,14 @@
 readonly pak="com.google.AndroidStudio"
 readonly def_path="/app/bin:/usr/bin"
 
-self="$(id -un)"
-readonly self
+readonly dev_root="${HOME}/devel"
+readonly android_root="${dev_root}/sdk/android"
 
 path="${HOME}/.local/bin"
 path="${path}:/app/extra/android-studio/jre/bin"
-path="${path}:/storage/${self}/devel/sdk/android/emulator"
-path="${path}:/storage/${self}/devel/sdk/android/cdmline-tools/latest/bin"
-path="${path}:/storage/${self}/devel/sdk/android/platform-tools"
+path="${path}:${android_root}/emulator"
+path="${path}:${android_root}/cdmline-tools/latest/bin"
+path="${path}:${android_root}/platform-tools"
 readonly path
 
 cmd=""
@@ -23,7 +23,7 @@ readonly cmd
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="/storage/${self}/devel/sdk/android" \
-  --filesystem="/storage/${self}/devel/project" \
+  --filesystem="${android_root}" \
+  --filesystem="${dev_root}/project" \
   "$@" || exit 1
 exit 0

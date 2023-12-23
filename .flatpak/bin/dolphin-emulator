@@ -1,8 +1,5 @@
 #!/bin/sh
 
-self="$(id -un)"
-readonly self
-
 readonly pak="org.DolphinEmu.dolphin-emu"
 readonly def_path="/app/bin:/usr/bin"
 readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
@@ -39,9 +36,7 @@ unset _hn
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --filesystem="/home/${self}/games/emulator" \
-  --filesystem="/storage/${self}/games/emulator" \
-  --filesystem="/storage/${self}/games2/emulator" \
+  --filesystem="${HOME}/games/emulator" \
   ${_run_cmd} \
   "$@" || exit 1
 exit 0

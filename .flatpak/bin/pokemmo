@@ -1,8 +1,5 @@
 #!/bin/sh
 
-self="$(id -un)"
-readonly self
-
 readonly pak="com.pokemmo.PokeMMO"
 readonly def_path="/app/jre/bin:/app/bin:/usr/bin"
 readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
@@ -29,6 +26,6 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --command="${HOME}/.local/bin/gametime-pokemmo" \
-  --filesystem="/storage/${self}/games/pokemmo" \
+  --filesystem="${HOME}/games/pokemmo" \
   "$@" || exit 1
 exit 0

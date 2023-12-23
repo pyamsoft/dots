@@ -2,9 +2,6 @@
 
 readonly pak="com.jetbrains.WebStorm"
 
-self="$(id -un)"
-readonly self
-
 cmd=""
 if [ "$1" = "--shell" ]; then
   cmd="${cmd} --shell"
@@ -14,6 +11,6 @@ readonly cmd
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
-  --filesystem="/storage/${self}/devel/project" \
+  --filesystem="${HOME}/devel/project" \
   "$@" || exit 1
 exit 0

@@ -1,8 +1,5 @@
 #!/bin/sh
 
-self="$(id -un)"
-readonly self
-
 readonly pak="io.openrct2.OpenRCT2"
 readonly def_path="/app/bin:/usr/bin"
 readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
@@ -29,8 +26,6 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --command="${HOME}/.local/bin/gametime-openrct2" \
-  --filesystem="/home/${self}/games/steam" \
-  --filesystem="/storage/${self}/games/steam" \
-  --filesystem="/storage/${self}/games2/steam" \
+  --filesystem="${HOME}/games/steam" \
   "$@" || exit 1
 exit 0
