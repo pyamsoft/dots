@@ -73,6 +73,7 @@ default-cursors
 desktop-file-utils
 device-mapper
 diffutils
+dmidecode
 dnssec-anchors
 dosfstools
 double-conversion
