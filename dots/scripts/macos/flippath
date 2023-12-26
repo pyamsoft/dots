@@ -56,7 +56,7 @@ main() {
       _flip || return 1
       ;;
     *)
-      printf -- 'Path does not need flipping'
+      printf -- 'Path does not need flipping\n'
       return 1
       ;;
   esac
