@@ -111,6 +111,11 @@ _prepare_gamescope() {
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
+
+    # Force VRS shading
+    # https://www.phoronix.com/review/radeon-radv-vrs
+    export RADV_FORCE_VRS="2x2"
+    __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
   else
@@ -159,9 +164,6 @@ _prepare_gamescope() {
   # 0 is max sharpness, 20 is min sharpness
   # Slight sharpness by default and drop vkbasalt by default
   __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 16"
-
-  # Force resolution
-  __gamescope_options="${__gamescope_options} --force-windows-fullscreen"
 
   # Force cursor grab
   __gamescope_options="${__gamescope_options} --force-grab-cursor --grab"
