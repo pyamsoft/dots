@@ -123,6 +123,17 @@ _setup_homedir() {
   export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
   export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
   export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
+
+  # Make directories
+  if [ -d "${XDG_CONFIG_HOME}/readline" ]; then
+    mkdir -p "${XDG_CONFIG_HOME}/readline"
+  fi
+  if [ -d "${XDG_CACHE_HOME}/less" ]; then
+    mkdir -p "${XDG_CACHE_HOME}/less"
+  fi
+  if [ -d "${XDG_DATA_HOME}/gnupg" ]; then
+    mkdir -p "${XDG_DATA_HOME}/gnupg"
+  fi
 }
 
 _environment() {
