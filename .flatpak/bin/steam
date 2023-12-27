@@ -26,15 +26,11 @@ readonly cmd
 if [ -e "${HOME}/games/steam" ]; then
   touch "${HOME}/games/steam" || return 1
 fi
-if [ -e "${HOME}/extragames/steam" ]; then
-  touch "${HOME}/extragames/steam" || return 1
-fi
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --filesystem="${HOME}/games/steam" \
-  --filesystem="${HOME}/extragames/steam" \
   "$@" || exit 1
 exit 0
