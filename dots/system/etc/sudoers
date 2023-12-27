@@ -12,8 +12,12 @@
 # Reset environment
 Defaults env_reset
 
-# Define secure path
+# Define secure path (Linux)
 Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Define secure path (MacOS with homebrew and Macports)
+#Defaults secure_path="/opt/homebrew/sbin:/opt/homebrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+#Defaults secure_path="/opt/homebrew/sbin:/opt/homebrew/bin:/opt/local/sbin:/opt/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Set umask to 0022 as most files are owned by root but used by everyone
 Defaults umask=0022
@@ -27,8 +31,8 @@ Defaults pwfeedback
 
 root ALL=(ALL:ALL) ALL
 
-# Let user 1000 run as root (the # below is not a comment, it indicates a user-ID)
-#1000 ALL=(root) ALL
+# Let myuser run as root
+#myuser ALL=(root) ALL
 
 ## Read drop-in files from /etc/sudoers.d
 ## (the '#' here does not indicate a comment)

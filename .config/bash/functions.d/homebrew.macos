@@ -1,6 +1,23 @@
 # shellcheck shell=bash
 
+__upall_macos_homebrew() {
+  brew update && brew upgrade && brew upgrade --greedy && brew autoremove && brew cleanup
+}
+
+__upall_macos_macports() {
+  if [ -e /opt/local/bin/port ]; then
+    # Open a shell with macports set up
+    sudo bash -c "$(cat <<EOF
+export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
+export MANPATH="/opt/local/share/man:${MANPATH}"
+
+port selfupdate && port sync && port upgrade
+EOF
+)"
+  fi
+}
+
 # Update everything
 upall() {
-  brew update && brew upgrade && brew upgrade --greedy && brew autoremove && brew cleanup
+  __upall_macos_homebrew && __upall_macos_macports
 }
