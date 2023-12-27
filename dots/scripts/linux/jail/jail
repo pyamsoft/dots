@@ -63,6 +63,7 @@ Jails are located in: ${JAIL_DIR} by default
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
 --shell          Open a bash shell in the jail instead of executing the command
+-h | --help      Prints this help
 
 EOF
 )"
@@ -150,6 +151,12 @@ main() {
     return 1
   fi
   shift
+
+  # Show help
+  if [ "${_cmd}" = "--help" ] || [ "${_cmd}" = "-h" ]; then
+    _usage
+    return 1
+  fi
 
   # If we want to open a shell, then the next thing is the command
   if [ "${_cmd}" = "--shell" ]; then
