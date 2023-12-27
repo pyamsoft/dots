@@ -1,0 +1,9 @@
+[Unit]
+Description=Freegames check for %i (must be already configured with first-run)
+
+[Timer]
+OnCalendar=daily
+Unit=freegames@%i.service
+
+[Install]
+WantedBy=timers.target
