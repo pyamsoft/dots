@@ -11,7 +11,7 @@ __upall_macos_macports() {
 export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 export MANPATH="/opt/local/share/man:${MANPATH}"
 
-port selfupdate && port sync && port upgrade outdated
+port selfupdate && port sync && port upgrade outdated && port uninstall inactive
 EOF
 )"
   fi
