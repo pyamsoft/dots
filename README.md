@@ -13,6 +13,12 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+## USBGuard
+[Generally speaking, mask usbguard services](https://wiki.archlinux.org/title/USBGuard)
+
+We basically exclusively use USB, don't allow any program to accidentally start the usbguard service
+as it will immediately disconnect all of our devices
+
 ### Wayland
 - Moonlight does not claim display properly in Wayland with mirrored monitor setup   (solved with cap_sys_admin tweak)
 - Sunshine needs cap_sys_admin `sudo setcap cap_sys_admin+p /usr/bin/sunshine`
