@@ -172,7 +172,7 @@ _prepare_gamescope() {
   # https://github.com/ValveSoftware/gamescope/issues/995
   #
   # Just set something that's so high it won't bother us - limit FPS via in-game options
-  __gamescope_options="${__gamescope_options} --nested-refresh 300"
+  __gamescope_options="${__gamescope_options} --nested-refresh 90"
   __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
   # Expose Wayland
