@@ -2,7 +2,7 @@
 Description=Freegames check for %i (must be already configured with first-run)
 
 [Timer]
-OnCalendar=daily
+OnCalendar=0/4
 Unit=freegames@%i.service
 
 [Install]
