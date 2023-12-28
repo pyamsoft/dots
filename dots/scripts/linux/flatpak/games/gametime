@@ -116,6 +116,9 @@ _prepare_gamescope() {
     # https://www.phoronix.com/review/radeon-radv-vrs
     export RADV_FORCE_VRS="2x2"
     __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
+
+    # Window
+    window_type="--borderless"
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
   else
