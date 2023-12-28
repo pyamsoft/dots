@@ -105,9 +105,8 @@ _prepare_gamescope() {
   window_type="--fullscreen"
   output_height=1080
   output_width=
-
-  # Default to FSR quality
   fsr_amount=15
+  fps_max=300
 
   if [ "${__hostname}" = "nerd1" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
@@ -138,6 +137,11 @@ _prepare_gamescope() {
   # If we have a custom GAME_FSR amount passed in, use it
   if [ -n "${GAME_FSR}" ]; then
     fsr_amount="${GAME_FSR}"
+  fi
+
+  # If we have a custom GAME_FPS amount passed in, use it
+  if [ -n "${GAME_FPS}" ]; then
+    fps_max="${GAME_FPS}"
   fi
 
   # Calculate the nested resolution by mathing the set fsr_amount
@@ -175,7 +179,7 @@ _prepare_gamescope() {
   # https://github.com/ValveSoftware/gamescope/issues/995
   #
   # Just set something that's so high it won't bother us - limit FPS via in-game options
-  __gamescope_options="${__gamescope_options} --nested-refresh 90"
+  __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
   __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
   # Expose Wayland
@@ -197,9 +201,11 @@ _prepare_gamescope() {
   unset nested_width
   unset nested_height
   unset window_type
+  unset fps_max
   unset GAME_RES
   unset GAME_FSR
   unset GAME_WINDOW
+  unset GAME_FPS
   return 0
 }
 
