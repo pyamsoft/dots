@@ -6,12 +6,14 @@ __upall_macos_homebrew() {
 
 __upall_macos_macports() {
   if [ -e /opt/local/bin/port ]; then
+    printf -- 'Using sudo to update the MacPorts installation...\n'
+
     # Open a shell with macports set up
     sudo bash -c "$(cat <<EOF
 export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 export MANPATH="/opt/local/share/man:${MANPATH}"
 
-port selfupdate && port sync && port upgrade outdated && port uninstall inactive
+port selfupdate && port upgrade outdated && port uninstall inactive
 EOF
 )"
   fi
