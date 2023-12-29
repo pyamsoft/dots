@@ -13,5 +13,5 @@ readonly cmd
 exec flatpak-env ${cmd} "${pak}" \
   --filesystem="xdg-music" \
   --filesystem="${HOME}/music" \
-  "$@" || exit 1
+  -- "$@" || exit 1
 exit 0

@@ -32,5 +32,5 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --filesystem="${HOME}/games/steam" \
-  "$@" || exit 1
+  -- "$@" || exit 1
 exit 0

@@ -27,5 +27,5 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --command="${HOME}/.local/bin/gametime-openrct2" \
   --filesystem="${HOME}/games/steam" \
-  "$@" || exit 1
+  -- "$@" || exit 1
 exit 0

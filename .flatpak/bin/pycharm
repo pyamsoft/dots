@@ -12,5 +12,5 @@ readonly cmd
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --filesystem="${HOME}/devel/project" \
-  "$@" || exit 1
+  -- "$@" || exit 1
 exit 0

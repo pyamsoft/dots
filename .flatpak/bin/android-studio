@@ -25,5 +25,5 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project" \
-  "$@" || exit 1
+  -- "$@" || exit 1
 exit 0
