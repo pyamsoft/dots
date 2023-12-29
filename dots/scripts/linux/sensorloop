@@ -1,2 +1,0 @@
-#!/bin/sh
-exec nice -n 19 watch -n 5 sensors
