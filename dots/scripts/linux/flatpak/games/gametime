@@ -250,7 +250,7 @@ _prepare_mangohud() {
   if command -v mangohud >/dev/null; then
     if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -ne 0 ]; then
       printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
-      export MANGOHUD_CONFIG="${_mangohud_config},no_display"
+      export MANGOHUD_CONFIG="${_mangohud_config}"
       __game_tools="${__game_tools} mangohud --dlsym"
     else
       printf -- '[gametime] MangoHud performance overlay: NO (GAME_HUD=%s)\n' "${GAME_HUD}"
