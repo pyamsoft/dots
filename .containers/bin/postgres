@@ -5,7 +5,7 @@
 
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
-readonly _tag="16.0"
+readonly _tag="16.1"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
