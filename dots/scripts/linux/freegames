@@ -65,9 +65,6 @@ pipx install apprise || {
   exit 1
 }
 
-export NOTIFY="${NOTIFY}"
-export SHOW="${SHOW}"
-
 printf -- 'Claim from Epic Games...\n'
 node epic-games.js || {
   printf -- 'Failed to claim from Epic Games.\n'
