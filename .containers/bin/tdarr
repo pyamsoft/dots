@@ -2,7 +2,7 @@
 
 readonly _name="tdarr"
 readonly _image="ghcr.io/haveagitgat/tdarr"
-readonly _tag="2.16.01"
+readonly _tag="2.17.01"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
