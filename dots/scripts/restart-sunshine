@@ -60,7 +60,9 @@ _unlock_session() {
 }
 
 _list_sessions_linux() {
-  loginctl list-sessions --no-legend | awk '{ print $1 }' || return 1
+  # Only sessions for our active user
+  loginctl list-sessions --no-legend | grep "$(id -u)"| awk '{ print $1 }' || return 1
+
   return 0
 }
 
