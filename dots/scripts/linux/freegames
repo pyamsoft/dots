@@ -65,6 +65,10 @@ pipx install apprise || {
   exit 1
 }
 
+# Run the VNC on a different X
+export DISPLAY="${DISPLAY}"
+
+# free-games-claimer options 
 export NOTIFY="${NOTIFY}"
 export SHOW="${SHOW}"
 
