@@ -1,4 +1,0 @@
-# watchtower
-
-Symlink the script from `/usr/local/bin/watchtower` to `${HOME}/.containers/bin/watchtower`
-to use with `systemctl --user start containerize@watchtower`

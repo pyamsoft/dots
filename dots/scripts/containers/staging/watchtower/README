@@ -1,0 +1,9 @@
+# watchtower
+
+Symlink the script from `/usr/local/bin/watchtower` to `${HOME}/.containers/bin/watchtower`
+to use with `systemctl --user start containerize@watchtower`
+
+## Why doesn't it work?
+Watchtower only updates an image with "the same tag".
+We generally want to pin to an image tag, but watch "latest" for updates.
+Watchtower will not do that :(
