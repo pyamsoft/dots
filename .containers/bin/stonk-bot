@@ -60,7 +60,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
-    -l "com.centurylinklabs.watchtower.enable=true" \
+    -l "com.centurylinklabs.watchtower.enable=false" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
