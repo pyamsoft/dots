@@ -1,0 +1,141 @@
+#!/bin/sh
+
+readonly _name="diun"
+readonly _image="docker.io/crazymax/diun"
+readonly _tag="latest"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  _mnt=""
+  _podman_socket=""
+  if [ "$(id -u)" -eq 0 ]; then
+    _mnt="/usr/local"
+    _podman_socket="/run/"
+  else
+    _mnt="${HOME}/.local"
+    _podman_socket="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  fi
+
+  readonly _sock="${_podman_socket}/podman/podman.sock"
+  readonly _mount1="${_mnt}/etc/containers/${_name}/data"
+
+  if [ ! -e "${_sock}" ]; then
+    printf -- 'Must have podman socket active.\n'
+    if [ "$(id -u)" -eq 0 ]; then
+      printf -- 'Run "sudo systemctl enable --now podman.socket"\n'
+    else
+      printf -- 'Run "systemctl --user enable --now podman.socket"\n'
+      return 1
+    fi
+  fi
+
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_sock},target=/var/run/docker.sock"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
+
+  readonly _mounts
+
+  unset _mnt
+  unset _podman_socket
+
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # No caps
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  _userns=""
+
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  _d=""
+
+  _mnt=""
+  if [ "$(id -u)" -eq 0 ]; then
+    _mnt="/usr/local"
+  else
+    _mnt="${HOME}/.local"
+  fi
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${_mnt}/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+  unset _mnt
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run ${_how} \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    -e "DIUN_WATCH_WORKERS=20" \
+    -e "DIUN_WATCH_SCHEDULE=0 */6 * * *" \
+    -e "DIUN_WATCH_JITTER=30s" \
+    -e "DIUN_PROVIDERS_DOCKER=true" \
+    -e "DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT=true" \
+    -l "diun.enable=true" \
+    ${_d} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  # How do we run?
+  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
+    shift
+    _how="-d --restart=unless-stopped"
+  else
+    _how="--rm -i -t"
+  fi
+  readonly _how
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
+
