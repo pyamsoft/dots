@@ -2,7 +2,7 @@
 
 readonly _name="diun"
 readonly _image="docker.io/crazymax/diun"
-readonly _tag="latest"
+readonly _tag="4.26.0"
 
 # Use podman, don't use docker
 readonly _cmd="podman"

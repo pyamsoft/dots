@@ -7,8 +7,8 @@
 
 [Unit]
 Description=AdGuardHome container for %i
-After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service
-Wants=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service
+After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service podman.service
+Wants=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service podman.service
 Requires=user@%i.service
 
 [Service]

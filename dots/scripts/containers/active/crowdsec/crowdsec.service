@@ -2,7 +2,8 @@
 
 [Unit]
 Description=Crowdsec container
-After=syslog.target network.target remote-fs.target nss-lookup.target
+After=syslog.target network.target remote-fs.target nss-lookup.target podman.service docker.service
+Wants=podman.service docker.service
 
 [Service]
 ExecStartPre=-/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'

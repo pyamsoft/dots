@@ -2,8 +2,8 @@
 
 [Unit]
 Description=Scrutiny container
-After=docker.service
-Wants=docker.service
+After=docker.service podman.service
+Wants=docker.service podman.service
 
 [Service]
 ExecStartPre=-/bin/sh -c '_c="scrutiny"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'

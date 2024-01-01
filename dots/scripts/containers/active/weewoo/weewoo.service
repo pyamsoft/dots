@@ -1,6 +1,7 @@
 [Unit]
 Description=WeeWoo system monitor
-After=syslog.target network.target remote-fs.target nss-lookup.target
+After=syslog.target network.target remote-fs.target nss-lookup.target podman.service
+Wants=podman.service
 
 [Service]
 ExecStart=/bin/sh -c '_c="weewoo"; podman stop "$${_c}"; podman rm "$${_c}"; /usr/local/bin/"$${_c}"'
