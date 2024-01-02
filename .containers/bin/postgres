@@ -3,6 +3,14 @@
 # Migrating major version data:
 # https://www.cloudytuts.com/tutorials/docker/how-to-upgrade-postgresql-in-docker-and-kubernetes
 
+
+# For some reason, on a fresh first launch, the container hangs at:
+#
+# syncing data to disk ...
+#
+# Stop the container with `podman stop -t 0 postgres`
+# And then start it again and it should start up
+
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
 readonly _tag="16.1"
@@ -26,11 +34,16 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
+
+  # s6
   _caps="${_caps} --cap-add DAC_OVERRIDE"
   _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
+
+  # To own /var/run/postgresql
   _caps="${_caps} --cap-add FOWNER"
+
   readonly _caps
   return 0
 }
@@ -50,13 +63,13 @@ _check_user() {
     return 1
   fi
 
+  # Otherwise we keep OCI
+  _userns="--userns keep-id"
+
   # On MacOS we need to own the files to chown them
   # because just VM things
   if [ "$(uname)" = "Darwin" ]; then
-    _userns="--user=$(id -u):$(id -g)"
-  else
-    # Otherwise we keep OCI
-    _userns="--userns keep-id"
+    _userns="${_userns} --user=$(id -u):$(id -g)"
   fi
   readonly _userns
 
