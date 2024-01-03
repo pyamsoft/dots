@@ -1,0 +1,14 @@
+# HomeAssistant container
+
+[Unit]
+Description=Caddy container
+After=docker.service podman.service
+Wants=docker.service podman.service
+
+[Service]
+ExecStartPre=-/bin/sh -c '_c="home-assistant"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+ExecStart=/bin/sh -c '_c="home-assistant"; /usr/local/bin/"$${_c}"'
+ExecStop=/bin/sh -c '_c="home-assistant"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+
+[Install]
+WantedBy=multi-user.target
