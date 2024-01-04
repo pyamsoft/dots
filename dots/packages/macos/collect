@@ -1,12 +1,24 @@
 #!/bin/sh
 
-main() {
-  _all="$(brew bundle dump --file -)"
-  printf -- '%s' "${_all}" | grep '^tap'  | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >taps
-  printf -- '%s' "${_all}" | grep '^brew' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >brews
-  printf -- '%s' "${_all}" | grep '^cask' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >casks
+_collect_brew() {
+  if command -v brew >/dev/null; then
+    _all="$(brew bundle dump --file -)"
+    printf -- '%s' "${_all}" | grep '^tap'  | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >taps
+    printf -- '%s' "${_all}" | grep '^brew' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >brews
+    printf -- '%s' "${_all}" | grep '^cask' | awk '{ print $2}' | tr '"' ' ' | tr ',' ' ' | cut -c 2- | awk '{ print $1 }' >casks
+    unset _all
+  fi
+}
 
-  unset _all
+_collect_macports() {
+  if command -v sudo >/dev/null && [ -e /opt/local/bin/port ]; then
+    sudo /opt/local/bin/port installed requested | tail -n +2 >ports
+  fi
+}
+
+main() {
+  _collect_brew || return 1
+  _collect_macports || return 1
   return 0
 }
 
