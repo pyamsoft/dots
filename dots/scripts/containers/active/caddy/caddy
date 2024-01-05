@@ -86,6 +86,21 @@ _check_user() {
 }
 
 _containerize() {
+  # Runtime configuration
+  _cd=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="/usr/local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -100,7 +115,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --cap-drop ALL \
-    --net=host \
+    ${_cd} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
