@@ -42,10 +42,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Bind to our Tailscale interface and ourselves
-  for _ip in 127.0.0.1 100.122.254.80; do
-    _ports="${_ports} -p ${_ip}:1337:80/tcp"
-  done
+  _ports="${_ports} -p 127.0.0.1:1337:80/tcp"
 
   readonly _ports
   return 0
