@@ -121,6 +121,20 @@ _check_user() {
 }
 
 _containerize() {
+  # Runtime configuration
+  _ah=""
+
+  # Optional runtime config (so we don't have to hardcode keys)
+  _runconf="$(_get_env "HOME")/.local/etc/containers/${_name}/runconfig.env"
+  if [ -e "${_runconf}" ]; then
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+  else
+    printf -- 'Optional runconfig.env supported at "%s"\n' "${_runconf}"
+  fi
+  unset _runconf
+
   # Open ports to non-root users
   _priv_port_drop || return 1
 
