@@ -47,7 +47,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:8080:8080/tcp"
+  _ports="${_ports} -p 127.0.0.1:8081:8080/tcp"
   _ports="${_ports} -p 127.0.0.1:8086:8086/tcp"
 
   readonly _ports
