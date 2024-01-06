@@ -108,13 +108,17 @@ _containerize() {
 
   # We don't use --security-opt no-new-privileges:true since
   # the AWS VPS that this runs on does not support that option
+  _sec="--no-hosts --cap-drop=ALL"
+  if command -v hostnamectl >/dev/null && [ "$(hostnamectl hostname)" = "nerd2" ]; then
+    _sec="${_sec} --security-opt no-new-privileges:true"
+  fi
 
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
-    --cap-drop ALL \
+    ${_sec} \
     ${_cd} \
     ${_mounts} \
     ${_ports} \
