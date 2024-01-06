@@ -21,16 +21,8 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly cmd
 
-# For some reason on nerd2 (RX580) gamescope makes the game super choppy
-# No problem on nerd1 (iGPU 5600G)
-_run_cmd=""
-_hn="$(hostnamectl hostname)"
-if [ "${_hn}" = "nerd2" ]; then
-  _run_cmd=""
-else
-  _run_cmd="--command=${HOME}/.local/bin/gametime-dolphin-emu"
-fi
-unset _hn
+# Launch gametime
+readonly _run_cmd="--command=${HOME}/.local/bin/gametime-dolphin-emu"
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
