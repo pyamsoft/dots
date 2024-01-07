@@ -86,7 +86,7 @@ _containerize() {
 
   # We don't use --security-opt no-new-privileges:true since
   # the AWS VPS that this runs on does not support that option
-  _sec="--no-hosts --cap-drop=ALL"
+  _sec="--cap-drop=ALL"
   if command -v hostnamectl >/dev/null && [ "$(hostnamectl hostname)" = "nerd2" ]; then
     _sec="${_sec} --security-opt no-new-privileges:true"
   fi

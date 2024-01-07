@@ -97,7 +97,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
-    --no-hosts --security-opt no-new-privileges:true --cap-drop ALL \
+    --security-opt no-new-privileges:true --cap-drop ALL \
     --device /dev/dri:/dev/dri \
     -e "serverIP=0.0.0.0" \
     -e "serverPort=8266" \
