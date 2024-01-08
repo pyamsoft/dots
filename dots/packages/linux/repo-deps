@@ -674,9 +674,11 @@ python
 python-cairo
 python-capng
 python-certifi
+python-charset-normalizer
 python-distro
 python-gobject
 python-greenlet
+python-idna
 python-lxml
 python-markdown
 python-msgpack
@@ -689,6 +691,8 @@ python-pygments
 python-pynvim
 python-pyqt5
 python-pyqt5-sip
+python-requests
+python-urllib3
 python-yaml
 qca-qt5
 qpdf
