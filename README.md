@@ -13,6 +13,10 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+## Sound on Linux
+You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would generally
+want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
+
 ## USBGuard
 [Generally speaking, mask usbguard services](https://wiki.archlinux.org/title/USBGuard)
 
