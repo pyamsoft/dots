@@ -118,6 +118,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
+    --add-host "localhost:127.0.0.1" \
     ${_sec} \
     ${_cd} \
     ${_mounts} \

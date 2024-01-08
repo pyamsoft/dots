@@ -61,6 +61,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --add-host "localhost:127.0.0.1" \
     --device=/dev/dri \
     ${_mounts} \
     ${_ports} \

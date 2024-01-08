@@ -149,6 +149,7 @@ _containerize() {
   _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --add-host "localhost:127.0.0.1" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

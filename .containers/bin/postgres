@@ -88,6 +88,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --add-host "localhost:127.0.0.1" \
     -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
     ${_mounts} \
     ${_ports} \
