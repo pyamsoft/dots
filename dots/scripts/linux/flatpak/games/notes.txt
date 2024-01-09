@@ -21,22 +21,3 @@ Make sure you:
 ### Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
-
-
-### AMD GPU power profile
-Your AMD gpu may be running on a weaker power profile.
-Check the udev rule in `dots/system/etc/udev/rules.d/30-amdgpu-profile.rules`
-for an example which sets a stronger power profile to avoid throttling.
-
-#### Gamescope
-
-Gamescope is pinned to commit `9e2ba1b79351dde28e2984b75b11701cbfba1444ba1b0260b61f45ad159c8c74`
-Commits after this do not work for Moonlight (x11 error crashes)
-and throws some "swap chain" error launching `Ready or Not` on Steam
-
-- No mouse cursor in fullscreen when using SW cursor tweak
-  - This can be partially remidied by using software cursors and the extension `gnome-shell-extension-disable-unredirect-git`
-  - This allows the use of the SW cursor, while also not making it invisible in an unredirect (fullscreen) window
-- No mouse cursor in Moonlight without SW cursor tweak
-  - This can be partially remidied by using software cursors and the extension `gnome-shell-extension-disable-unredirect-git`
-  - This allows the use of the SW cursor, while also not making it invisible in an unredirect (fullscreen) window

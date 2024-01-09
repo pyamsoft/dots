@@ -24,9 +24,7 @@ We basically exclusively use USB, don't allow any program to accidentally start 
 as it will immediately disconnect all of our devices
 
 ### Wayland
-- Moonlight does not claim display properly in Wayland with mirrored monitor setup   (solved with cap_sys_admin tweak)
 - Sunshine needs cap_sys_admin `sudo setcap cap_sys_admin+p /usr/bin/sunshine`
-- Moonlight may not respect the keyboard input - run `sudo loginctl unlock-sessions` in an SSH session.
 - KDE Connect prompts Screen Sharing every time start remote mouse
   - No real way around this? Not sure if it's Portal or KDEConnect's job to solve.
 
@@ -39,25 +37,20 @@ Use `podman` instead of `docker` to avoid the root daemon
 ### Flatpak
 For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
-You will need to install `MangoHud` `vkBasalt` `gamescope` `proton-GE` and `Adwaita-dark` manually
+You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` and `Adwaita-dark` manually
 
-Gamescope is currently masked/pinned to a [specific commit](https://github.com/flathub/org.freedesktop.Platform.VulkanLayer.gamescope/issues/49). See also Steam (Flatpak)
-Un-mask when fixed with `flatpak mask -u --remove org.freedesktop.Platform.VulkanLayer.gamescope`
-
-#### Steam (Flatpak)
+### Steam (Flatpak)
 See notes in `~dots/scripts/linux/flatpak/games/notes.txt`
 
-#### Moonlight
-
+### Moonlight
 Make sure you do not block the X11 or fallback x11 sockets for moonlight or else --grab won't work
-
 Sunshine Right-Alt tweak does not work because Wayland GNOME does not respond to the re-bound key.
 
-You can run moonlight in gamescope via the `gametime-moonlight` script.
-Note to capture keys you'll need to use the Grab command in gamescope, which is `Super+G`
-You will not need to use the moonlight Fullscreen (Ctrl+Shift+X) or capture (Ctrl+Shift+Z)
-as these are handled by gamescope. Exit is still possible via (Ctrl+Shift+Q) but may hang on final
-window kill
+### Sunshine
+Don't enable the user level systemd service - it's weird. Use our customer autostart-sunshine user service
+which calls through to the `restart-sunshine` script, which it expects to live in `${HOME}/.local/bin`
+
+The `restart-sunshine` script is unixy platform agnostic and will handle known quirks of sunshine 
 
 ## Tweaks
 
