@@ -26,7 +26,10 @@ _prep_ports() {
 }
 
 _check_user() {
-  # Runs as root user on VPS
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
 
   # Expects to be root (since the cert file is owned by root)
   _userns=""
