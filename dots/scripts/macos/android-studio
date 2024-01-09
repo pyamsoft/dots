@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Java on MacOS is provided by Jetbrains Toolbox
-export JAVA_HOME="${HOME}/Applications/Android Studio.app/Contents/jbr/Contents/Home/"
-export GRADLE_LOCAL_JAVA_HOME="${HOME}/Applications/Android Studio.app/Contents/jbr/Contents/Home/"
+export AS_PATH="${HOME}/Applications/Android Studio.app/Contents"
+export JAVA_HOME="${AS_PATH}/jbr/Contents/Home/"
+export GRADLE_LOCAL_JAVA_HOME="${JAVA_HOME}"
 
 # Add Android tools to the PATH
 PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
 PATH="${HOME}/devel/sdk/android/cmdline-tools/latest/bin:${PATH}"
-
 # Kotlin tools
 PATH="${AS_PATH}/plugins/Kotlin/kotlinc/bin:${PATH}"
 export PATH
