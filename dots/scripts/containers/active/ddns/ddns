@@ -70,8 +70,10 @@ _containerize() {
   _dd=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="$(_get_env "HOME")/.local/etc/containers/${_name}/runconfig.env"
+  _confdir="$(_get_env "HOME")/.local/etc/containers/${_name}"
+  _runconf="${_confdir}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
+    _runas mkdir -p "${_confdir}" || return 1
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
   fi
