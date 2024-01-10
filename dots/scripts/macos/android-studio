@@ -1,15 +1,20 @@
 #!/bin/sh
 
-# Java on MacOS is provided by Jetbrains Toolbox
-export AS_PATH="${HOME}/Applications/Android Studio.app/Contents"
-export JAVA_HOME="${AS_PATH}/jbr/Contents/Home/"
+if [ -d "${HOME}/Applications/Android Studio.app" ]; then
+  # Android Studio provided by Jetbrains Toolbox
+  _as_path="${HOME}/Applications/Android Studio.app"
+else
+  # Android Studio provided by Homebrew direct install
+  _as_path="/Applications/Android Studio.app"
+fi
+export JAVA_HOME="${_as_path}/Contents/jbr/Contents/Home/"
 export GRADLE_LOCAL_JAVA_HOME="${JAVA_HOME}"
 
 # Add Android tools to the PATH
 PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
 PATH="${HOME}/devel/sdk/android/cmdline-tools/latest/bin:${PATH}"
 # Kotlin tools
-PATH="${AS_PATH}/plugins/Kotlin/kotlinc/bin:${PATH}"
+PATH="${_as_path}/Contents/plugins/Kotlin/kotlinc/bin:${PATH}"
 export PATH
 
 if [ "$1" = "--shell" ]; then
@@ -17,5 +22,5 @@ if [ "$1" = "--shell" ]; then
   exec bash "$@"
 else
   # Launch Android Studio
-  exec open "${HOME}/Applications/Android Studio.app" "$@"
+  exec open "${_as_path}" "$@"
 fi
