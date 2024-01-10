@@ -1,0 +1,28 @@
+#!/bin/sh
+
+readonly pak="net.davidotek.pupgui2"
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# We get an error about
+#
+# bwrap: Can't make symlink at ${HOME}/.var/app/com.valvesoftware.Steam/data: File exists
+#
+# To fix this, clear the data symlink if it exists
+_data_link="${HOME}/.var/app/com.valvesoftware.Steam/data"
+if [ -L "${_data_link}" ] && [ -e "${_data_link}" ]; then
+  printf -- 'Purge old Steam data symlink.\n'
+  rm -f "${_data_link}" || exit 1
+fi
+unset _data_link
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  -- "$@" || exit 1
+exit 0
+
