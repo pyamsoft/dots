@@ -1,0 +1,99 @@
+#  Copyright (C) 2023  pyamsoft
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software Foundation, Inc.,
+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+#
+
+_git_ssh() {
+  COMPREPLY=()
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+  local prevprev="${COMP_WORDS[COMP_CWORD - 2]}"
+
+  local actions="export list create delete help version"
+  local short_options="-h -v"
+  local long_options="--help --version"
+
+  local list_options="--verbose"
+
+  # Find and populate git-ssh configs
+  local git_ssh_configs
+  local git_config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/git-ssh"
+  if [ -d "${git_config_dir}" ]; then
+    git_ssh_configs="$(find "${git_config_dir}" \
+      -name '*.2' \
+      -exec basename {} '.2' \;)"
+  else
+    git_ssh_configs=""
+  fi
+
+  if [[ "${cur}" = --* ]]; then
+    if [[ "${prev}" = "list" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${list_options}" -- "${cur}"))
+    else
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${long_options}" -- "${cur}"))
+    fi
+  elif [[ "${cur}" = -* ]]; then
+    if [[ "${prev}" = "list" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${list_options}" -- "${cur}"))
+    else
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${long_options}" -- "${cur}") $(compgen -W "${short_options}" -- "${cur}"))
+    fi
+  else
+    if [[ "${prev}" = "export" ]] || [[ "${prev}" = "delete" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${git_ssh_configs}" -- "${cur}"))
+    elif [[ "${prev}" = "help" ]]; then
+      COMPREPLY=()
+    elif [[ "${prev}" = "version" ]]; then
+      COMPREPLY=()
+    elif [[ "${prev}" = "list" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${list_options}" -- "${cur}"))
+    elif [[ "${prev}" = "create" ]] || [[ "${prevprev}" = "create" ]]; then
+      COMPREPLY=()
+    elif [[ "${cur}" = "export" ]] || [[ "${cur}" = "delete" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${git_ssh_configs}" -- "${cur}"))
+    elif [[ "${cur}" = "help" ]]; then
+      COMPREPLY=()
+    elif [[ "${cur}" = "version" ]]; then
+      COMPREPLY=()
+    elif [[ "${cur}" = "list" ]]; then
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${list_options}" -- "${cur}"))
+    elif [[ "${cur}" = "create" ]] || [[ "${prev}" = "create" ]]; then
+      COMPREPLY=()
+    else
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${actions}" -- "${cur}"))
+    fi
+  fi
+
+  unset cur
+  unset prev
+  unset prevprev
+  unset short_options
+  unset long_options
+  unset actions
+  unset git_ssh_configs
+  unset git_config_dir
+}
+
+# Tie completion function to command
+complete -o bashdefault -o default -o nospace -F _git_ssh git-ssh

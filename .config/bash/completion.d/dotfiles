@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
-if [ -f "/usr/share/bash-completion/completions/git" ]; then
-  . "/usr/share/bash-completion/completions/git"
+__dot_load() {
+  . "$1"
 
   __git_complete dotfiles git
 
@@ -16,4 +16,17 @@ if [ -f "/usr/share/bash-completion/completions/git" ]; then
   __git_complete dotf git_fetch
   __git_complete dotps git_push
   __git_complete dotl git_log
+}
+
+__dot_comp="/usr/share/bash-completion/completions/git"
+if [ -f "${__dot_comp}" ]; then
+  __dot_load "${__dot_comp}"
+else
+  __dot_comp="/opt/homebrew/etc/bash_completion.d/git-completion.bash"
+  if [ -f "${__dot_comp}" ]; then
+    __dot_load "${__dot_comp}"
+  fi
 fi
+unset __dot_comp
+
+unset -f __dot_load
