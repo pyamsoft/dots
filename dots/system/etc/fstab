@@ -1,0 +1,7 @@
+##
+# Steam Flatpak bind mount
+#
+# The flatpak for protonup-qt expects this Steam/data directory to exist, but sometimes will fail
+# to symlink it if the symlink already exists. We can avoid this problem by mounting the directory
+# as a bind mount.
+~/.var/app/com.valvesoftware.Steam/.local/share ~/.var/app/com.valvesoftware.Steam/data   none    defaults,bind,nofail    0 0
