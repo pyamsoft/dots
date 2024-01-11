@@ -1,2 +1,5 @@
+[Context]
+filesystems=~/.var/app/com.valvesoftware.Steam;
+
 [Session Bus Policy]
 org.freedesktop.Flatpak=talk
