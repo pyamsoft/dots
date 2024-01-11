@@ -6,4 +6,6 @@ After=scrutiny.service
 Requires=scrutiny.service
 
 [Service]
+# Let the Scrutiny service start up
+ExecStartPre=/bin/sh -c 'sleep 5'
 ExecStart=/bin/sh -c 'podman exec scrutiny /bin/sh -c "scrutiny-collector-metrics run"'
