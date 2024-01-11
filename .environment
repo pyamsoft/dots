@@ -9,6 +9,7 @@ _setup_editor() {
       export EDITOR="${e}"
       export SYSTEMD_EDITOR="${e}"
       export SUDO_EDITOR="${e}"
+      export DIFFPROG="${e} -d"
       break
     fi
   done;
