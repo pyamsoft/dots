@@ -10,7 +10,7 @@ Description=AdGuardHome container for %i
 After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service podman.service
 Wants=network-online.target
 Requires=user@%i.service
-RequiresMountsFor=%t/containers
+RequiresMountsFor=/run/user/%i/containers
 
 [Service]
 ExecStartPre=-/bin/sh -c '_c="adguardhome"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
