@@ -64,6 +64,8 @@ dav1d
 db
 db5.3
 dbus
+dbus-broker
+dbus-broker-units
 dbus-glib
 dbus-python
 dconf
@@ -508,6 +510,7 @@ libvdpau
 libvdpau-va-gl
 libverto
 libvorbis
+libvpl
 libvpx
 libvterm
 libwacom
@@ -606,7 +609,6 @@ nspr
 nss
 numactl
 ocl-icd
-onevpl
 openal
 opencore-amr
 openexr
