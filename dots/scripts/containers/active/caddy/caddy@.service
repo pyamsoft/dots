@@ -9,8 +9,9 @@
 [Unit]
 Description=Caddy container
 After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service podman.service user@%i.service
-Wants=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service podman.service
+Wants=network-online.target
 Requires=user@%i.service
+RequiresMountsFor=%t/containers
 
 [Service]
 ExecStartPre=-/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'

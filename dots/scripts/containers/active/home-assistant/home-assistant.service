@@ -2,8 +2,9 @@
 
 [Unit]
 Description=Caddy container
-After=docker.service podman.service
-Wants=docker.service podman.service
+After=network-online.target docker.service podman.service
+Wants=network-online.target
+RequiresMountsFor=%t/containers
 
 [Service]
 ExecStartPre=-/bin/sh -c '_c="home-assistant"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'

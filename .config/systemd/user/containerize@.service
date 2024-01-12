@@ -1,8 +1,9 @@
 # Run a container as a user
 [Unit]
 Description=On %u login, start container %i
-After=podman.service
-Requires=podman.service
+After=network-online.target docker.service podman.service
+Wants=network-online.target
+RequiresMountsFor=%t/containers
 
 [Service]
 ExecStartPre=-/bin/sh -c 'podman stop -t 5 %i; podman rm -f %i'

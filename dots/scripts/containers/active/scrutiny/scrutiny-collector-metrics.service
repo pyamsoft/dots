@@ -2,8 +2,10 @@
 
 [Unit]
 Description=Scrutiny Collector Metrics
-After=scrutiny.service
+After=network-online.target docker.service podman.service scrutiny.service
+Wants=network-online.target
 Requires=scrutiny.service
+RequiresMountsFor=%t/containers
 
 [Service]
 # Let the Scrutiny service start up
