@@ -7,7 +7,7 @@
 
 [Unit]
 [Unit]
-Description=Caddy container
+Description=Container: Caddy for %i
 After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service podman.service user@%i.service
 Wants=network-online.target
 Requires=user@%i.service

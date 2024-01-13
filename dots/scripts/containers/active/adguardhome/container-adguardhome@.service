@@ -6,7 +6,7 @@
 # Generally this is 1000 for "your user"
 
 [Unit]
-Description=AdGuardHome container for %i
+Description=Container: AdGuardHome for %i
 After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service user@%i.service podman.service
 Wants=network-online.target
 Requires=user@%i.service
