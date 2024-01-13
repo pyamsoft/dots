@@ -59,8 +59,9 @@ main() {
     return 1
   fi
 
-  # Run tailscaled as root, output log
+  # Run as root, output to local logs
   _run "/opt/homebrew/bin/tailscaled" "${_user}" "${_logdir}"
+  _run "/usr/local/sbin/pmadjust" "${_user}" "${_logdir}"
 
   unset _user
   unset _logdir

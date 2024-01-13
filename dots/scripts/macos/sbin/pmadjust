@@ -1,0 +1,26 @@
+#!/bin/sh
+
+main() {
+  if ! command -v pmset >/dev/null; then
+    printf -- 'Cannot find "pmset" on PATH'
+    return 1
+  fi
+
+  # Log commands
+  set -eux
+
+  # Turn off wake on magic packet or modem ring
+  pmset womp 0 || return 1
+  pmset ring 0 || return 1
+
+  # No powernap or proximity wake
+  pmset powernap 0 || return 1
+  pmset proximitywake 0 || return 1
+
+  # Let system to go sleep even if ssh is active, don't wake for network
+  pmset ttyskeepawake 0 || return 1
+  pmset tcpkeepalive 0 || return 1
+}
+
+main "$@" || exit 1
+exit 0
