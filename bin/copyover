@@ -5,7 +5,7 @@ if [ "$1" = "media" ]; then
   _path="nerd@nerd2:/home/nerd/media/holding"
   shift
 else
-  _path="nerd@nerd2:/home/nerd"
+  _path="nerd@nerd2:/home/nerd/holding"
 fi
 readonly _path
 
