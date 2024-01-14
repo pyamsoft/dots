@@ -45,7 +45,18 @@ _killa() {
 main() {
   _force="$1"
 
-  _killa "GradleDaemon" "${_force}" || return 1
+  if [ "$(basename "$0")" = "kill-gradle" ]; then
+    _killa "GradleDaemon" "${_force}" || return 1
+  else
+    _killa "proton" "${_force}" || return 1
+    _killa "wineserver" "${_force}" || return 1
+    _killa "winedevice.exe" "${_force}" || return 1
+    _killa "explorer.exe" "${_force}" || return 1
+    _killa "services.exe" "${_force}" || return 1
+    _killa "gamescope" "${_force}" || return 1
+    _killa "gamescope-brokey" "${_force}" || return 1
+    _killa "steam-launch-wrapper" "${_force}" || return 1
+  fi
 
   unset _force
   return 0
