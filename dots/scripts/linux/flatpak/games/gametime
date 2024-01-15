@@ -24,10 +24,12 @@ _prepare_env() {
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
 
   # These SDL vars can cause random issues with some Steam games, so unset them
+  # SDL2, 1.2 compat
+  # SDL3 adds underscores lol
   export SDL_VIDEODRIVER=
-  export SDL_VIDEO_DRIVER=
   export SDL_AUDIODRIVER=
-  export SDL_AUDIO_DRIVER=
+  export SDL_VIDEO_DRIVER="${SDL_VIDEODRIVER}"
+  export SDL_AUDIO_DRIVER="${SDL_AUDIODRIVER}"
   __game_environment="${__game_environment} SDL_VIDEODRIVER=${SDL_VIDEODRIVER}"
   __game_environment="${__game_environment} SDL_VIDEO_DRIVER=${SDL_VIDEO_DRIVER}"
   __game_environment="${__game_environment} SDL_AUDIODRIVER=${SDL_AUDIODRIVER}"
