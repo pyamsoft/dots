@@ -117,6 +117,14 @@ _prepare_gamescope() {
     # https://www.phoronix.com/review/radeon-radv-vrs
     export RADV_FORCE_VRS="2x2"
     __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
+
+    # AMDGPU causes weird PAGE_IO_FAULT errors on new 6.6 kernels in fullscreen.
+    # windowed mode seems fine though.
+    #
+    # Jan 15 12:21:29 nerd1 kernel: amdgpu 0000:c5:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0005 address=0xfff1acf7000 flags=0x0000]
+    # Jan 15 12:21:29 nerd1 kernel: amdgpu 0000:c5:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0005 address=0xfff1acf8000 flags=0x0000]
+    # Jan 15 12:21:29 nerd1 kernel: amdgpu 0000:c5:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0005 address=0xfff1b805000 flags=0x0000]
+    window_type="--windowed"
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
   else
