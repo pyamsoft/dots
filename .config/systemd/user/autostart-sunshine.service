@@ -4,7 +4,7 @@ Description=Start Sunshine on session login
 [Service]
 # Need to wait just a little or auth error because loginctl not ready
 ExecStartPre=/usr/bin/sleep 5
-ExecStart=%h/.local/bin/restart-sunshine
+ExecStart=%h/bin/restart-sunshine
 
 [Install]
 WantedBy=graphical-session.target
