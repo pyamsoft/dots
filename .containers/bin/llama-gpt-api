@@ -2,7 +2,7 @@
 
 readonly _name="llama-gpt-api"
 readonly _image="ghcr.io/abetlen/llama-cpp-python"
-readonly _tag="latest@sha256:b6d21ff8c4d9baad65e1fa741a0f8c898d68735fff3f3cd777e3f0c6a1839dd4"
+readonly _tag="v0.2.29"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -28,6 +28,13 @@ _prep_caps() {
   # Needed for something?
   _caps="${_caps} --cap-add IPC_LOCK"
 
+  # image uses apt and stuff internally
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+  _caps="${_caps} --cap-add FOWNER"
+
   readonly _caps
   return 0
 }
@@ -47,8 +54,8 @@ _check_user() {
     return 1
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  # Needs root in container
+  _userns="--user 0:0"
   readonly _userns
 
   return 0
@@ -111,5 +118,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-
-
