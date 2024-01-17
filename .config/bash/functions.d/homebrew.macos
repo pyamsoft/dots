@@ -6,26 +6,25 @@ __upall_macos_homebrew() {
 
 __upall_macos_macports() {
   if [ -e /opt/local/bin/port ]; then
+    if [ -n "$1" ] && [ "$1" = "--shell" ]; then
+      printf -- 'Entering macports shell environment...\n'
+    
+      export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
+      export MANPATH="/opt/local/share/man:${MANPATH}"
+    
+      # Normal user shell
+      exec bash
+    elif [ -n "$1" ] && [ "$1" = "--root-shell" ]; then
+      printf -- 'Entering macports root-shell environment...\n'
 
-    # Open a shell with macports set up
-    sh -c "$(cat <<EOF
+      # Root user shell
+      exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; bash'
+    else
+      printf -- 'Using sudo to update the MacPorts installation...\n'
 
-if [ -n "$1" ] && [ "$1" = "--shell" ]; then
-  printf -- 'Entering macports shell environment...\n'
-
-  export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
-  export MANPATH="/opt/local/share/man:${MANPATH}"
-
-  exec bash
-elif [ -n "$1" ] && [ "$1" = "--root-shell" ]; then
-  printf -- 'Entering macports root-shell environment...\n'
-  exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; bash'
-else
-  printf -- 'Using sudo to update the MacPorts installation...\n'
-  exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; port selfupdate && port upgrade outdated && port uninstall inactive'
-fi
-EOF
-)"
+      # Root user run upgrades
+      exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; port selfupdate && port upgrade outdated && port uninstall inactive'
+    fi
   fi
 }
 
