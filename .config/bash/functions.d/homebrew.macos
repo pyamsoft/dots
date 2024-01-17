@@ -15,6 +15,9 @@ export MANPATH="/opt/local/share/man:${MANPATH}"
 if [ -n "$1" ] && [ "$1" = "--shell" ]; then
   printf -- 'Entering macports shell environment...\n'
   exec bash
+elif [ -n "$1" ] && [ "$1" = "--root-shell" ]; then
+  printf -- 'Entering macports root-shell environment...\n'
+  exec sudo bash
 else
   printf -- 'Using sudo to update the MacPorts installation...\n'
   exec sudo sh -c 'port selfupdate && port upgrade outdated && port uninstall inactive'
