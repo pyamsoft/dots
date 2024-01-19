@@ -65,7 +65,7 @@ _prep_network() {
     --ignore \
     --disable-dns \
     --driver "bridge" \
-    "${_name}" || {
+    "${_name}" >/dev/null || {
     printf -- 'Failed to create podman network bridge: %s\n' "${_name}"
     return 1
   }
