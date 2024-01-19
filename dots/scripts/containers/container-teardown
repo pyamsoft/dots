@@ -9,22 +9,25 @@ main() {
   fi
 
   # Attempt nice stop
-  podman stop -t 5 "${_name}" || {
+  printf -- 'Attempt nice stop container: %s\n' "${_name}"
+  podman stop -t 5 "${_name}" >/dev/null || {
     printf -- 'Failed to nicely stop container %s\n' "${_name}"
   }
 
-  # Remove the network
-  podman network rm -t 5 "${_name}" || {
-    printf -- 'Failed to remove the container network: %s\n' "${_name}"
-  }
-
   # Remove the container
-  podman rm -f "${_name}" || {
+  printf -- '\nAttempt force-remove container: %s\n' "${_name}"
+  podman rm -f "${_name}" >/dev/null || {
     printf -- 'Failed to force remove the container %s\n' "${_name}"
     return 1
   }
 
-  printf -- 'Container is completely torn down: %s\n' "${_name}"
+  # Remove the network
+  printf -- '\nAttempt remove container network: %s\n' "${_name}"
+  podman network rm "${_name}" >/dev/null || {
+    printf -- 'Failed to remove the container network: %s\n' "${_name}"
+  }
+
+  printf -- '\nContainer is completely torn down: %s\n' "${_name}"
   return 0
 }
 
