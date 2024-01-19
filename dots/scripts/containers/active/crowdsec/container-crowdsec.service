@@ -7,9 +7,9 @@ Wants=network-online.target
 RequiresMountsFor=%t/containers
 
 [Service]
-ExecStartPre=-/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+ExecStartPre=-/bin/sh -c '_c="crowdsec"; container-teardown "$${_c}"'
 ExecStart=/bin/sh -c '_c="crowdsec"; /usr/local/bin/"$${_c}"'
-ExecStop=/bin/sh -c '_c="crowdsec"; podman stop -t 5 "$${_c}"; podman rm -f "$${_c}"'
+ExecStop=/bin/sh -c '_c="crowdsec"; container-teardown "$${_c}"'
 ExecReload=/bin/sh -c '_c="crowdsec"; podman exec -i -t "$${_c}" /bin/sh -c "kill -HUP 1"'
 Restart=always
 RestartSec=10

@@ -14,9 +14,9 @@ Requires=user@%i.service
 RequiresMountsFor=/run/user/%i/containers
 
 [Service]
-ExecStartPre=-/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
+ExecStartPre=-/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown $${_c}"'
 ExecStart=/bin/sh -c '_c="caddy"; /usr/local/bin/"$${_c}" "%i"'
-ExecStop=/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" podman stop -t 5 "$${_c}"; sudo -u "$${_u}" podman rm -f "$${_c}"'
+ExecStop=/bin/sh -c '_c="caddy"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown $${_c}"'
 
 [Install]
 WantedBy=user@%i.service

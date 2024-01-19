@@ -1,0 +1,32 @@
+#!/bin/sh
+
+main() {
+  _name="$1"
+
+  if [ -z "${_name}" ]; then
+    printf -- 'Must provide container name to teardown\n.'
+    return 1
+  fi
+
+  # Attempt nice stop
+  podman stop -t 5 "${_name}" || {
+    printf -- 'Failed to nicely stop container %s\n' "${_name}"
+  }
+
+  # Remove the network
+  podman network rm -t 5 "${_name}" || {
+    printf -- 'Failed to remove the container network: %s\n' "${_name}"
+  }
+
+  # Remove the container
+  podman rm -f "${_name}" || {
+    printf -- 'Failed to force remove the container %s\n' "${_name}"
+    return 1
+  }
+
+  printf -- 'Container is completely torn down: %s\n' "${_name}"
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
