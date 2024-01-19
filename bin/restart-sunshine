@@ -104,13 +104,14 @@ _start_sunshine_linux() {
 }
 
 _stop_sunshine_macos() {
+  # Sunshine installed with MacPorts uses daemondo
 
   # shellcheck disable=SC2009
-  _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | awk '{ print $2 }')"
+  _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
   if [ -n "${_d_pid}" ]; then
 
     # Send kill
-    printf -- 'Attempt to kill running daemondo --label=Sunshine process...\n'
+    printf -- 'Attempt to kill running daemondo --label=Sunshine process... %s\n' "${_d_pid}"
     kill "${_d_pid}" || {
       printf -- 'Failed to kill daemondo PID: %s\n' "${_d_pid}"
       return 1
@@ -123,7 +124,7 @@ _stop_sunshine_macos() {
 
       # Force kill if we take too long
       if [ "${_wait_count}" -ge 10 ]; then
-        printf -- "We've waited a long time to stop the old. Force kill it"
+        printf -- "We've waited a long time to stop the old. Force kill it %s\n" "${_d_pid}"
         kill -9 "${_d_pid}" || {
           printf -- 'Failed to force-kill daemondo PID: %s\n' "${_d_pid}"
 
@@ -137,11 +138,53 @@ _stop_sunshine_macos() {
       sleep 2
 
       # shellcheck disable=SC2009
-      _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | awk '{ print $2 }')"
+      _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
     done
-  fi
 
-  printf -- 'Stopped old Sunshine daemondo!\n'
+    printf -- 'Stopped old Sunshine daemondo!\n'
+  fi
+  unset _wait_count
+  unset _d_pid
+
+  # Installed with homebrew we just run sunshine
+  
+  # shellcheck disable=SC2009
+  _d_pid="$(ps aux | grep 'sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
+  if [ -n "${_d_pid}" ]; then
+
+    # Send kill
+    printf -- 'Attempt to kill running sunshine process %s...\n' "${_d_pid}"
+    kill "${_d_pid}" || {
+      printf -- 'Failed to kill sunshine PID: %s\n' "${_d_pid}"
+      return 1
+    }
+
+    # Wait for death
+    _wait_count=0
+    while [ -n "${_d_pid}" ]; do
+      _wait_count="$((_wait_count + 1))"
+
+      # Force kill if we take too long
+      if [ "${_wait_count}" -ge 10 ]; then
+        printf -- "We've waited a long time to stop the old. Force kill it %s\n" "${_d_pid}"
+        kill -9 "${_d_pid}" || {
+          printf -- 'Failed to force-kill sunshine PID: %s\n' "${_d_pid}"
+
+          unset _wait_count
+          unset _d_pid
+          return 1
+        }
+      fi
+
+      # Wait for death
+      sleep 2
+
+      # shellcheck disable=SC2009
+      _d_pid="$(ps aux | grep 'sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
+    done
+
+    printf -- 'Stopped old Sunshine!\n'
+  fi
 
   unset _wait_count
   unset _d_pid
@@ -153,8 +196,17 @@ _start_sunshine_macos() {
   _stop_sunshine_macos
 
   # Run sunshine daemon
-  printf -- 'Run sunshine with daemondo!\n'
-  /opt/local/bin/daemondo --label=Sunshine --restart-netchange --pid=exec --start-cmd /opt/local/bin/sunshine > "${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs/sunshine" &
+  if [ -f "/opt/local/bin/daemondo" ] && [ -f "/opt/local/bin/sunshine" ]; then
+    printf -- 'Run sunshine with daemondo!\n'
+    /opt/local/bin/daemondo \
+      --label=Sunshine \
+      --restart-netchange \
+      --pid=exec \
+      --start-cmd /opt/local/bin/sunshine >"${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs/sunshine" &
+  elif [ -f "/opt/homebrew/bin/sunshine" ]; then
+    printf -- 'Run sunshine from homebrew!\n'
+    /opt/homebrew/bin/sunshine >"${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs/sunshine" &
+  fi
 
   return 0
 }
