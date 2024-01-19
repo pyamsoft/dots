@@ -57,6 +57,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --add-host "localhost:127.0.0.1" \
     --dns "1.1.1.1" \
+    --dns-search=. \
     --init \
     ${_sec} \
     ${_mounts} \

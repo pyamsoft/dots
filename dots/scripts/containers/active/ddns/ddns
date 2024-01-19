@@ -103,6 +103,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --add-host "localhost:127.0.0.1" \
     --dns "1.1.1.1" \
+    --dns-search=. \
     -e PROXIED=false \
     -e IP6_PROVIDER=none \
     -e PUID=1000 \

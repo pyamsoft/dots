@@ -82,6 +82,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
     --dns "1.1.1.1" \
+    --dns-search=. \
     --privileged \
     ${_ha} \
     ${_mounts} \

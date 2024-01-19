@@ -107,6 +107,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
     --dns "1.1.1.1" \
+    --dns-search=. \
     --device "/dev/dri:/dev/dri" \
     ${_jf} \
     ${_groups} \
