@@ -50,6 +50,7 @@ _prep_network() {
   ${_cmd} network create \
     --ignore \
     --disable-dns \
+    --opt="isolate" \
     --driver "bridge" \
     "${_name}" >/dev/null || {
     printf -- 'Failed to create network bridge: %s\n' "${_name}"

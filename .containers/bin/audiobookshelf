@@ -63,6 +63,7 @@ _prep_network() {
   # shellcheck disable=SC2086
   ${_cmd} network create \
     --ignore \
+    --opt="isolate" \
     --disable-dns \
     --driver "bridge" \
     "${_name}" >/dev/null || {
