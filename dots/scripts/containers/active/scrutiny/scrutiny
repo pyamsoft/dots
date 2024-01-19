@@ -68,6 +68,20 @@ _check_user() {
   return 0
 }
 
+_prep_network() {
+  # shellcheck disable=SC2086
+  ${_cmd} network create \
+    --ignore \
+    --disable-dns \
+    --driver "bridge" \
+    "${_name}" >/dev/null || {
+    printf -- 'Failed to create network bridge: %s\n' "${_name}"
+    return 1
+  }
+
+  return 0
+}
+
 _containerize() {
   # scrutiny runtime config variable
   _sc=""
@@ -96,6 +110,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
+    --network="${_name}" \
     --entrypoint=/scripts/init \
     ${_sc} \
     ${_mounts} \
@@ -115,6 +130,7 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
+  _prep_network || return 1
 
   # How do we run?
   if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then

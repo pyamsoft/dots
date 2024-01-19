@@ -61,12 +61,13 @@ _prep_mounts() {
 }
 
 _prep_network() {
-  _runas podman network create \
+  # shellcheck disable=SC2086
+  _runas ${_cmd} network create \
     --ignore \
     --disable-dns \
     --driver "bridge" \
     "${_name}" >/dev/null || {
-    printf -- 'Failed to create podman network bridge: %s\n' "${_name}"
+    printf -- 'Failed to create network bridge: %s\n' "${_name}"
     return 1
   }
 
