@@ -149,6 +149,7 @@ _containerize() {
   _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --add-host "localhost:127.0.0.1" \
+    --dns "1.1.1.1" \
     ${_sec} \
     ${_cd} \
     ${_mounts} \

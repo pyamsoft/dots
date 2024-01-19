@@ -106,7 +106,8 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
-    --device /dev/dri:/dev/dri \
+    --dns "1.1.1.1" \
+    --device "/dev/dri:/dev/dri" \
     ${_jf} \
     ${_groups} \
     ${_mounts} \

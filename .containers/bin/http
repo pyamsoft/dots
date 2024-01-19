@@ -45,21 +45,6 @@ _check_user() {
   return 0
 }
 
-_prep_network() {
-  # shellcheck disable=SC2086
-  ${_cmd} network create \
-    --ignore \
-    --disable-dns \
-    --opt="isolate" \
-    --driver "bridge" \
-    "${_name}" >/dev/null || {
-    printf -- 'Failed to create network bridge: %s\n' "${_name}"
-    return 1
-  }
-
-  return 0
-}
-
 _containerize() {
   # Log the commands we use next
   # Fail on errors
@@ -72,7 +57,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
-    --network="${_name}" \
+    --dns "1.1.1.1" \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
