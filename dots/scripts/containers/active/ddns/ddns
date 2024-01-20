@@ -106,7 +106,6 @@ _containerize() {
     --dns "1.1.1.1" \
     --dns-search=. \
     -e PROXIED=false \
-    -e IP6_PROVIDER=none \
     -e PUID=1000 \
     -e PGID=1000 \
     ${_dd} \
