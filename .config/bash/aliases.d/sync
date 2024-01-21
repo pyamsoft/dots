@@ -1,0 +1,8 @@
+# Call sync twice
+# https://www.man7.org/linux/man-pages/man2/sync.2.html
+# According to POXIS, sync can "finish" before actually "finishing"
+# But the next sync cannot start until the initial completion is done.
+# Linux technically avoids this at an FS level, but just to be safe
+# calling sync twice will ensure that by the time the second one
+# returns, the first one is done
+alias sync="sync && sync"
