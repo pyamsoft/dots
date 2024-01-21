@@ -56,6 +56,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --add-host "localhost:127.0.0.1" \
+    --add-host "host.containers.internal:host-gateway" \
     --dns "1.1.1.1" \
     --dns-search=. \
     --init \

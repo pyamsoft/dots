@@ -57,6 +57,7 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
+    --add-host "host.containers.internal:host-gateway" \
     --dns "1.1.1.1" \
     --dns-search=. \
     ${_mounts} \
@@ -71,7 +72,6 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
-  _prep_network || return 1
 
   # How do we run?
   _how="--rm -i -t"

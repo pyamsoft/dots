@@ -60,6 +60,9 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
+  # We can use localhost DNS since we have host network access,
+  # so localhost is AdguardHome
+
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
@@ -67,7 +70,8 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --add-host "localhost:127.0.0.1" \
-    --dns "1.1.1.1" \
+    --add-host "host.containers.internal:host-gateway" \
+    --dns "127.0.0.1" \
     --dns-search=. \
     --net=host \
     ${_env} \
