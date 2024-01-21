@@ -3,7 +3,7 @@ Description=Start Guake Indicator on session login
 
 [Service]
 # Need to wait just a little
-ExecStartPre=/usr/bin/sleep 5
+ExecStartPre=/usr/bin/sleep 2
 ExecStart=/usr/bin/guake -e 'tmux -2u'
 
 [Install]

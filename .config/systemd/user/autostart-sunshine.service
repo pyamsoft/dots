@@ -3,7 +3,7 @@ Description=Start Sunshine on session login
 
 [Service]
 # Need to wait just a little or auth error because loginctl not ready
-ExecStartPre=/usr/bin/sleep 5
+ExecStartPre=/usr/bin/sleep 2
 ExecStart=%h/bin/restart-sunshine
 
 [Install]
