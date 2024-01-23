@@ -78,7 +78,7 @@ _check_user() {
 
 _containerize() {
   # Only compare the version minors, since bc only can do floating point, not semver :(
-  _is_cmd_new_enough="$(printf -- '%s >= 4.7' "$(podman --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')" | bc)"
+  _is_cmd_new_enough="$(printf -- '%s >= 4.7\n' "$(podman --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')" | bc)"
 
   # MacOS can't launch with host-gateway
   _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
