@@ -54,6 +54,15 @@ _check_user() {
 _containerize() {
   # Add extra env before the set -x
   _env="-e PUID=$(id -u) -e PGID=$(id -g)"
+  readonly _env
+
+  # host network stack can use DNS at localhost cache
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Log the commands we use next
   # Fail on errors
@@ -69,11 +78,8 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "127.0.0.1" \
-    --dns-search=. \
     --net=host \
+    ${_network} \
     ${_env} \
     ${_mounts} \
     ${_ports} \

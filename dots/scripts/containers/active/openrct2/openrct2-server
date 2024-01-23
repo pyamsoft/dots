@@ -51,7 +51,12 @@ _check_user() {
 }
 
 _containerize() {
-  readonly _RCT_PASSWD="poop"
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Log the commands we use next
   # Fail on errors
@@ -67,18 +72,15 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     --init \
+    ${_network} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
     ${_userns} \
     "${_image}:${_tag}" \
     host "/home/openrct2/.config/OpenRCT2/${park}" \
-    --password "${_RCT_PASSWD}" \
+    --password "poop" \
     --headless \
     "$@"
 }

@@ -83,6 +83,14 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+  readonly _sc
+
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Log the commands we use next
   # Fail on errors
@@ -95,11 +103,8 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     --entrypoint=/scripts/init \
+    ${_network} \
     ${_sc} \
     ${_mounts} \
     ${_ports} \

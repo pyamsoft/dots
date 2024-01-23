@@ -51,6 +51,13 @@ _check_user() {
 }
 
 _containerize() {
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -61,11 +68,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     --device "/dev/dri:/dev/dri" \
+    ${_network} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

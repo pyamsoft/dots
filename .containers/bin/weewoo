@@ -44,6 +44,14 @@ _containerize() {
   if command -v hostnamectl >/dev/null && [ "$(hostnamectl hostname)" = "nerd2" ]; then
     _sec="${_sec} --security-opt no-new-privileges:true"
   fi
+  readonly _sec
+
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Log the commands we use next
   # Fail on errors
@@ -55,11 +63,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     --init \
+    ${_network} \
     ${_sec} \
     ${_mounts} \
     ${_ports} \

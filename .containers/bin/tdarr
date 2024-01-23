@@ -87,6 +87,13 @@ _containerize() {
   _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
   readonly _groups
 
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -98,16 +105,13 @@ _containerize() {
   exec ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     --device "/dev/dri:/dev/dri" \
     -e "serverIP=0.0.0.0" \
     -e "serverPort=8266" \
     -e "webUIPort=8265" \
     -e "internalNode=true" \
     -e "inContainer=true" \
+    ${_network} \
     ${_groups} \
     ${_mounts} \
     ${_ports} \

@@ -83,6 +83,7 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+  readonly _dd
 
   # We don't use --security-opt no-new-privileges:true since
   # the AWS VPS that this runs on does not support that option
@@ -90,6 +91,14 @@ _containerize() {
   if command -v hostnamectl >/dev/null && [ "$(hostnamectl hostname)" = "nerd2" ]; then
     _sec="${_sec} --security-opt no-new-privileges:true"
   fi
+  readonly _sec
+
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Log the commands we use next
   # Fail on errors
@@ -101,13 +110,10 @@ _containerize() {
   # shellcheck disable=SC2086
   _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "1.1.1.1" \
-    --dns-search=. \
     -e PROXIED=false \
     -e PUID=1000 \
     -e PGID=1000 \
+    ${_network} \
     ${_dd} \
     ${_sec} \
     ${_mounts} \

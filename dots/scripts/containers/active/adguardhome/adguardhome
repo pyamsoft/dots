@@ -134,6 +134,15 @@ _containerize() {
     printf -- 'Optional runconfig.env supported at "%s"\n' "${_runconf}"
   fi
   unset _runconf
+  readonly _ah
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
 
   # Open ports to non-root users
   _priv_port_drop || return 1
@@ -149,10 +158,7 @@ _containerize() {
   _runas ${_cmd} run ${_how} \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --add-host "localhost:127.0.0.1" \
-    --add-host "host.containers.internal:host-gateway" \
-    --dns "127.0.0.1" \
-    --dns-search=. \
+    ${_network} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
