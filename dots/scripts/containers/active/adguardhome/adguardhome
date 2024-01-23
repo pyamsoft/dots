@@ -136,13 +136,18 @@ _containerize() {
   unset _runconf
   readonly _ah
 
+  # Only compare the version minors, since bc only can do floating point, not semver :(
+  _is_cmd_new_enough="$(printf -- '%s >= 4.7' "$(podman --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')" | bc)"
+
   # We use our container DNS resolver
   # MacOS can't launch with host-gateway
   _network="--add-host localhost:127.0.0.1 --dns 127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
   readonly _network
+
+  unset _is_cmd_new_enough
 
   # Open ports to non-root users
   _priv_port_drop || return 1
