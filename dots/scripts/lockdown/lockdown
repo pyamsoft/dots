@@ -1,0 +1,323 @@
+#!/bin/sh
+
+_usage() {
+  true
+}
+
+_setup_devices() {
+  _devices=""
+
+  if [ "${_allow_video}" -ne 0 ]; then
+    _d="/dev/dri"
+    _devices="${_devices} --device ${_d}:${_d}"
+  fi
+  unset _d
+
+  if [ "${_allow_audio}" -ne 0 ]; then
+    _d="/dev/snd"
+    _devices="${_devices} --device ${_d}:${_d}"
+  fi
+  unset _d
+
+  if [ "${_allow_input}" -ne 0 ]; then
+    _d="/dev/input"
+    _devices="${_devices} --device ${_d}:${_d}"
+  fi
+  unset _d
+
+  return 0
+}
+
+_setup_mounts() {
+  _mounts=""
+
+  # tmpfs where we expect them
+  _mounts="${_mounts} --mount type=tmpfs,target=/tmp"
+  _mounts="${_mounts} --mount type=tmpfs,target=/run"
+
+  # pts
+  _mounts="${_mounts} --mount type=devpts,target=/dev/pts"
+
+  if [ "${_allow_video}" -ne 0 ]; then
+    # Wayland socket
+    for _x in "${XDG_RUNTIME_DIR}/wayland-"*; do
+      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+    done
+
+    # X11
+    for _x in "/tmp/.X"* "/tmp/.ICE-unix"* "${XDG_RUNTIME_DIR}/.mutter-Xwaylandauth"*; do
+      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+    done
+  fi
+  unset _x
+
+  if [ "${_allow_audio}" -ne 0 ]; then
+    # Pipewire, PulseAudio
+    for _x in "${XDG_RUNTIME_DIR}/pipewire"* "${XDG_RUNTIME_DIR}/pulse"; do
+      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+    done
+  fi
+  unset _x
+
+  # Dbus
+  if [ "${_allow_dbus}" -ne 0 ]; then
+    for _x in "/run/dbus" "${XDG_RUNTIME_DIR}/bus"; do
+      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+    done
+  fi
+  unset _x
+
+  readonly _mounts
+  return 0
+}
+
+_setup_env() {
+  _env=""
+
+  # Mesa
+  _env="${_env} -e MESA_DISK_CACHE_SINGLE_FILE=1"
+
+  # Language
+  _env="${_env} -e LANGUAGE=${LANGUAGE:-${LANG}}"
+  _env="${_env} -e LANG=${LANG}"
+
+  # Host bits
+  _env="${_env} -e HOST_USER=$(id -un)"
+  _env="${_env} -e HOST_UID=$(id -u)"
+
+  # Pull from host
+  if [ "${_allow_video}" -ne 0 ]; then
+    _env="${_env} -e DISPLAY=${DISPLAY}"
+    _env="${_env} -e XAUTHORITY=${XAUTHORITY}"
+    _env="${_env} -e WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
+  fi
+
+  if [ "${_allow_dbus}" -ne 0 ]; then
+    _env="${_env} -e DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS}"
+  fi
+
+  readonly _env
+  return 0
+}
+
+_get_gid_for_group() {
+  _grp="$1"
+  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
+
+  printf -- '%s' "${_gid}"
+
+  unset _grp
+  unset _gid
+  return 0
+}
+
+_setup_groups() {
+  # Needed for GPU rendering
+  _groups=""
+
+  if [ "${_allow_video}" -ne 0 ]; then
+    _groups="${_groups} --group-add=$(_get_gid_for_group "render")"
+    _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
+  fi
+
+  if [ "${_allow_audio}" -ne 0 ]; then
+    _groups="${_groups} --group-add=$(_get_gid_for_group "audio")"
+  fi
+
+  if [ "${_allow_input}" -ne 0 ]; then
+    _groups="${_groups} --group-add=$(_get_gid_for_group "input")"
+  fi
+
+  readonly _groups
+  return 0
+}
+
+_setup_run_opts() {
+  _run_opts=""
+
+  if [ "${_allow_video}" -ne 0 ]; then
+    _run_opts="${_run_opts} --ipc=host"
+  fi
+
+  # Ensure presence
+  _run_opts="${_run_opts} --add-host 127.0.0.1:localhost"
+  _run_opts="${_run_opts} --add-host 127.0.0.1:lockdown-${_name}"
+  _run_opts="${_run_opts} --dns 1.1.1.1"
+
+  # Use host networking stack for Steam?
+  _run_opts="${_run_opts} --network=host"
+
+  # User setup
+  _run_opts="${_run_opts} --user=0:0"
+  _run_opts="${_run_opts} --userns=keep-id"
+  _run_opts="${_run_opts} --ulimit=host"
+
+  readonly _run_opts
+  return 0
+}
+
+_run() {
+  set -xeu
+
+  # shellcheck disable=SC2086
+  exec podman run \
+    -i -t \
+    --security-opt no-new-privileges:true \
+    --name "lockdown-${_name}" \
+    --hostname "lockdown-${_name}" \
+    --init \
+    --mount "type=bind,source=${_lockdown_home},target=${HOME}" \
+    ${_run_opts} \
+    ${_groups} \
+    ${_mounts} \
+    ${_devices} \
+    ${_env} \
+    "$@" "${_image}"
+}
+
+_process_option_with_argument() {
+  _opt="$1"
+  _maybe_arg="$2"
+  _do_shift=0
+
+  if printf -- '%s' "$1" | grep -q '='; then
+    # Has equals, split up
+    _processed="$(printf -- '%s\n' "$(printf -- '%s' "${_opt}" | tr '=' ' ')")"
+    _opt_name="$(printf -- '%s' "${_processed}" | awk '{ print $1 }')"
+    _opt_value="$(printf -- '%s' "${_processed}" | awk '{ print $2 }')"
+    unset _processed
+
+    # Since it's equals, shift by only 1
+    _do_shift=1
+  else
+    # No equals, just spit out
+    _opt_name="${_opt}"
+    _opt_value="${_maybe_arg}"
+
+    # Shift by 2
+    _do_shift=2
+  fi
+
+  case "${_opt_name}" in
+    '--name')
+      _name="${_opt_value}"
+
+      # Number to shift
+      return "${_do_shift}"
+      ;;
+    '--image')
+      _image="${_opt_value}"
+
+      # Number to shift
+      return "${_do_shift}"
+      ;;
+    '--no-audio')
+      _allow_audio=0
+
+      # Number to shift
+      return 1
+      ;;
+    '--no-video')
+      _allow_video=0
+
+      # Number to shift
+      return 1
+      ;;
+    '--no-input')
+      _allow_input=0
+
+      # Number to shift
+      return 1
+      ;;
+    '--allow-dbus')
+      _allow_dbus=1
+
+      # Number to shift
+      return 1
+      ;;
+  esac
+
+  unset _opt
+  unset _maybe_arg
+  unset _opt_name
+  unset _opt_value
+  unset _do_shift
+  return 0
+}
+
+main() {
+  _name=""
+  _image=""
+
+  _allow_input=1
+  _allow_audio=1
+  _allow_video=1
+  _allow_dbus=0
+
+  if [ "$#" -le 0 ]; then
+    printf -- 'Must provide required arguments\n'
+    _usage
+    return 1
+  fi
+
+  while [ "$#" -gt "0" ]; do
+    _process_option_with_argument "$1" "$2"
+    _shift_amount="$?"
+
+    if [ -n "${_shift_amount}" ] && [ "${_shift_amount}" -eq "0" ]; then
+      printf -- 'Unable to process options %s %s\n' "$1" "$2"
+      return 1
+    fi
+
+    if [ -n "${_shift_amount}" ] && [ "${_shift_amount}" -eq "${_shift_amount}" ]; then
+      _count=0
+      while [ "${_count}" -lt "${_shift_amount}" ]; do
+        _count="$((_count + 1))"
+        shift
+      done
+      unset _count
+    fi
+    unset _shift_amount
+  done
+
+  if [ -z "${_name}" ] || [ -z "${_image}" ]; then
+    printf -- 'Requires name and image\n'
+    return 1
+  fi
+
+  _lockdown_home="${HOME}/.local/etc/lockdown/lockdown-${_name}"
+  mkdir -p "${_lockdown_home}" || {
+    printf -- 'Failed to make lockdown home directory: %s\n' "${_lockdown_home}"
+    return 1
+  }
+
+  _setup_mounts || {
+    printf -- 'Failed to setup mounts\n'
+    return 1
+  }
+
+  _setup_devices || {
+    printf -- 'Failed to setup devices\n'
+    return 1
+  }
+
+  _setup_groups || {
+    printf -- 'Failed to setup groups\n'
+    return 1
+  }
+
+  _setup_env || {
+    printf -- 'Failed to setup env\n'
+    return 1
+  }
+
+  _setup_run_opts || {
+    printf -- 'Failed to setup runtime options\n'
+    return 1
+  }
+
+  _run "$@"
+}
+
+main "$@" || exit 1
+exit 0
