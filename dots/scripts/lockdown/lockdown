@@ -176,6 +176,7 @@ _run() {
 }
 
 _process_option_with_argument() {
+  # For this function, the "0" return code is "bad"
   _opt="$1"
   _maybe_arg="$2"
   _do_shift=0
@@ -200,12 +201,22 @@ _process_option_with_argument() {
 
   case "${_opt_name}" in
     '--name')
+      # We expect something valid
+      if [ "${_opt_value}" = "--" ]; then
+        return 0
+      fi
+
       _name="${_opt_value}"
 
       # Number to shift
       return "${_do_shift}"
       ;;
     '--image')
+      # We expect something valid
+      if [ "${_opt_value}" = "--" ]; then
+        return 0
+      fi
+
       _image="${_opt_value}"
 
       # Number to shift
@@ -261,6 +272,12 @@ main() {
   fi
 
   while [ "$#" -gt "0" ]; do
+    # Stop processing
+    if [ "$1" = "--" ]; then
+      shift
+      break
+    fi
+
     _process_option_with_argument "$1" "$2"
     _shift_amount="$?"
 
