@@ -9,19 +9,25 @@ _setup_devices() {
 
   if [ "${_allow_video}" -ne 0 ]; then
     _d="/dev/dri"
-    _devices="${_devices} --device ${_d}:${_d}"
+    if [ -d "${_d}" ]; then
+      _devices="${_devices} --device ${_d}:${_d}"
+    fi
   fi
   unset _d
 
   if [ "${_allow_audio}" -ne 0 ]; then
     _d="/dev/snd"
-    _devices="${_devices} --device ${_d}:${_d}"
+    if [ -d "${_d}" ]; then
+      _devices="${_devices} --device ${_d}:${_d}"
+    fi
   fi
   unset _d
 
   if [ "${_allow_input}" -ne 0 ]; then
     _d="/dev/input"
-    _devices="${_devices} --device ${_d}:${_d}"
+    if [ -d "${_d}" ]; then
+      _devices="${_devices} --device ${_d}:${_d}"
+    fi
   fi
   unset _d
 
@@ -41,12 +47,28 @@ _setup_mounts() {
   if [ "${_allow_video}" -ne 0 ]; then
     # Wayland socket
     for _x in "${XDG_RUNTIME_DIR}/wayland-"*; do
-      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+      case "${_x}" in
+        *-\*)
+          ;;
+        *)
+          if [ -e "${_x}" ]; then
+            _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+          fi
+          ;;
+      esac
     done
 
     # X11
     for _x in "/tmp/.X"* "/tmp/.ICE-unix"* "${XDG_RUNTIME_DIR}/.mutter-Xwaylandauth"*; do
-      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+      case "${_x}" in
+        *\*)
+          ;;
+        *)
+          if [ -e "${_x}" ]; then
+            _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+          fi
+          ;;
+      esac
     done
   fi
   unset _x
@@ -54,7 +76,15 @@ _setup_mounts() {
   if [ "${_allow_audio}" -ne 0 ]; then
     # Pipewire, PulseAudio
     for _x in "${XDG_RUNTIME_DIR}/pipewire"* "${XDG_RUNTIME_DIR}/pulse"; do
-      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+      case "${_x}" in
+        *\*)
+          ;;
+        *)
+          if [ -e "${_x}" ]; then
+            _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+          fi
+          ;;
+      esac
     done
   fi
   unset _x
@@ -62,7 +92,15 @@ _setup_mounts() {
   # Dbus
   if [ "${_allow_dbus}" -ne 0 ]; then
     for _x in "/run/dbus" "${XDG_RUNTIME_DIR}/bus"; do
-      _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+      case "${_x}" in
+        *\*)
+          ;;
+        *)
+          if [ -e "${_x}" ]; then
+            _mounts="${_mounts} --mount type=bind,source=${_x},target=${_x}"
+          fi
+          ;;
+      esac
     done
   fi
   unset _x
@@ -135,7 +173,9 @@ _setup_groups() {
 _setup_run_opts() {
   _run_opts=""
 
-  if [ "${_allow_video}" -ne 0 ]; then
+  if [ "${_allow_video}" -ne 0 ] || [ "${_allow_audio}" -ne 0 ]; then
+    # X11 requires host ipc
+    # pipewire/pulseaudio use /dev/shm
     _run_opts="${_run_opts} --ipc=host"
   fi
 
@@ -144,13 +184,13 @@ _setup_run_opts() {
   _run_opts="${_run_opts} --add-host 127.0.0.1:lockdown-${_name}"
   _run_opts="${_run_opts} --dns 1.1.1.1"
 
-  # Use host networking stack for Steam?
-  _run_opts="${_run_opts} --network=host"
-
   # User setup
   _run_opts="${_run_opts} --user=0:0"
   _run_opts="${_run_opts} --userns=keep-id"
   _run_opts="${_run_opts} --ulimit=host"
+
+  # Use host networking stack for Steam?
+  _run_opts="${_run_opts} --network=host"
 
   readonly _run_opts
   return 0
