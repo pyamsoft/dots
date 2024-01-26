@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Delete the gaming user entirely
+exec sudo sh -c 'loginctl disable-linger gaming && sleep 1 && userdel -r gaming && sleep 1 && groupdel gaming'

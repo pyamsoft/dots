@@ -1,0 +1,121 @@
+#
+# ~/.bash_profile
+#
+
+[[ -f ~/.bashrc ]] && . ~/.bashrc
+
+__set_shopt_options() {
+  if ! command -v shopt > /dev/null; then
+    return 0
+  fi
+
+  # Window
+  shopt -s checkwinsize
+
+  # Spellcheck
+  shopt -s cdspell
+  shopt -s dirspell
+
+  # Don't destroy history file
+  shopt -s histappend
+  shopt -s cmdhist
+
+  # No completion on empty command
+  shopt -s no_empty_cmd_completion
+
+  # Glob
+  shopt -s globstar
+  shopt -s extglob
+  shopt -s dotglob
+}
+
+__setup_shell_env() {
+  # Disable the bash_history file
+  export HISTCONTROL=ignoreboth
+  export HISTFILE="${XDG_CONFIG_HOME}/bash/history"
+
+  # Move bash_completion file
+  export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
+}
+
+# Correct systemctl --user service
+_correct_systemctl() {
+  _my_uid="$(id -u)"
+  export XDG_RUNTIME_DIR="/run/user/${_my_uid}"
+  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+  unset _my_uid
+}
+
+_setup_xdg() {
+  # Define XDG directories
+  if [ -z "${XDG_CONFIG_HOME}" ]; then
+    export XDG_CONFIG_HOME="${HOME}/.config"
+  fi
+
+  if [ -z "${XDG_CACHE_HOME}" ]; then
+    export XDG_CACHE_HOME="${HOME}/.cache"
+  fi
+
+  if [ -z "${XDG_DATA_HOME}" ]; then
+    export XDG_DATA_HOME="${HOME}/.local/share"
+  fi
+
+  if [ -z "${XDG_STATE_HOME}" ]; then
+    export XDG_STATE_HOME="${HOME}/.local/state"
+  fi
+}
+
+_setup_homedir() {
+  # Suggestions from xdg-ninja
+  export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
+  export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
+  export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
+  export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
+
+  # Make directories
+  if [ -d "${XDG_CONFIG_HOME}/readline" ]; then
+    mkdir -p "${XDG_CONFIG_HOME}/readline"
+  fi
+  if [ -d "${XDG_CACHE_HOME}/less" ]; then
+    mkdir -p "${XDG_CACHE_HOME}/less"
+  fi
+  if [ -d "${XDG_DATA_HOME}/gnupg" ]; then
+    mkdir -p "${XDG_DATA_HOME}/gnupg"
+  fi
+}
+
+_setup_extra() {
+  # If systemd assumes we have 256 colors, it displays a weird yellow for example.
+  # Our terminal color scheme only handles 16
+  export SYSTEMD_COLORS=16
+
+  # Help with Pulse audio crackling in some programs
+  export PULSE_LATENCY_MSEC=60
+  
+  # Hardware Accel
+  #
+  # For AMD
+  export LIBVA_DRIVER_NAME=radeonsi
+  
+  # Use single-file shader cache
+  # https://www.phoronix.com/news/Mesa-Single-File-Cache
+  export MESA_DISK_CACHE_SINGLE_FILE=1
+  
+  # No AT accessibility bus
+  export NO_AT_BRIDGE=1
+}
+
+_setup_extra
+_setup_xdg
+_setup_homedir
+_correct_systemctl
+__setup_shell_env
+__set_shopt_options
+
+unset -f _setup_extra
+unset -f _setup_xdg
+unset -f _setup_homedir
+unset -f _correct_systemctl
+unset -f __set_shopt_options
+unset -f __setup_shell_env
+

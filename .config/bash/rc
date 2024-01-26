@@ -1,5 +1,8 @@
 # shellcheck shell=bash
 
+# If not running interactively, don't do anything
+[[ "$-" != *i* ]] && return
+
 _launch_starship() {
   if command -v starship > /dev/null; then
     eval "$(starship init bash)" || return 1

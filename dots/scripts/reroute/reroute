@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# A simple $HOME only sandbox that re-writes all environment variables to a directory of choice
+#
+# This is NOT a security sandbox. This has one simple goal which is to $HOME sandbox gaming apps
+
+readonly _target_user="gaming"
+
+_check_user() {
+  if ! id -u "${_target_user}" >/dev/null 2>&1; then
+    printf -- 'Target user %s does not exist!\n' "${_target_user}"
+    return 1
+  fi
+
+  return 0
+}
+
+main() {
+  if ! _check_user; then
+    return 1
+  fi
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
