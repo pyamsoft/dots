@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Dolphin Emulator with games
+
+exec jail "$(basename "$0")" \
+  --new-session \
+  --bind "${HOME}/games/emulator" "${HOME}/games/emulator" \
+  --bind "${HOME}/.local/bin/gametime" "${HOME}/.local/bin/gametime" \
+  -- \
+  "$@"
