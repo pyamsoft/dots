@@ -44,17 +44,17 @@ _setup_path() {
 
   # Linux stuff
   if [ "$(uname)" = "Linux" ]; then
-    # Jail scripts
-    if command -v bwrap >/dev/null && command -v jail >/dev/null; then
-      if [ -d "${HOME}/.jail/bin" ]; then
-        PATH="${HOME}/.jail/bin:${PATH}"
-      fi
-    fi
-
     # Flatpak scrips
     if command -v flatpak >/dev/null; then
       if [ -d "${HOME}/.flatpak/bin" ]; then
         PATH="${HOME}/.flatpak/bin:${PATH}"
+      fi
+    fi
+
+    # Jail scripts
+    if command -v bwrap >/dev/null && command -v jail >/dev/null; then
+      if [ -d "${HOME}/.jail/bin" ]; then
+        PATH="${HOME}/.jail/bin:${PATH}"
       fi
     fi
   fi

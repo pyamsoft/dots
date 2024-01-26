@@ -33,15 +33,14 @@ _clean_path() {
 
 _create_home() {
   _home="$1"
-  if [ ! -d "${_home}" ]; then
-    # Create the jail root
-    mkdir -p "${_home}" || {
-      printf -- 'Failed to create jail dir: %s\n' "${_home}"
 
-      unset _home
-      return 1
-    }
-  fi
+  # Create the jail root
+  mkdir -p "${_home}/home" "${_home}/var/tmp" || {
+    printf -- 'Failed to create jail dir: %s\n' "${_home}"
+
+    unset _home
+    return 1
+  }
 
   unset _home
   return 0
@@ -58,7 +57,10 @@ directory.
 Jails are located in: ${JAIL_DIR} by default
 
 
-\$ jail [--name <name>] [--shell] <command>
+\$ jail [--name <name>] [--shell] <command> [bwrap-options] -- [command-options]
+
+Any arguments passed after the <command> will be interpreted as options for bwrap.
+Any arguments passed after the command and "--" will be passed to the command
 
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
@@ -67,6 +69,30 @@ Jails are located in: ${JAIL_DIR} by default
 
 EOF
 )"
+}
+
+_bind_x11() {
+  for _b in "/tmp/.X"*-lock "/tmp/."*"-unix"; do
+    _binds="${_binds} --bind ${_b} ${_b}"
+  done
+  unset _b
+}
+
+_bind_gtk() {
+  for _b in "${XDG_CONFIG_HOME}/gtk-"* "${XDG_CONFIG_HOME}/dconf"; do
+    _binds="${_binds} --ro-bind ${_b} ${_b}"
+  done
+  unset _b
+}
+
+_extra_binds() {
+  _binds=""
+
+  _bind_x11
+  _bind_gtk
+
+  readonly _binds
+  return 0
 }
 
 _run_jail() {
@@ -87,11 +113,32 @@ _run_jail() {
   fi
   unset _j_open_shell
 
-  # Clean the path before running
   _clean_path || return 1
+  _extra_binds || return 1
+
+  _args=""
+  for _a in "$@"; do
+    if [ "${_a}" = "--" ]; then
+      shift
+      break
+    fi
+
+    if [ -z "${_args}" ]; then
+      _args="$1"
+    else
+      _args="${_args} $1"
+    fi
+    shift
+  done
 
   # Log commands
-  set -x
+  set -xeu
+
+  # Unset the SESSION_MANAGER var
+  # https://stackoverflow.com/questions/59057653/qt-session-management-error-none-of-the-authentication-protocols-specified-are
+  #
+  # Overwrite /tmp /run /var and /proc
+  # Mount back the user runtime dir and add extra binds for .X11 in /tmp
 
   # Make sure we kill children when bwrap dies
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
@@ -100,6 +147,8 @@ _run_jail() {
   # mount new proc on /proc
   # Mount a new home
   # Mark the process
+  #
+  # shellcheck disable=SC2086
   exec bwrap \
     --die-with-parent \
     --unshare-user-try \
@@ -108,12 +157,18 @@ _run_jail() {
     --unshare-cgroup-try \
     --dev-bind / / \
     --tmpfs /tmp \
+    --tmpfs /run \
+    --tmpfs /var \
     --proc /proc \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
-    --bind "${_j_jail}" "${HOME}" \
-    -- "${_j_cmd}" "$@"
+    --unsetenv SESSION_MANAGER \
+    --bind "${_j_jail}/home" "${HOME}" \
+    --bind "${_j_jail}/var/tmp" "/var/tmp" \
+    --bind "${XDG_RUNTIME_DIR}" "${XDG_RUNTIME_DIR}" \
+    ${_binds} \
+    ${_args} -- "${_j_cmd}" "$@"
 }
 
 _check_prereq() {
