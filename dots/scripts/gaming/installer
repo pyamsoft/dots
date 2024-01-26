@@ -64,25 +64,27 @@ _installer() {
 
 _local_install() {
   script="$1"
+  target="$2"
   current_directory="$(pwd)"
 
-  printf -- 'Attempt local install script %s into host\n' "${script}"
+  printf -- 'SUDO: Attempt local install script %s into target %s/bin\n' "${script}" "${target}"
 
-  t="${HOME}/.local/bin/$(basename "${script}")"
+  t="${target}/bin/$(basename "${script}")"
 
-  cp -f "${current_directory}/${script}" "$t" || {
+  sudo cp -f "${current_directory}/${script}" "$t" || {
     printf -- 'Failed to copy script %s into host\n' "${script}"
     return 1
   }
 
-  chmod 700 "$t" || {
+  sudo chmod 700 "$t" || {
     printf -- 'Failed to mark script %s executable for host\n' "${script}"
     return 2
   }
 
-  printf -- '    %s installed for host\n' "${script}"
+  printf -- 'SUDO:    %s installed for %s\n' "${script}" "$t"
 
   unset t
+  unset target
   unset script
   unset current_directory
   return 0
@@ -106,7 +108,15 @@ _installer "org.DolphinEmu.dolphin-emu" ".local/bin" "dolphin-emu/gametime-dolph
 
 # If we have gamescope locally, maybe we want this script too
 if command -v gamescope >/dev/null; then
-  _local_install "gametime" || exit 1
+  for _u in /home/gaming-*; do
+    case "${_u}" in
+      gaming-\*)
+        ;;
+      *)
+        _local_install "gametime" "${_u}" || exit 1
+        ;;
+    esac
+  done
 fi
 
 exit 0
