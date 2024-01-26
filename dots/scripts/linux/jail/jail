@@ -134,12 +134,6 @@ _run_jail() {
   # Log commands
   set -xeu
 
-  # Unset the SESSION_MANAGER var
-  # https://stackoverflow.com/questions/59057653/qt-session-management-error-none-of-the-authentication-protocols-specified-are
-  #
-  # Overwrite /tmp /run /var and /proc
-  # Mount back the user runtime dir and add extra binds for .X11 in /tmp
-
   # Make sure we kill children when bwrap dies
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
   # dev-bind root so everything works the same as it would outside
@@ -147,6 +141,13 @@ _run_jail() {
   # mount new proc on /proc
   # Mount a new home
   # Mark the process
+  #
+  # Unset the SESSION_MANAGER var
+  # https://stackoverflow.com/questions/59057653/qt-session-management-error-none-of-the-authentication-protocols-specified-are
+  #
+  # Overwrite /tmp /run /var and /proc
+  # Mount back the user runtime dir and add extra binds for .X11 in /tmp
+  # Mount dbus system socket
   #
   # shellcheck disable=SC2086
   exec bwrap \
@@ -167,6 +168,7 @@ _run_jail() {
     --bind "${_j_jail}/home" "${HOME}" \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     --bind "${XDG_RUNTIME_DIR}" "${XDG_RUNTIME_DIR}" \
+    --ro-bind "/run/dbus" "/run/dbus" \
     ${_binds} \
     ${_args} -- "${_j_cmd}" "$@"
 }

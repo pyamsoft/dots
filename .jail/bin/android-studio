@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Android Studio with devel
+
+# Gradle Doctor complains
+export JAVA_HOME="/opt/android-studio/jbr"
+
+exec jail "$(basename "$0")" \
+  --new-session \
+  --bind "${HOME}/devel" "${HOME}/devel/" \
+  -- \
+  "$@"
