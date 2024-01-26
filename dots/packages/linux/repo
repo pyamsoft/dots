@@ -9,6 +9,8 @@ buildah
 cups-pdf
 dconf-editor
 ddcutil
+dolphin-emu
+easyeffects
 firefox
 gamescope
 gdm
@@ -34,6 +36,7 @@ mangohud
 nautilus
 neovim
 noto-fonts
+openrct2
 otf-cascadia-code
 p7zip
 pacman-contrib
