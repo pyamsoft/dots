@@ -3,6 +3,18 @@
 A set of scripts to setup a secondary user for JUST GAMING on the host machine,
 without giving access like `wheel` or `user directories` to the gaming software.
 
+This is needed because `gamescope` won't run in flatpak except
+- If you use an outdated unmaintained Proton-GE (which is bad)
+
+`gamescope` won't run in `podman` or `bwrap` because the sandbox prevents us from touching `/tmp/.X11-unix`,
+which is also no good.
+
+So we trade off.
+
+Less security (running on the host system) but with a "user-home" sandbox (running as a second, less privileged user).
+
+## What
+
 `setup` will setup a gaming user and grant them `systemctl --user` session access
 
 `gamer` will run the provided binary as the `gaming-{name}` user and grant the
@@ -10,7 +22,7 @@ user access to the local X server via `xhost`
 
 `delete` will remove a `gaming-{name}` user and delete their `$HOME`
 
-## sudo
+### sudo
 
 You'll probably want to copy the sudoer file here into `/etc/sudoers.d`
 Note that, intentionally, this sudoers file only offers passwordless access for
