@@ -4,8 +4,6 @@
 #
 # This is NOT a security sandbox. This has one simple goal which is to $HOME sandbox gaming apps
 
-readonly _target_user="gaming"
-
 _check_user() {
   if ! id -u "${_target_user}" >/dev/null 2>&1; then
     printf -- 'Target user %s does not exist!\n' "${_target_user}"
@@ -16,9 +14,24 @@ _check_user() {
 }
 
 main() {
+  _cmd="$1"
+  if [ -z "${_cmd}" ]; then
+    printf -- 'Must specify a command to run as %s\n' "${_target_user}"
+    return 1
+  fi
+  shift
+
+  readonly _target_user="gaming-${_cmd}"
   if ! _check_user; then
     return 1
   fi
+
+  # Run
+  xhost +SI:localuser:"${_target_user}" || {
+    printf -- 'Failed to grant xhost access to %s\n' "${_target_user}"
+    return 1
+  }
+  sudo -u "${_target_user}" -i -- env GAMER=1 "${_cmd}" "$@"
 
   return 0
 }

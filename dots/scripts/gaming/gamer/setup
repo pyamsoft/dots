@@ -1,7 +1,5 @@
 #!/bin/sh
 
-readonly _target_user="gaming"
-
 _check_user() {
   if  id -u "${_target_user}" >/dev/null 2>&1; then
     printf -- 'Target user %s already exists!\n' "${_target_user}"
@@ -13,7 +11,7 @@ _check_user() {
 
 _create_user() {
   printf -- 'Create target user: %s\n' "${_target_user}"
-  sudo useradd --create-home --shell /bin/nologin --user-group "${_target_user}" || {
+  sudo useradd --create-home --shell /bin/bash --user-group "${_target_user}" || {
     printf -- 'Unable to create target user: %s\n' "${_target_user}"
     return 1
   }
@@ -60,6 +58,14 @@ _create_user() {
 }
 
 main() {
+  _target_user="$1"
+  if [ -z "${_target_user}" ]; then
+    printf -- 'Need a target user to setup!\n'
+    return 1
+  fi
+  _target_user="gaming-${_target_user}"
+  readonly _target_user
+
   if ! _check_user; then
     return 1
   fi

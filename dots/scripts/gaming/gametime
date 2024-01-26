@@ -14,10 +14,14 @@ _prepare_env() {
 
   # Setup for WAYLAND for gamescope-wl
   # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
-  if [ -z "${WAYLAND_DISPLAY}" ]; then
-    export WAYLAND_DISPLAY=""
-    __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
-  fi
+  #
+  # Don't use or else gamescope complains about wayland
+  #
+  # if [ -z "${WAYLAND_DISPLAY}" ]; then
+  #   export WAYLAND_DISPLAY=""
+  #   __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
+  # fi
+  unset WAYLAND_DISPLAY
 
   # Disable vertical blank
   export vblank_mode=0

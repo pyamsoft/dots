@@ -13,6 +13,14 @@ org.gnome.SessionManager=none
 org.freedesktop.secrets=none
 org.gnome.Shell.Extensions=none
 org.freedesktop.impl.portal.PermissionStore=none
+org.freedesktop.UPower=none
+org.freedesktop.ScreenSaver=none
+org.gnome.SettingsDaemon.MediaKeys=none
+org.freedesktop.PowerManagement=none
+org.freedesktop.UDisks2=none
+com.canonical.AppMenu.Registrar=none
+org.kde.KGlobalSettings=none
+org.freedesktop.login1=none
 
 [Environment]
 PROMPT_COMMAND=
