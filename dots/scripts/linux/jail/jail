@@ -152,15 +152,7 @@ _run_jail() {
   # shellcheck disable=SC2086
   exec bwrap \
     --die-with-parent \
-    --unshare-user-try \
-    --unshare-pid \
-    --unshare-uts \
-    --unshare-cgroup-try \
     --dev-bind / / \
-    --tmpfs /tmp \
-    --tmpfs /run \
-    --tmpfs /var \
-    --proc /proc \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \

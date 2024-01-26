@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Steam with games
+
+exec jail "$(basename "$0")" \
+  --bind "${HOME}/games/steam" "${HOME}/games/steam" \
+  --bind "${HOME}/.local/bin/gametime" "${HOME}/.local/bin/gametime" \
+  -- \
+  "$@"

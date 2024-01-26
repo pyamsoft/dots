@@ -7,11 +7,8 @@ base
 base-devel
 buildah
 cups-pdf
-dconf-editor
 ddcutil
 dolphin-emu
-easyeffects
-firefox
 gamescope
 gdm
 gentium-plus-font
@@ -25,11 +22,8 @@ htop
 inter-font
 irqbalance
 kdeconnect
-keepassxc
 kernel-modules-hook
-libreoffice-still
 linux-lts
-lollypop
 man-db
 man-pages
 mangohud
@@ -41,11 +35,8 @@ otf-cascadia-code
 p7zip
 pacman-contrib
 papirus-icon-theme
-pavucontrol
 picard
 podman
-pycharm-community-edition
-qbittorrent
 reflector
 rng-tools
 rofi
@@ -55,7 +46,6 @@ smartmontools
 sof-firmware
 sshpass
 starship
-steam
 tailscale
 tmux
 tree-sitter-cli

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+readonly pak="org.gnome.Lollypop"
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --filesystem="xdg-music" \
+  --filesystem="${HOME}/music" \
+  -- "$@" || exit 1
+exit 0
