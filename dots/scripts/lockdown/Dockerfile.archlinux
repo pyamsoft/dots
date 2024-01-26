@@ -1,0 +1,14 @@
+FROM archlinux
+
+# Set the umask before we continue
+RUN umask 0022
+
+# Install common software
+RUN pacman -Syu --noconfirm base base-devel alsa-utils mesa-utils pipewire-pulse pipewire-alsa wireplumber curl iputils iproute2 ffmpeg x264 x265 gst-plugins-bad gst-plugins-ugly gst-plugin-va libva-mesa-driver mesa mesa-vdpau libvdpau-va-gl vulkan-radeon
+
+# Add init scripts
+ADD ./init /init
+
+# Set entrypoint as lockdown-init
+ENTRYPOINT [ "/init/lockdown-init" ]
+

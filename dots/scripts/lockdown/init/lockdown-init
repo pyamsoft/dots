@@ -15,6 +15,7 @@ _setup_groups() {
 
   # sudo
   gpasswd -a "${HOST_USER}" sudo
+  gpasswd -a "${HOST_USER}" wheel
 
   return 0
 }
@@ -30,6 +31,9 @@ _setup_runtime() {
 
   # Set shell as bash
   chsh --shell /bin/bash "${HOST_USER}" || return 1
+
+  # Allow sudo access
+  echo "${HOST_USER} ALL=(ALL) ALL" >>/etc/sudoers
 
   return 0
 }

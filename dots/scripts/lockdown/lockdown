@@ -221,7 +221,6 @@ _run() {
 
   # shellcheck disable=SC2086
   exec podman run \
-    --security-opt no-new-privileges:true \
     --name "lockdown-${_name}" \
     --hostname "lockdown-${_name}" \
     --init \

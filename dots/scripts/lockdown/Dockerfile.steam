@@ -1,0 +1,25 @@
+FROM localhost/pyamsoft/archlinux
+
+# Enable multilib
+RUN echo '[multilib]' >>/etc/pacman.conf && echo 'Include = /etc/pacman.d/mirrorlist' >>/etc/pacman.conf
+
+# Install paru for AUR access
+RUN pacman -Syu --noconfirm git
+
+## Setup a build user
+RUN useradd -m --shell=/bin/false build && usermod -L build && echo "build ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers && echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+## Clone and install
+USER build
+RUN cd && git clone 'https://aur.archlinux.org/paru-bin.git' && cd paru-bin && makepkg -scfi --noconfirm
+
+# Install Steam and friends
+RUN paru -Syu --noconfirm --skipreview steam steam-native-runtime gamescope mangohud protonup-qt glfw-x11 lib32-libva-mesa-driver lib32-mesa-vdpau
+
+# Back to root
+USER root
+RUN userdel -r build
+
+# gamescope in steam doesn't work because
+# wlserver: [xwayland/sockets.c:99] /tmp/.X11-unix not owned by root or us
+# we could chown the folder in the container but it would mess up the host.

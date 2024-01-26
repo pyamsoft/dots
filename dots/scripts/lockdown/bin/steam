@@ -1,0 +1,26 @@
+#!/bin/sh
+
+_cmd="$(basename "$0")"
+readonly _cmd
+
+main() {
+  # Sometimes steam messes up and deletes our library paths
+  # https://wiki.archlinux.org/title/Steam/Troubleshooting#Cannot_browse_filesystem_to_add_a_library_folder_or_library_folder_appears_as_empty
+  if [ -e "${HOME}/games/steam" ]; then
+    touch "${HOME}/games/steam" || return 1
+  fi
+
+  _run="lockdown --name ${_cmd} --image localhost/pyamsoft/${_cmd} -- --mount type=bind,source=${HOME}/games/steam,target=${HOME}/games/steam"
+  readonly _run
+
+  if [ -n "$1" ] && [ "$1" = "--shell" ]; then
+    shift
+    exec ${_run} --rm -i -t "$@"
+  else
+    # shellcheck disable=SC2086
+    exec ${_run} --rm -- -c "/init/userinit -c ${_cmd}" "$@"
+  fi
+}
+
+main "$@" || exit 1
+exit 0
