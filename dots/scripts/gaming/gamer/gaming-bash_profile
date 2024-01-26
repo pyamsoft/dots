@@ -103,6 +103,9 @@ _setup_extra() {
   
   # No AT accessibility bus
   export NO_AT_BRIDGE=1
+
+  # Add local path
+  export PATH="${HOME}/bin:${PATH}"
 }
 
 _setup_extra

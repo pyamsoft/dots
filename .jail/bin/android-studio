@@ -4,6 +4,9 @@
 
 # Gradle Doctor complains
 export JAVA_HOME="/opt/android-studio/jbr"
+export PATH="${HOME}/devel/sdk/android/build-tools/34.0.0:${PATH}"
+export PATH="${HOME}/devel/sdk/android/cmdline-tools/latest:${PATH}"
+export PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
 
 exec jail "$(basename "$0")" \
   --new-session \

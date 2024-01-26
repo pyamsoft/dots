@@ -1,4 +1,12 @@
 #!/bin/sh
 
 # Delete the gaming user entirely
-exec sudo sh -c 'loginctl disable-linger gaming && sleep 1 && userdel -r gaming && sleep 1 && groupdel gaming'
+_user="$1"
+if [ -z "${_user}" ]; then
+  printf -- 'Need target user to delete\n'
+  exit 1
+fi
+
+_user="gaming-${_user}"
+readonly _user
+exec sudo sh -c "loginctl disable-linger ${_user} && sleep 1 && userdel -r ${_user} && sleep 1 && groupdel ${_user}"

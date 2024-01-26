@@ -3,6 +3,7 @@
 # A simple $HOME only sandbox that re-writes all environment variables to a directory of choice
 #
 # This is NOT a security sandbox. This has one simple goal which is to $HOME sandbox gaming apps
+readonly _SCRIPT_NAME="gamer"
 
 _check_user() {
   if ! id -u "${_target_user}" >/dev/null 2>&1; then
@@ -16,10 +17,17 @@ _check_user() {
 main() {
   _cmd="$1"
   if [ -z "${_cmd}" ]; then
-    printf -- 'Must specify a command to run as %s\n' "${_target_user}"
-    return 1
+    _cur_name=$(basename "$0")
+    readonly _cur_name
+    if [ "${_cur_name}" != "${_SCRIPT_NAME}" ]; then
+      _cmd="${_cur_name}"
+    else
+      printf -- 'Must specify a command to run as %s\n' "${_target_user}"
+      return 1
+    fi
+  else
+    shift
   fi
-  shift
 
   readonly _target_user="gaming-${_cmd}"
   if ! _check_user; then
@@ -31,7 +39,11 @@ main() {
     printf -- 'Failed to grant xhost access to %s\n' "${_target_user}"
     return 1
   }
-  sudo -u "${_target_user}" -i -- env GAMER=1 "${_cmd}" "$@"
+  sudo \
+    -u "${_target_user}" \
+    -i \
+    -- \
+    env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
 
   return 0
 }

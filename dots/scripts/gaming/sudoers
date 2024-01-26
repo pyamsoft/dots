@@ -1,0 +1,4 @@
+# Gaming access for user
+#
+# Replace "gaming-steam" and "steam" command with your user name and command name
+peter ALL=(gaming-steam) NOPASSWD:/bin/bash -c env GAMER=1 steam
