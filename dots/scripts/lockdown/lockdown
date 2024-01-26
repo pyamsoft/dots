@@ -193,6 +193,11 @@ _setup_run_opts() {
   # Use host networking stack for Steam?
   _run_opts="${_run_opts} --network=host"
 
+  if [ "${_allow_shell}" -eq 1 ]; then
+    # Attach shell
+    _run_opts="${_run_opts} -i -t"
+  fi
+
   readonly _run_opts
   return 0
 }
@@ -216,7 +221,6 @@ _run() {
 
   # shellcheck disable=SC2086
   exec podman run \
-    -i -t \
     --security-opt no-new-privileges:true \
     --name "lockdown-${_name}" \
     --hostname "lockdown-${_name}" \
@@ -302,6 +306,12 @@ _process_option_with_argument() {
       # Number to shift
       return 1
       ;;
+    '--shell')
+      _allow_shell=1
+
+      # Number to shift
+      return 1
+      ;;
   esac
 
   unset _opt
@@ -320,6 +330,7 @@ main() {
   _allow_audio=1
   _allow_video=1
   _allow_dbus=0
+  _allow_shell=0
 
   if [ "$#" -le 0 ]; then
     printf -- 'Must provide required arguments\n'
