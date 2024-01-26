@@ -180,6 +180,7 @@ gst-plugins-base
 gst-plugins-base-libs
 gst-plugins-good
 gst-plugins-ugly
+gst-python
 gstreamer
 gtk-update-icon-cache
 gtk2
@@ -256,6 +257,7 @@ hyphen
 i2c-tools
 iana-etc
 icu
+id3lib
 iio-sensor-proxy
 ijs
 imagemagick
@@ -268,12 +270,9 @@ iso-codes
 iw
 iwd
 jansson
-java-runtime-common
 jbig2dec
 jbigkit
 jitterentropy
-jre17-openjdk
-jre17-openjdk-headless
 js115
 json-c
 json-glib
@@ -298,6 +297,8 @@ kglobalaccel5
 kguiaddons5
 ki18n5
 kiconthemes5
+kid3-common
+kid3-qt
 kio5
 kirigami-addons5
 kirigami2
@@ -442,6 +443,7 @@ libmicrohttpd
 libmm-glib
 libmnl
 libmodplug
+libmp4v2
 libmpc
 libmpcdec
 libmpeg2
@@ -841,6 +843,7 @@ tecla
 tevent
 texinfo
 thin-provisioning-tools
+totem-pl-parser
 tpm2-tss
 tracker3
 tree-sitter
