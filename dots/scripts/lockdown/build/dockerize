@@ -1,0 +1,29 @@
+#!/bin/sh
+
+main() {
+  _name="$1"
+
+  if [ -z "${_name}" ]; then
+    printf -- 'Requires name\n'
+    return 1
+  fi
+
+  # Eat
+  shift
+
+  # Only podman support
+  readonly _cmd="podman"
+
+  # shellcheck disable=SC2086
+  exec ${_cmd} build . \
+    -t pyamsoft/"${_name}" \
+    -f ./"Dockerfile.${_name}" \
+    --env="BASE_BUILD_DATE=$(date)" \
+    --rm \
+    --layers \
+    --force-rm \
+    "$@"
+}
+
+main "$@" || exit 1
+exit 0

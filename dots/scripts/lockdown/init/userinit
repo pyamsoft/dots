@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export XDG_RUNTIME_DIR="/run/user/${HOST_UID}"
+
+exec su \
+  --login \
+  --whitelist=BASE_BUILD_DATE,DISPLAY,WAYLAND_DISPLAY,MESA_DISK_CACHE_SINGLE_FILE,XAUTHORITY,LANG,LANGUAGE,XDG_RUNTIME_DIR \
+  "${HOST_USER}" "$@"

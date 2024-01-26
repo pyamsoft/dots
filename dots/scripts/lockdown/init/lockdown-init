@@ -1,0 +1,64 @@
+#!/bin/sh
+
+readonly _password="1234"
+
+_setup_groups() {
+  # Audio
+  gpasswd -a "${HOST_USER}" audio
+
+  # Video
+  gpasswd -a "${HOST_USER}" video
+  gpasswd -a "${HOST_USER}" render
+
+  # Input
+  gpasswd -a "${HOST_USER}" input
+
+  # sudo
+  gpasswd -a "${HOST_USER}" sudo
+
+  return 0
+}
+
+_setup_password() {
+  printf -- '%s:%s\n' "${HOST_USER}" "${_password}" | chpasswd || return 1
+  return 0
+}
+
+_setup_runtime() {
+  # Own XDG_RUNTIME_DIR
+  chown "${HOST_USER}:${HOST_USER}" /run/user/"${HOST_UID}" || return 1
+
+  # Set shell as bash
+  chsh --shell /bin/bash "${HOST_USER}" || return 1
+
+  return 0
+}
+
+_setup_user() {
+  _setup_password || {
+    printf -- 'Failed to set password: %s\n' "${HOST_USER}"
+    return 1
+  }
+
+  _setup_groups || {
+    printf -- 'Failed to set groups: %s\n' "${HOST_USER}"
+    return 1
+  }
+
+  _setup_runtime || {
+    printf -- 'Failed to set runtime: %s\n' "${HOST_USER}"
+    return 1
+  }
+}
+
+main() {
+  _setup_user || return 1
+  return 0
+}
+
+main || exit 1
+
+# Start a shell
+exec /bin/bash -l "$@"
+
+exit 0

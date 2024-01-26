@@ -180,8 +180,9 @@ _setup_run_opts() {
   fi
 
   # Ensure presence
-  _run_opts="${_run_opts} --add-host 127.0.0.1:localhost"
-  _run_opts="${_run_opts} --add-host 127.0.0.1:lockdown-${_name}"
+  _run_opts="${_run_opts} --add-host localhost:127.0.0.1"
+  _run_opts="${_run_opts} --add-host lockdown-${_name}:127.0.0.1"
+  _run_opts="${_run_opts} --add-host host.containers.internal:host-gateway"
   _run_opts="${_run_opts} --dns 1.1.1.1"
 
   # User setup
@@ -197,6 +198,20 @@ _setup_run_opts() {
 }
 
 _run() {
+  _args=""
+  while [ "$#" -gt 0 ]; do
+    _o="$1"
+    shift
+
+    if [ "${_o}" = "--" ]; then
+      break
+    fi
+
+    _args="${_args} ${_o}"
+  done
+  readonly _args
+  unset _o
+
   set -xeu
 
   # shellcheck disable=SC2086
@@ -212,7 +227,8 @@ _run() {
     ${_mounts} \
     ${_devices} \
     ${_env} \
-    "$@" "${_image}"
+    ${_args} \
+    "${_image}" "$@"
 }
 
 _process_option_with_argument() {
@@ -342,7 +358,7 @@ main() {
     return 1
   fi
 
-  _lockdown_home="${HOME}/.local/etc/lockdown/lockdown-${_name}"
+  _lockdown_home="${HOME}/.local/etc/lockdown/${_name}"
   mkdir -p "${_lockdown_home}" || {
     printf -- 'Failed to make lockdown home directory: %s\n' "${_lockdown_home}"
     return 1
