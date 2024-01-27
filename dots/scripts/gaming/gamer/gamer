@@ -39,6 +39,16 @@ main() {
     printf -- 'Failed to grant xhost access to %s\n' "${_target_user}"
     return 1
   }
+
+  # Load pulseaudio over localhost TCP
+  _pa_mod="module-native-protocol-tcp"
+  if ! pactl list modules | grep -q "${_pa_mod}"; then
+    pactl load-module "${_pa_mod}" "listen=127.0.0.1" "port=4712" || {
+      printf -- 'Failed to load pactl TCP protocol\n'
+      return 1
+    }
+  fi
+
   sudo \
     -u "${_target_user}" \
     -i \

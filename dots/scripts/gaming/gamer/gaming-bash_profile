@@ -106,6 +106,9 @@ _setup_extra() {
 
   # Add local path
   export PATH="${HOME}/bin:${PATH}"
+
+  # Listen to the "main" user pulseaudio socket
+  export PULSE_SERVER="tcp:127.0.0.1:4712"
 }
 
 _setup_extra

@@ -33,6 +33,7 @@ EOF
 
 _create_user() {
   printf -- 'Create target user: %s\n' "${_target_user}"
+
   sudo useradd --create-home --shell /bin/bash --user-group "${_target_user}" || {
     printf -- 'Unable to create target user: %s\n' "${_target_user}"
     return 1
