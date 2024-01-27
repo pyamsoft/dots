@@ -153,6 +153,15 @@ _run_jail() {
   exec bwrap \
     --die-with-parent \
     --dev-bind / / \
+    --unshare-user \
+    --unshare-ipc \
+    --unshare-pid \
+    --unshare-uts \
+    --unshare-cgroup \
+    --tmpfs /run \
+    --tmpfs /tmp \
+    --tmpfs /var \
+    --proc /proc \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
