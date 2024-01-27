@@ -1,0 +1,9 @@
+# .bash_logout
+
+# Kill all our stuff
+_me="$(id -un)"
+
+printf -- 'Bye bye %s\n' "${_me}"
+loginctl kill-user "${_me}"
+
+unset _me

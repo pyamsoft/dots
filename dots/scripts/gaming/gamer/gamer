@@ -55,6 +55,11 @@ main() {
     -- \
     env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
 
+  # Then when it finishes, we make sure to clean up
+  xhost -SI:localuser:"${_target_user}" || {
+    printf -- 'Failed to revoke xhost access to %s\n' "${_target_user}"
+  }
+
   return 0
 }
 

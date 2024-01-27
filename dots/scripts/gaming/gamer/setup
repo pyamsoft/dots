@@ -54,6 +54,11 @@ _create_user() {
     return 1
   }
 
+  sudo cp ./gaming-bash_logout /home/"${_target_user}"/.bash_logout || {
+    printf -- 'Failed to install bash_logout for %s\n' "${_target_user}"
+    return 1
+  }
+
   _install_launcher || return 1
 
   # Update access perms
