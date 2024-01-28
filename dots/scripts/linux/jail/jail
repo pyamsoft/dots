@@ -158,10 +158,24 @@ _run_jail() {
     --unshare-pid \
     --unshare-uts \
     --unshare-cgroup \
+    --tmpfs /boot \
+    --tmpfs /efi \
     --tmpfs /run \
     --tmpfs /tmp \
     --tmpfs /var \
+    --tmpfs /srv \
+    --tmpfs /sys \
     --proc /proc \
+    --tmpfs /usr/lib/modules \
+    --tmpfs /usr/lib/modprobe.d \
+    --tmpfs /usr/lib/modules-load.d \
+    --tmpfs /etc/kernel \
+    --tmpfs /etc/keyutils \
+    --tmpfs /etc/modprobe.d \
+    --tmpfs /etc/modules-load.d \
+    --tmpfs /etc/sudoers.d \
+    --tmpfs /etc/sysctl.d \
+    --mqueue /dev/mqueue \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
@@ -170,6 +184,7 @@ _run_jail() {
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     --bind "${XDG_RUNTIME_DIR}" "${XDG_RUNTIME_DIR}" \
     --ro-bind "/run/dbus" "/run/dbus" \
+    --ro-bind "/run/cups" "/run/cups" \
     ${_binds} \
     ${_args} -- "${_j_cmd}" "$@"
 }
