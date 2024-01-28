@@ -15,13 +15,14 @@ _install_launcher() {
   printf -- '%s' "$(cat <<EOF
 #!/bin/sh
 
-if [ "${GAMER_GAMESCOPE}" -ne 0 ]; then
+env | sort
+if [ -n "${GAMER_GAMESCOPE}" ] && [ "${GAMER_GAMESCOPE}" -ne 0 ]; then
   exec gametime ${_cmd} "\$@"
 else
   exec "${_cmd}" "\$@"
 fi
 EOF
-)" | sudo tee -a /home/"${_target_user}"/bin/launcher >/dev/null || {
+)" | sudo tee /home/"${_target_user}"/bin/launcher >/dev/null || {
   printf -- 'Failed to install launcher for user %s\n' "${_target_user}"
   return 1
 }
