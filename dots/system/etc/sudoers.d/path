@@ -1,0 +1,5 @@
+# Reset environment
+Defaults env_reset
+
+# Define secure path
+Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"

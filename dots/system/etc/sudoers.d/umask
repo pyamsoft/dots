@@ -1,0 +1,3 @@
+# Set umask to 0022 as most files are owned by root but used by everyone
+Defaults umask=0022
+Defaults umask_override

@@ -1,0 +1,2 @@
+# Keep defined proxies
+Defaults env_keep += "*_proxy *_PROXY"
