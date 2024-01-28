@@ -21,3 +21,8 @@ Make sure you:
 ### Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
+
+### Team Fortress 2 and other Old Source Games
+They require `lib32-gperftools` installed from the AUR, and run with  
+`LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%`  
+[see here](https://github.com/ValveSoftware/Source-1-Games/issues/5043)

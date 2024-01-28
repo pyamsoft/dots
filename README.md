@@ -40,7 +40,7 @@ Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from Obs
 You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` and `Adwaita-dark` manually
 
 ### Steam (Flatpak)
-See notes in `~dots/scripts/linux/flatpak/games/notes.txt`
+See notes in `~dots/scripts/gaming/README.md`
 
 ### Moonlight
 Make sure you do not block the X11 or fallback x11 sockets for moonlight or else --grab won't work

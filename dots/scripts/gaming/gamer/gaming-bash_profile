@@ -125,3 +125,9 @@ unset -f _correct_systemctl
 unset -f __set_shopt_options
 unset -f __setup_shell_env
 
+# Enable linger and wait just a little bit to make sure
+printf -- 'Linger around %s\n' "$(id -un)"
+loginctl enable-linger "$(id -un)" && sleep 2
+if ! systemctl --user >/dev/null; then
+  printf -- 'systemctl failed?!?!?\n'
+fi
