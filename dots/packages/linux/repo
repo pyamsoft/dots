@@ -39,6 +39,7 @@ pacman-contrib
 papirus-icon-theme
 picard
 podman
+pycharm-community-edition
 reflector
 rng-tools
 rofi
@@ -48,6 +49,7 @@ smartmontools
 sof-firmware
 sshpass
 starship
+steam
 tailscale
 tmux
 tree-sitter-cli
