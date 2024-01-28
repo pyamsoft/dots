@@ -6,11 +6,12 @@ _do_theme() {
   _theme="$1"
 
   _t="/usr/share/themes/${_theme}"
-  if [ ! -d "${_t}" ]; then
+  if [ -z "$1" ] || [ ! -d "${_t}" ]; then
     printf -- 'Sorry, theme %s does not exist on host!\n' "${_t}"
+    unset _t
+    unset _theme
     return 1
   fi
-  shift
 
   # Copy theme
   mkdir -p "${HOME}/.themes"
@@ -19,40 +20,39 @@ _do_theme() {
     _t="/usr/share/themes/${_theme}-Dark"
     if [ -d "${_t}" ]; then
       cp -r "${_t}" "${HOME}/.themes"
-      flatpak override -u --env=GTK_THEME="${_theme}-Dark"
     fi
 
     _t="/usr/share/themes/${_theme}-dark"
     if [ -d "${_t}" ]; then
       cp -r "${_t}" "${HOME}/.themes"
-      flatpak override -u --env=GTK_THEME="${_theme}-dark"
     fi
 
     _t="/usr/share/themes/${_theme}_Dark"
     if [ -d "${_t}" ]; then
       cp -r "${_t}" "${HOME}/.themes"
-      flatpak override -u --env=GTK_THEME="${_theme}_Dark"
     fi
 
     _t="/usr/share/themes/${_theme}_dark"
     if [ -d "${_t}" ]; then
       cp -r "${_t}" "${HOME}/.themes"
-      flatpak override -u --env=GTK_THEME="${_theme}_dark"
     fi
-  else
-    flatpak override -u --env=GTK_THEME="${_theme}"
   fi
+
+  unset _t
+  unset _theme
+  return 0
 }
 
 _do_icon() {
   _icon="$1"
 
   _i="/usr/share/icons/${_icon}"
-  if [ ! -d "${_i}" ]; then
+  if [ -z "$1" ] || [ ! -d "${_i}" ]; then
     printf -- 'Sorry, icon %s does not exist on host!\n' "${_i}"
+    unset _icon
+    unset _i
     return 1
   fi
-  shift
 
   # Copy theme
   mkdir -p "${HOME}/.icons"
@@ -61,29 +61,27 @@ _do_icon() {
     _i="/usr/share/icons/${_icon}-Dark"
     if [ -d "${_i}" ]; then
       cp -r "${_i}" "${HOME}/.icons"
-      flatpak override -u --env=ICON_THEME="${_icon}-Dark"
     fi
 
     _i="/usr/share/icons/${_icon}-dark"
     if [ -d "${_i}" ]; then
       cp -r "${_i}" "${HOME}/.icons"
-      flatpak override -u --env=ICON_THEME="${_icon}-dark"
     fi
 
     _i="/usr/share/icons/${_icon}_Dark"
     if [ -d "${_i}" ]; then
       cp -r "${_i}" "${HOME}/.icons"
-      flatpak override -u --env=ICON_THEME="${_icon}_Dark"
     fi
 
     _i="/usr/share/icons/${_theme}_dark"
     if [ -d "${_i}" ]; then
       cp -r "${_i}" "${HOME}/.icons"
-      flatpak override -u --env=ICON_THEME="${_icon}_dark"
     fi
-  else
-    flatpak override -u --env=ICON_THEME="${_icon}"
   fi
+
+  unset _i
+  unset _icon
+  return 0
 }
 
 main() {
@@ -94,10 +92,9 @@ main() {
   fi
 
   _do_theme "$1" || return 1
-
   shift
-
   _do_icon "$1" || return 1
+
   return 0
 }
 
