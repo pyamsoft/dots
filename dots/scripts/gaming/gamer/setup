@@ -10,6 +10,8 @@ _check_user() {
 }
 
 _install_launcher() {
+  printf -- 'Install user launcher: %s\n' "${_target_user}"
+
   printf -- '%s' "$(cat <<EOF
 #!/bin/sh
 
@@ -31,20 +33,9 @@ EOF
   }
 }
 
-_create_user() {
-  printf -- 'Create target user: %s\n' "${_target_user}"
-
-  sudo useradd --create-home --shell /bin/bash --user-group "${_target_user}" || {
-    printf -- 'Unable to create target user: %s\n' "${_target_user}"
-    return 1
-  }
-
-  sudo mkdir -p /home/"${_target_user}"/bin
-  sudo mkdir -p /home/"${_target_user}"/.cache
-  sudo mkdir -p /home/"${_target_user}"/.config
-  sudo mkdir -p /home/"${_target_user}"/.local/share
-
+_bash_files() {
   printf -- 'Install user bash profile files: %s\n' "${_target_user}"
+
   sudo cp ./gaming-bashrc /home/"${_target_user}"/.bashrc || {
     printf -- 'Failed to install bashrc for %s\n' "${_target_user}"
     return 1
@@ -59,7 +50,22 @@ _create_user() {
     return 1
   }
 
-  _install_launcher || return 1
+  return 0
+}
+
+_make_dirs() {
+  printf -- 'Make user directories: %s\n' "${_target_user}"
+
+  sudo mkdir -p \
+    /home/"${_target_user}"/bin \
+    /home/"${_target_user}"/.cache \
+    /home/"${_target_user}"/.config \
+    /home/"${_target_user}"/.local/share || return 1
+  return 0
+}
+
+_take_ownership() {
+  printf -- 'Claim user ownership: %s\n' "${_target_user}"
 
   # Update access perms
   sudo chown "${_target_user}:${_target_user}" -R /home/"${_target_user}" || {
@@ -79,9 +85,32 @@ _create_user() {
     return 1
   }
 
-  printf -- 'Enable linger for user: %s\n' "${_target_user}"
-  sudo loginctl enable-linger "${_target_user}" || {
-    printf -- 'Failed to enable linger for %s\n' "${_target_user}"
+  return 0
+}
+
+_copy_env() {
+  printf -- 'Copy main-user environment: %s\n' "${_target_user}"
+
+  sudo rm -rf /home/"${_target_user}"/.config/environment.d/* || {
+    printf -- 'Failed to clean up target environment.d\n'
+    return 1
+  }
+  sudo mkdir -p /home/"${_target_user}"/.config/environment.d || {
+    printf -- 'Failed to mkdir target environment.d\n'
+    return 1
+  }
+  sudo cp "${HOME}"/.config/environment.d/* /home/"${_target_user}"/.config/environment.d/ || {
+    printf -- 'Failed to copy into target environment.d\n'
+    return 1
+  }
+  return 0
+}
+
+_create_user() {
+  printf -- 'Create target user: %s\n' "${_target_user}"
+
+  sudo useradd --create-home --shell /bin/bash --user-group "${_target_user}" || {
+    printf -- 'Unable to create target user: %s\n' "${_target_user}"
     return 1
   }
 
@@ -100,11 +129,15 @@ main() {
   readonly _cmd
   readonly _target_user
 
-  if ! _check_user; then
-    return 1
+  if _check_user; then
+    _create_user || return 1
   fi
 
-  _create_user || return 1
+  _make_dirs || return 1
+  _bash_files || return 1
+  _copy_env || return 1
+  _install_launcher || return 1
+  _take_ownership || return 1
 
   return 0
 }
