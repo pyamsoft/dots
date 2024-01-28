@@ -1,4 +1,0 @@
-# Gaming access for user
-peter ALL=(root) NOPASSWD:/usr/local/sbin/gamelaunch steam
-peter ALL=(root) NOPASSWD:/usr/local/sbin/gamelaunch openrct2
-peter ALL=(root) NOPASSWD:/usr/local/sbin/gamelaunch dolphin-emu
