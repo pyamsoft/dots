@@ -1,6 +1,6 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!/tmp;!~/games;!xdg-data;!xdg-run/systemd;!xdg-videos;!xdg-run/podman;!~/devel;!/var/lib/flatpak/overrides;!host-etc;!xdg-config;!xdg-data/flatpak/app;!xdg-run/gamescope-0;!xdg-run/keyring;!xdg-download;!/var/lib/flatpak/app;!xdg-music;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-templates;!xdg-documents;xdg-config/gtk-3.0:ro;!home;!xdg-config/containers;!xdg-config/ssh;!xdg-data/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-config/sunshine;!xdg-run/gamescope-0.lock;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
-unset-environment=SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!xdg-data;!/var/lib/flatpak/overrides;!xdg-run/podman;!xdg-documents;!~/devel;!host-etc;!xdg-data/flatpak/app;!/tmp;!xdg-run/gamescope-0;!xdg-run/keyring;!xdg-download;!/var/lib/flatpak/app;!xdg-music;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config;!xdg-templates;xdg-config/gtk-3.0:ro;!home;!xdg-config/containers;!xdg-config/ssh;!xdg-data/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-config/sunshine;!xdg-run/gamescope-0.lock;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
+unset-environment=GTK_THEME;SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;ICON_THEME;
 persistent=.;
 sockets=!ssh-auth;!pcsc;!gpg-agent;
 devices=!kvm;!shm;
@@ -12,24 +12,22 @@ org.gnome.SessionManager=none
 org.freedesktop.UPower=none
 org.freedesktop.UDisks2=none
 org.freedesktop.secrets=none
-org.freedesktop.Avahi=none
 org.gnome.Shell.Extensions=none
+org.freedesktop.Avahi=none
 org.freedesktop.impl.portal.PermissionStore=none
 org.kde.KGlobalSettings=none
 org.freedesktop.Flatpak=none
 com.canonical.AppMenu.Registrar=none
 org.freedesktop.login1=none
 org.a11y.Bus=none
-org.freedesktop.ScreenSaver=none
 org.gnome.Software=none
+org.freedesktop.ScreenSaver=none
 org.freedesktop.PowerManagement=none
 
 [Environment]
-GTK_THEME=Adwaita-dark
 SDL_AUDIODRIVER=
 SDL_VIDEODRIVER=
 SDL_VIDEO_DRIVER=
 PROMPT_COMMAND=
 PS1=
 SDL_AUDIO_DRIVER=
-ICON_THEME=Papirus-Dark
