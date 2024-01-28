@@ -1,9 +1,11 @@
 # .bash_logout
 
 # Kill all our stuff
-_me="$(id -un)"
+if [ -n "${GAMER}" ] && [ "${GAMER}" -eq 1 ]; then
+  _me="$(id -un)"
 
-printf -- 'Bye bye %s\n' "${_me}"
-loginctl kill-user "${_me}"
+  printf -- 'Bye bye %s\n' "${_me}"
+  loginctl kill-user "${_me}"
 
-unset _me
+  unset _me
+fi
