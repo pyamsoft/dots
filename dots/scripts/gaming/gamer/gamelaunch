@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Privileged script, to be used with gamer script and sudoers set up
+
+_check_user() {
+  if ! id -u "${_target_user}" >/dev/null 2>&1; then
+    printf -- 'Target user %s does not exist!\n' "${_target_user}"
+    return 1
+  fi
+
+  return 0
+}
+
+main() {
+  if [ -z "${SUDO_USER}" ]; then
+    printf -- "gamelaunch requires that you run as a regular user with sudo\n"
+    return 1
+  fi
+
+  if [ "${SUDO_UID}" -eq 0 ]; then
+    printf -- "gamelaunch requires that you run as a regular user with sudo\n"
+    return 1
+  fi
+
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- "gamelaunch requires that you run with sudo\n"
+    return 1
+  fi
+
+  if [ -z "${DISPLAY}" ]; then
+    printf -- "gamelaunch requires a valid \$DISPLAY variable.\n"
+    return 1
+  fi
+
+  if [ -z "${XAUTHORITY}" ]; then
+    printf -- "gamelaunch requires a valid \$XAUTHORITY variable.\n"
+    return 1
+  fi
+
+  _target_user="$1"
+  if [ -z "${_target_user}" ]; then
+    printf -- 'gamelaunch requires a target user as the first argument\n'
+    return 1
+  fi
+
+  shift
+
+  readonly _target_user="gaming-${_target_user}"
+  if ! _check_user; then
+    return 1
+  fi
+
+  # Running machinectl shell gives us a "clean session to work with" that attaches to it's own systemctl --user session
+  # and loginctl session
+  #
+  # Because its "clean" though, we need to manually forward our main user session "$DISPLAY" and "$XAUTHORITY"
+  # to allow x11 connections.
+  #
+  # DO NOT FORWARD "$WAYLAND_DISPLAY" yet as multi-user on the same display isn't fully figured out yet (things crash).
+  #
+  # We want this 'raw ~' to not expand so that it is evaluated as the target_user home, not main_user home
+  # shellcheck disable=SC2088
+  exec machinectl --quiet \
+    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
+    --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
+    shell "${_target_user}@.host" \
+    /bin/bash -l -c '~/bin/launcher' "$@"
+
+  # Currently, we "access" the systemd bus by manually setting the path in .bash_profile (gaming-bash_profile)
+  # and "starting" the session via loginctl lingering. It's not perfect but it works.
+  # sudo \
+  #   -u "${_target_user}" \
+  #   -i \
+  #   -- \
+  #   env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
+}
+
+main "$@" || exit 1
+exit 0

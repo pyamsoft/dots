@@ -1,5 +1,4 @@
 # Gaming access for user
 #
 # Replace "primary-user" and "gaming-secondary-user"
-primary-user ALL=(gaming-secondary-user) NOPASSWD:/bin/bash -c env GAMER_GAMESCOPE=1 launcher
-primary-user ALL=(gaming-secondary-user) NOPASSWD:/bin/bash -c env GAMER_GAMESCOPE=0 launcher
+primary-user ALL=(root) NOPASSWD:/usr/local/sbin/gamelaunch gaming-secondary-user

@@ -49,11 +49,16 @@ main() {
     }
   fi
 
-  sudo \
-    -u "${_target_user}" \
-    -i \
-    -- \
-    env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
+  # See gamelaunch script in /usr/local/sbin
+  sudo /usr/local/sbin/gamelaunch "${_cmd}" "$@"
+
+  # Currently, we "access" the systemd bus by manually setting the path in .bash_profile (gaming-bash_profile)
+  # and "starting" the session via loginctl lingering. It's not perfect but it works.
+  # sudo \
+  #   -u "${_target_user}" \
+  #   -i \
+  #   -- \
+  #   env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
 
   # Then when it finishes, we make sure to clean up
   xhost -SI:localuser:"${_target_user}" || {

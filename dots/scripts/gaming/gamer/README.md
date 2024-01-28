@@ -15,10 +15,14 @@ Less security (running on the host system) but with a "user-home" sandbox (runni
 
 ## What
 
-`setup` will setup a gaming user and grant them `systemctl --user` session access
+`setup` unprivileged but will ask for sudo, and will setup a gaming user.
 
-`gamer` will run the provided binary as the `gaming-{name}` user and grant the
-user access to the local X server via `xhost`
+`gamer` is unprivileged will run the provided binary as the `gaming-{name}` user and grant the
+user access to the local X server via `xhost`, as well as correctly setting up a `systemctl --user`
+connection and a `loginctl` session.
+
+`gamelaunch` is a privileged script that will grant the `gaming-{name}` user access to the local X server
+by forwarding the `main user` `$DISPLAY` and `$XAUTHORITY` environment.
 
 `delete` will remove a `gaming-{name}` user and delete their `$HOME`
 

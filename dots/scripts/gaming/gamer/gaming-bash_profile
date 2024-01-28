@@ -38,14 +38,6 @@ __setup_shell_env() {
   export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
 }
 
-# Correct systemctl --user service
-_correct_systemctl() {
-  _my_uid="$(id -u)"
-  export XDG_RUNTIME_DIR="/run/user/${_my_uid}"
-  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
-  unset _my_uid
-}
-
 _setup_xdg() {
   # Define XDG directories
   if [ -z "${XDG_CONFIG_HOME}" ]; then
@@ -114,20 +106,11 @@ _setup_extra() {
 _setup_extra
 _setup_xdg
 _setup_homedir
-_correct_systemctl
 __setup_shell_env
 __set_shopt_options
 
 unset -f _setup_extra
 unset -f _setup_xdg
 unset -f _setup_homedir
-unset -f _correct_systemctl
 unset -f __set_shopt_options
 unset -f __setup_shell_env
-
-# Enable linger and wait just a little bit to make sure
-printf -- 'Linger around %s\n' "$(id -un)"
-loginctl enable-linger "$(id -un)" && sleep 2
-if ! systemctl --user >/dev/null; then
-  printf -- 'systemctl failed?!?!?\n'
-fi
