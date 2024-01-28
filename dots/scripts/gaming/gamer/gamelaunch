@@ -63,6 +63,7 @@ main() {
   exec machinectl --quiet \
     --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
     --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
+    --setenv="GAMER=1" \
     shell "${_target_user}@.host" \
     /bin/bash -l -c '~/bin/launcher' "$@"
 
