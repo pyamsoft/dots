@@ -12,6 +12,7 @@ org.gnome.SessionManager=none
 org.freedesktop.UPower=none
 org.freedesktop.UDisks2=none
 org.freedesktop.secrets=none
+org.gnome.Shell=none
 org.gnome.Shell.Extensions=none
 org.freedesktop.Avahi=none
 org.freedesktop.impl.portal.PermissionStore=none
