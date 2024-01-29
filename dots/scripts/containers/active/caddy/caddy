@@ -143,7 +143,8 @@ _containerize() {
   readonly _sec
 
   # MacOS can't launch with host-gateway
-  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  # We NEED host networking so that Caddy reports the corret remote_ip|client_ip for logs
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=. --network=host"
   if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
