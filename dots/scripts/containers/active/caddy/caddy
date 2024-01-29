@@ -146,9 +146,11 @@ _containerize() {
   # We NEED host networking so that Caddy reports the corret remote_ip|client_ip for logs
   #
   # OR we can use this: https://caddy.community/t/use-real-ip-in-docker-podman-container/12978/3
-  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=. --network=slirp4netns:port_handler=slirp4netns"
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
   if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
+    _network="${_network} --add-host host.containers.internal:host-gateway --network=slirp4netns:port_handler=slirp4netns"
+  else
+    _network="${_network} --network=host"
   fi
   readonly _network
 
