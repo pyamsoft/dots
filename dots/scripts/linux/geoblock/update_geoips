@@ -11,7 +11,7 @@ main () {
     return 1
   }
 
-  mkdir /usr/share/xt_geoip || {
+  mkdir -p /usr/share/xt_geoip || {
     printf -- 'Failed to make target xt_geoip directory.\n'
     return 1
   }
