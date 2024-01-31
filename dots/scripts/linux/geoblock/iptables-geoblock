@@ -44,7 +44,8 @@ _reset_chain() {
   # Accept any good countries
   if [ -n "${_ACCEPT_COUNTRIES}" ]; then
     for _c in ${_ACCEPT_COUNTRIES}; do
-      printf -- 'Accept country: %s\n' "${_c}"
+      printf -- 'Accept traffic from country: %s\n' "${_c}"
+      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j ACCEPT
     done
   else
     printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
