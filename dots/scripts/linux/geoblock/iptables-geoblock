@@ -41,16 +41,6 @@ _reset_chain() {
   # Accept related/established traffic
   "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN || return 1
 
-  # Accept any good countries
-  if [ -n "${_ACCEPT_COUNTRIES}" ]; then
-    for _c in ${_ACCEPT_COUNTRIES}; do
-      printf -- 'Accept traffic from country: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN
-    done
-  else
-    printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
-  fi
-
   # Accept any good IPv4 address
   if [ -n "${_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
     for _c in ${_ACCEPT_IP4}; do
@@ -69,6 +59,16 @@ _reset_chain() {
     done
   else
     printf -- 'No IPv6 addresses to whitelist.\n'
+  fi
+
+  # Accept any good countries
+  if [ -n "${_ACCEPT_COUNTRIES}" ]; then
+    for _c in ${_ACCEPT_COUNTRIES}; do
+      printf -- 'Accept traffic from country: %s\n' "${_c}"
+      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN
+    done
+  else
+    printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
   fi
 
   # Otherwise drop
