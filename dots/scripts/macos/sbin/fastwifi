@@ -2,6 +2,8 @@
 
 # https://www.reddit.com/r/macbookpro/comments/rtyjbt/finally_solved_my_slow_wifi_speeds_on_my_2021/
 main () {
+  set -eux
+
   ifconfig awdl0 down || {
     printf -- 'Unable to set awdl0 down.\n'
     return 1
