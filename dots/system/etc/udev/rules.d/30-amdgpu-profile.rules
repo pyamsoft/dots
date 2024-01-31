@@ -1,0 +1,3 @@
+# Compute has the most performance. Our system defaults to 1 (3D) or 2 (Video)
+# https://gitlab.freedesktop.org/drm/amd/-/issues/1500#note_1854170
+KERNEL=="card0", SUBSYSTEM=="drm", DRIVERS=="amdgpu", ATTR{device/pp_power_profile_mode}="5"

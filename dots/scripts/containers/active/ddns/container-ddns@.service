@@ -1,14 +1,20 @@
+# Runs the ddns container when the target user logs in
+#
+# Should be enabled as `systemctl enable ddns@UID.service`
+# where UID is the UID of the target user you want to run the container
+#
+# Generally this is 1000 for "your user"
 [Unit]
 Description=Container: Cloudflare DDNS for %i
-After=network-online.target docker.service tailscaled.service mullvad-vpn.service firewalld.service podman.service user@%i.service
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
 Wants=network-online.target
 Requires=user@%i.service
 RequiresMountsFor=/run/user/%i/containers
 
 [Service]
-ExecStartPre=-/bin/sh -c 'sleep 2; _c="ddns"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown "$${_c}"'
-ExecStart=/bin/sh -c '_c="ddns"; /usr/local/bin/"$${_c}" "%i"'
-ExecStop=/bin/sh -c '_c="ddns"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown "$${_c}"'
+ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown ddns --delay'
+ExecStart=/bin/sh -c '/usr/local/bin/ddns "%i"'
+ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown ddns'
 
 [Install]
 WantedBy=user@%i.service

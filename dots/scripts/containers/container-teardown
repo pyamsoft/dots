@@ -1,11 +1,38 @@
 #!/bin/sh
 
+_PROG="$(basename "$0")"
+
+_usage() {
+  printf -- '%s\n' "$(cat <<EOF
+
+${_PROG} <name> [--delay]
+
+<name>    name of the container to teardown
+--delay   Optional: delay actions by 2 seconds
+
+Teardown will nicely stop, then remove the container and
+associated network
+
+EOF
+)"
+}
+
 main() {
   _name="$1"
 
   if [ -z "${_name}" ]; then
     printf -- 'Must provide container name to teardown\n.'
+    _usage || return 1
     return 1
+  fi
+
+  # Eat name
+  shift
+
+  # Allow delay
+  if [ -n "$1" ] && [ "$1" = "--delay" ]; then
+    printf -- 'Delay teardown action...\n'
+    sleep 2 || return 1
   fi
 
   # Attempt nice stop

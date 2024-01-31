@@ -1,14 +1,14 @@
 # Run a container as a user
 [Unit]
 Description=On %u login, start container %i
-After=network-online.target docker.service podman.service
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
 Wants=network-online.target
 RequiresMountsFor=%t/containers
 
 [Service]
-ExecStartPre=-/bin/sh -c 'sleep 2; container-teardown %i'
-ExecStart=/bin/sh -c '%h/.containers/bin/%i'
-ExecStop=/bin/sh -c 'container-teardown %i'
+ExecStartPre=-/usr/local/bin/container-teardown %i --delay
+ExecStart=%h/.containers/bin/%i
+ExecStop=/usr/local/bin/container-teardown %i
 
 [Install]
 WantedBy=default.target

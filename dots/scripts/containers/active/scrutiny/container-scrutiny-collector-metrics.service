@@ -2,12 +2,12 @@
 
 [Unit]
 Description=Container: Scrutiny Collector Metrics Runner
-After=network-online.target docker.service podman.service container-scrutiny.service
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
 Wants=network-online.target
 Requires=container-scrutiny.service
 RequiresMountsFor=%t/containers
 
 [Service]
 # Let the Scrutiny service start up
-ExecStartPre=/bin/sh -c 'sleep 5'
+ExecStartPre=-/bin/sh -c 'sleep 5'
 ExecStart=/bin/sh -c 'podman exec scrutiny /bin/sh -c "scrutiny-collector-metrics run"'
