@@ -1,0 +1,158 @@
+#!/bin/sh
+
+readonly _CHAIN_NAME="POOT_GEOBLOCK"
+
+readonly _ACCEPT_COUNTRIES="US SG"
+readonly _ACCEPT_IP4="127.0.0.1/8"
+readonly _ACCEPT_IP6="::1/128"
+
+_remove_rule() {
+  if "${_ip}" -C "$@" >/dev/null 2>&1; then
+    printf -- 'Remove rule: %s -D %s\n' "${_ip}" "$*"
+    "${_ip}" -D "$@" || return 1
+  fi
+
+  return 0
+}
+
+_insert_rule_if_not_exists() {
+  if ! "${_ip}" -C "$@" >/dev/null 2>&1; then
+    printf -- 'Inserting new rule: %s -I %s\n' "${_ip}" "$*"
+    "${_ip}" -I "$@" || return 1
+  fi
+
+  return 0
+}
+
+_erase_chain() {
+  printf -- 'Zeroing chain: %s %s\n' "${_ip}" "${_CHAIN_NAME}"
+  "${_ip}" --zero "${_CHAIN_NAME}" || return 1
+
+  printf -- 'Flushing chain: %s %s\n' "${_ip}" "${_CHAIN_NAME}"
+  "${_ip}" --flush "${_CHAIN_NAME}" || return 1
+}
+
+_reset_chain() {
+  _erase_chain
+
+  # Drop invalid traffic
+  "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate INVALID -j DROP || return 1
+
+  # Accept related/established traffic
+  "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || return 1
+
+  # Accept any good countries
+  if [ -n "${_ACCEPT_COUNTRIES}" ]; then
+    for _c in ${_ACCEPT_COUNTRIES}; do
+      printf -- 'Accept country: %s\n' "${_c}"
+    done
+  else
+    printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
+  fi
+
+  # Accept any good IPv4 address
+  if [ -n "${_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
+    for _c in ${_ACCEPT_IP4}; do
+      printf -- 'Accept IPv4: %s\n' "${_c}"
+      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j ACCEPT
+    done
+  else
+    printf -- 'No IPv4 addresses to whitelist.\n'
+  fi
+
+  # Accept any good IPv6 address
+  if [ -n "${_ACCEPT_IP6}" ] && [ "${_ip}" = "ip6tables" ]; then
+    for _c in ${_ACCEPT_IP6}; do
+      printf -- 'Accept IPv6: %s\n' "${_c}"
+      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j ACCEPT
+    done
+  else
+    printf -- 'No IPv6 addresses to whitelist.\n'
+  fi
+
+  # Otherwise drop
+  printf -- 'Otherwise drop traffic\n'
+  "${_ip}" -A "${_CHAIN_NAME}" -j LOG --log-prefix "[POOT_GEOBLOCK]: "
+  "${_ip}" -A "${_CHAIN_NAME}" -j DROP
+}
+
+_iptables_create() {
+  if "${_ip}" --new-chain "${_CHAIN_NAME}" >/dev/null 2>&1; then
+    printf -- 'Create new chain: %s\n' "${_CHAIN_NAME}"
+  else
+    printf -- 'Refresh existing chain: %s\n' "${_CHAIN_NAME}"
+  fi
+
+  _remove_rule INPUT -j "${_CHAIN_NAME}" || return 1
+  _remove_rule FORWARD -j "${_CHAIN_NAME}" || return 1
+
+  _reset_chain || return 1
+
+  _insert_rule_if_not_exists INPUT -j "${_CHAIN_NAME}" || return 1
+  _insert_rule_if_not_exists FORWARD -j "${_CHAIN_NAME}" || return 1
+
+  return 0
+}
+
+_iptables_destroy() {
+  _remove_rule INPUT -j "${_CHAIN_NAME}" || return 1
+  _remove_rule FORWARD -j "${_CHAIN_NAME}" || return 1
+  _erase_chain || return 1
+
+  return 0
+}
+
+_parse_cmd() {
+  if [ -z "$1" ]; then
+    printf -- 'Must specify one of "create" "destroy"\n'
+    return 1
+  fi
+
+  if [ "$1" = "create" ]; then
+    _iptables_create || return 1
+  elif [ "$1" = "destroy" ]; then
+    _iptables_destroy || return 1
+  else
+    printf -- 'Must specify one of "create" "destroy": %s\n' "$1"
+    return 1
+  fi
+
+  return 0
+}
+
+_parse_ipv() {
+  if [ -z "$1" ]; then
+    printf -- 'Must specify one of "4" "6"\n'
+    return 1
+  fi
+
+  if [ "$1" = "4" ]; then
+    _ip="iptables"
+  elif [ "$1" = "6" ]; then
+    _ip="ip6tables"
+  else
+    printf -- 'Must specify one of "4" "6": %s\n' "$1"
+    return 1
+  fi
+
+  # Do not touch!
+  readonly _ip
+  return 0
+}
+
+main() {
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'Must run as root.\n'
+    return 1
+  fi
+
+  _parse_ipv "$1" || return 1
+  shift
+  _parse_cmd "$1" || return 1
+  shift
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
