@@ -13,7 +13,7 @@ Requires=user@%i.service
 RequiresMountsFor=/run/user/%i/containers
 
 [Service]
-ExecStartPre=-/bin/sh -c '_c="adguardhome"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown "$${_c}"'
+ExecStartPre=-/bin/sh -c 'sleep 2; _c="adguardhome"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown "$${_c}"'
 ExecStart=/bin/sh -c '_c="adguardhome"; /usr/local/bin/"$${_c}" "%i"'
 ExecStop=/bin/sh -c '_c="adguardhome"; _u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown "$${_c}"'
 
