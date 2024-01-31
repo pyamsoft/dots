@@ -1,0 +1,46 @@
+#!/bin/sh
+
+main () {
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'Must run as root.\n'
+    return 1
+  fi
+
+  cd /usr/libexec/xtables-addons || {
+    printf -- 'Failed to cd into xtables-addons directory.\n'
+    return 1
+  }
+
+  mkdir /usr/share/xt_geoip || {
+    printf -- 'Failed to make target xt_geoip directory.\n'
+    return 1
+  }
+
+  chmod 755 /usr/share/xt_geoip || {
+    printf -- 'Failed to mark exec target xt_geoip directory.\n'
+    return 1
+  }
+
+  # Download (will save as dbip-country-lite.csv)
+  ./xt_geoip_dl || {
+    printf -- 'Failed to download latest geoip.\n'
+    return 1
+  }
+
+  ./xt_geoip_build -D /usr/share/xt_geoip dbip-country-lite.csv || {
+    printf -- 'Failed to convert CSV to GEO-IP\n'
+    printf -- 'On Debian 12, you may need to run: "%s"\n' "apt --mark-auto install libtext-csv-xs-perl"
+    return 1
+  }
+
+  rm -f dbip-country-lite.csv || {
+    printf -- 'Failed to remove dbip-country-lite CSV\n'
+    return 1
+  }
+
+  printf -- 'GeoIP database is updated in /usr/share/xt_geoip\n'
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
