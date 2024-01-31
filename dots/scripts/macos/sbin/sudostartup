@@ -17,7 +17,7 @@ _run() {
   touch "${_run_logdir}/${_log_name}"
 
   # Owned by user
-  chown "${_user}" "${_run_logdir}/${_log_name}"
+  chown "${_run_user}" "${_run_logdir}/${_log_name}"
   chmod 600 "${_run_logdir}/${_log_name}"
 
   # Exec program
@@ -62,6 +62,7 @@ main() {
   # Run as root, output to local logs
   _run "/opt/homebrew/bin/tailscaled" "${_user}" "${_logdir}"
   _run "/usr/local/sbin/pmadjust" "${_user}" "${_logdir}"
+  _run "/usr/local/sbin/fastwifi" "${_user}" "${_logdir}"
 
   unset _user
   unset _logdir

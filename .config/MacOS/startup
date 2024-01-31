@@ -10,17 +10,23 @@ _clear_logs()
 _podman_rootful()
 {
   touch "${_log_path}/$1" || return 1
-  podman stop "$1" >> "${_log_path}/$1" 2>&1
-  podman rm "$1" >> "${_log_path}/$1" 2>&1
-  "/usr/local/bin/$1" "${_user}" >> "${_log_path}/$1" 2>&1 &
+
+  # Stop it first
+  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1 &
+
+  # Start up
+  "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1 &
 }
 
 _podman_rootless()
 {
   touch "${_log_path}/$1" || return 1
-  podman stop "$1" >> "${_log_path}/$1" 2>&1
-  podman rm "$1" >> "${_log_path}/$1" 2>&1
-  "${HOME}/.containers/bin/$1" >> "${_log_path}/$1" 2>&1 &
+
+  # Stop it first
+  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1 &
+
+  # Start up
+  "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1 &
 }
 
 _podman()
@@ -32,18 +38,18 @@ _podman()
   # We expect it so add it here
   if ! command -v podman > /dev/null; then
     PATH="/opt/homebrew/bin:${PATH}"
-    printf -- 'Added homebrew-bin to PATH for podman\n' >> "${_log_path}/podman"
+    printf -- 'Added homebrew-bin to PATH for podman\n' >>"${_log_path}/podman"
   fi
   export PATH
 
   if ! command -v podman > /dev/null; then
-    printf -- 'You must install "podman"\n' >> "${_log_path}/podman"
+    printf -- 'You must install "podman"\n' >>"${_log_path}/podman"
     return 1
   fi
 
   # Restart podman machine
-  podman machine stop >> "${_log_path}/podman" 2>&1 || return 1
-  podman machine start >> "${_log_path}/podman" 2>&1 || return 1
+  podman machine stop >>"${_log_path}/podman" 2>&1 || return 1
+  podman machine start >>"${_log_path}/podman" 2>&1 || return 1
 
   _podman_rootful "adguardhome" || return 1
   _podman_rootless "postgres" || return 1
@@ -59,7 +65,7 @@ _startup_programs()
 
   _podman || {
     # Don't return 1 here, we don't want to die just because podman failed
-    printf -- 'podman failed to initialize.\n' >> "${_log_path}/podman"
+    printf -- 'podman failed to initialize.\n' >>"${_log_path}/podman"
   }
 
   return 0
