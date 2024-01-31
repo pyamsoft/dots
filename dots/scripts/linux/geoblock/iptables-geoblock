@@ -39,13 +39,13 @@ _reset_chain() {
   "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate INVALID -j DROP || return 1
 
   # Accept related/established traffic
-  "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT || return 1
+  "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN || return 1
 
   # Accept any good countries
   if [ -n "${_ACCEPT_COUNTRIES}" ]; then
     for _c in ${_ACCEPT_COUNTRIES}; do
       printf -- 'Accept traffic from country: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j ACCEPT
+      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN
     done
   else
     printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
@@ -55,7 +55,7 @@ _reset_chain() {
   if [ -n "${_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
     for _c in ${_ACCEPT_IP4}; do
       printf -- 'Accept IPv4: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j ACCEPT
+      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
     done
   else
     printf -- 'No IPv4 addresses to whitelist.\n'
@@ -65,7 +65,7 @@ _reset_chain() {
   if [ -n "${_ACCEPT_IP6}" ] && [ "${_ip}" = "ip6tables" ]; then
     for _c in ${_ACCEPT_IP6}; do
       printf -- 'Accept IPv6: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j ACCEPT
+      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
     done
   else
     printf -- 'No IPv6 addresses to whitelist.\n'
