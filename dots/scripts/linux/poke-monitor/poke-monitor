@@ -71,10 +71,69 @@ _setup() {
   return 0
 }
 
+_get_active_monitor_names() {
+  _active_monitors="$(xrandr --listactivemonitors | tail -n -1 | awk '{ print $4 }')"
+
+  printf -- '%s\n' "$_active_monitors" || return 1
+
+  unset _active_monitors
+  return 0
+}
+
+_xrandr_monitor() {
+  _monitors="$(_get_active_monitor_names)"
+  if [ -z "${_monitors}" ]; then
+    unset _monitors
+
+    printf -- 'Could not find any active monitors. Trying with generic poke.\n'
+    xrandr >/dev/null 2>&1 || {
+      printf -- 'Failed to poke-monitor with xrandr [default] action\n'
+      return 1
+    }
+    return 0
+  fi
+
+  case "$1" in
+    auto)
+      _failed=0
+      for _m in ${_monitors}; do
+        printf -- 'Attempt "auto" poke monitor: %s %s\n' "${_m}" "${DISPLAY}"
+        xrandr --output "${_m}" --auto >/dev/null 2>&1 || {
+          printf -- 'Failed to "auto" poke monitor with xrandr: %s\n' "${_m}"
+          _failed=1
+        }
+        unset _m
+      done
+
+      unset _monitors
+      return "${_failed}"
+      ;;
+    reset)
+      _failed=0
+      for _m in ${_monitors}; do
+        printf -- 'Attempt "reset" poke monitor: %s %s\n' "${_m}" "${DISPLAY}"
+        xrandr --output "${_m}" --off >/dev/null 2>&1 || {
+          printf -- 'Failed to "reset"[off] poke monitor with xrandr: %s\n' "${_m}"
+          _failed=1
+        }
+        xrandr --output "${_m}" --auto >/dev/null 2>&1 || {
+          printf -- 'Failed to "reset"[auto] poke monitor with xrandr: %s\n' "${_m}"
+          _failed=1
+        }
+        unset _m
+      done
+
+      unset _monitors
+      return "${_failed}"
+      ;;
+  esac
+}
+
 ##
 # Poke with display
 _poke() {
   _display="$1"
+  shift
 
   # Guess DISPLAY variable to poke
   DISPLAY="${_display}"
@@ -86,7 +145,7 @@ _poke() {
   printf -- 'Attempting to poke monitor via xrandr: %s\n' "${DISPLAY}"
   while [ "${_count}" -gt 0 ]; do
     printf -- 'Poke: %s...\n' "${_count}"
-    xrandr >/dev/null 2>&1 || {
+    _xrandr_monitor "$1" || {
       printf -- 'Failed to poke monitor with xrandr: %s\n' "${DISPLAY}"
 
       unset DISPLAY
@@ -107,21 +166,35 @@ _poke() {
 }
 
 main() {
+  # Validate command
+  if [ -z "$1" ]; then
+    printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset"\n'
+    return 1
+  fi
+  case "$1" in
+    auto|reset)
+      ;;
+    *)
+      printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset"\n'
+      return 1
+      ;;
+  esac
+
   # Try poking common monitor DISPLAY connections
   _setup || {
     printf -- 'Failed setup\n'
     return 1
   }
 
-  for _m in $(seq 0 7); do
-    _poke ":${_m}" && {
-      printf -- 'Poked monitor :%s\n' "${_m}"
+  for _mon in $(seq 0 7); do
+    _poke ":${_mon}" "$1" && {
+      printf -- 'Poked monitor: %s [%s]\n' "${_mon}" "$1"
       return 0
     }
   done
 
   # Nothing worked
-  printf -- 'Failed all attempts to poke monitor :0 - :7\n'
+  printf -- 'Failed all attempts to poke monitor :0 - :7 [%s]\n' "$1"
   return 1
 }
 
