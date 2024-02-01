@@ -165,12 +165,13 @@ _prepare_gamescope() {
     fi
   fi
 
-
   # Options passed to gamescope session
   __gamescope_options="${__gamescope_options} ${window_type} --output-height ${output_height} --nested-height ${nested_height}"
 
   # Scale the window to fill
-  __gamescope_options="${__gamescope_options} --scaler fill"
+  #
+  # Scaling causes the mouse to not be in the right place
+  #__gamescope_options="${__gamescope_options} --scaler fill"
 
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
