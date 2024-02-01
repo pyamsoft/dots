@@ -1,5 +1,14 @@
 #!/bin/sh
 
+if [ -d "${HOME}/Applications/" ]; then
+  # Pycharm provided by Jetbrains Toolbox
+  _py_path="${HOME}/Applications/PyCharm Community Edition.app"
+else
+  # Pycharm provided by Homebrew direct install
+  _py_path="/Applications/PyCharm CE.app"
+fi
+export JAVA_HOME="${_py_path}/Contents/jbr/Contents/Home/"
+
 # Add llvm to path
 PATH="/opt/homebrew/Cellar/llvm@14/14.0.6/bin:${PATH}"
 export PATH
@@ -9,6 +18,6 @@ if [ "$1" = "--shell" ]; then
   exec bash "$@"
 else
   # Launch PYCharm
-  exec open "${HOME}/Applications/PyCharm Community Edition.app" "$@"
+  exec open "${_py_path}" "$@"
 fi
 
