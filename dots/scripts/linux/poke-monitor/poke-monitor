@@ -94,6 +94,13 @@ _xrandr_monitor() {
   fi
 
   case "$1" in
+    list)
+      xrandr || {
+        printf -- 'Failed xrandr list\n'
+        return 1
+      }
+      return 0
+      ;;
     auto)
       _failed=0
       for _m in ${_monitors}; do
@@ -168,14 +175,14 @@ _poke() {
 main() {
   # Validate command
   if [ -z "$1" ]; then
-    printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset"\n'
+    printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset" "list"\n'
     return 1
   fi
   case "$1" in
-    auto|reset)
+    auto|reset|list)
       ;;
     *)
-      printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset"\n'
+      printf -- 'Failed to poke-monitor. Command must be one of "auto" "reset" "list"\n'
       return 1
       ;;
   esac
