@@ -60,7 +60,8 @@ _make_dirs() {
   sudo mkdir -p \
     /home/"${_target_user}"/bin \
     /home/"${_target_user}"/.cache \
-    /home/"${_target_user}"/.config \
+    /home/"${_target_user}"/.config/systemd/user \
+    /home/"${_target_user}"/.config/environment.d \
     /home/"${_target_user}"/.local/share || return 1
   return 0
 }
@@ -107,6 +108,23 @@ _copy_env() {
   return 0
 }
 
+_mask_systemd() {
+  printf -- ' Mask systemctl services: %s\n' "${_target_user}"
+
+  sudo mkdir -p /home/"${_target_user}"/.config/systemd/user || {
+    printf -- 'Failed to mkdir target systemctl config.d\n'
+    return 1
+  }
+
+  for _s in "pipewire.service" "pipewire-pulse.service" "pipewire.socket" "pipewire-pulse.socket"; do
+    sudo ln -s /dev/null "${HOME}"/.config/systemd/user/"${_s}" || {
+      printf -- 'Failed to mask %s\n' "${_s}"
+      return 1
+    }
+  done
+  return 0
+}
+
 _create_user() {
   printf -- 'Create target user: %s\n' "${_target_user}"
 
@@ -137,6 +155,7 @@ main() {
   _make_dirs || return 1
   _bash_files || return 1
   _copy_env || return 1
+  _mask_systemd || return 1
   _install_launcher || return 1
   _take_ownership || return 1
 
