@@ -160,6 +160,13 @@ _poke() {
       return 1
     }
 
+    # List stops after one
+    if [ "$1" = "list" ]; then
+      unset DISPLAY
+      unset _display
+      return 0
+    fi
+
     # Wait before trying again
     sleep 1
     _count=$((_count - 1))
