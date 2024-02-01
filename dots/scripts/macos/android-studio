@@ -22,5 +22,5 @@ if [ "$1" = "--shell" ]; then
   exec bash "$@"
 else
   # Launch Android Studio
-  exec open "${_as_path}" "$@"
+  exec open -a "${_as_path}" "$@"
 fi
