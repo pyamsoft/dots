@@ -117,7 +117,7 @@ _mask_systemd() {
   }
 
   for _s in "pipewire.service" "pipewire-pulse.service" "pipewire.socket" "pipewire-pulse.socket"; do
-    sudo ln -s /dev/null "${HOME}"/.config/systemd/user/"${_s}" || {
+    sudo ln -s -f /dev/null /home/"${_target_user}"/.config/systemd/user/"${_s}" || {
       printf -- 'Failed to mask %s\n' "${_s}"
       return 1
     }
