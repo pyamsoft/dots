@@ -6,7 +6,7 @@ After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate
 Type=simple
 User=%I
 Group=%I
-ExecStart=/bin/sh -c "poke-monitor"
+ExecStart=/usr/local/bin/poke-monitor auto
 
 [Install]
 WantedBy=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
