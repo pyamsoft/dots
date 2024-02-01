@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -d "${HOME}/Applications/" ]; then
+if [ -d "${HOME}/Applications/PyCharm Community Edition.app" ]; then
   # Pycharm provided by Jetbrains Toolbox
   _py_path="${HOME}/Applications/PyCharm Community Edition.app"
 else
