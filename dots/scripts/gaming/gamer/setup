@@ -109,7 +109,7 @@ _copy_env() {
 }
 
 _mask_systemd() {
-  printf -- ' Mask systemctl services: %s\n' "${_target_user}"
+  printf -- 'Mask systemctl services: %s\n' "${_target_user}"
 
   sudo mkdir -p /home/"${_target_user}"/.config/systemd/user || {
     printf -- 'Failed to mkdir target systemctl config.d\n'
