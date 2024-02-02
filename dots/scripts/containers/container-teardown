@@ -8,7 +8,7 @@ _usage() {
 ${_PROG} <name> [--delay]
 
 <name>    name of the container to teardown
---delay   Optional: delay actions by 2 seconds
+--delay   Optional: delay actions by 3 seconds
 
 Teardown will nicely stop, then remove the container and
 associated network
@@ -32,7 +32,7 @@ main() {
   # Allow delay
   if [ -n "$1" ] && [ "$1" = "--delay" ]; then
     printf -- 'Delay teardown action...\n'
-    sleep 2 || return 1
+    sleep 3 || return 1
   fi
 
   # Attempt nice stop
