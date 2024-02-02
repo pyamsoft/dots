@@ -6,7 +6,6 @@
 # Generally this is 1000 for "your user"
 
 [Unit]
-[Unit]
 Description=Container: Caddy for %i
 After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
 Wants=network-online.target
