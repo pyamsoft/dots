@@ -1,0 +1,10 @@
+# Run update-geoblock on a timer
+
+[Unit]
+Description=Update GeoBlock IPs list
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
+Wants=network-online.target
+Requires=iptables-geoblock.service
+
+[Service]
+ExecStart=/usr/local/sbin/update-geoblock

@@ -1,0 +1,12 @@
+# Run update-geoblock on a timer
+
+[Unit]
+Description=Update GeoBlock IPs list
+
+[Timer]
+OnCalendar=daily
+AccuracySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target
