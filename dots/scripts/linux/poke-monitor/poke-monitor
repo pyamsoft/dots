@@ -72,7 +72,7 @@ _setup() {
 }
 
 _get_active_monitor_names() {
-  _active_monitors="$(xrandr --listactivemonitors | tail -n -1 | awk '{ print $4 }')"
+  _active_monitors="$(xrandr --listactivemonitors | tail -n +2 | awk '{ print $4 }')"
 
   printf -- '%s\n' "$_active_monitors" || return 1
 
