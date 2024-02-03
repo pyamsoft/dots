@@ -149,7 +149,8 @@ main() {
   shift
 
   # Check that we are not targeting root
-  if [ "$(id -u "${_user}")" -eq 0 ]; then
+  _uid="$(id -u "${_user}")"
+  if [ "${_uid}" -eq 0 ]; then
     printf -- 'Your target user must not be root: %s\n' "${_user}"
     return 1
   fi
@@ -167,6 +168,20 @@ main() {
     _how="--rm -i -t"
   fi
   readonly _how
+
+  # Wait for the target user's ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  _runas podman --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check podman version.\n'
+    return 1
+  }
+  while [ ! -d "/run/user/${_uid}/containers" ]; do
+    sleep 1 || {
+      printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+      return 1
+    }
+  done
+  printf -- 'Container runtime is ready, start %s\n' "${_name}"
 
   _containerize "$@" || return 1
   return 0

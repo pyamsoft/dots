@@ -110,6 +110,20 @@ main() {
   fi
   readonly _how
 
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  podman --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check podman version.\n'
+    return 1
+  }
+  while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+    sleep 1 || {
+      printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+      return 1
+    }
+  done
+  printf -- 'Container runtime is ready, start %s\n' "${_name}"
+
   _containerize "$@" || return 1
   return 0
 }
