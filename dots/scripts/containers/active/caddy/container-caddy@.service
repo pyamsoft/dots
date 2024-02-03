@@ -12,7 +12,7 @@ Wants=network-online.target
 Requires=user@%i.service
 
 [Service]
-ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy --delay'
+ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
 ExecStart=/bin/sh -c '/usr/local/bin/caddy "%i"'
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
 

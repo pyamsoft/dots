@@ -11,7 +11,7 @@ Wants=network-online.target
 Requires=user@%i.service
 
 [Service]
-ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown ddns --delay'
+ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown ddns'
 ExecStart=/bin/sh -c '/usr/local/bin/ddns "%i"'
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown ddns'
 

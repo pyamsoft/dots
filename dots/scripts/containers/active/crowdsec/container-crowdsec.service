@@ -6,7 +6,7 @@ After=network-online.target syslog.target remote-fs.target nss-lookup.target pod
 Wants=network-online.target
 
 [Service]
-ExecStartPre=-/usr/local/bin/container-teardown crowdsec --delay
+ExecStartPre=-/usr/local/bin/container-teardown crowdsec
 ExecStart=/usr/local/bin/crowdsec
 ExecStop=/usr/local/bin/container-teardown crowdsec
 Restart=on-failure
