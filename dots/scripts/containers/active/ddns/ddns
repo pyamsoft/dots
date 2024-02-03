@@ -86,7 +86,7 @@ _containerize() {
   readonly _dd
 
   # Only compare the version minors
-  _current_version="$(podman --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
   _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
   unset _current_version
 
@@ -171,8 +171,8 @@ main() {
 
   # Wait for the target user's ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  _runas podman --version >/dev/null 2>&1 || {
-    printf -- 'Unable to check podman version.\n'
+  _runas "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
     return 1
   }
   while [ ! -d "/run/user/${_uid}/containers" ]; do
