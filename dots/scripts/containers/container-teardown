@@ -5,10 +5,9 @@ _PROG="$(basename "$0")"
 _usage() {
   printf -- '%s\n' "$(cat <<EOF
 
-${_PROG} <name> [--delay]
+${_PROG} <name>
 
 <name>    name of the container to teardown
---delay   Optional: delay actions by 3 seconds
 
 Teardown will nicely stop, then remove the container and
 associated network
@@ -28,12 +27,6 @@ main() {
 
   # Eat name
   shift
-
-  # Allow delay
-  if [ -n "$1" ] && [ "$1" = "--delay" ]; then
-    printf -- 'Delay teardown action...\n'
-    sleep 3 || return 1
-  fi
 
   # Attempt nice stop
   printf -- 'Attempt nice stop container: %s\n' "${_name}"

@@ -5,7 +5,6 @@ Description=Container: Scrutiny Collector Metrics Runner
 After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
 Wants=network-online.target
 Requires=container-scrutiny.service
-RequiresMountsFor=%t/containers
 
 [Service]
 # Let the Scrutiny service start up

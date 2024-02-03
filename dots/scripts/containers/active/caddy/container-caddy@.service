@@ -10,7 +10,6 @@ Description=Container: Caddy for %i
 After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
 Wants=network-online.target
 Requires=user@%i.service
-RequiresMountsFor=/run/user/%i/containers
 
 [Service]
 ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy --delay'

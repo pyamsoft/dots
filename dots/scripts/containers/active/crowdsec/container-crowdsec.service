@@ -4,7 +4,6 @@
 Description=Container: Crowdsec
 After=network-online.target syslog.target remote-fs.target nss-lookup.target podman.service docker.service
 Wants=network-online.target
-RequiresMountsFor=%t/containers
 
 [Service]
 ExecStartPre=-/usr/local/bin/container-teardown crowdsec --delay
