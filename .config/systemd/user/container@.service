@@ -8,6 +8,8 @@ Wants=network-online.target
 ExecStartPre=-/usr/local/bin/container-teardown %i
 ExecStart=%h/.containers/bin/%i
 ExecStop=/usr/local/bin/container-teardown %i
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=default.target

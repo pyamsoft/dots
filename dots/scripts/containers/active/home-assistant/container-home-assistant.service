@@ -9,6 +9,8 @@ Wants=network-online.target
 ExecStartPre=-/usr/local/bin/container-teardown home-assistant
 ExecStart=/usr/local/bin/home-assistant
 ExecStop=/usr/local/bin/container-teardown home-assistant
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target

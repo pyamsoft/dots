@@ -15,6 +15,8 @@ Requires=user@%i.service
 ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
 ExecStart=/bin/sh -c '/usr/local/bin/caddy "%i"'
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=user@%i.service
