@@ -32,7 +32,6 @@ bluez
 bluez-libs
 bolt
 boost-libs
-botan
 brotli
 btrfs-progs
 bubblewrap
@@ -164,11 +163,9 @@ gpgme
 gpm
 graphene
 graphite
-graphviz
 grep
 groff
 gsettings-desktop-schemas
-gsfonts
 gsm
 gsound
 gssdp
@@ -186,7 +183,6 @@ gtk-update-icon-cache
 gtk3
 gtk4
 gtkmm-4.0
-gts
 guile
 gupnp
 gupnp-igd
@@ -250,7 +246,6 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
-hunspell
 hwdata
 hwloc
 hyphen
@@ -318,7 +313,6 @@ kwidgetsaddons5
 kwindowsystem5
 kxmlgui5
 l-smash
-ladspa
 lame
 lapack
 lcms2
@@ -612,7 +606,6 @@ libwireplumber
 libwnck3
 libwpe
 libx11
-libx86
 libxau
 libxcb
 libxcomposite
@@ -667,7 +660,6 @@ lvm2
 lz4
 lzo
 m4
-mailcap
 make
 malcontent
 mbedtls2
@@ -692,7 +684,6 @@ ncurses
 neon
 net-snmp
 netavark
-netpbm
 nettle
 networkmanager
 nftables
@@ -775,7 +766,6 @@ psmisc
 pugixml
 pulseaudio-qt
 python
-python-beautifulsoup4
 python-cairo
 python-capng
 python-certifi
@@ -791,7 +781,6 @@ python-gobject
 python-greenlet
 python-idna
 python-kiwisolver
-python-lxml
 python-markdown
 python-matplotlib
 python-msgpack
@@ -804,7 +793,6 @@ python-protobuf
 python-pycryptodomex
 python-pycups
 python-pycurl
-python-pygments
 python-pyjwt
 python-pynvim
 python-pyparsing
@@ -812,7 +800,6 @@ python-pyqt5
 python-pyqt5-sip
 python-requests
 python-six
-python-soupsieve
 python-urllib3
 python-yaml
 qca-qt5
@@ -838,7 +825,6 @@ qt6-translations
 qt6-wayland
 raptor
 rav1e
-read-edid
 readline
 rrdtool
 rsync
@@ -849,7 +835,6 @@ rubberband
 sane
 sane-airscan
 sbc
-sdl12-compat
 sdl2
 seatd
 sed
