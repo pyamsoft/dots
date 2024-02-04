@@ -146,6 +146,7 @@ _run_jail() {
   # https://stackoverflow.com/questions/59057653/qt-session-management-error-none-of-the-authentication-protocols-specified-are
   #
   # Overwrite /tmp /run /var and /proc
+  # (Don't overwrite /sys or else it breaks 3D graphics)
   # Mount back the user runtime dir and add extra binds for .X11 in /tmp
   # Mount dbus system socket
   #
@@ -164,7 +165,6 @@ _run_jail() {
     --tmpfs /tmp \
     --tmpfs /var \
     --tmpfs /srv \
-    --tmpfs /sys \
     --proc /proc \
     --tmpfs /usr/lib/modules \
     --tmpfs /usr/lib/modprobe.d \
