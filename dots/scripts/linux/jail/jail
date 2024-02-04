@@ -102,11 +102,18 @@ _run_jail() {
   shift
   shift
 
+  # Use a new session
+  _j_session="--new-session"
+
   # If we are opening a shell, override the command
+  # and keep current session
   if [ "${_j_open_shell}" -eq 1 ]; then
     _j_cmd="/bin/bash"
+    _j_session=""
   fi
   unset _j_open_shell
+  readonly _j_session
+  readonly _j_cmd
 
   _clean_path || return 1
 
@@ -124,6 +131,7 @@ _run_jail() {
     fi
     shift
   done
+  readonly _args
 
   # Fail on subshell or pipe failure
   set -eu
@@ -147,6 +155,7 @@ _run_jail() {
   #
   # shellcheck disable=SC2086,SC2046
   exec bwrap \
+    ${_j_session} \
     --die-with-parent \
     --unshare-user \
     --unshare-ipc \

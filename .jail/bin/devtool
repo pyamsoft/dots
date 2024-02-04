@@ -3,7 +3,6 @@
 # Android Studio with devel
 
 exec jail "$(basename "$0")" \
-  --new-session \
   --bind "${HOME}/devel" "${HOME}/devel/" \
   -- \
   "$@"

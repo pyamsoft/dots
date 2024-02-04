@@ -9,7 +9,6 @@ export PATH="${HOME}/devel/sdk/android/cmdline-tools/latest:${PATH}"
 export PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
 
 exec jail "$(basename "$0")" \
-  --new-session \
   --bind "${HOME}/devel" "${HOME}/devel/" \
   -- \
   "$@"

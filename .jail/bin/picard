@@ -1,7 +1,6 @@
 #!/bin/sh
 
 exec jail "$(basename "$0")" \
-  --new-session \
   --bind "${HOME}/music" "${HOME}/music/" \
   -- \
   "$@"

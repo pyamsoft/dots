@@ -1,3 +1,3 @@
 #!/bin/sh
 
-exec jail "$(basename "$0")" --new-session -- "$@"
+exec jail "$(basename "$0")" -- "$@"
