@@ -71,27 +71,22 @@ EOF
 )"
 }
 
-_bind_x11() {
-  for _b in "/tmp/.X"*-lock "/tmp/."*"-unix"; do
-    _binds="${_binds} --bind ${_b} ${_b}"
+##
+# Bind to the same path in the jail
+#
+# $1 bind type bind|ro-bind|dev-bind
+# $2.. path
+_bind_in_jail() {
+  _bind_type="$1"
+  shift
+
+  # Rest are paths
+  for _path in "$@"; do
+    printf -- '--%s %s %s ' "${_bind_type}" "${_path}" "${_path}"
   done
-  unset _b
-}
 
-_bind_gtk() {
-  for _b in "${XDG_CONFIG_HOME}/gtk-"* "${XDG_CONFIG_HOME}/dconf"; do
-    _binds="${_binds} --ro-bind ${_b} ${_b}"
-  done
-  unset _b
-}
-
-_extra_binds() {
-  _binds=""
-
-  _bind_x11
-  _bind_gtk
-
-  readonly _binds
+  unset _bind_type
+  unset _bind_path
   return 0
 }
 
@@ -114,7 +109,6 @@ _run_jail() {
   unset _j_open_shell
 
   _clean_path || return 1
-  _extra_binds || return 1
 
   _args=""
   for _a in "$@"; do
@@ -131,8 +125,8 @@ _run_jail() {
     shift
   done
 
-  # Log commands
-  set -xeu
+  # Fail on subshell or pipe failure
+  set -eu
 
   # Make sure we kill children when bwrap dies
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
@@ -146,26 +140,29 @@ _run_jail() {
   # https://stackoverflow.com/questions/59057653/qt-session-management-error-none-of-the-authentication-protocols-specified-are
   #
   # Overwrite /tmp /run /var and /proc
-  # (Don't overwrite /sys or else it breaks 3D graphics)
+  # /sys is overwritten but the char and pci devices are mounted back in for 3d accel
   # Mount back the user runtime dir and add extra binds for .X11 in /tmp
   # Mount dbus system socket
+  # Mount cups socket
   #
-  # shellcheck disable=SC2086
+  # shellcheck disable=SC2086,SC2046
   exec bwrap \
     --die-with-parent \
-    --dev-bind / / \
     --unshare-user \
     --unshare-ipc \
     --unshare-pid \
     --unshare-uts \
     --unshare-cgroup \
+    $(_bind_in_jail "dev-bind" "/") \
     --tmpfs /boot \
     --tmpfs /efi \
     --tmpfs /run \
     --tmpfs /tmp \
     --tmpfs /var \
     --tmpfs /srv \
+    --tmpfs /sys \
     --proc /proc \
+    --mqueue /dev/mqueue \
     --tmpfs /usr/lib/modules \
     --tmpfs /usr/lib/modprobe.d \
     --tmpfs /usr/lib/modules-load.d \
@@ -175,17 +172,21 @@ _run_jail() {
     --tmpfs /etc/modules-load.d \
     --tmpfs /etc/sudoers.d \
     --tmpfs /etc/sysctl.d \
-    --mqueue /dev/mqueue \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
     --unsetenv SESSION_MANAGER \
     --bind "${_j_jail}/home" "${HOME}" \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
-    --bind "${XDG_RUNTIME_DIR}" "${XDG_RUNTIME_DIR}" \
-    --ro-bind "/run/dbus" "/run/dbus" \
-    --ro-bind "/run/cups" "/run/cups" \
-    ${_binds} \
+    $(_bind_in_jail "dev-bind" /sys/dev/char) \
+    $(_bind_in_jail "dev-bind" /sys/devices/pci*) \
+    $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR}") \
+    $(_bind_in_jail "ro-bind" /run/dbus) \
+    $(_bind_in_jail "ro-bind" /run/cups) \
+    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME}"/gtk-*) \
+    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME}"/dconf) \
+    $(_bind_in_jail "bind" /tmp/.X*-lock) \
+    $(_bind_in_jail "bind" /tmp/.*-unix) \
     ${_args} -- "${_j_cmd}" "$@"
 }
 
