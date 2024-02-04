@@ -1,7 +1,7 @@
 // Polkit rules are written in Javascript. LOL. Assume ES5
 polkit.addRule(function(action, subject) {
-  var isValidGroup = subject.isInGroup("lpadmin") || subject.isInGroup("wheel");
-  var isValidAction = action.id === "org.opensuse.cupspkhelper.mechanism.all-edit";
+  var isValidGroup = subject.isInGroup("tailscale") || subject.isInGroup("wheel");
+  var isValidAction = action.id.lastIndexOf("org.freedesktop.resolve1.", 0) === 0;
   if (isValidGroup && isValidAction) {
     return polkit.Result.YES;
   }
