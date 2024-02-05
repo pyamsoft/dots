@@ -97,7 +97,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run ${_how} \
+  exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
@@ -115,15 +115,6 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
-
-  # How do we run?
-  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-    shift
-    _how="-d --restart=unless-stopped"
-  else
-    _how="--rm -i -t"
-  fi
-  readonly _how
 
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
