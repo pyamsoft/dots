@@ -1,0 +1,34 @@
+#!/bin/sh
+
+main() {
+  _cmd="sudo docker"
+  if command -v podman > /dev/null; then
+    _cmd="podman"
+  fi
+
+  if [ -z "$1" ]; then
+    printf -- 'You must specify a version of the OpenRCT2 server (like 0.4.7)\n'
+    return 1
+  fi
+
+  # Pull the openrct2 version from github
+  curl -o ./Dockerfile "https://raw.githubusercontent.com/OpenRCT2/openrct2-docker/master/$1/cli/Dockerfile" || {
+    printf -- 'Failed to download OpenRCT2 server: %s\n' "$1"
+    return 1
+  }
+
+  # Eat arg
+  shift
+
+  # shellcheck disable=SC2086
+  exec ${_cmd} build . \
+    -t pyamsoft/openrct2 \
+    -f ./Dockerfile \
+    --rm \
+    --layers \
+    --force-rm \
+    "$@"
+}
+
+main "$@" || exit 1
+exit 0
