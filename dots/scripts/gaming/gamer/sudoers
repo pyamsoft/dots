@@ -1,5 +1,5 @@
-# Keep gamer related vars
-Defaults env_keep += "GAMER_*"
+# Keep gamer related vars only for gamelaunch script
+Defaults!/usr/local/sbin/gamelaunch env_keep += "GAMER_*"
 
 # Gaming access for user
 #
