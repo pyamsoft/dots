@@ -110,7 +110,7 @@ _block_in_jail() {
   # Rest are paths
   for _path in "$@"; do
     if [ -e "${_path}" ]; then
-      printf -- '--tmpfs %s %s ' "${_path}" "${_path}"
+      printf -- '--tmpfs %s ' "${_path}"
     fi
   done
   unset _path
