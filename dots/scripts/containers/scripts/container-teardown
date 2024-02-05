@@ -19,6 +19,12 @@ EOF
 main() {
   _name="$1"
 
+  # Podman expects us to be in a accessible CWD
+  cd "${HOME}" || {
+    printf -- 'Unable to cd to user HOME for podman usage'
+    return 1
+  }
+
   if [ -z "${_name}" ]; then
     printf -- 'Must provide container name to teardown\n.'
     _usage || return 1
