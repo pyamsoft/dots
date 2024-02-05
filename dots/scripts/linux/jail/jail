@@ -80,15 +80,41 @@ _bind_in_jail() {
   _bind_type="$1"
   shift
 
+  # No path provided, stop
+  if [ -z "$2" ]; then
+    return 1
+  fi
+
   # Rest are paths
   for _path in "$@"; do
     if [ -e "${_path}" ]; then
       printf -- '--%s %s %s ' "${_bind_type}" "${_path}" "${_path}"
     fi
   done
+  unset _path
 
   unset _bind_type
-  unset _bind_path
+  return 0
+}
+
+##
+# Block the path in the jail
+#
+# $1.. path
+_block_in_jail() {
+  # No path provided, stop
+  if [ -z "$1" ]; then
+    return 1
+  fi
+
+  # Rest are paths
+  for _path in "$@"; do
+    if [ -e "${_path}" ]; then
+      printf -- '--tmpfs %s %s ' "${_path}" "${_path}"
+    fi
+  done
+  unset _path
+
   return 0
 }
 
@@ -164,28 +190,18 @@ _run_jail() {
     --unshare-pid \
     --unshare-uts \
     --unshare-cgroup \
-    $(_bind_in_jail "dev-bind" "/") \
-    --tmpfs /boot \
-    --tmpfs /run \
-    --tmpfs /tmp \
-    --tmpfs /var \
-    --tmpfs /srv \
-    --tmpfs /sys \
-    --proc /proc \
-    --mqueue /dev/mqueue \
-    --tmpfs /usr/lib/modules \
-    --tmpfs /usr/lib/modprobe.d \
-    --tmpfs /usr/lib/modules-load.d \
-    --tmpfs /etc/kernel \
-    --tmpfs /etc/keyutils \
-    --tmpfs /etc/modprobe.d \
-    --tmpfs /etc/modules-load.d \
-    --tmpfs /etc/sudoers.d \
-    --tmpfs /etc/sysctl.d \
     --setenv JAIL_PID "$$" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
     --unsetenv SESSION_MANAGER \
+    $(_bind_in_jail "dev-bind" "/") \
+    --proc /proc \
+    --mqueue /dev/mqueue \
+    $(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys") \
+    $(_block_in_jail "/usr/lib/modules" "/usr/lib/modprobe.d" "/usr/lib/modules-load.d") \
+    $(_block_in_jail "/etc/kernel" "/etc/keyutils") \
+    $(_block_in_jail "/etc/modprobe.d" "/etc/modules-load.d") \
+    $(_block_in_jail "/etc/sudoers.d" "/etc/sysctl.d") \
     --bind "${_j_jail}/home" "${HOME}" \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     $(_bind_in_jail "dev-bind" /sys/dev/char) \
