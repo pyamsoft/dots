@@ -74,9 +74,10 @@ _containerize() {
   unset _current_version
 
   # MacOS can't launch with host-gateway
+  # Use slirp4netns port_handler to pass original IP address
   _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
   if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
+    _network="${_network} --add-host host.containers.internal:host-gateway --network=slirp4netns:port_handler=slirp4netns"
   fi
   readonly _network
 
