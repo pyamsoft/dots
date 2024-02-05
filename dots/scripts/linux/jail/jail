@@ -82,7 +82,9 @@ _bind_in_jail() {
 
   # Rest are paths
   for _path in "$@"; do
-    printf -- '--%s %s %s ' "${_bind_type}" "${_path}" "${_path}"
+    if [ -e "${_path}" ]; then
+      printf -- '--%s %s %s ' "${_bind_type}" "${_path}" "${_path}"
+    fi
   done
 
   unset _bind_type
@@ -164,7 +166,6 @@ _run_jail() {
     --unshare-cgroup \
     $(_bind_in_jail "dev-bind" "/") \
     --tmpfs /boot \
-    --tmpfs /efi \
     --tmpfs /run \
     --tmpfs /tmp \
     --tmpfs /var \
