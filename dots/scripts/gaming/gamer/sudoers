@@ -1,3 +1,6 @@
+# Keep gamer related vars
+Defaults env_keep += "GAMER_*"
+
 # Gaming access for user
 #
 # Replace "primary-user" and "gaming-secondary-user"

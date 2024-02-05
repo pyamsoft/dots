@@ -50,7 +50,7 @@ main() {
   fi
 
   # See gamelaunch script in /usr/local/sbin
-  sudo /usr/local/sbin/gamelaunch "${_cmd}" --gamescope="${GAMER_GAMESCOPE:-0}" "$@"
+  sudo /usr/local/sbin/gamelaunch "${_cmd}" "$@"
 
   # Currently, we "access" the systemd bus by manually setting the path in .bash_profile (gaming-bash_profile)
   # and "starting" the session via loginctl lingering. It's not perfect but it works.
