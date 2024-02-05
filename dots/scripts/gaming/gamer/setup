@@ -15,8 +15,7 @@ _install_launcher() {
   printf -- '%s' "$(cat <<EOF
 #!/bin/sh
 
-env | sort
-if [ -n "${GAMER_GAMESCOPE}" ] && [ "${GAMER_GAMESCOPE}" -ne 0 ]; then
+if [ -n "\${GAMER_GAMESCOPE}" ] && [ "\${GAMER_GAMESCOPE}" -ne 0 ]; then
   exec gametime ${_cmd} "\$@"
 else
   exec "${_cmd}" "\$@"

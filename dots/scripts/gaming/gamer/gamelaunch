@@ -45,6 +45,39 @@ main() {
 
   shift
 
+  # Consume gamescope
+  case "$1" in
+    --gamescope)
+      if [ -z "$2" ]; then
+        printf -- 'Missing required --gamescope argument value!\n'
+        return 1
+      fi
+
+      # Export gamescope
+      export GAMER_GAMESCOPE="$2"
+
+      # Eat both
+      shift
+      shift
+      ;;
+    --gamescope=*)
+      _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
+      if [ -z "${_split}" ]; then
+        printf -- 'Missing required --gamescope= argument value!\n'
+        return 1
+      fi
+
+      # Export gamescope
+      export GAMER_GAMESCOPE="${_split}"
+      unset _split
+
+      # Eat just one
+      shift
+      ;;
+    *)
+      ;;
+  esac
+
   readonly _target_user="gaming-${_target_user}"
   if ! _check_user; then
     return 1
