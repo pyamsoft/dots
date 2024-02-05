@@ -31,8 +31,8 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
+  # Openrct2 only uses TCP. I know. Wow
   _ports="${_ports} -p 127.0.0.1:11753:11753/tcp"
-  _ports="${_ports} -p 127.0.0.1:11753:11753/udp"
 
   readonly _ports
   return 0
