@@ -81,7 +81,7 @@ _bind_in_jail() {
   shift
 
   # No path provided, stop
-  if [ -z "$2" ]; then
+  if [ -z "$1" ]; then
     return 1
   fi
 
