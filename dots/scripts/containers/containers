@@ -1,0 +1,66 @@
+#!/bin/sh
+
+_PROG_NAME="$(basename "$0")"
+
+_usage() {
+  printf -- '%s\n' "$(cat <<EOF
+
+${_PROG_NAME} <action>
+
+<actions>
+ps           Runs 'podman ps', passing all arguments
+teardown     Runs 'container-teardown', passing all arguments
+
+EOF
+)"
+}
+
+_TARGET_USER="containers"
+_check_user() {
+  if ! id -u "${_TARGET_USER}" >/dev/null 2>&1; then
+    printf -- 'Target user %s does not exist!\n' "${_TARGET_USER}"
+    return 1
+  fi
+
+  return 0
+}
+
+main() {
+  if [ -z "$1" ]; then
+    _usage || return 1
+    return 1
+  fi
+
+  # Podman expects us to be in a accessible CWD
+  cd "${HOME}" || {
+    printf -- 'Unable to cd to user HOME for podman usage'
+    return 1
+  }
+
+  if ! _check_user; then
+    return 1
+  fi
+
+  # Eat argument
+  _action="$1"
+  shift
+
+  case "${_action}" in
+    ps)
+      exec podman ps "$@"
+      ;;
+    teardown)
+      exec container-teardown "$@"
+      ;;
+    *)
+      printf -- 'Invalid action: "%s"\n' "${_action}"
+      _usage || return 1
+      return 1
+      ;;
+  esac
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

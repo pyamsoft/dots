@@ -1,0 +1,24 @@
+#!/bin/sh
+
+readonly _target_user="containers"
+
+_check_user() {
+  if ! id -u "${_target_user}" >/dev/null 2>&1; then
+    printf -- 'Target user %s does not exist!\n' "${_target_user}"
+    return 1
+  fi
+
+  return 0
+}
+
+main() {
+  if ! _check_user; then
+    return 1
+  fi
+
+  exec sudo -u "${_target_user}" /usr/local/bin/containers "$@"
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
