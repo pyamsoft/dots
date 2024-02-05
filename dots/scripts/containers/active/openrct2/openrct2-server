@@ -44,7 +44,8 @@ _check_user() {
     return 1
   fi
 
-  _userns="--userns keep-id"
+  # Run as "our user" in the container instead of openrct2
+  _userns="--userns keep-id --user=$(id -u):$(id -g)"
 
   readonly _userns
 
