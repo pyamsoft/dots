@@ -1,0 +1,13 @@
+# Run fprs as a user
+[Unit]
+Description=On %u login, start frps %i
+After=network-online.target syslog.target remote-fs.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/bin/sh -c 'frps -c %i.toml'
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target
