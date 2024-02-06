@@ -21,9 +21,11 @@ main() {
     return 1
   }
 
-  printf -- 'Edit and correct any existing files.\n'
-  printf -- 'When you are ready, press Enter:\n'
+  printf -- '\n\n\n====================================\n'
+  printf -- '\nEdit and correct any existing files.\n'
+  printf -- 'When you are ready, press Enter: '
   read -r _ >/dev/null 2>&1
+  printf -- '====================================\n'
 
   # Mark our repo as not bare
   dotfiles config --local --bool core.bare false || {
