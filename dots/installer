@@ -10,7 +10,7 @@ alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
 main() {
   # Clone the repo as bare into the dotfiles folder
   # This will only pull in repo information but not any files yet
-  git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles || {
+  git clone --bare "https://github.com/pyamsoft/dots.git" "${HOME}"/.dotfiles || {
     printf -- 'Failed to clone dotfile remote repository\n'
     return 1
   }
