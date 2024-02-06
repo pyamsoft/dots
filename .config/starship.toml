@@ -15,6 +15,10 @@ truncation_length = 0
 truncate_to_repo = false
 style = "blue"
 
+# Noisy and generally pointless
+[git_status]
+disabled = true
+
 # Battery module has some bugs and we
 # don't have any devices that use a battery
 # anyway
