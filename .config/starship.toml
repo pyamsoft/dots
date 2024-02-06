@@ -1,24 +1,19 @@
+# Don't add a newline to the prompt (above the prompt)
 add_newline = false
 
+# Always show the username so we know who we are
 [username]
 show_always = true
 
+# Always show the hostname so we know where we are
+[hostname]
+ssh_only = false
+
+# Never truncate directory names
 [directory]
 truncation_length = 0
 truncate_to_repo = false
 style = "blue"
-
-[java]
-disabled = true
-
-[python]
-disabled = true
-
-[nodejs]
-disabled = true
-
-[git_status]
-disabled = true
 
 # Battery module has some bugs and we
 # don't have any devices that use a battery
