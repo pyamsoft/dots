@@ -16,7 +16,7 @@ main() {
     return 1
   fi
 
-  exec sudo -u "${_target_user}" /usr/local/bin/sudo-delegate-containers "$@"
+  exec sudo -u "${_target_user}" /usr/local/bin/delegate-containers "$@"
   return 0
 }
 
