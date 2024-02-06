@@ -4,28 +4,60 @@
 # https://www.atlassian.com/git/tutorials/dotfiles
 # https://stackoverflow.com/questions/10637378/how-do-i-convert-a-bare-git-repository-into-a-normal-one-in-place
 
-# Clone the repo as bare into the dotfiles folder
-# This will only pull in repo information but not any files yet
-git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles
-
 # The dotfiles alias
 alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
 
-# Configure the repository to only show explicitly added files
-dotfiles config --local status.showUntrackedFiles no
+main() {
+  # Clone the repo as bare into the dotfiles folder
+  # This will only pull in repo information but not any files yet
+  git clone --bare "https://github.com/pyamsoft/dots" "${HOME}"/.dotfiles || {
+    printf -- 'Failed to clone dotfile remote repository\n'
+    return 1
+  }
 
-printf -- 'When you are ready, press Enter:\n'
+  # Configure the repository to only show explicitly added files
+  dotfiles config --local status.showUntrackedFiles no || {
+    printf -- 'Failed to configure local dotfiles repository\n'
+    return 1
+  }
 
-read -r _ >/dev/null 2>&1
+  printf -- 'Edit and correct any existing files.\n'
+  printf -- 'When you are ready, press Enter:\n'
+  read -r _ >/dev/null 2>&1
 
-# Mark our repo as not bare
-dotfiles config --local --bool core.bare false
+  # Mark our repo as not bare
+  dotfiles config --local --bool core.bare false || {
+    printf -- 'Failed updating local repository from bare => normal\n'
+    return 1
+  }
 
-# Reset back onto master
-dotfiles reset --hard
+  # Reset back onto main
+  dotfiles reset --hard || {
+    printf -- 'Failed hard reset back to main\n'
+    return 1
+  }
 
-# Mark the upstream fetch lines so "dotfiles fetch" sees origin/main
-dotfiles config --local 'remote.origin.fetch' '+refs/heads/*:refs/remotes/origin/*'
+  # Mark the upstream fetch lines so "dotfiles fetch" sees origin/main
+  dotfiles config --local 'remote.origin.fetch' '+refs/heads/*:refs/remotes/origin/*' || {
+    printf -- 'Failed configuring local upstream origin remotes.\n'
+    return 1
+  }
 
-# Sync up
-dotfiles fetch -a -p
+  # Sync up
+  dotfiles fetch -a -p || {
+    printf -- 'Failed sync-up pruning fetch\n'
+    return 1
+  }
+
+  printf -- 'Setting origin upstream to "main"\n'
+  dotfiles branch --set-upstream-to=origin/main main || {
+    printf -- 'Failed setting origin upstream to "main"\n'
+    return 1
+  }
+
+  printf -- 'Dotfiles repository installed. Launch a new shell using: %s\n' "${SHELL:-/bin/bash}"
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
