@@ -64,7 +64,7 @@ Any arguments passed after the command and "--" will be passed to the command
 
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
---shell          Open a bash shell in the jail instead of executing the command
+--shell          Open a shell in the jail instead of executing the command
 -h | --help      Prints this help
 
 EOF
@@ -136,7 +136,7 @@ _run_jail() {
   # If we are opening a shell, override the command
   # and keep current session
   if [ "${_j_open_shell}" -eq 1 ]; then
-    _j_cmd="/bin/bash"
+    _j_cmd="${SHELL:-/bin/bash}"
     _j_session=""
   fi
   unset _j_open_shell
@@ -199,20 +199,32 @@ _run_jail() {
     --mqueue /dev/mqueue \
     $(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys") \
     $(_block_in_jail "/usr/lib/modules" "/usr/lib/modprobe.d" "/usr/lib/modules-load.d") \
+    $(_block_in_jail "/usr/share/iptables" "/usr/share/nftables" "/usr/share/firewalld") \
+    $(_block_in_jail "/usr/share/polkit-1") \
+    $(_block_in_jail "/usr/share/flatpak") \
+    $(_block_in_jail "/usr/lib/udev" "/usr/lib/sudo") \
+    $(_block_in_jail "/usr/lib/sunshine") \
+    $(_block_in_jail "/usr/lib/systemd") \
     $(_block_in_jail "/etc/kernel" "/etc/keyutils") \
     $(_block_in_jail "/etc/modprobe.d" "/etc/modules-load.d") \
+    $(_block_in_jail "/etc/credstore" "/etc/credstore.encrypted") \
+    $(_block_in_jail "/etc/iptables" "/etc/firewalld" "/etc/firewall") \
+    $(_block_in_jail "/etc/polkit-1" "/etc/udev") \
     $(_block_in_jail "/etc/sudoers.d" "/etc/sysctl.d") \
+    $(_block_in_jail "/etc/systemd") \
+    $(_block_in_jail "/etc/flatpak") \
+    $(_block_in_jail "/etc/ssh") \
     --bind "${_j_jail}/home" "${HOME}" \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     $(_bind_in_jail "dev-bind" /sys/dev/char) \
     $(_bind_in_jail "dev-bind" /sys/devices/pci*) \
-    $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR}") \
     $(_bind_in_jail "ro-bind" /run/dbus) \
     $(_bind_in_jail "ro-bind" /run/cups) \
-    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME}"/gtk-*) \
-    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME}"/dconf) \
+    $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}") \
     $(_bind_in_jail "bind" /tmp/.X*-lock) \
     $(_bind_in_jail "bind" /tmp/.*-unix) \
+    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
+    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
     ${_args} -- "${_j_cmd}" "$@"
 }
 
