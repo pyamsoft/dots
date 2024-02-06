@@ -55,6 +55,7 @@ _check_user() {
 _containerize() {
   # OpenRCT2 runtime config variable
   _or=""
+  _password=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
@@ -68,6 +69,11 @@ _containerize() {
   . "${_runconf}" || return 1
   unset _runconf
   readonly _or
+
+  if [ -z "${_password}" ]; then
+    printf -- 'Must provide a server password via the "_password" variable.\n'
+    return 1
+  fi
 
   # Only compare the version minors
   _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
@@ -104,7 +110,7 @@ _containerize() {
     ${_userns} \
     "${_image}:${_tag}" \
     host "/home/openrct2/.config/OpenRCT2/${park}" \
-    --password "poop" \
+    --password "${_password}" \
     --headless \
     "$@"
 }
