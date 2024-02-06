@@ -118,6 +118,13 @@ _block_in_jail() {
   return 0
 }
 
+_wrap() {
+  # Log outputs, fail on anything
+  set -xeu
+
+  exec bwrap "$@"
+}
+
 _run_jail() {
   _j_open_shell="$1"
   _j_cmd="$2"
@@ -182,7 +189,7 @@ _run_jail() {
   # Mount cups socket
   #
   # shellcheck disable=SC2086,SC2046
-  exec bwrap \
+  _wrap \
     ${_j_session} \
     --die-with-parent \
     --unshare-user \
