@@ -10,6 +10,7 @@ ${_PROG_NAME} <action>
 <actions>
 ps           Runs 'podman ps', passing all arguments
 exec         Runs 'podman exec', passing all arguments
+images       Runs 'podman images', passing all arguments
 system       Runs 'podman system', passing all arguments
 teardown     Runs 'container-teardown', passing all arguments
 
@@ -53,7 +54,7 @@ main() {
   shift
 
   case "${_action}" in
-    ps|exec|system)
+    ps|exec|images|system)
       exec podman "${_action}" "$@"
       ;;
     teardown)
