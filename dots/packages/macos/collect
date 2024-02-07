@@ -13,6 +13,8 @@ _collect_brew() {
 _collect_macports() {
   if command -v sudo >/dev/null && [ -e /opt/local/bin/port ]; then
     sudo /opt/local/bin/port installed requested | tail -n +2 >ports
+  else
+    rm ports
   fi
 }
 
