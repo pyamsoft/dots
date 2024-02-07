@@ -12,10 +12,10 @@ _podman_rootful()
   touch "${_log_path}/$1" || return 1
 
   # Stop it first
-  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1 &
+  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
   # Start up
-  "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1 &
+  "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1
 }
 
 _podman_rootless()
@@ -23,10 +23,10 @@ _podman_rootless()
   touch "${_log_path}/$1" || return 1
 
   # Stop it first
-  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1 &
+  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
   # Start up
-  "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1 &
+  "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1
 }
 
 _podman()
@@ -51,8 +51,8 @@ _podman()
   podman machine stop >>"${_log_path}/podman" 2>&1 || return 1
   podman machine start >>"${_log_path}/podman" 2>&1 || return 1
 
-  _podman_rootful "adguardhome" || return 1
-  _podman_rootless "postgres" || return 1
+  _podman_rootful "adguardhome" &
+  _podman_rootless "postgres" &
 
   return 0
 }

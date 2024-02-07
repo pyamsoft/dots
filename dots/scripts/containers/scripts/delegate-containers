@@ -11,6 +11,7 @@ ${_PROG_NAME} <action>
 ps           Runs 'podman ps', passing all arguments
 logs         Runs 'podman logs', passing all arguments
 images       Runs 'podman images', passing all arguments
+inspect      Runs 'podman inspect', passing all arguments
 
 enter        Runs 'podman exec -it <name> sh'
 cleanup      Runs 'podman system prune -a'
@@ -56,7 +57,7 @@ main() {
   shift
 
   case "${_action}" in
-    ps|logs|images)
+    ps|logs|images|inspect)
       exec podman "${_action}" "$@"
       ;;
     enter)
