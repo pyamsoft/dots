@@ -3,7 +3,7 @@
 _enter_jail() {
   _jail_user="$1"
 
-  jail --name "free-games-${_jail_user}" bash -c './claimer' || return 1
+  jail --name "free-games-${_jail_user}" bash -- -c './claimer' || return 1
 
   unset _jail_user
   return 0
