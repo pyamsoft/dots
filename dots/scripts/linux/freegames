@@ -19,7 +19,7 @@ _install_script() {
     return 1
   fi
 
-  _jail_home="${HOME}/.local/etc/jails/free-games-${_jail_owner}"
+  _jail_home="${HOME}/.local/etc/jails/free-games-${_jail_owner}/home"
   mkdir -p "${_jail_home}" || {
     printf -- 'Unable to create jail home directory: %s' "${_jail_home}"
 
