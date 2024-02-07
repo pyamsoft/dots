@@ -1,6 +1,13 @@
 # Don't add a newline to the prompt (above the prompt)
 add_newline = false
 
+# Don't follow symlinks (slow with networked file systems)
+follow_symlinks = false
+
+# Don't track command duration
+[cmd_duration]
+disabled = true
+
 # Always show the username so we know who we are
 [username]
 show_always = true
