@@ -9,11 +9,12 @@ ${_PROG_NAME} <action>
 
 <actions>
 ps           Runs 'podman ps', passing all arguments
-exec         Runs 'podman exec', passing all arguments
 logs         Runs 'podman logs', passing all arguments
 images       Runs 'podman images', passing all arguments
-system       Runs 'podman system', passing all arguments
-teardown     Runs 'container-teardown', passing all arguments
+
+enter        Runs 'podman exec -it <name> sh'
+cleanup      Runs 'podman system prune -a'
+teardown     Runs 'container-teardown <name>'
 
 EOF
 )"
@@ -55,8 +56,15 @@ main() {
   shift
 
   case "${_action}" in
-    ps|exec|logs|images|system)
+    ps|logs|images)
       exec podman "${_action}" "$@"
+      ;;
+    enter)
+      # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
+      exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
+      ;;
+    cleanup)
+      exec podman system prune -a
       ;;
     teardown)
       exec container-teardown "$@"
