@@ -133,19 +133,22 @@ main() {
   _prep_ports || return 1
   _prep_caps || return 1
 
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
   "${_cmd}" --version >/dev/null 2>&1 || {
     printf -- 'Unable to check %s version.\n' "${_cmd}"
     return 1
   }
-  while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-    sleep 1 || {
-      printf -- 'Cancelled while waiting for container runtime to stand up.\n'
-      return 1
-    }
-  done
-  printf -- 'Container runtime is ready, start %s\n' "${_name}"
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
 
   _containerize "$@" || return 1
   return 0
