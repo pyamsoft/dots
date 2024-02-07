@@ -251,6 +251,17 @@ _restart() {
 
 _restart_sunshine() {
   printf -- 'Restarting Sunshine gamestream...\n'
+
+  # If we can, we should poke the monitor first just to be safe
+  if command -v poke-monitor >/dev/null 2>&1; then
+    printf -- 'Poking the monitor first before doing Sunshine things, just in case...\n'
+
+    # Just give it our best shot.
+    poke-monitor auto || {
+      printf -- 'Poking the monitor failed, continue with Sunshine things anyway.\n'
+    }
+  fi
+
   if _restart; then
     printf -- 'Restarted sunshine service!\n'
   else
@@ -266,7 +277,6 @@ main() {
     _restart_sunshine || return 1
     return 0
   else
-
     # On MacOS sometimes we are not on the PATH
     if [ "$(uname)" = "Darwin" ]; then
       if [ -e /opt/local/bin/sunshine ]; then
