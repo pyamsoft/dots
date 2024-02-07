@@ -11,22 +11,30 @@ _podman_rootful()
 {
   touch "${_log_path}/$1" || return 1
 
-  # Stop it first
-  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
+  if [ -x "/usr/local/bin/$1" ]; then
+    # Stop it first
+    /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
-  # Start up
-  "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1
+    # Start up
+    "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1
+  else
+    printf -- 'No script to execute /usr/local/bin/%s as %s' "$1" "${_user}"  >>"${_log_path}/$1" 2>&1
+  fi
 }
 
 _podman_rootless()
 {
   touch "${_log_path}/$1" || return 1
 
-  # Stop it first
-  /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
+  if [ -x "${HOME}/.containers/bin/$1" ]; then
+    # Stop it first
+    /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
-  # Start up
-  "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1
+    # Start up
+    "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1
+  else
+    printf -- 'No script to execute %s/.containers/bin/%s as %s' "${HOME}" "$1" "${_user}"  >>"${_log_path}/$1" 2>&1
+  fi
 }
 
 _podman()
