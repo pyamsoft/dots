@@ -1,3 +1,6 @@
+// vi: ft=javascript
+// This rule is not needed if Tailscale Magic DNS does not manage your system
+
 // Polkit rules are written in Javascript. LOL. Assume ES5
 polkit.addRule(function(action, subject) {
   var isValidGroup = subject.isInGroup("tailscale") || subject.isInGroup("wheel");
