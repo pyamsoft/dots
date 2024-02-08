@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <description>Sunshine Gamestream server</description>
+  <port port="47984" protocol="tcp"/>
+  <port port="47989" protocol="tcp"/>
+  <port port="47990" protocol="tcp"/>
+  <port port="48010" protocol="tcp"/>
+  <port port="47998-48000" protocol="udp"/>
+</service>
