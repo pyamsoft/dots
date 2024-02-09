@@ -16,7 +16,8 @@ _podman_rootful()
     /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
     # Start up
-    "/usr/local/bin/$1" "${_user}" >>"${_log_path}/$1" 2>&1
+    # Pass stdin from /dev/null so that -i -t flags don't get system interrupted.
+    "/usr/local/bin/$1" "${_user}" </dev/null >>"${_log_path}/$1" 2>&1
   else
     printf -- 'No script to execute /usr/local/bin/%s as %s' "$1" "${_user}"  >>"${_log_path}/$1" 2>&1
   fi
@@ -31,7 +32,8 @@ _podman_rootless()
     /usr/local/bin/container-teardown "$1" >>"${_log_path}/$1" 2>&1
 
     # Start up
-    "${HOME}/.containers/bin/$1" >>"${_log_path}/$1" 2>&1
+    # Pass stdin from /dev/null so that -i -t flags don't get system interrupted.
+    "${HOME}/.containers/bin/$1" </dev/null >>"${_log_path}/$1" 2>&1
   else
     printf -- 'No script to execute %s/.containers/bin/%s' "${HOME}" "$1" >>"${_log_path}/$1" 2>&1
   fi
