@@ -41,7 +41,6 @@ ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
 cairo
-cairomm-1.16
 cantarell-fonts
 catatonit
 cblas
@@ -65,7 +64,6 @@ cups-filters
 cups-pk-helper
 curl
 dav1d
-db
 db5.3
 dbus
 dbus-broker
@@ -137,7 +135,6 @@ glew
 glib-networking
 glib2
 glibc
-glibmm-2.68
 glm
 glslang
 glu
@@ -182,7 +179,6 @@ gstreamer
 gtk-update-icon-cache
 gtk3
 gtk4
-gtkmm-4.0
 guile
 gupnp
 gupnp-igd
@@ -558,7 +554,6 @@ libsasl
 libseccomp
 libsecret
 libshout
-libsigc++-3.0
 libslirp
 libsm
 libsmbios
@@ -714,7 +709,6 @@ pacman-mirrorlist
 pam
 pambase
 pango
-pangomm-2.48
 parted
 passim
 patch
