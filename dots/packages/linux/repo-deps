@@ -264,12 +264,9 @@ iso-codes
 iw
 iwd
 jansson
-java-runtime-common
 jbig2dec
 jbigkit
 jitterentropy
-jre17-openjdk
-jre17-openjdk-headless
 js115
 json-c
 json-glib
@@ -446,6 +443,7 @@ libepoxy
 libevdev
 libevent
 libexif
+libfabric
 libfakekey
 libfdk-aac
 libffi
@@ -897,6 +895,7 @@ usbmuxd
 util-linux
 util-linux-libs
 v4l-utils
+vapoursynth
 vid.stab
 vmaf
 volume_key

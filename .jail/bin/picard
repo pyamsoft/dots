@@ -1,6 +1,0 @@
-#!/bin/sh
-
-exec jail "$(basename "$0")" \
-  --bind "${HOME}/music" "${HOME}/music/" \
-  -- \
-  "$@"

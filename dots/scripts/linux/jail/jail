@@ -191,7 +191,6 @@ _run_jail() {
   # shellcheck disable=SC2086,SC2046
   _wrap \
     ${_j_session} \
-    --die-with-parent \
     --unshare-user \
     --unshare-ipc \
     --unshare-pid \
