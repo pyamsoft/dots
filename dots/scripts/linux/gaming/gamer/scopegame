@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec env GAMER_GAMESCOPE=1 \
+  "$(dirname "$(realpath "$0")")/gamer" \
+  "$(basename "$0")" "$@"

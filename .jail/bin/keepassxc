@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# KeepassXC with no internet access
+
+exec jail "$(basename "$0")" \
+  --new-session \
+  --unshare-net \
+  --bind "${HOME}/.keepass" "${HOME}/.keepass" \
+  -- \
+  "$@"

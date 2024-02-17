@@ -9,4 +9,4 @@ fi
 
 _user="gaming-${_user}"
 readonly _user
-exec sudo sh -c "loginctl kill-user ${_user} && sleep 1 && loginctl disable-linger ${_user} && sleep 1 && userdel -r ${_user} && sleep 1 && groupdel ${_user}"
+exec sudo sh -c "loginctl kill-user ${_user} ; sleep 1 && loginctl disable-linger ${_user} ; sleep 1 && userdel -r ${_user} && sleep 1 && groupdel ${_user}"

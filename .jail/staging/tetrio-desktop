@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# KeepassXC with no internet access
+# Tetrio
 
 exec jail "$(basename "$0")" \
   --new-session \
-  --unshare-net \
   -- \
   "$@"

@@ -72,18 +72,61 @@ _local_install() {
   t="${target}/bin/$(basename "${script}")"
 
   sudo cp -f "${current_directory}/${script}" "$t" || {
-    printf -- 'Failed to copy script %s into host\n' "${script}"
+    printf -- 'Failed to copy script %s into host %s\n' "${script}" "${target}"
+    return 1
+  }
+
+  sudo chown "$(basename "${target}"):$(basename "${target}")" "$t" || {
+    printf -- 'Failed to own script %s as target user %s\n' "${script}" "$(basename "${target}")"
     return 1
   }
 
   sudo chmod 700 "$t" || {
-    printf -- 'Failed to mark script %s executable for host\n' "${script}"
+    printf -- 'Failed to mark script %s executable for host %s\n' "${script}" "${target}"
     return 2
   }
 
   printf -- 'SUDO:    %s installed for %s\n' "${script}" "$t"
 
   unset t
+  unset target
+  unset script
+  unset current_directory
+  return 0
+}
+
+_jail_install() {
+  script="$1"
+  target="$2"
+  current_directory="$(pwd)"
+
+  printf -- 'Attempt local install script %s into jail %s/bin\n' "${script}" "${target}"
+
+  jail="${HOME}/.local/etc/jails/${target}"
+  jail_bindir="${jail}/home/.local/bin"
+
+  if [ ! -d "${jail}" ]; then
+    printf -- 'Ignore local install of %s into jail %s, does not exist.\n' "${script}" "${target}"
+    return 0
+  fi
+
+  t="${jail_bindir}/$(basename "${script}")"
+
+  mkdir -p "${jail_bindir}" || {
+    printf -- 'Failed to make jail directory %s\n' "${jail_bindir}"
+    return 1
+  }
+
+  chmod 700 "$t" || {
+    printf -- 'Failed to mark script %s executable for jail %s\n' "${script}" "${target}"
+    return 2
+  }
+
+  printf -- '    %s installed for %s\n' "${script}" "$t"
+
+  unset t
+  unset jail
+  unset jail_bindir
   unset target
   unset script
   unset current_directory
@@ -108,6 +151,7 @@ _installer "org.DolphinEmu.dolphin-emu" ".local/bin" "dolphin-emu/gametime-dolph
 
 # If we have gamescope locally, maybe we want this script too
 if command -v gamescope >/dev/null; then
+  # Gaming as another user
   for _u in /home/gaming-*; do
     case "${_u}" in
       gaming-\*)
@@ -117,6 +161,13 @@ if command -v gamescope >/dev/null; then
         ;;
     esac
   done
+
+  # Jails
+  _jail_install "gametime" "heroic"
+  _jail_install "gametime" "steam"
+  _jail_install "gametime" "dolphin-emu"
+  _jail_install "gametime" "openrct2"
+  _jail_install "gametime" "tetrio"
 fi
 
 exit 0

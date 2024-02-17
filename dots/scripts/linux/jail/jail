@@ -171,7 +171,6 @@ _run_jail() {
   # Fail on subshell or pipe failure
   set -eu
 
-  # Make sure we kill children when bwrap dies
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
   # dev-bind root so everything works the same as it would outside
   # tmpfs bind /tmp for security
