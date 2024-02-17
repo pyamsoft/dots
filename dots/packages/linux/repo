@@ -9,6 +9,8 @@ buildah
 cups-pdf
 ddcutil
 dolphin-emu
+easyeffects
+firefox
 gamescope
 gdm
 gentium-plus-font
@@ -22,7 +24,9 @@ htop
 inter-font
 irqbalance
 kdeconnect
+keepassxc
 kernel-modules-hook
+libreoffice-still
 linux-lts
 man-db
 man-pages
@@ -30,14 +34,17 @@ mangohud
 nautilus
 neovim
 noto-fonts
+obs-studio
 openrct2
 otf-cascadia-code
 p7zip
 pacman-contrib
 papirus-icon-theme
+pavucontrol
 picard
 pkgstats
 podman
+qbittorrent
 reflector
 rng-tools
 rofi

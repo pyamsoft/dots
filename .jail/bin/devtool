@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Android Studio with devel
+# IDE with devel
 
 exec jail "$(basename "$0")" \
   --bind "${HOME}/devel" "${HOME}/devel/" \
