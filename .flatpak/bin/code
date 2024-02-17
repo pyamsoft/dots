@@ -1,0 +1,23 @@
+#!/bin/sh
+
+readonly pak="com.visualstudio.code"
+readonly def_path="/app/bin:/usr/bin"
+
+readonly dev_root="${HOME}/devel"
+
+path="${HOME}/.local/bin"
+readonly path
+
+cmd=""
+if [ "$1" = "--shell" ]; then
+  cmd="${cmd} --shell"
+  shift
+fi
+readonly cmd
+
+# shellcheck disable=SC2086
+exec flatpak-env ${cmd} "${pak}" \
+  --with-env PATH "${path}:" "${def_path}" \
+  --filesystem="${dev_root}/project" \
+  -- "$@" || exit 1
+exit 0
