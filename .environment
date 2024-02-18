@@ -31,3 +31,8 @@ done
 unset script
 
 unset os
+
+# Mark environment as set up
+export PYAMSOFT_ENVIRONMENT=1
+
+return 0
