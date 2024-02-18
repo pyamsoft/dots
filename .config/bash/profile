@@ -1,4 +1,10 @@
 # shellcheck shell=bash
+#
+# Source if the environment is not setup
+if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  # shellcheck disable=SC1091
+  [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
+fi
 
 os="$(uname)"
 
