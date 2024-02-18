@@ -1,0 +1,6 @@
+# shellcheck shell=sh
+
+# Suggestions from xdg-ninja
+export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
+
+return 0

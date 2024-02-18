@@ -1,169 +1,33 @@
-# shellcheck shell=bash
+# shellcheck shell=sh
 
-_setup_editor() {
-  # User editor can be from a local script
-  # Use absolute path to editor
-  _editors="${HOME}/.local/bin/lvim /opt/homebrew/bin/nvim /usr/bin/nvim /usr/bin/vim /usr/bin/vi"
-  for e in ${_editors}; do
-    if [ -f "${e}" ]; then
-      export EDITOR="${e}"
-      export SYSTEMD_EDITOR="${e}"
-      export SUDO_EDITOR="${e}"
-      export DIFFPROG="${e} -d"
-      break
-    fi
-  done;
-  unset _editors
-
+# If we have already been sourced, exit out
+if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
   return 0
-}
+fi
 
-_setup_path() {
-  # MacOS doesn't have /usr/local/sbin by default.
-  # If we made it, add it
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ -d "/usr/local/sbin" ]; then
-      PATH="/usr/local/sbin:${PATH}"
-    fi  
-  fi
+os="$(uname)"
 
-  # Source these onto the path first in case other script
-  # directories rely on a command we created
-  #
-  # ex. .jail/bin relies on our script bin/jail
+for script in "${HOME}"/.environment.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && {
+    case "${script}" in
+      *.linux)
+        if [ "${os}" = "Linux" ]; then
+          . "${script}"
+        fi
+        ;;
+      *.macos)
+        if [ "${os}" = "Darwin" ]; then
+          . "${script}"
+        fi
+        ;;
+      *)
+        . "${script}"
+        ;;
+    esac
+  }
+  unset script
+done
+unset script
 
-  # Git tracked scripts
-  if [ -d "${HOME}/bin" ]; then
-    PATH="${HOME}/bin:${PATH}"
-  fi
-
-  # Local scripts that are not git tracked
-  if [ -d "${HOME}/.local/bin" ]; then
-    PATH="${HOME}/.local/bin:${PATH}"
-  fi
-
-  # Linux stuff
-  if [ "$(uname)" = "Linux" ]; then
-    # Flatpak scrips
-    if command -v flatpak >/dev/null; then
-      if [ -d "${HOME}/.flatpak/bin" ]; then
-        PATH="${HOME}/.flatpak/bin:${PATH}"
-      fi
-    fi
-
-    # Jail scripts
-    if command -v bwrap >/dev/null && command -v jail >/dev/null; then
-      if [ -d "${HOME}/.jail/bin" ]; then
-        PATH="${HOME}/.jail/bin:${PATH}"
-      fi
-    fi
-  fi
-
-  # Docker scrips
-  if command -v docker >/dev/null || command -v podman >/dev/null; then
-    if [ -d "${HOME}/.containers/bin" ]; then
-      PATH="${HOME}/.containers/bin:${PATH}"
-    fi
-  fi
-
-  # Add local npm repository: used for things like bash-language-server
-  # Set the local npm global path with "npm config set prefix ~/.npm/global"
-  if command -v npm >/dev/null; then
-    _npm_path="${HOME}/.npm/global"
-
-    # Set the global path
-    npm config set prefix "${_npm_path}"
-
-    # Export it
-    PATH="${_npm_path}/bin:${PATH}"
-
-    # Clean up
-    unset _npm_path
-  fi
-
-  # Export the PATH
-  export PATH
-}
-
-_setup_macos() {
-  # Add macports (generally MacOS)
-  #if [ -e /opt/local/bin/port ]; then
-  #  export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-  #  export MANPATH="/opt/local/share/man:$MANPATH"
-  #fi
-
-  # Add homebrew scripts (generally MacOS)
-  if [ -e /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  fi
-
-}
-
-_setup_xdg() {
-  # Define XDG directories
-  if [ -z "${XDG_CONFIG_HOME}" ]; then
-    export XDG_CONFIG_HOME="${HOME}/.config"
-  fi
-
-  if [ -z "${XDG_CACHE_HOME}" ]; then
-    export XDG_CACHE_HOME="${HOME}/.cache"
-  fi
-
-  if [ -z "${XDG_DATA_HOME}" ]; then
-    export XDG_DATA_HOME="${HOME}/.local/share"
-  fi
-
-  if [ -z "${XDG_STATE_HOME}" ]; then
-    export XDG_STATE_HOME="${HOME}/.local/state"
-  fi
-}
-
-_setup_homedir() {
-  # Suggestions from xdg-ninja
-  export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
-  export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
-  export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
-  export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
-
-  # Make directories
-  if [ -d "${XDG_CONFIG_HOME}/readline" ]; then
-    mkdir -p "${XDG_CONFIG_HOME}/readline"
-  fi
-  if [ -d "${XDG_CACHE_HOME}/less" ]; then
-    mkdir -p "${XDG_CACHE_HOME}/less"
-  fi
-  if [ -d "${XDG_DATA_HOME}/gnupg" ]; then
-    mkdir -p "${XDG_DATA_HOME}/gnupg"
-  fi
-}
-
-_environment() {
-  # If we have already been sourced, exit out
-  if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
-    return 0
-  fi
-
-  _setup_macos || return 1
-  _setup_path || return 1
-  _setup_xdg || return 1
-  _setup_editor || return 1
-
-  # Expect XDG to be setup
-  _setup_homedir || return 1
-
-  # Mark environment as set up
-  export PYAMSOFT_ENVIRONMENT=1
-
-  return 0
-}
-
-_environment
-
-unset -f _environment
-unset -f _setup_macos
-unset -f _setup_xdg
-unset -f _setup_path
-unset -f _setup_editor
-unset -f _setup_homedir
-
-# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
+unset os
