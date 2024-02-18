@@ -165,6 +165,36 @@ _setup_ssh() {
   fi
 }
 
+_rc_dropin() {
+  os="$(uname)"
+
+  for script in "${HOME}"/.bashrc.d/* "${XDG_CONFIG_HOME}"/bash/rc.d/*; do
+    # shellcheck disable=SC1090
+    [ -r "${script}" ] && {
+      case "${script}" in
+        *.linux)
+          if [ "${os}" = "Linux" ]; then
+            . "${script}"
+          fi
+          ;;
+        *.macos)
+          if [ "${os}" = "Darwin" ]; then
+            . "${script}"
+          fi
+          ;;
+        *)
+          . "${script}"
+          ;;
+      esac
+    }
+    unset script
+  done
+  unset script
+
+  unset os
+  return 0
+}
+
 _bashrc() {
   _ensure_env || {
     printf -- '[bashrc] Failed to setup environment\n'
@@ -201,6 +231,11 @@ _bashrc() {
     return 0
   }
 
+  _rc_dropin || {
+    printf -- '[bashrc] Failed to launch starship\n'
+    return 0
+  }
+
   _launch_starship || {
     printf -- '[bashrc] Failed to launch starship\n'
     return 0
@@ -224,5 +259,6 @@ unset -f _ensure_env
 unset -f _direnv
 unset -f _correct_term_macos
 unset -f _setup_ssh
+unset -f _rc_dropin
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
