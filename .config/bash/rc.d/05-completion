@@ -1,0 +1,42 @@
+# shellcheck shell=bash
+
+# Enable bash completion
+_bcomp="/usr/share/bash-completion/bash_completion"
+
+[ -r "${_bcomp}" ] && {
+  # shellcheck disable=SC1090
+  . "${_bcomp}" || {
+    unset _bcomp
+    return 1
+  }
+}
+
+_bcomp="/etc/bash_completion"
+[ -r "${_bcomp}" ] && {
+  # shellcheck disable=SC1090
+  . "${_bcomp}" || {
+    unset _bcomp
+    return 1
+  }
+}
+
+_bcomp="/usr/local/share/bash-completion/bash_completion"
+[ -r "${_bcomp}" ] && {
+  # shellcheck disable=SC1090
+  . "${_bcomp}" || {
+    unset _bcomp
+    return 1
+  }
+}
+
+_bcomp="/opt/homebrew/share/bash-completion/bash_completion"
+[ -r "${_bcomp}" ] && {
+  # shellcheck disable=SC1090
+  . "${_bcomp}" || {
+    unset _bcomp
+    return 1
+  }
+}
+unset _bcomp
+
+return 0

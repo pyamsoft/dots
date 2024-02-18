@@ -3,262 +3,29 @@
 # If not running interactively, don't do anything
 [[ "$-" != *i* ]] && return
 
-_launch_starship() {
-  if command -v starship > /dev/null; then
-    eval "$(starship init bash)" || return 1
-  else
-    export PS1='\u in \h in \w
-\$ '
-  fi
+os="$(uname)"
 
-  return 0
-}
-
-_increase_ulimit() {
-  if command -v ulimit > /dev/null; then
-    # ulimit is normally something like 1024 on Linux or 256 on MacOS
-    # This can lead to errors like postgres:too many files open
-    # We bump the ulimit up to 2048 in any interactive shell
-    _current_ulimit="$(ulimit -S -n)"
-    if [ "${_current_ulimit}" -le 2048 ]; then
-      ulimit -S -n 2048 || return 1
-    fi
-    unset _current_ulimit
-  fi
-
-  return 0
-}
-
-_enable_bash_completion() {
-  # Enable bash completion
-  _bcomp="/usr/share/bash-completion/bash_completion"
-
-  [ -r "${_bcomp}" ] && {
-    # shellcheck disable=SC1090
-    . "${_bcomp}" || return 1
-  }
-
-  _bcomp="/etc/bash_completion"
-  [ -r "${_bcomp}" ] && {
-    # shellcheck disable=SC1090
-    . "${_bcomp}" || return 1
-  }
-
-  _bcomp="/usr/local/share/bash-completion/bash_completion"
-  [ -r "${_bcomp}" ] && {
-    # shellcheck disable=SC1090
-    . "${_bcomp}" || return 1
-  }
-
-  _bcomp="/opt/homebrew/share/bash-completion/bash_completion"
-  [ -r "${_bcomp}" ] && {
-    # shellcheck disable=SC1090
-    . "${_bcomp}" || return 1
-  }
-
-  unset _bcomp
-
-  return 0
-}
-
-_bash_qol() {
-  _aliases="${XDG_CONFIG_HOME}/bash/aliases"
-  [ -f "${_aliases}" ] && {
-    # shellcheck disable=SC1090
-    . "${_aliases}" || return 1
-  }
-  unset _aliases
-
-  _functions="${XDG_CONFIG_HOME}/bash/functions"
-  [ -f "${_functions}" ] && {
-    # shellcheck disable=SC1090
-    . "${_functions}" || return 1
-  }
-  unset _functions
-
-  # Set LS_COLORS
-  if command -v vivid > /dev/null; then
-    # We are dark if tmux identifies our theme as "macchiato"
-    if grep -q \"macchiato\" "${HOME}/.config/tmux/tmux.conf"; then
-      export LS_COLORS="$(vivid generate catppuccin-macchiato)"
-    else
-      export LS_COLORS="$(vivid generate catppuccin-latte)"
-    fi
-  elif command -v gdircolors > /dev/null; then
-    eval "$(gdircolors -b)" || return 1
-  elif command -v dircolors > /dev/null; then
-    eval "$(dircolors -b)" || return 1
-  fi
-
-  return 0
-}
-
-_ensure_env() {
-  # Source bash_profile if the environment is not setup
-  if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-    [ -f "${HOME}"/.bash_profile ] && {
-      # shellcheck disable=SC1091
-      . "${HOME}"/.bash_profile || return 1
-    }
-  fi
-
-  return 0
-}
-
-_direnv() {
-  # Source bash_profile if the environment is not setup
-  if command -v direnv > /dev/null; then
-    eval "$(direnv hook bash)" || return 1
-  fi
-
-  return 0
-}
-
-_correct_term_macos() {
-  # tmux-256color is not on MacOS, use screen-256color instead
-  if [ "$(uname)" = "Darwin" ] && [ "${TERM}" = "tmux-256color" ]; then
-    export TERM="screen-256color"
-  fi
-
-  return 0
-}
-
-_setup_ssh() {
-
-  # We do not have an already running auth sock
-  if [ -z "${SSH_AUTH_SOCK}" ]; then
-
-    # Systemd has set us a runtime dir
-    if [ -n "${XDG_RUNTIME_DIR}" ]; then
-      # GCR over Gnome-Keyring old path
-      if [ -S "${XDG_RUNTIME_DIR}/gcr/ssh" ]; then
-        export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/gcr/ssh"
-        return 0
-      fi
-
-      # Gnome Keyring owns SSH when it runs
-      if [ -S "${XDG_RUNTIME_DIR}/keyring/ssh" ]; then
-        export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/keyring/ssh"
-        return 0
-      fi
-    fi
-
-    # Otherwise figure out an SSH agent home
-    if [ -z "${XDG_RUNTIME_DIR}" ]; then
-      _ssh_home="/tmp"
-    else
-      _ssh_home="${XDG_RUNTIME_DIR}"
-    fi
-
-    # Check if an SSH agent is already running
-    if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
-      # Launch a new agent and save the details in this runtime file
-      ssh-agent -s >"${_ssh_home}/ssh-agent.env"
-    fi
-
-    if [ -f "${_ssh_home}/ssh-agent.env" ]; then
-      # shellcheck disable=SC1091
-      . "${_ssh_home}/ssh-agent.env" >/dev/null 2>&1
-    fi
-
-    unset _ssh_home
-  fi
-}
-
-_rc_dropin() {
-  os="$(uname)"
-
-  for script in "${HOME}"/.bashrc.d/* "${XDG_CONFIG_HOME}"/bash/rc.d/*; do
-    # shellcheck disable=SC1090
-    [ -r "${script}" ] && {
-      case "${script}" in
-        *.linux)
-          if [ "${os}" = "Linux" ]; then
-            . "${script}"
-          fi
-          ;;
-        *.macos)
-          if [ "${os}" = "Darwin" ]; then
-            . "${script}"
-          fi
-          ;;
-        *)
+for script in "${HOME}"/.bashrc.d/* "${XDG_CONFIG_HOME}"/bash/rc.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && {
+    case "${script}" in
+      *.linux)
+        if [ "${os}" = "Linux" ]; then
           . "${script}"
-          ;;
-      esac
-    }
-    unset script
-  done
+        fi
+        ;;
+      *.macos)
+        if [ "${os}" = "Darwin" ]; then
+          . "${script}"
+        fi
+        ;;
+      *)
+        . "${script}"
+        ;;
+    esac
+  }
   unset script
+done
+unset script
 
-  unset os
-  return 0
-}
-
-_bashrc() {
-  _ensure_env || {
-    printf -- '[bashrc] Failed to setup environment\n'
-    return 0
-  }
-
-  _bash_qol || {
-    printf -- '[bashrc] Failed to setup bash QOL features\n'
-    return 0
-  }
-
-  _enable_bash_completion || {
-    printf -- '[bashrc] Failed to setup bash shell completion\n'
-    return 0
-  }
-
-  _direnv || {
-    printf -- '[bashrc] Failed direnv setup\n'
-    return 0
-  }
-
-  _increase_ulimit || {
-    printf -- '[bashrc] Failed to increase ulimit\n'
-    return 0
-  }
-
-  _setup_ssh || {
-    printf -- '[bashrc] Failed to attach or launch ssh-agent\n'
-    return 0
-  }
-
-  _correct_term_macos || {
-    printf -- '[bashrc] Failed to correct TERM\n'
-    return 0
-  }
-
-  _rc_dropin || {
-    printf -- '[bashrc] Failed to launch starship\n'
-    return 0
-  }
-
-  _launch_starship || {
-    printf -- '[bashrc] Failed to launch starship\n'
-    return 0
-  }
-
-  return 0
-}
-
-# Never return bad from here, bashrc must never fail
-_bashrc || {
-    printf -- '[bashrc] Error during setup\n'
-}
-
-# Do not export the functions
-unset -f _bashrc
-unset -f _increase_ulimit
-unset -f _enable_bash_completion
-unset -f _launch_starship
-unset -f _bash_qol
-unset -f _ensure_env
-unset -f _direnv
-unset -f _correct_term_macos
-unset -f _setup_ssh
-unset -f _rc_dropin
-
-# vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround:
+unset os

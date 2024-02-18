@@ -1,0 +1,17 @@
+# shellcheck shell=bash
+
+# No ulimit, no work
+if ! command -v ulimit > /dev/null; then
+  return 0
+fi
+
+# ulimit is normally something like 1024 on Linux or 256 on MacOS
+# This can lead to errors like postgres:too many files open
+# We bump the ulimit up to 2048 in any interactive shell
+_current_ulimit="$(ulimit -S -n)"
+if [ "${_current_ulimit}" -le 2048 ]; then
+  ulimit -S -n 2048 || return 1
+fi
+unset _current_ulimit
+
+return 0
