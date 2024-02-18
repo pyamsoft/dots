@@ -1,0 +1,5 @@
+# shellcheck shell=bash
+
+# Disable the bash_history file
+export HISTCONTROL=ignoreboth
+export HISTFILE="${XDG_CONFIG_HOME}/bash/history"

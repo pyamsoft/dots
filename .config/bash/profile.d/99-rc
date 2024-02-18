@@ -1,0 +1,5 @@
+# shellcheck shell=bash
+
+[ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
+
+return 0

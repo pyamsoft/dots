@@ -1,0 +1,26 @@
+# shellcheck shell=bash
+
+if ! command -v shopt >/dev/null; then
+  return 0
+fi
+
+# Window
+shopt -s checkwinsize
+
+# Spellcheck
+shopt -s cdspell
+shopt -s dirspell
+
+# Don't destroy history file
+shopt -s histappend
+shopt -s cmdhist
+
+# No completion on empty command
+shopt -s no_empty_cmd_completion
+
+# Glob
+shopt -s globstar
+shopt -s extglob
+shopt -s dotglob
+
+return 0
