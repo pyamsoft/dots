@@ -11,16 +11,22 @@ for script in "${HOME}"/.bashrc.d/* "${XDG_CONFIG_HOME}"/bash/rc.d/*; do
     case "${script}" in
       *.linux)
         if [ "${os}" = "Linux" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'Linux bashrc setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *.macos)
         if [ "${os}" = "Darwin" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'MacOS bashrc setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *)
-        . "${script}"
+        . "${script}" || {
+            printf -- 'bashrc setup script failed: %s\n' "${script}"
+        }
         ;;
     esac
   }

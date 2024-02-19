@@ -13,16 +13,22 @@ for script in "${HOME}"/.environment.d/*; do
     case "${script}" in
       *.linux)
         if [ "${os}" = "Linux" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'Linux environment setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *.macos)
         if [ "${os}" = "Darwin" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'MacOS environment setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *)
-        . "${script}"
+        . "${script}" || {
+            printf -- 'environment setup script failed: %s\n' "${script}"
+        }
         ;;
     esac
   }
