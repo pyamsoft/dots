@@ -15,6 +15,7 @@ inspect      Runs 'podman inspect', passing all arguments
 
 enter        Runs 'podman exec -it <name> sh'
 cleanup      Runs 'podman system prune -a'
+restart      Runs 'systemctl --user restart container@<name>'
 teardown     Runs 'container-teardown <name>'
 
 EOF
@@ -66,6 +67,11 @@ main() {
       ;;
     cleanup)
       exec podman system prune -a
+      ;;
+    restart)
+      _container="$1"
+      shift
+      exec systemctl --user restart "container@${_container}" "$@"
       ;;
     teardown)
       exec container-teardown "$@"
