@@ -28,15 +28,6 @@ _bcomp="/usr/local/share/bash-completion/bash_completion"
     return 1
   }
 }
-
-_bcomp="/opt/homebrew/share/bash-completion/bash_completion"
-[ -r "${_bcomp}" ] && {
-  # shellcheck disable=SC1090
-  . "${_bcomp}" || {
-    unset _bcomp
-    return 1
-  }
-}
 unset _bcomp
 
 return 0
