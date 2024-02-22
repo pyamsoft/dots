@@ -1,0 +1,21 @@
+# shellcheck shell=sh
+
+# Source these onto the path first in case other script
+# directories rely on a command we created
+#
+# ex. .jail/bin relies on our script bin/jail
+
+# Git tracked scripts
+if [ -d "${HOME}/bin" ]; then
+  PATH="${HOME}/bin:${PATH}"
+fi
+
+# Local scripts that are not git tracked
+if [ -d "${HOME}/.local/bin" ]; then
+  PATH="${HOME}/.local/bin:${PATH}"
+fi
+
+# Export the PATH
+export PATH
+
+return 0
