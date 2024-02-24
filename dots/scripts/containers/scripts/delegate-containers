@@ -1,6 +1,8 @@
 #!/bin/sh
 
 _PROG_NAME="$(basename "$0")"
+_TARGET_USER="containers"
+_CONTAINER=""
 
 _usage() {
   printf -- '%s\n' "$(cat <<EOF
@@ -13,20 +15,38 @@ logs         Runs 'podman logs', passing all arguments
 images       Runs 'podman images', passing all arguments
 inspect      Runs 'podman inspect', passing all arguments
 
-enter        Runs 'podman exec -it <name> sh'
 cleanup      Runs 'podman system prune -a'
+enter        Runs 'podman exec -it <name> sh'
+restart      Runs 'systemctl --user restart container@<name>'
+status       Runs 'systemctl --user status container@<name>'
 teardown     Runs 'container-teardown <name>'
 
 EOF
 )"
 }
 
-_TARGET_USER="containers"
 _check_user() {
   if ! id -u "${_TARGET_USER}" >/dev/null 2>&1; then
     printf -- 'Target user %s does not exist!\n' "${_TARGET_USER}"
     return 1
   fi
+
+  return 0
+}
+
+_prep_container() {
+  _action="$1"
+  _CONTAINER="$2"
+
+  if [ -z "${_CONTAINER}" ]; then
+    printf -- 'Must call %s with a container name\n' "${_action}"
+    return 1
+  fi
+
+  # Since the containers user lingers, we assume the XDG_RUNTIME_DIR exists, but it's not set in this sudo shell
+  # So we manually set it and then call systemctl
+  XDG_RUNTIME_DIR="/run/user/$(id -u)"
+  export XDG_RUNTIME_DIR
 
   return 0
 }
@@ -60,12 +80,19 @@ main() {
     ps|logs|images|inspect)
       exec podman "${_action}" "$@"
       ;;
+    cleanup)
+      exec podman system prune -a
+      ;;
     enter)
       # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
       exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
       ;;
-    cleanup)
-      exec podman system prune -a
+    restart|status)
+      _prep_container "${_action}" "$1" || return 1
+      shift
+
+      # Run as the user
+      exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
       ;;
     teardown)
       exec container-teardown "$@"
