@@ -37,6 +37,15 @@ _compose() {
     return 1
   fi
 
+  _project="$(dirname "${_compose_file}")"
+
+  # Move into the compose project directory
+  # We need to live here to auto-read the .env file
+  cd "${_project}" || {
+    printf -- 'Unable to cd into compose project directory: %s\n' "${_project}"
+  }
+  unset _project
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
