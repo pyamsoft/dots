@@ -4,22 +4,32 @@ _PROG_NAME="$(basename "$0")"
 _TARGET_USER="containers"
 _CONTAINER=""
 
+_dotfiles() {
+  exec git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+}
+
 _usage() {
   printf -- '%s\n' "$(cat <<EOF
 
 ${_PROG_NAME} <action>
 
 <actions>
-ps           Runs 'podman ps', passing all arguments
-logs         Runs 'podman logs', passing all arguments
-images       Runs 'podman images', passing all arguments
-inspect      Runs 'podman inspect', passing all arguments
 
-cleanup      Runs 'podman system prune -a'
-enter        Runs 'podman exec -it <name> sh'
-restart      Runs 'systemctl --user restart container@<name>'
-status       Runs 'systemctl --user status container@<name>'
-teardown     Runs 'container-teardown <name>'
+[container]:   Exectue podman operations on containers
+
+  ps           Runs 'podman ps', passing all arguments
+  logs         Runs 'podman logs', passing all arguments
+  images       Runs 'podman images', passing all arguments
+  inspect      Runs 'podman inspect', passing all arguments
+
+[system]:      System management related operations
+
+  cleanup      Runs 'podman system prune -a'
+  enter        Runs 'podman exec -it <name> sh'
+  restart      Runs 'systemctl --user restart container@<name>'
+  status       Runs 'systemctl --user status container@<name>'
+  teardown     Runs 'container-teardown <name>'
+  update       Runs 'dotfiles pull'
 
 EOF
 )"
@@ -96,6 +106,9 @@ main() {
       ;;
     teardown)
       exec container-teardown "$@"
+      ;;
+    update)
+      _dotfiles pull "$@"
       ;;
     *)
       printf -- 'Invalid action: "%s"\n' "${_action}"
