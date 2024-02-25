@@ -7,15 +7,15 @@ readonly _cmd="podman"
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/meilisearch"
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/nginx"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/logs"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/meilisearch"
+  readonly _mount4="${HOME}/.local/etc/containers/${_name}/nginx"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
-  _mounts=""
-  readonly _mounts
   return 0
 }
 
