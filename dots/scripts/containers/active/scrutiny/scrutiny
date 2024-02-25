@@ -2,7 +2,7 @@
 
 readonly _name="scrutiny"
 readonly _image="ghcr.io/analogj/scrutiny"
-readonly _tag="v0.7.2-omnibus"
+readonly _tag="v0.7.3-omnibus"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
