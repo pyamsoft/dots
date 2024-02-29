@@ -1,7 +1,6 @@
 alsa-firmware
 alsa-plugins
 alsa-utils
-amd-ucode
 android-udev
 base
 base-devel
@@ -11,7 +10,6 @@ ddcutil
 dolphin-emu
 gamescope
 gdm
-gentium-plus-font
 gnome-shell-extension-appindicator
 gnome-themes-extra
 gnome-tweaks
@@ -52,6 +50,7 @@ steam
 tailscale
 tmux
 tree-sitter-cli
+ttf-gentium-plus
 ttf-liberation
 usbutils
 xdg-user-dirs
