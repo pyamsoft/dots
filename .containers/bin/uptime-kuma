@@ -56,6 +56,21 @@ _containerize() {
   _env="-e PUID=$(id -u) -e PGID=$(id -g)"
   readonly _env
 
+  _uk=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+  readonly _uk
+
   # Only compare the version minors
   _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
   _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
@@ -86,6 +101,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --net=host \
+    ${_uk} \
     ${_network} \
     ${_env} \
     ${_mounts} \
