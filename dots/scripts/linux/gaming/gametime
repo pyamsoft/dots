@@ -187,7 +187,7 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 16"
 
   # Force cursor grab to keep cursor in focus on Wayland
-  __gamescope_options="${__gamescope_options} --force-grab-cursor --grab"
+  # __gamescope_options="${__gamescope_options} --force-grab-cursor --grab"
 
   # Due to gamescope limiter issues, FPS limit should be double the refresh rate
   # https://github.com/ValveSoftware/gamescope/issues/995
