@@ -1,0 +1,8 @@
+# Ping uptime kuma
+[Unit]
+Description=Uptime Kuma Crowdsec Ping
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/crowdkuma
