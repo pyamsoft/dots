@@ -124,6 +124,10 @@ _prepare_gamescope() {
 
     # Set window to normal instead of fullscreen
     window_type=" "
+
+    # Slightly smaller window for our poor little Minisform UM780
+    output_width=1680
+    output_height=1050
   elif [ "${__hostname}" = "nerd2" ]; then
     printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
   else
