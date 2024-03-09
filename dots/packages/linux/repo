@@ -21,6 +21,7 @@ inter-font
 irqbalance
 kdeconnect
 kernel-modules-hook
+ldns
 linux-lts
 man-db
 man-pages

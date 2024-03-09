@@ -32,7 +32,6 @@ bluez-libs
 bolt
 boost-libs
 brotli
-btrfs-progs
 bubblewrap
 bzip2
 c-ares
@@ -75,6 +74,7 @@ desktop-file-utils
 device-mapper
 diffutils
 dmidecode
+dnssec-anchors
 dosfstools
 double-conversion
 duktape
@@ -844,7 +844,6 @@ sqlite
 sratom
 srt
 startup-notification
-strace
 sudo
 svt-av1
 svt-hevc
