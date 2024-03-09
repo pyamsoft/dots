@@ -24,12 +24,12 @@ ${_PROG_NAME} <action>
 
 [system]:      System management related operations
 
-  cleanup      Runs 'podman system prune -a'
   enter        Runs 'podman exec -it <name> sh'
+  prune        Runs 'podman system prune -a'
+  pull         Runs 'dotfiles pull'
   restart      Runs 'systemctl --user restart container@<name>'
   status       Runs 'systemctl --user status container@<name>'
   teardown     Runs 'container-teardown <name>'
-  update       Runs 'dotfiles pull'
 
 EOF
 )"
@@ -90,12 +90,15 @@ main() {
     ps|logs|images|inspect)
       exec podman "${_action}" "$@"
       ;;
-    cleanup)
-      exec podman system prune -a
-      ;;
     enter)
       # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
       exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
+      ;;
+    prune)
+      exec podman system prune -a
+      ;;
+    pull)
+      _dotfiles pull "$@"
       ;;
     restart|status)
       _prep_container "${_action}" "$1" || return 1
@@ -106,9 +109,6 @@ main() {
       ;;
     teardown)
       exec container-teardown "$@"
-      ;;
-    update)
-      _dotfiles pull "$@"
       ;;
     *)
       printf -- 'Invalid action: "%s"\n' "${_action}"
