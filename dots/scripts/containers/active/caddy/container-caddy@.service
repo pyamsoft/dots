@@ -12,8 +12,10 @@ Wants=network-online.target
 Requires=user@%i.service
 
 [Service]
+# File must exist or fail
+ExecStartPre=/bin/test -x /usr/local/bin/caddy
 ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
-ExecStart=/bin/sh -c '/usr/local/bin/caddy "%i"'
+ExecStart=/usr/local/bin/caddy "%i"
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown caddy'
 Restart=on-failure
 RestartSec=10

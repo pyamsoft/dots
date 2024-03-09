@@ -5,4 +5,6 @@ After=network-online.target syslog.target remote-fs.target nss-lookup.target doc
 Wants=network-online.target
 
 [Service]
+# Let the Crowdsec service start up
+ExecStartPre=-/bin/sh -c 'sleep 5'
 ExecStart=/usr/local/bin/crowdkuma

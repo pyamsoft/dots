@@ -6,6 +6,8 @@ After=network-online.target syslog.target remote-fs.target nss-lookup.target doc
 Wants=network-online.target
 
 [Service]
+# File must exist or fail
+ExecStartPre=/bin/test -x /usr/local/bin/scrutiny
 ExecStartPre=-/usr/local/bin/container-teardown scrutiny
 ExecStart=/usr/local/bin/scrutiny
 ExecStop=/usr/local/bin/container-teardown scrutiny
