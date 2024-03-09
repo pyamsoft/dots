@@ -1,9 +1,11 @@
+# Poke the DP monitor on system resume
 [Unit]
 Description=Poke Monitors with xrandr on resume
 After=suspend.target hibernate.target hybrid-sleep.target suspend-then-hibernate.target
 
 [Service]
-Type=simple
+# Fail if script does not exist
+ExecStartPre=/bin/test -x /usr/local/bin/poke-monitor
 User=%I
 Group=%I
 ExecStart=/usr/local/bin/poke-monitor auto
