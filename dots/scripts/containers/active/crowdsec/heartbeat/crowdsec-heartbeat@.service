@@ -1,10 +1,11 @@
-# Ping uptime kuma
+# Check that Crowdsec is Alive
+
 [Unit]
-Description=Uptime Kuma Crowdsec Ping
+Description=Crowdsec Heartbeat Report to %i
 After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
 Wants=network-online.target
 
 [Service]
-# Let the Crowdsec service start up
-ExecStartPre=-/bin/sh -c 'sleep 5'
-ExecStart=/usr/local/bin/crowdkuma
+# Need oneshot or timer does not restart
+Type=oneshot
+ExecStart=/usr/local/bin/crowdsec-heartbeat --unescape "%i"

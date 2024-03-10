@@ -1,0 +1,13 @@
+# Check that Crowdsec is Alive
+
+[Unit]
+Description=Crowdsec Heartbeat Report to %i
+
+[Timer]
+OnUnitInactiveSec=30s
+AccuracySec=1s
+Persistent=true
+Unit=crowdsec-heartbeat@%i.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,38 @@
+#!/bin/sh
+
+main() {
+  _unescape=0
+  if [ "$1" = "--unescape" ]; then
+    _unescape=1
+    shift
+  fi
+
+  if [ -z "$1" ]; then
+    printf -- 'You must pass a heartbeat URL!\n'
+    return 1
+  fi
+
+  _url="$1"
+  shift
+
+  if [ "${_unescape}" -eq 1 ]; then
+    printf -- '[Crowdsec Heartbeat] Unescape URL: %s\n' "${_url}"
+    _url="$(systemd-escape --unescape "${_url}")"
+  fi
+
+  cscli lapi status && {
+    printf -- '[Crowdsec Heartbeat] Crowdsec is still alive! Report: %s\n' "${_url}"
+    curl -s "${_url}" || {
+      printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"\n' "${_url}"
+      return 1
+    }
+
+    return 0
+  }
+
+  printf -- 'Crowdsec is DEAD!!!\n'
+  return 1
+}
+
+main "$@" || exit 1
+exit 0
