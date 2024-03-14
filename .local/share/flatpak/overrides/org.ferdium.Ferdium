@@ -1,3 +1,2 @@
 [Context]
 filesystems=xdg-download;
-sockets=wayland;
