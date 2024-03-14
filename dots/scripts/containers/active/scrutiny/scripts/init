@@ -1,6 +1,9 @@
-#!/bin/sh
+#!/usr/bin/sh
 
-# scrutiny v0.7.1 ships with a web folder that has assets
+# In scrutiny v0.8.0, /bin/sh does not exist.
+# /usr/bin/sh is where shell lives. What the hell?
+
+# scrutiny v0.7.1-v0.8.0 ships with a web folder that has assets
 # that cannot be read because the directory doesn't have
 # exec permission, so icons don't load.
 #
