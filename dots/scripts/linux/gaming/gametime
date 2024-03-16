@@ -67,10 +67,10 @@ _prepare_env() {
 }
 
 _get_hostname() {
-  if command -v hostnamectl >/dev/null; then
-    __hostname="$(hostnamectl hostname)"
-  elif command -v hostname >/dev/null; then
+  if command -v hostname >/dev/null; then
     __hostname="$(hostname)"
+  elif command -v hostnamectl >/dev/null && [ -n "${XDG_RUNTIME_DIR}" ]; then
+    __hostname="$(hostnamectl hostname)"
   fi
 
   return 0
