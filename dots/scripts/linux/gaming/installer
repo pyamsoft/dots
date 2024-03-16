@@ -138,12 +138,14 @@ _installer "com.valvesoftware.Steam" ".local/bin" "gametime" 1 || exit 1
 _installer "io.openrct2.OpenRCT2" ".local/bin" "gametime" 1 || exit 1
 _installer "com.pokemmo.PokeMMO" ".local/bin" "gametime" 1 || exit 1
 _installer "org.DolphinEmu.dolphin-emu" ".local/bin" "gametime" 1 || exit 1
+_installer "com.usebottles.bottles" ".local/bin" "gametime" 1 || exit 1
 
 _installer "com.heroicgameslauncher.hgl" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "com.valvesoftware.Steam" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "io.openrct2.OpenRCT2" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "com.pokemmo.PokeMMO" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 _installer "org.DolphinEmu.dolphin-emu" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
+_installer "com.usebottles.bottles" "config/vkBasalt" "vkBasalt.conf" 0 || exit 1
 
 _installer "io.openrct2.OpenRCT2" ".local/bin" "openrct2/gametime-openrct2" 1 || exit 1
 _installer "com.pokemmo.PokeMMO" ".local/bin" "pokemmo/gametime-pokemmo" 1 || exit 1

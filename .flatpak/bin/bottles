@@ -1,12 +1,12 @@
 #!/bin/sh
 
-readonly pak="com.heroicgameslauncher.hgl"
-readonly def_path="/app/bin:/app/utils/bin:/usr/bin:/app/bin/heroic/resources/app.asar.unpacked/build/bin/linux"
+readonly pak="com.usebottles.bottles"
+readonly def_path="/app/bin:/app/utils/bin:/usr/bin"
 readonly path="${HOME}/.local/bin"
 
 # Gamescope LD_LIBRARY_PATH fix
 readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib:/usr/lib/extensions/vulkan/MangoHud/lib:/usr/lib/extensions/vulkan/OBSVkCapture/lib"
-_def_ld_path=""
+_def_ld_path="/app/lib:/app/lib32"
 if [ -n "${LD_LIBRARY_PATH}" ]; then
   _def_ld_path=":${LD_LIBRARY_PATH}"
 else
@@ -25,6 +25,5 @@ readonly cmd
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --filesystem="${HOME}/games/heroic" \
   -- "$@" || exit 1
 exit 0
