@@ -7,7 +7,6 @@ Description=Crowdsec Heartbeat Report to %i
 OnUnitInactiveSec=30s
 AccuracySec=1s
 Persistent=true
-Unit=crowdsec-heartbeat@%i.service
 
 [Install]
 WantedBy=timers.target
