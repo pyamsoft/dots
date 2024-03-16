@@ -462,6 +462,7 @@ libgweather-4
 libhandy
 libheif
 libibus
+libical
 libice
 libidn
 libidn2
@@ -800,6 +801,7 @@ qt6-base
 qt6-declarative
 qt6-multimedia
 qt6-multimedia-ffmpeg
+qt6-shadertools
 qt6-svg
 qt6-translations
 qt6-wayland
