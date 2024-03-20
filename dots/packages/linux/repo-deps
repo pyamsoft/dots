@@ -416,7 +416,6 @@ libcolord
 libcups
 libcupsfilters
 libdaemon
-libdatachannel
 libdatrie
 libdbusmenu-glib
 libdbusmenu-gtk3
@@ -476,7 +475,6 @@ libinstpatch
 libisl
 libjcat
 libjpeg-turbo
-libjuice
 libjxl
 libkeybinder3
 libksba
@@ -654,7 +652,6 @@ lzo
 m4
 make
 malcontent
-mbedtls
 mbedtls2
 md4c
 mdadm
@@ -808,7 +805,6 @@ qt6-wayland
 raptor
 rav1e
 readline
-rnnoise
 rrdtool
 rsync
 rtkit
