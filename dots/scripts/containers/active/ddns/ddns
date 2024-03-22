@@ -157,7 +157,7 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd / || {
-    printf -- 'Unable to cd to root for podman usage'
+    printf -- 'Unable to cd to root for podman usage\n'
     return 1
   }
 

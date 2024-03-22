@@ -81,7 +81,7 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- 'Unable to cd to user HOME for podman usage'
+    printf -- 'Unable to cd to user HOME for podman usage\n'
     return 1
   }
 
