@@ -45,14 +45,6 @@ _check_user() {
 }
 
 _prep_container() {
-  _action="$1"
-  _CONTAINER="$2"
-
-  if [ -z "${_CONTAINER}" ]; then
-    printf -- 'Must call %s with a container name\n' "${_action}"
-    return 1
-  fi
-
   # Since the containers user lingers, we assume the XDG_RUNTIME_DIR exists, but it's not set in this sudo shell
   # So we manually set it and then call systemctl
   XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -100,8 +92,30 @@ main() {
     pull)
       _dotfiles pull "$@"
       ;;
-    restart|status)
-      _prep_container "${_action}" "$1" || return 1
+    status)
+      _prep_container || return 1
+
+      if [ -n "$1" ]; then
+        _CONTAINER="$1"
+        shift
+      fi
+
+      if [ -z "${_CONTAINER}" ]; then
+        # Run as the user
+        exec systemctl --user "$@"
+      else
+        # Run as the user
+        exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
+      fi
+      ;;
+    restart)
+      _prep_container || return 1
+
+      _CONTAINER="$1"
+      if [ -z "${_CONTAINER}" ]; then
+        printf -- 'Must call %s with a container name\n' "${_action}"
+        return 1
+      fi
       shift
 
       # Run as the user
