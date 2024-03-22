@@ -204,6 +204,12 @@ main() {
     return 1
   fi
 
+  # Podman expects us to be in a accessible CWD
+  cd / || {
+    printf -- 'Unable to cd to root for podman usage'
+    return 1
+  }
+
   _check_user || return 1
   _prep_mounts || return 1
   _prep_ports || return 1
