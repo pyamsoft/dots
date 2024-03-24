@@ -4,9 +4,9 @@
 Description=Crowdsec Heartbeat Report to %i
 
 [Timer]
-OnUnitInactiveSec=30s
+# Every 30 seconds
+OnCalendar=*-*-* *:*:00,30
 AccuracySec=1s
-Persistent=true
 
 [Install]
 WantedBy=timers.target
