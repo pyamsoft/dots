@@ -1,0 +1,32 @@
+# Git options
+
+https://www.reddit.com/r/programming/comments/1bgyhl1/popular_git_config_options/
+https://jvns.ca/blog/2024/02/16/popular-git-config-options/
+
+
+```ini
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main
+[commit]
+	gpgsign = true
+	verbose = true
+	cleanup = scissors
+[gpg]
+	format = ssh
+[core]
+	fsmonitor = true
+	pager = delta
+[rebase]
+	autosquash = true
+[rerere]
+	enabled = true
+[diff]
+	algorithm = histogram
+```
