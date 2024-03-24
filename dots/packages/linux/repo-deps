@@ -42,7 +42,6 @@ cairo
 cantarell-fonts
 catatonit
 cblas
-chromaprint
 cifs-utils
 colord
 colord-gtk-common
@@ -81,12 +80,9 @@ duktape
 e2fsprogs
 efivar
 ell
-enchant
 enet
 exiv2
 expat
-faac
-faad2
 fakeroot
 ffmpeg
 fftw
@@ -163,10 +159,8 @@ gsettings-desktop-schemas
 gsm
 gsound
 gssdp
-gst-libav
 gst-plugin-libcamera
 gst-plugin-pipewire
-gst-plugins-bad
 gst-plugins-bad-libs
 gst-plugins-base-libs
 gst-plugins-good
@@ -187,7 +181,6 @@ gvfs-nfs
 gvfs-smb
 gzip
 harfbuzz
-harfbuzz-icu
 haskell-aeson
 haskell-assoc
 haskell-attoparsec
@@ -237,9 +230,9 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
+http-parser
 hwdata
 hwloc
-hyphen
 i2c-tools
 iana-etc
 icu
@@ -377,7 +370,6 @@ lib32-zlib
 lib32-zstd
 libadwaita
 libaio
-libappindicator-gtk3
 libarchive
 libass
 libassuan
@@ -419,8 +411,6 @@ libdaemon
 libdatrie
 libdbusmenu-glib
 libdbusmenu-gtk3
-libdc1394
-libdca
 libde265
 libdecor
 libdeflate
@@ -428,7 +418,6 @@ libdisplay-info
 libdovi
 libdrm
 libdv
-libdvdnav
 libdvdread
 libedit
 libei
@@ -449,8 +438,8 @@ libgdata
 libgdm
 libgexiv2
 libgirepository
+libgit2
 libglvnd
-libgme
 libgoa
 libgpg-error
 libgphoto2
@@ -483,21 +472,16 @@ libldac
 libldap
 libliftoff
 liblqr
-liblrdf
-libltc
 libluv
 libmalcontent
-libmanette
 libmbim
 libmd
 libmfx
-libmicrodns
 libmicrohttpd
 libmm-glib
 libmnl
 libmodplug
 libmpc
-libmpcdec
 libmtp
 libmysofa
 libnautilus-extension
@@ -560,7 +544,6 @@ libsoup
 libsoup3
 libsoxr
 libspng
-libsrtp
 libssh
 libssh2
 libstemmer
@@ -594,7 +577,6 @@ libwbclient
 libwebp
 libwireplumber
 libwnck3
-libwpe
 libx11
 libxau
 libxcb
@@ -659,7 +641,6 @@ media-player-info
 mesa
 mesa-vdpau
 miniupnpc
-mjpegtools
 mkinitcpio
 mkinitcpio-busybox
 mobile-broadband-provider-info
@@ -671,7 +652,6 @@ msgpack-c
 mtdev
 mutter
 ncurses
-neon
 net-snmp
 netavark
 nettle
@@ -803,7 +783,6 @@ qt6-shadertools
 qt6-svg
 qt6-translations
 qt6-wayland
-raptor
 rav1e
 readline
 rrdtool
@@ -834,8 +813,6 @@ solid
 sonnet
 sord
 sound-theme-freedesktop
-soundtouch
-spandsp
 speex
 speexdsp
 spirv-tools
@@ -845,7 +822,6 @@ srt
 startup-notification
 sudo
 svt-av1
-svt-hevc
 sysfsutils
 system-config-printer
 systemd
@@ -887,17 +863,13 @@ vulkan-mesa-layers
 vulkan-radeon
 wavpack
 wayland
-webkit2gtk-4.1
 webrtc-audio-processing-1
 which
-wildmidi
 wireless-regdb
 wireplumber
 wl-clipboard
 wlroots
-woff2
 wpa_supplicant
-wpebackend-fdo
 x264
 x265
 xcb-proto
@@ -932,12 +904,9 @@ xvidcore
 xxhash
 xz
 yajl
-zbar
 zenity
 zeromq
 zimg
 zix
 zlib
 zstd
-zvbi
-zxing-cpp

@@ -4,7 +4,7 @@ https://www.reddit.com/r/programming/comments/1bgyhl1/popular_git_config_options
 https://jvns.ca/blog/2024/02/16/popular-git-config-options/
 
 
-```ini
+```gitconfig
 [alias]
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 [filter "lfs"]
@@ -29,4 +29,8 @@ https://jvns.ca/blog/2024/02/16/popular-git-config-options/
 	enabled = true
 [diff]
 	algorithm = histogram
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	line-numbers = true
 ```
