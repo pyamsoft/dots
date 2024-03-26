@@ -668,6 +668,7 @@ nspr
 nss
 numactl
 ocl-icd
+oniguruma
 openal
 opencore-amr
 openexr
@@ -838,6 +839,12 @@ thin-provisioning-tools
 tpm2-tss
 tracker3
 tree-sitter
+tree-sitter-bash
+tree-sitter-c
+tree-sitter-lua
+tree-sitter-markdown
+tree-sitter-python
+tree-sitter-vimdoc
 tslib
 ttf-cascadia-code-nerd
 ttf-dejavu
