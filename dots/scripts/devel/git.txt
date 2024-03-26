@@ -4,6 +4,7 @@ https://www.reddit.com/r/programming/comments/1bgyhl1/popular_git_config_options
 https://jvns.ca/blog/2024/02/16/popular-git-config-options/
 
 
+Nice defaults:
 ```gitconfig
 [alias]
 	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
@@ -15,13 +16,8 @@ https://jvns.ca/blog/2024/02/16/popular-git-config-options/
 [init]
 	defaultBranch = main
 [commit]
-	gpgsign = true
 	verbose = true
-	cleanup = scissors
-[gpg]
-	format = ssh
 [core]
-	fsmonitor = true
 	pager = delta
 [rebase]
 	autosquash = true
@@ -33,4 +29,16 @@ https://jvns.ca/blog/2024/02/16/popular-git-config-options/
 	diffFilter = delta --color-only
 [delta]
 	line-numbers = true
+```
+
+Signing setup (don't need KeepassXC specifically)
+https://code.mendhak.com/keepassxc-sign-git-commit-with-ssh/
+
+```gitconfig
+[commit]
+	gpgsign = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = /absolute/path/to/ssh/allowed/signers/file
 ```
