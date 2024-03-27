@@ -20,11 +20,13 @@ Nice defaults:
 [core]
 	pager = delta
 [rebase]
-	autosquash = true
+	autoSquash = true
 [rerere]
 	enabled = true
 [diff]
 	algorithm = histogram
+[push]
+	autoSetupRemote = true
 [interactive]
 	diffFilter = delta --color-only
 [delta]
