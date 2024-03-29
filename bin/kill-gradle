@@ -44,9 +44,29 @@ _killa() {
 
 main() {
   _force=""
+  _wait=""
+
   if [ "$1" = "--force" ]; then
     _force="force"
     shift
+  fi
+
+  if [ "$1" = "--wait" ]; then
+    _wait="wait"
+    shift
+  fi
+
+  if [ "$1" = "--force" ]; then
+    _force="force"
+    shift
+  fi
+
+  if [ "${_wait}" = "wait" ]; then
+    printf -- 'Waiting before kill 5s...\n'
+    sleep 5s || {
+      printf -- 'Failed to wait before kill.\n'
+      return 1
+    }
   fi
 
   if [ "$(basename "$0")" = "kill-gradle" ]; then
