@@ -43,7 +43,11 @@ _killa() {
 }
 
 main() {
-  _force="$1"
+  _force=""
+  if [ "$1" = "--force" ]; then
+    _force="force"
+    shift
+  fi
 
   if [ "$(basename "$0")" = "kill-gradle" ]; then
     _killa "GradleDaemon" "${_force}" || return 1
@@ -56,6 +60,11 @@ main() {
     _killa "gamescope" "${_force}" || return 1
     _killa "gamescope-brokey" "${_force}" || return 1
     _killa "steam-launch-wrapper" "${_force}" || return 1
+  fi
+
+  # Custom kill
+  if [ -n "$1" ]; then
+    _killa "$*" "${_force}" || return 1
   fi
 
   unset _force

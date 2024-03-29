@@ -80,7 +80,6 @@ duktape
 e2fsprogs
 efivar
 ell
-enet
 exiv2
 expat
 fakeroot
@@ -844,6 +843,7 @@ tree-sitter-c
 tree-sitter-lua
 tree-sitter-markdown
 tree-sitter-python
+tree-sitter-query
 tree-sitter-vimdoc
 tslib
 ttf-cascadia-code-nerd

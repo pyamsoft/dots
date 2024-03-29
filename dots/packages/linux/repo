@@ -23,6 +23,7 @@ irqbalance
 kdeconnect
 kernel-modules-hook
 ldns
+libappindicator-gtk3
 linux-lts
 man-db
 man-pages
