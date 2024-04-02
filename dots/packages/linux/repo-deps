@@ -681,7 +681,6 @@ openvr
 opus
 orc
 ostree
-otf-comicshanns-nerd
 p11-kit
 pacman
 pacman-mirrorlist
@@ -847,6 +846,7 @@ tree-sitter-python
 tree-sitter-query
 tree-sitter-vimdoc
 tslib
+ttf-cascadia-mono-nerd
 ttf-dejavu
 twolame
 tzdata
