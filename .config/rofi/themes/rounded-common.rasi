@@ -5,7 +5,7 @@
  *******************************************************************************/
 
 * {
-    font:   "Cascadia Mono PL Regular 12";
+    font:   "Monospace Regular 12";
 
     background-color:   transparent;
     text-color:         @fg0;
