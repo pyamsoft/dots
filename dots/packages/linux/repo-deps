@@ -335,7 +335,6 @@ lib32-libxau
 lib32-libxcb
 lib32-libxcrypt
 lib32-libxcrypt-compat
-lib32-libxdamage
 lib32-libxdmcp
 lib32-libxext
 lib32-libxfixes
@@ -457,6 +456,7 @@ libiec61883
 libieee1284
 libimagequant
 libimobiledevice
+libimobiledevice-glue
 libinih
 libinput
 libinstpatch
