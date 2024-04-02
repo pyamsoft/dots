@@ -31,6 +31,18 @@ EOF
     printf -- 'Failed to exec-mark launcher for user %s\n' "${_target_user}"
     return 1
   }
+
+  # Copy over kill-game script
+  sudo cp "${HOME}/bin/kill-gradle" /home/"${_target_user}"/bin/kill-game || {
+    printf -- 'Failed to copy over kill-game script for user: %s\n' "${_target_user}"
+    return 1
+  }
+
+  # Mark exec
+  sudo chmod 700 /home/"${_target_user}"/bin/kill-game || {
+    printf -- 'Failed to exec-mark kill-game for user %s\n' "${_target_user}"
+    return 1
+  }
 }
 
 _bash_files() {
