@@ -13,6 +13,12 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+## Fonts
+
+I code with a monospace Comic Sans like font. Yes, I am serious.  
+Currently I'm using a fork of "Comic Shanns", found here on github:  
+[you have been warned](https://github.com/jesusmgg/comic-shanns-mono)
+
 ## Sound on Linux
 You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would generally
 want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
