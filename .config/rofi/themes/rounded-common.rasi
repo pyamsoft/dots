@@ -5,7 +5,7 @@
  *******************************************************************************/
 
 * {
-    font:   "Monospace Regular 13";
+    font:   "Monospace Regular 14";
 
     background-color:   transparent;
     text-color:         @fg0;
