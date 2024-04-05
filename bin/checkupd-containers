@@ -65,11 +65,6 @@ _check_containers() {
   # shellcheck disable=SC2086
   _containers="$(${_cmd} images | grep -e '^docker\.io' -e '^ghcr\.io' | awk '{ printf $1 " " $2 " " }')"
 
-  if [ -z "${_amt}" ]; then
-    printf -- 'Default to the latest 10 tags.\n'
-    _amt=10
-  fi
-
   # Don't look up the same container but with different versions more than once
   # This would happen if we were running hello-world:1 and pulled down hello-world:2
   # which podman sees as 2 container images
@@ -94,6 +89,11 @@ _check_containers() {
 
     # Keep track
     if [ "${_skip}" -eq 0 ]; then
+      if [ -z "${_amt}" ]; then
+        printf -- 'Default to the latest 10 tags.\n'
+        _amt=10
+      fi
+
       _already_seen="${_already_seen} ${_name}"
       _get_latest_tags "${_name}" "${_amt}" || return 1
     fi
