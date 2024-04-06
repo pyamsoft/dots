@@ -846,8 +846,9 @@ tree-sitter-python
 tree-sitter-query
 tree-sitter-vimdoc
 tslib
-ttf-cascadia-mono-nerd
 ttf-dejavu
+ttf-nerd-fonts-symbols-common
+ttf-nerd-fonts-symbols-mono
 twolame
 tzdata
 udisks2
