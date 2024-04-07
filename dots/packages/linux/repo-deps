@@ -368,6 +368,7 @@ lib32-zlib
 lib32-zstd
 libadwaita
 libaio
+libappindicator-gtk3
 libarchive
 libass
 libassuan
