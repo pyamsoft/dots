@@ -19,6 +19,7 @@ Nice defaults:
 	verbose = true
 [core]
 	pager = delta
+	compression = 4
 [rebase]
 	autoSquash = true
 [rerere]
