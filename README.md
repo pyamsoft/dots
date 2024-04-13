@@ -13,6 +13,15 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+## Proxy
+
+For proxy usage
+- First you should run `apply-http-proxy default` to see the settings, and then
+  `eval $(apply-http-proxy default)` to set the environment.
+- For systemd services that need proxy access, you should run `apply-http-proxy systemd-apply`
+  first, and then restart any services that need to use the proxy.
+- For git, update your git-ssh config to use the socat proxy line
+
 ## Fonts
 
 I code with a monospace Comic Sans like font. Yes, I am serious.  
