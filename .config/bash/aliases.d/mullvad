@@ -1,0 +1,12 @@
+# shellcheck shell=bash
+
+amimullvad() {
+  _arg="connected"
+  if [ -n "$1" ]; then
+    _arg="$1"
+    shift
+  fi
+
+  curl "https://am.i.mullvad.net/${_arg}" "$@" || return 1
+  return 0
+}
