@@ -2,7 +2,7 @@
 
 readonly _name="uptime-kuma"
 readonly _image="docker.io/louislam/uptime-kuma"
-readonly _tag="1.23.11"
+readonly _tag="1.23.13"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
