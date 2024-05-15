@@ -24,7 +24,6 @@ the Tailscale "Access Controls" editor
 		"tag:admin":      ["autogroup:admin"],
 		"tag:server":     ["autogroup:admin"],
 		"tag:kdeconnect": ["autogroup:admin"],
-		"tag:sunshine":   ["autogroup:admin"],
 	},
 
 	// Define access control lists for users, groups, autogroups, tags,
@@ -56,22 +55,6 @@ the Tailscale "Access Controls" editor
 			"action": "accept",
 			"src":    ["tag:kdeconnect"],
 			"dst":    ["tag:kdeconnect:1714-1764"],
-		},
-
-		// Allow TCP communication between sunshine devices ON sunshine ports
-		{
-			"action": "accept",
-			"src":    ["tag:sunshine"],
-			"dst":    ["tag:sunshine:47984,47989-47990,48010"],
-			"proto":  "tcp",
-		},
-
-		// Allow UDP communication between sunshine devices ON sunshine ports
-		{
-			"action": "accept",
-			"src":    ["tag:sunshine"],
-			"dst":    ["tag:sunshine:47998-48000"],
-			"proto":  "udp",
 		},
 
 		// Allow all connections.
@@ -119,34 +102,6 @@ the Tailscale "Access Controls" editor
 		{
 			"src":  "tag:kdeconnect",
 			"deny": ["tag:kdeconnect:1234"],
-		},
-
-		// Accept TCP communication to sunshine ON sunshine port
-		{
-			"src":    "tag:sunshine",
-			"accept": ["tag:sunshine:47984"],
-			"proto":  "tcp",
-		},
-
-		// Accept TCP communication to sunshine ON sunshine port
-		{
-			"src":    "tag:sunshine",
-			"accept": ["tag:sunshine:47999"],
-			"proto":  "udp",
-		},
-
-		// Reject communication to sunshine OFF sunshine port
-		{
-			"src":   "tag:sunshine",
-			"deny":  ["tag:sunshine:1234"],
-			"proto": "tcp",
-		},
-
-		// Reject communication to sunshine OFF sunshine port
-		{
-			"src":   "tag:sunshine",
-			"deny":  ["tag:sunshine:47984"],
-			"proto": "udp",
 		},
 	],
 }
