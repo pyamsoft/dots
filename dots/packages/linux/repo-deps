@@ -65,7 +65,6 @@ db5.3
 dbus
 dbus-broker
 dbus-broker-units
-dbus-python
 dconf
 debugedit
 debuginfod
@@ -765,6 +764,7 @@ python-charset-normalizer
 python-contourpy
 python-cycler
 python-dateutil
+python-dbus
 python-distro
 python-fonttools
 python-gobject
