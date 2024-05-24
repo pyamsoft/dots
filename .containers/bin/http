@@ -51,11 +51,8 @@ _containerize() {
   _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
   unset _current_version
 
-  # MacOS can't launch with host-gateway
-  _network="--add-host localhost:127.0.0.1"
-  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
-  fi
+  # Since we may want to test HTTP local devices like localhost, we use the host network
+  _network="--net=host"
   readonly _network
 
   unset _is_cmd_new_enough
