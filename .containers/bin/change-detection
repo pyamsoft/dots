@@ -2,7 +2,7 @@
 
 readonly _name="change-detection"
 readonly _image="docker.io/dgtlmoon/changedetection.io"
-readonly _tag="0.45.22"
+readonly _tag="0.45.23"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
