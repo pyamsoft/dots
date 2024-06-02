@@ -6,6 +6,7 @@ readonly self_pid="$$"
 _killa() {
   _process="$1"
   _really="$2"
+  _as_root="$3"
 
   my_pid="$(pgrep -f "${_process}")"
   if [ -n "${my_pid}" ]; then
@@ -18,33 +19,58 @@ _killa() {
     done
 
     if [ -n "${clean_pids}" ]; then
-      printf -- 'Killing process %s\n' "${_process}" "${clean_pids}"
+      if [ "${_as_root}" -eq 1 ]; then
+        printf -- '[ROOT] Killing process %s\n' "${_process}" "${clean_pids}"
+      else
+        printf -- 'Killing process %s\n' "${_process}" "${clean_pids}"
+      fi
+
       # Don't quote so that multiple PIDs can be killed
       if [ "${_really}" = "force" ]; then
-        # shellcheck disable=SC2086
-        kill -9 ${clean_pids} || return 1
+        if [ "${_as_root}" -eq 1 ]; then
+          # shellcheck disable=SC2086
+          sudo kill -9 ${clean_pids} || return 1
+        else
+          # shellcheck disable=SC2086
+          kill -9 ${clean_pids} || return 1
+        fi
       else
-        # shellcheck disable=SC2086
-        kill ${clean_pids} || return 1
+        if [ "${_as_root}" -eq 1 ]; then
+          # shellcheck disable=SC2086
+          sudo kill ${clean_pids} || return 1
+        else
+          # shellcheck disable=SC2086
+          kill ${clean_pids} || return 1
+        fi
       fi
     else
-      printf -- '%s not running.\n' "${_process}"
+      if [ "${_as_root}" -eq 1 ]; then
+        printf -- '[ROOT] %s not running.\n' "${_process}"
+      else
+        printf -- '%s not running.\n' "${_process}"
+      fi
     fi
 
     unset my_pid
     unset clean_pids
   else
-    printf -- '%s not running.\n' "${_process}"
+    if [ "${_as_root}" -eq 1 ]; then
+      printf -- '[ROOT] %s not running.\n' "${_process}"
+    else
+      printf -- '%s not running.\n' "${_process}"
+    fi
   fi
 
   unset _process
   unset _really
+  unset _as_root
   return 0
 }
 
 main() {
   _force=""
   _wait=""
+  _root=0
 
   if [ "$1" = "--force" ]; then
     _force="force"
@@ -69,25 +95,34 @@ main() {
     }
   fi
 
-  if [ "$(basename "$0")" = "kill-gradle" ]; then
-    _killa "GradleDaemon" "${_force}" || return 1
+  if [ -z "${GAMER}" ]; then
+    printf -- 'Running kill as root.\n'
+    _root=1
   else
-    _killa "proton" "${_force}" || return 1
-    _killa "wineserver" "${_force}" || return 1
-    _killa "winedevice.exe" "${_force}" || return 1
-    _killa "explorer.exe" "${_force}" || return 1
-    _killa "services.exe" "${_force}" || return 1
-    _killa "gamescope" "${_force}" || return 1
-    _killa "gamescope-brokey" "${_force}" || return 1
-    _killa "steam-launch-wrapper" "${_force}" || return 1
+    _root=0
+  fi
+
+  if [ "$(basename "$0")" = "kill-gradle" ]; then
+    _killa "GradleDaemon" "${_force}" "${_root}" || return 1
+  else
+    _killa "proton" "${_force}" "${_root}" || return 1
+    _killa "wineserver" "${_force}" "${_root}" || return 1
+    _killa "winedevice.exe" "${_force}" "${_root}" || return 1
+    _killa "explorer.exe" "${_force}" "${_root}" || return 1
+    _killa "services.exe" "${_force}" "${_root}" || return 1
+    _killa "gamescope" "${_force}" "${_root}" || return 1
+    _killa "gamescope-brokey" "${_force}" "${_root}" || return 1
+    _killa "steam-launch-wrapper" "${_force}" "${_root}" || return 1
   fi
 
   # Custom kill
   if [ -n "$1" ]; then
-    _killa "$*" "${_force}" || return 1
+    _killa "$*" "${_force}" "${_root}" || return 1
   fi
 
   unset _force
+  unset _root
+  unset _wait
   return 0
 }
 
