@@ -5,6 +5,7 @@ acl
 adobe-source-code-pro-fonts
 adwaita-cursors
 adwaita-icon-theme
+adwaita-icon-theme-legacy
 alsa-card-profiles
 alsa-lib
 alsa-topology-conf
@@ -48,6 +49,7 @@ colord
 colord-gtk-common
 colord-gtk4
 colord-sane
+composefs
 confuse
 conmon
 containers-common
@@ -125,6 +127,7 @@ giflib
 git
 gjs
 glew
+glfw
 glib-networking
 glib2
 glibc
@@ -140,6 +143,7 @@ gnome-desktop
 gnome-desktop-4
 gnome-desktop-common
 gnome-disk-utility
+gnome-keybindings
 gnome-keyring
 gnome-online-accounts
 gnome-session
@@ -167,6 +171,7 @@ gst-plugins-bad-libs
 gst-plugins-base-libs
 gst-plugins-good
 gstreamer
+gtest
 gtk-update-icon-cache
 gtk3
 gtk4
@@ -564,7 +569,6 @@ libstemmer
 libsysprof-capture
 libtasn1
 libteam
-libtermkey
 libthai
 libtheora
 libtiff
@@ -641,6 +645,7 @@ lmdb
 lsb-release
 lsof
 lua
+lua51-lpeg
 luajit
 lv2
 lvm2
@@ -922,16 +927,12 @@ xdg-desktop-portal
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
 xdg-utils
-xf86-input-libinput
 xkeyboard-config
 xorg-fonts-encodings
-xorg-server
 xorg-server-common
 xorg-setxkbmap
-xorg-xhost
 xorg-xkbcomp
 xorg-xprop
-xorg-xrdb
 xorg-xset
 xorg-xwayland
 xorgproto
