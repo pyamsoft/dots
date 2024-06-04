@@ -933,6 +933,7 @@ xorg-server-common
 xorg-setxkbmap
 xorg-xkbcomp
 xorg-xprop
+xorg-xrandr
 xorg-xset
 xorg-xwayland
 xorgproto
