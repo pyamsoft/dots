@@ -931,6 +931,7 @@ xkeyboard-config
 xorg-fonts-encodings
 xorg-server-common
 xorg-setxkbmap
+xorg-xhost
 xorg-xkbcomp
 xorg-xprop
 xorg-xrandr
