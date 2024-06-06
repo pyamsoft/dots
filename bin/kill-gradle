@@ -95,16 +95,17 @@ main() {
     }
   fi
 
-  if [ -z "${GAMER}" ]; then
-    printf -- 'Running kill as root.\n'
-    _root=1
-  else
-    _root=0
-  fi
-
+  _root=0
   if [ "$(basename "$0")" = "kill-gradle" ]; then
     _killa "GradleDaemon" "${_force}" "${_root}" || return 1
   else
+    if [ -z "${GAMER}" ]; then
+      printf -- 'Running kill as root.\n'
+      _root=1
+    else
+      _root=0
+    fi
+
     _killa "proton" "${_force}" "${_root}" || return 1
     _killa "wineserver" "${_force}" "${_root}" || return 1
     _killa "winedevice.exe" "${_force}" "${_root}" || return 1
