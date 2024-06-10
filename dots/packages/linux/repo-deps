@@ -1,4 +1,5 @@
 aalib
+aardvark-dns
 abseil-cpp
 accountsservice
 acl
@@ -32,6 +33,7 @@ bluez
 bluez-libs
 bolt
 boost-libs
+breeze-icons
 brotli
 bubblewrap
 bzip2
@@ -179,10 +181,6 @@ guile
 gupnp
 gupnp-igd
 gvfs
-gvfs-afc
-gvfs-goa
-gvfs-google
-gvfs-gphoto2
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
@@ -240,7 +238,6 @@ hidapi
 highway
 http-parser
 hwdata
-hwloc
 hyphen
 i2c-tools
 iana-etc
@@ -378,7 +375,6 @@ lib32-xz
 lib32-zlib
 lib32-zstd
 libadwaita
-libaio
 libarchive
 libass
 libassuan
@@ -438,7 +434,6 @@ libepoxy
 libevdev
 libevent
 libexif
-libfabric
 libfakekey
 libfdk-aac
 libffi
@@ -446,7 +441,6 @@ libfontenc
 libfreeaptx
 libftdi
 libgcrypt
-libgdata
 libgdm
 libgexiv2
 libgirepository
@@ -648,7 +642,6 @@ lua
 lua51-lpeg
 luajit
 lv2
-lvm2
 lz4
 lzo
 m4
@@ -696,11 +689,8 @@ openal
 opencore-amr
 openexr
 openjpeg2
-openmpi
-openpmix
 openssh
 openssl
-openucx
 openvr
 opus
 orc
@@ -757,7 +747,6 @@ ppp
 procps-ng
 protobuf
 protobuf-c
-prrte
 psmisc
 pugixml
 pulseaudio-qt
@@ -776,10 +765,8 @@ python-gobject
 python-greenlet
 python-idna
 python-kiwisolver
-python-markdown
 python-matplotlib
 python-msgpack
-python-mutagen
 python-numpy
 python-packaging
 python-pbr
@@ -810,7 +797,6 @@ qt6-wayland
 raptor
 rav1e
 readline
-rrdtool
 rsync
 rtkit
 rtl-sdr
@@ -862,7 +848,6 @@ tdb
 tecla
 tevent
 texinfo
-thin-provisioning-tools
 tpm2-tss
 tracker3
 tree-sitter
@@ -883,7 +868,6 @@ udisks2
 unibilium
 unzip
 upower
-usbmuxd
 util-linux
 util-linux-libs
 v4l-utils
