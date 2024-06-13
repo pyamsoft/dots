@@ -143,6 +143,9 @@ _mask_systemd() {
     return 1
   }
 
+  # Instead of launching a pipewire server for this new user, we allow the user to connect to our
+  # current user's pulseaudio server. This way we can control the volume of all applications from the same
+  # sound server
   for _s in "pipewire.service" "pipewire-pulse.service" "pipewire.socket" "pipewire-pulse.socket"; do
     sudo ln -s -f /dev/null /home/"${_target_user}"/.config/systemd/user/"${_s}" || {
       printf -- '[setup] Failed to mask %s\n' "${_s}"
