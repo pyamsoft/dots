@@ -2,7 +2,7 @@
 
 _check_user() {
   if  id -u "${_target_user}" >/dev/null 2>&1; then
-    printf -- 'Target user %s already exists!\n' "${_target_user}"
+    printf -- '[setup] Target user %s already exists!\n' "${_target_user}"
     return 1
   fi
 
@@ -10,55 +10,71 @@ _check_user() {
 }
 
 _install_launcher() {
-  printf -- 'Install user launcher: %s\n' "${_target_user}"
+  printf -- '[setup] Install user launcher: %s\n' "${_target_user}"
 
   printf -- '%s' "$(cat <<EOF
 #!/bin/sh
 
+# Export graphical environment if it exists
+if [ -n "\${DISPLAY}" ]; then
+  printf -- '[launcher] Export DISPLAY into systemd: %s\n' "\${DISPLAY}"
+  systemctl --user set-environment DISPLAY="\${DISPLAY}"
+fi
+if [ -n "\${WAYLAND_DISPLAY}" ]; then
+  printf -- '[launcher] Export WAYLAND_DISPLAY into systemd: %s\n' "\${WAYLAND_DISPLAY}"
+  systemctl --user set-environment WAYLAND_DISPLAY="\${WAYLAND_DISPLAY}"
+fi
+if [ -n "\${XAUTHORITY}" ]; then
+  printf -- '[launcher] Export XAUTHORITY into systemd: %s\n' "\${XAUTHORITY}"
+  systemctl --user set-environment XAUTHORITY="\${XAUTHORITY}"
+fi
+
 if [ -n "\${GAMER_GAMESCOPE}" ] && [ "\${GAMER_GAMESCOPE}" -ne 0 ]; then
+  printf -- '[launcher] Launch command with gametime: "%s"\n' "${_cmd} \$*"
   exec gametime ${_cmd} "\$@"
 else
+  printf -- '[launcher] Launch command: "%s"\n' "${_cmd} \$*"
   exec "${_cmd}" "\$@"
 fi
 EOF
 )" | sudo tee /home/"${_target_user}"/bin/launcher >/dev/null || {
-  printf -- 'Failed to install launcher for user %s\n' "${_target_user}"
+  printf -- '[setup] Failed to install launcher for user %s\n' "${_target_user}"
   return 1
 }
 
   # Mark exec
   sudo chmod 700 /home/"${_target_user}"/bin/launcher || {
-    printf -- 'Failed to exec-mark launcher for user %s\n' "${_target_user}"
+    printf -- '[setup] Failed to exec-mark launcher for user %s\n' "${_target_user}"
     return 1
   }
 
   # Copy over kill-game script
   sudo cp "${HOME}/bin/kill-gradle" /home/"${_target_user}"/bin/kill-game || {
-    printf -- 'Failed to copy over kill-game script for user: %s\n' "${_target_user}"
+    printf -- '[setup] Failed to copy over kill-game script for user: %s\n' "${_target_user}"
     return 1
   }
 
   # Mark exec
   sudo chmod 700 /home/"${_target_user}"/bin/kill-game || {
-    printf -- 'Failed to exec-mark kill-game for user %s\n' "${_target_user}"
+    printf -- '[setup] Failed to exec-mark kill-game for user %s\n' "${_target_user}"
     return 1
   }
 }
 
 _bash_files() {
-  printf -- 'Install user bash profile files: %s\n' "${_target_user}"
+  printf -- '[setup] Install user bash profile files: %s\n' "${_target_user}"
 
   sudo cp ./gaming-bashrc /home/"${_target_user}"/.bashrc || {
-    printf -- 'Failed to install bashrc for %s\n' "${_target_user}"
+    printf -- '[setup] Failed to install bashrc for %s\n' "${_target_user}"
     return 1
   }
   sudo cp ./gaming-bash_profile /home/"${_target_user}"/.bash_profile || {
-    printf -- 'Failed to install bash_profile for %s\n' "${_target_user}"
+    printf -- '[setup] Failed to install bash_profile for %s\n' "${_target_user}"
     return 1
   }
 
   sudo cp ./gaming-bash_logout /home/"${_target_user}"/.bash_logout || {
-    printf -- 'Failed to install bash_logout for %s\n' "${_target_user}"
+    printf -- '[setup] Failed to install bash_logout for %s\n' "${_target_user}"
     return 1
   }
 
@@ -66,7 +82,7 @@ _bash_files() {
 }
 
 _make_dirs() {
-  printf -- 'Make user directories: %s\n' "${_target_user}"
+  printf -- '[setup] Make user directories: %s\n' "${_target_user}"
 
   sudo mkdir -p \
     /home/"${_target_user}"/bin \
@@ -78,23 +94,23 @@ _make_dirs() {
 }
 
 _take_ownership() {
-  printf -- 'Claim user ownership: %s\n' "${_target_user}"
+  printf -- '[setup] Claim user ownership: %s\n' "${_target_user}"
 
   # Update access perms
   sudo chown "${_target_user}:${_target_user}" -R /home/"${_target_user}" || {
-    printf -- 'Failed to own %s home\n' "${_target_user}"
+    printf -- '[setup] Failed to own %s home\n' "${_target_user}"
     return 1
   }
   sudo chmod o-rwx -R /home/"${_target_user}" || {
-    printf -- 'Failed to close off %s home to OTHER\n' "${_target_user}"
+    printf -- '[setup] Failed to close off %s home to OTHER\n' "${_target_user}"
     return 1
   }
   sudo chmod g+rwX -R /home/"${_target_user}" || {
-    printf -- 'Failed to allow %s home to GROUP\n' "${_target_user}"
+    printf -- '[setup] Failed to allow %s home to GROUP\n' "${_target_user}"
     return 1
   }
   sudo chmod u+rwX -R /home/"${_target_user}" || {
-    printf -- 'Failed to allow %s home to USER\n' "${_target_user}"
+    printf -- '[setup] Failed to allow %s home to USER\n' "${_target_user}"
     return 1
   }
 
@@ -102,34 +118,34 @@ _take_ownership() {
 }
 
 _copy_env() {
-  printf -- 'Copy main-user environment: %s\n' "${_target_user}"
+  printf -- '[setup] Copy main-user environment: %s\n' "${_target_user}"
 
   sudo rm -rf /home/"${_target_user}"/.config/environment.d/* || {
-    printf -- 'Failed to clean up target environment.d\n'
+    printf -- '[setup] Failed to clean up target environment.d\n'
     return 1
   }
   sudo mkdir -p /home/"${_target_user}"/.config/environment.d || {
-    printf -- 'Failed to mkdir target environment.d\n'
+    printf -- '[setup] Failed to mkdir target environment.d\n'
     return 1
   }
   sudo cp "${HOME}"/.config/environment.d/* /home/"${_target_user}"/.config/environment.d/ || {
-    printf -- 'Failed to copy into target environment.d\n'
+    printf -- '[setup] Failed to copy into target environment.d\n'
     return 1
   }
   return 0
 }
 
 _mask_systemd() {
-  printf -- 'Mask systemctl services: %s\n' "${_target_user}"
+  printf -- '[setup] Mask systemctl services: %s\n' "${_target_user}"
 
   sudo mkdir -p /home/"${_target_user}"/.config/systemd/user || {
-    printf -- 'Failed to mkdir target systemctl config.d\n'
+    printf -- '[setup] Failed to mkdir target systemctl config.d\n'
     return 1
   }
 
   for _s in "pipewire.service" "pipewire-pulse.service" "pipewire.socket" "pipewire-pulse.socket"; do
     sudo ln -s -f /dev/null /home/"${_target_user}"/.config/systemd/user/"${_s}" || {
-      printf -- 'Failed to mask %s\n' "${_s}"
+      printf -- '[setup] Failed to mask %s\n' "${_s}"
       return 1
     }
   done
@@ -137,10 +153,10 @@ _mask_systemd() {
 }
 
 _create_user() {
-  printf -- 'Create target user: %s\n' "${_target_user}"
+  printf -- '[setup] Create target user: %s\n' "${_target_user}"
 
   sudo useradd --create-home --shell /bin/bash --user-group "${_target_user}" || {
-    printf -- 'Unable to create target user: %s\n' "${_target_user}"
+    printf -- '[setup] Unable to create target user: %s\n' "${_target_user}"
     return 1
   }
 
@@ -150,7 +166,7 @@ _create_user() {
 main() {
   _target_user="$1"
   if [ -z "${_target_user}" ]; then
-    printf -- 'Need a target user to setup!\n'
+    printf -- '[setup] Need a target user to setup!\n'
     return 1
   fi
 

@@ -3,43 +3,47 @@
 # Privileged script, to be used with gamer script and sudoers set up
 
 _check_user() {
-  if ! id -u "${_target_user}" >/dev/null 2>&1; then
-    printf -- 'Target user %s does not exist!\n' "${_target_user}"
+  _check_me="$1"
+  if ! id -u "${_check_me}" >/dev/null 2>&1; then
+    printf -- '[gamelaunch] Target user %s does not exist!\n' "${_check_me}"
+
+    unset _check_me
     return 1
   fi
 
+  unset _check_me
   return 0
 }
 
 main() {
   if [ -z "${SUDO_USER}" ]; then
-    printf -- "gamelaunch requires that you run as a regular user with sudo\n"
+    printf -- "[gamelaunch] Requires that you run as a regular user with sudo\n"
     return 1
   fi
 
   if [ "${SUDO_UID}" -eq 0 ]; then
-    printf -- "gamelaunch requires that you run as a regular user with sudo\n"
+    printf -- "[gamelaunch] Requires that you run as a regular user with sudo\n"
     return 1
   fi
 
   if [ "$(id -u)" -ne 0 ]; then
-    printf -- "gamelaunch requires that you run with sudo\n"
+    printf -- "[gamelaunch] Requires that you run with sudo\n"
     return 1
   fi
 
   if [ -z "${DISPLAY}" ]; then
-    printf -- "gamelaunch requires a valid \$DISPLAY variable.\n"
+    printf -- "[gamelaunch] Requires a valid \$DISPLAY variable.\n"
     return 1
   fi
 
   if [ -z "${XAUTHORITY}" ]; then
-    printf -- "gamelaunch requires a valid \$XAUTHORITY variable.\n"
+    printf -- "[gamelaunch] Requires a valid \$XAUTHORITY variable.\n"
     return 1
   fi
 
   _target_user="$1"
   if [ -z "${_target_user}" ]; then
-    printf -- 'gamelaunch requires a target user as the first argument\n'
+    printf -- '[gamelaunch] Requires a target user as the first argument\n'
     return 1
   fi
 
@@ -49,7 +53,7 @@ main() {
   case "$1" in
     --gamescope)
       if [ -z "$2" ]; then
-        printf -- 'Missing required --gamescope argument value!\n'
+        printf -- '[gamelaunch] Missing required --gamescope argument value!\n'
         return 1
       fi
 
@@ -63,7 +67,7 @@ main() {
     --gamescope=*)
       _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
       if [ -z "${_split}" ]; then
-        printf -- 'Missing required --gamescope= argument value!\n'
+        printf -- '[gamelaunch] Missing required --gamescope= argument value!\n'
         return 1
       fi
 
@@ -78,10 +82,16 @@ main() {
       ;;
   esac
 
-  readonly _target_user="gaming-${_target_user}"
-  if ! _check_user; then
+  _real_user="gaming-${_target_user}"
+  if ! _check_user "${_real_user}"; then
     return 1
   fi
+
+  printf -- '[gamelaunch] Running command as target user: [%s]"~/bin/launcher %s"\n' "${_real_user}" "$*"
+  printf -- '[gamelaunch] DISPLAY=%s\n' "${DISPLAY}"
+  printf -- '[gamelaunch] XAUTHORITY=%s\n' "${XAUTHORITY}"
+  printf -- '[gamelaunch] GAMER_GAMESCOPE=%s\n' "${GAMER_GAMESCOPE:-0}"
+  printf -- '[gamelaunch] GAMER=1\n'
 
   # Running machinectl shell gives us a "clean session to work with" that attaches to it's own systemctl --user session
   # and loginctl session
@@ -97,16 +107,8 @@ main() {
     --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
     --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
     --setenv="GAMER=1" \
-    shell "${_target_user}@.host" \
+    shell "${_real_user}@.host" \
     /bin/bash -l -c '~/bin/launcher' "$@"
-
-  # Currently, we "access" the systemd bus by manually setting the path in .bash_profile (gaming-bash_profile)
-  # and "starting" the session via loginctl lingering. It's not perfect but it works.
-  # sudo \
-  #   -u "${_target_user}" \
-  #   -i \
-  #   -- \
-  #   env GAMER_GAMESCOPE="${GAMER_GAMESCOPE:-0}" launcher "$@"
 }
 
 main "$@" || exit 1
