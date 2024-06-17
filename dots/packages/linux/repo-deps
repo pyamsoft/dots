@@ -133,7 +133,6 @@ glfw
 glib-networking
 glib2
 glibc
-glm
 glslang
 glu
 gmp
@@ -478,7 +477,6 @@ libksba
 liblc3
 libldac
 libldap
-libliftoff
 liblqr
 liblrdf
 libltc
@@ -776,6 +774,8 @@ python-pycryptodomex
 python-pycups
 python-pynvim
 python-pyparsing
+python-pyqt5
+python-pyqt5-sip
 python-requests
 python-six
 python-urllib3
@@ -785,6 +785,8 @@ qhull
 qpdf
 qqc2-desktop-style
 qrencode
+qt5-base
+qt5-translations
 qt6-5compat
 qt6-base
 qt6-declarative
@@ -885,12 +887,12 @@ wavpack
 wayland
 webkitgtk-6.0
 webrtc-audio-processing-1
+wget
 which
 wildmidi
 wireless-regdb
 wireplumber
 wl-clipboard
-wlroots
 woff2
 wpa_supplicant
 wpebackend-fdo
