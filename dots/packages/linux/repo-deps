@@ -84,6 +84,7 @@ duktape
 e2fsprogs
 ell
 enchant
+enet
 exiv2
 expat
 faac
@@ -652,9 +653,11 @@ media-player-info
 mesa
 mesa-vdpau
 miniupnpc
+minizip-ng
 mjpegtools
 mkinitcpio
 mkinitcpio-busybox
+mlocate
 mobile-broadband-provider-info
 modemmanager
 modemmanager-qt
