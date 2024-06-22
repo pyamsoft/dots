@@ -6,22 +6,27 @@ __game_environment=""
 __game_tools=""
 __env_tools=""
 
+_log() {
+  _msg="$1"
+
+  if [ -n "${_msg}" ]; then
+    shift
+  fi
+
+  # shellcheck disable=SC2059
+  printf -- "[gametime]: ${_msg}\n" "$@"
+}
+
 _prepare_env() {
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
   __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
 
-  # Setup for WAYLAND for gamescope-wl
-  # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
-  #
-  # Don't use or else gamescope complains about wayland
-  #
-  # if [ -z "${WAYLAND_DISPLAY}" ]; then
-  #   export WAYLAND_DISPLAY=""
-  #   __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
-  # fi
-  unset WAYLAND_DISPLAY
+  # Force VRS shading
+  # https://www.phoronix.com/review/radeon-radv-vrs
+  export RADV_FORCE_VRS="2x2"
+  __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
   # Disable vertical blank
   export vblank_mode=0
@@ -49,7 +54,7 @@ _prepare_env() {
 
   # Optional fixes for messy graphics
   if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
-    printf -- '[gametime] Applying AMD driver fixes: YES (GAME_FIX=%s)\n' "${GAME_FIX}"
+    _log 'Applying AMD driver fixes: YES (GAME_FIX=%s)' "${GAME_FIX}"
 
     # Fix weird texture bugs
     # https://github.com/Plagman/gamescope/issues/320
@@ -59,7 +64,7 @@ _prepare_env() {
     export RADV_DEBUG=nodcc
     __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
   else
-    printf -- '[gametime] Applying AMD driver fixes: NO (GAME_FIX=%s)\n' "${GAME_FIX}"
+    _log 'Applying AMD driver fixes: NO (GAME_FIX=%s)' "${GAME_FIX}"
   fi
 
   unset GAME_FIX
@@ -107,27 +112,20 @@ _prepare_gamescope() {
   # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
   #       Or run it with GAME_FSR=15
 
-  # Defaults to 1080p
-  window_type="--fullscreen"
+  # Defaults to 1080p windowed
+  window_type=""
   output_height=1080
   output_width=
   fsr_amount=15
   fps_max=300
 
   if [ "${__hostname}" = "nerd1" ]; then
-    printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
-
-    # Force VRS shading
-    # https://www.phoronix.com/review/radeon-radv-vrs
-    export RADV_FORCE_VRS="2x2"
-    __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
-
-    # Set window to normal instead of fullscreen
-    window_type=" "
+    _log 'Using %s gamescope defaults' "${__hostname}"
   elif [ "${__hostname}" = "nerd2" ]; then
-    printf -- '[gametime] Using %s gamescope defaults\n' "${__hostname}"
+    _log 'Using %s gamescope defaults' "${__hostname}"
+    window_type="--fullscreen"
   else
-    printf -- '[gametime] Hostname "%s" unknown, use gamescope defaults\n' "${__hostname}"
+    _log 'Hostname "%s" unknown, use gamescope defaults' "${__hostname}"
   fi
 
   if [ -n "${GAME_WINDOW}" ]; then
@@ -193,8 +191,26 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
   # Expose Wayland
-  if [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+  if [ -n "${GAME_WAYLAND}" ] && [ "${GAME_WAYLAND}" -ne 0 ] && [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
+    _log 'Running with Wayland exposed'
     __gamescope_options="${__gamescope_options} --expose-wayland"
+  else
+    # Setup for WAYLAND for gamescope-wl
+    # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
+    #
+    # Don't use or else gamescope complains about wayland
+    #
+    # if [ -z "${WAYLAND_DISPLAY}" ]; then
+    #   export WAYLAND_DISPLAY=""
+    #   __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
+    # fi
+    unset WAYLAND_DISPLAY
+
+    # Use the SDL backend
+    #
+    # Otherwise we run with gamescope-wl on wayland, but we want normal gamescope
+    _log 'Force running with SDL backend'
+    __gamescope_options="${__gamescope_options} --backend sdl"
   fi
 
   if [ -n "${output_width}" ]; then
@@ -204,7 +220,7 @@ _prepare_gamescope() {
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
 
-  printf -- '[gametime] gamescope renderer: YES (GAME_RES=%s, GAME_FSR=%s, GAME_WINDOW=%s)\n' "${GAME_RES}" "${GAME_FSR}" "${GAME_WINDOW}"
+  _log 'gamescope renderer: YES (GAME_RES=%s, GAME_FSR=%s, GAME_WINDOW=%s)' "${GAME_RES}" "${GAME_FSR}" "${GAME_WINDOW}"
 
   unset output_width
   unset output_height
@@ -227,12 +243,12 @@ _prepare_vkbasalt() {
   if [ -d "/usr/lib/extensions/vulkan/vkBasalt" ]; then
     if [ -n "${GAME_VKB}" ] && [ "${GAME_VKB}" -ne 0 ]; then
       __game_environment="${__game_environment} ENABLE_VKBASALT=1"
-      printf -- '[gametime] vkBasalt post processing: YES (GAME_VKB=%s)\n' "${GAME_VKB}"
+      _log 'vkBasalt post processing: YES (GAME_VKB=%s)' "${GAME_VKB}"
     else
-      printf -- '[gametime] vkBasalt post processing: NO (GAME_VKB=%s)\n' "${GAME_VKB}"
+      _log 'vkBasalt post processing: NO (GAME_VKB=%s)' "${GAME_VKB}"
     fi
   else
-    printf -- '[gametime] vkBasalt post processing: MISSING (GAME_VKB=%s)\n' "${GAME_VKB}"
+    _log 'vkBasalt post processing: MISSING (GAME_VKB=%s)' "${GAME_VKB}"
   fi
 
   unset GAME_VKB
@@ -243,12 +259,12 @@ _prepare_vkbasalt() {
 # https://wiki.archlinux.org/title/OpenGL#OpenGL_over_Vulkan_(Zink)
 _prepare_zink() {
   if [ -n "${GAME_ZINK}" ] && [ "${GAME_ZINK}" -ne 0 ]; then
-    printf -- '[gametime] Zink for OpenGL over Vulkan: YES (GAME_ZINK=%s)\n' "${GAME_ZINK}"
+    _log 'Zink for OpenGL over Vulkan: YES (GAME_ZINK=%s)' "${GAME_ZINK}"
     __game_environment="${__game_environment} __GLX_VENDOR_LIBRARY_NAME=mesa"
     __game_environment="${__game_environment} MESA_LOADER_DRIVER_OVERRIDE=zink"
     __game_environment="${__game_environment} GALLIUM_DRIVER=zink"
   else
-    printf -- '[gametime] Zink for OpenGL over Vulkan: NO (GAME_ZINK=%s)\n' "${GAME_ZINK}"
+    _log 'Zink for OpenGL over Vulkan: NO (GAME_ZINK=%s)' "${GAME_ZINK}"
   fi
 
   unset GAME_ZINK
@@ -262,14 +278,14 @@ _prepare_mangohud() {
 
   if command -v mangohud >/dev/null; then
     if [ -n "${GAME_HUD}" ] && [ "${GAME_HUD}" -ne 0 ]; then
-      printf -- '[gametime] MangoHud performance overlay: YES (GAME_HUD=%s)\n' "${GAME_HUD}"
+      _log 'MangoHud performance overlay: YES (GAME_HUD=%s)' "${GAME_HUD}"
       export MANGOHUD_CONFIG="${_mangohud_config}"
       __game_tools="${__game_tools} mangohud --dlsym"
     else
-      printf -- '[gametime] MangoHud performance overlay: NO (GAME_HUD=%s)\n' "${GAME_HUD}"
+      _log 'MangoHud performance overlay: NO (GAME_HUD=%s)' "${GAME_HUD}"
     fi
   else
-    printf -- '[gametime] MangoHud performance overlay: MISSING (GAME_HUD=%s)\n' "${GAME_HUD}"
+    _log 'MangoHud performance overlay: MISSING (GAME_HUD=%s)' "${GAME_HUD}"
   fi
 
   unset _mangohud_config
@@ -280,14 +296,14 @@ _prepare_mangohud() {
 _prepare_gamemode() {
   if command -v gamemoderun >/dev/null; then
     if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 1 ]; then
-      printf -- '[gametime] Feral gamemode: YES (GAME_MODE=%s)\n' "${GAME_MODE}"
+      _log 'Feral gamemode: YES (GAME_MODE=%s)' "${GAME_MODE}"
       __env_tools="${__env_tools} gamemoderun"
       __game_tools="${__game_tools} gamemoderun"
     else
-      printf -- '[gametime] Feral gamemode: NO (GAME_MODE=%s)\n' "${GAME_MODE}"
+      _log 'Feral gamemode: NO (GAME_MODE=%s)' "${GAME_MODE}"
     fi
   else
-    printf -- '[gametime] Feral gamemode: MISSING (GAME_MODE=%s)\n' "${GAME_MODE}"
+    _log 'Feral gamemode: MISSING (GAME_MODE=%s)' "${GAME_MODE}"
   fi
 
   unset GAME_MODE
@@ -302,19 +318,19 @@ _prepare_obs() {
   if command -v obs-gamecapture >/dev/null; then
     if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
         __env_tools="${__env_tools} obs-gamecapture"
-        printf -- '[gametime] OBS Game Capture: YES (GAME_OBS=%s)\n' "${GAME_OBS}"
+        _log 'OBS Game Capture: YES (GAME_OBS=%s)' "${GAME_OBS}"
       else
-        printf -- '[gametime] OBS Game Capture: NO (GAME_OBS=%s)\n' "${GAME_OBS}"
+        _log 'OBS Game Capture: NO (GAME_OBS=%s)' "${GAME_OBS}"
       fi
   else
-    printf -- '[gametime] OBS Game Capture: MISSING (GAME_OBS=%s)\n' "${GAME_OBS}"
+    _log 'OBS Game Capture: MISSING (GAME_OBS=%s)' "${GAME_OBS}"
   fi
 
   unset GAME_OBS
 }
 
 _prepare() {
-  printf -- '[gametime] Preparing gaming environment...\n'
+  _log 'Preparing gaming environment...'
 
   _prepare_env || return 1
   _prepare_gamemode || return 1
@@ -330,9 +346,9 @@ _enable_flatpak_options() {
   # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
   if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
     __gamescope_options="${__gamescope_options} --steam"
-    printf -- '[gametime] Steam specific gamescope options: YES\n'
+    _log 'Steam specific gamescope options: YES'
   else
-    printf -- '[gametime] Steam specific gamescope options: NO\n'
+    _log 'Steam specific gamescope options: NO'
   fi
 
   return 0
@@ -341,43 +357,41 @@ _enable_flatpak_options() {
 _execute() {
   unset __hostname
 
-  printf -- '[gametime] %s gamescope %s -- env %s %s %s\n' \
-    "${__env_tools}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+  _log '%s %s %s -- env %s %s %s' \
+    "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
 
   # shellcheck disable=SC2086
-  exec ${__env_tools} gamescope ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+  exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
 
   return 0
 }
 
 main() {
-  if ! command -v gamescope > /dev/null; then
-    printf -- '[gametime] Unable to find gamescope binary\n'
-    return 1
-  fi
+  _log 'Using gamescope'
+  _gamescope="gamescope"
 
   _get_hostname || {
-    printf -- '[gametime] Unable to resolve hostname\n'
+    _log 'Unable to resolve hostname'
     __hostname=""
   }
 
   _prepare || {
-    printf -- '[gametime] Unable to prepare gaming environment\n'
+    _log 'Unable to prepare gaming environment'
     return 1
   }
 
   _prepare_gamescope || {
-    printf -- '[gametime] Unable to prepare gamescope\n'
+    _log 'Unable to prepare gamescope'
     return 1
   }
 
   _enable_flatpak_options || {
-    printf -- '[gametime] Unable to enable specific flatpak options\n'
+    _log 'Unable to enable specific flatpak options'
     return 1
   }
 
   _execute "$@" || {
-    printf -- '[gametime] Failed execute\n'
+    _log 'gametime] Failed execute'
     return 1
   }
 }
