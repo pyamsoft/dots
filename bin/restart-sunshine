@@ -61,9 +61,10 @@ _unlock_session() {
 
 _list_sessions_linux() {
   # Get only the session ID and the user name
+  # Only 'user' sessions, (instead of blank or "manager")
   # Only sessions for our active user
   # Match with spaces just in case a name is a part of another name
-  loginctl list-sessions --no-legend | awk '{ print $1 " " $2 " " $3 }' | grep " $(id -u) $(id -un)" | awk '{ print $1 }' || return 1
+  loginctl list-sessions --no-legend | grep "user" | awk '{ print $1 " " $2 " " $3 }' | grep " $(id -u) $(id -un)" | awk '{ print $1 }' || return 1
 
   return 0
 }
