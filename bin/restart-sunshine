@@ -28,10 +28,11 @@ _unlock_linux() {
   _s="$1"
 
   loginctl unlock-session "${_s}" || {
-    printf -- '[ERROR] Failed unlocking session: %s\n' "${_s}"
+    printf -- '[ERROR] Failed unlocking session: %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
     return 1
   }
 
+  printf -- 'Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
   unset _s
   return 0
 }
