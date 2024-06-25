@@ -32,6 +32,18 @@ _prepare_env() {
   export vblank_mode=0
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
 
+  # Enable NVAPI for Nvidia GPUs
+  export PROTON_ENABLE_NVAPI=1
+  __game_environment="${__game_environment} PROTON_ENABLE_NVAPI=${PROTON_ENABLE_NVAPI}"
+
+  # Report Nvidia GPU is AMD
+  export PROTON_HIDE_NVIDIA_GPU=0
+  __game_environment="${__game_environment} PROTON_HIDE_NVIDIA_GPU=${PROTON_HIDE_NVIDIA_GPU}"
+
+  # Avoid free to fix crashes in some games around playing multimedia video
+  PROTON_HEAP_DELAY_FREE=1
+  __game_environment="${__game_environment} PROTON_HEAP_DELAY_FREE=${PROTON_HEAP_DELAY_FREE}"
+
   # These SDL vars can cause random issues with some Steam games, so unset them
   # SDL2, 1.2 compat
   # SDL3 adds underscores lol
