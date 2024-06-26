@@ -260,7 +260,6 @@ jitterentropy
 js115
 json-c
 json-glib
-jsoncpp
 karchive
 kauth
 kbd
@@ -692,7 +691,6 @@ openexr
 openjpeg2
 openssh
 openssl
-openvr
 opus
 orc
 ostree
