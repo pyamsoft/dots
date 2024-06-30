@@ -369,18 +369,31 @@ _enable_flatpak_options() {
 _execute() {
   unset __hostname
 
-  _log '%s %s %s -- env %s %s %s' \
-    "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+  if [ -z "${_gamescope}" ]; then
+    _log '%s -- env %s %s %s' \
+      "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
 
-  # shellcheck disable=SC2086
-  exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+    # shellcheck disable=SC2086
+    exec ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
+  else
+    _log '%s %s %s -- env %s %s %s' \
+      "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+
+    # shellcheck disable=SC2086
+    exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+  fi
 
   return 0
 }
 
 main() {
-  _log 'Using gamescope'
-  _gamescope="gamescope"
+  if [ -n "${GAME_NOSCOPE}" ] && [ "${GAME_NOSCOPE}" -ne 0 ]; then
+    _log 'Not using gamescope'
+    _gamescope=""
+  else
+    _log 'Using gamescope'
+    _gamescope="gamescope"
+  fi
 
   _get_hostname || {
     _log 'Unable to resolve hostname'
