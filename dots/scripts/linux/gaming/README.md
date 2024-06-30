@@ -17,7 +17,6 @@ Make sure you:
    Make sure the "contentid" matches the path of your chosen folder.
 7. Restart steam, should work?
 
-
 ### Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
@@ -26,3 +25,11 @@ Make sure you unset it via --unset-env override in the flatpak file
 They require `lib32-gperftools` installed from the AUR, and run with  
 `LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%`  
 [see here](https://github.com/ValveSoftware/Source-1-Games/issues/5043)
+
+This may be fixed by the latest TF2 update that moves it to 64bit Vulkan,
+but who knows, the game is so botted that I haven't played in a while.
+
+### XDefiant and Ubisoft Connect
+
+Shit is usually borked, but this may work:
+[who knows](https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/)
