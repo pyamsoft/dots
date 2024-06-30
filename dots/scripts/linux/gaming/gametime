@@ -41,8 +41,13 @@ _prepare_env() {
   __game_environment="${__game_environment} PROTON_HIDE_NVIDIA_GPU=${PROTON_HIDE_NVIDIA_GPU}"
 
   # Avoid free to fix crashes in some games around playing multimedia video
-  PROTON_HEAP_DELAY_FREE=1
+  export PROTON_HEAP_DELAY_FREE=1
   __game_environment="${__game_environment} PROTON_HEAP_DELAY_FREE=${PROTON_HEAP_DELAY_FREE}"
+
+  # Fun random DXVK variables!
+  # https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/
+  export DXVK_NVAPI_ALLOW_OTHER_DRIVERS=1
+  __game_environment="${__game_environment} DXVK_NVAPI_ALLOW_OTHER_DRIVERS=${DXVK_NVAPI_ALLOW_OTHER_DRIVERS}"
 
   # These SDL vars can cause random issues with some Steam games, so unset them
   # SDL2, 1.2 compat
