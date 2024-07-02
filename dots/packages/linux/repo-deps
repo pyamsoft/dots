@@ -656,7 +656,6 @@ minizip-ng
 mjpegtools
 mkinitcpio
 mkinitcpio-busybox
-mlocate
 mobile-broadband-provider-info
 modemmanager
 modemmanager-qt
@@ -775,8 +774,8 @@ python-pycryptodomex
 python-pycups
 python-pynvim
 python-pyparsing
-python-pyqt5
-python-pyqt5-sip
+python-pyqt6
+python-pyqt6-sip
 python-requests
 python-six
 python-urllib3
