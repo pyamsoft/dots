@@ -33,6 +33,7 @@ _erase_chain() {
 }
 
 _reset_chain() {
+  # If this fails I guess its ok, the chain doesn't exist so we don't need to erase it
   _erase_chain
 
   # Drop invalid traffic
@@ -65,7 +66,10 @@ _reset_chain() {
   if [ -n "${_ACCEPT_COUNTRIES}" ]; then
     for _c in ${_ACCEPT_COUNTRIES}; do
       printf -- 'Accept traffic from country: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN
+      "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN || {
+        printf -- 'Failed to load "geoip" xtables addon module.\n'
+        return 1
+      }
     done
   else
     printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
@@ -174,7 +178,11 @@ _exec_cmd() {
   fi
 
   if [ "${_cmd}" = "create" ]; then
-    _iptables_create "${_opts}" || return 1
+    _iptables_create "${_opts}" || {
+      printf -- 'Failed to create iptables rules. Clean up and exit(1)'
+      _iptables_destroy "${_opts}" || return 1
+      return 1
+    }
   elif [ "${_cmd}" = "destroy" ]; then
     _iptables_destroy "${_opts}" || return 1
   else
