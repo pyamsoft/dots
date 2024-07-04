@@ -1,6 +1,7 @@
 [Context]
-features=devel;
+features=devel;multiarch;
 filesystems=!xdg-run/keyring;
+devices=all;
 
 [Environment]
 ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
