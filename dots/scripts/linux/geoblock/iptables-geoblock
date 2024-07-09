@@ -15,6 +15,15 @@ _remove_rule() {
   return 0
 }
 
+_append_rule_if_not_exists() {
+  if ! "${_ip}" -C "$@" >/dev/null 2>&1; then
+    printf -- 'Appending new rule: %s -I %s\n' "${_ip}" "$*"
+    "${_ip}" -A "$@" || return 1
+  fi
+
+  return 0
+}
+
 _insert_rule_if_not_exists() {
   if ! "${_ip}" -C "$@" >/dev/null 2>&1; then
     printf -- 'Inserting new rule: %s -I %s\n' "${_ip}" "$*"
@@ -94,12 +103,10 @@ _iptables_create() {
     unset _create_opts
     return 1
   }
-  if [ "${_create_opts}" = "--forward" ]; then
-    _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
-      unset _create_opts
-      return 1
-    }
-  fi
+  _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
+    unset _create_opts
+    return 1
+  }
 
   _reset_chain || {
     unset _create_opts
@@ -110,12 +117,10 @@ _iptables_create() {
     unset _create_opts
     return 1
   }
-  if [ "${_create_opts}" = "--forward" ]; then
-    _insert_rule_if_not_exists FORWARD -j "${_CHAIN_NAME}" || {
-      unset _create_opts
-      return 1
-    }
-  fi
+  _append_rule_if_not_exists FORWARD -j "${_CHAIN_NAME}" || {
+    unset _create_opts
+    return 1
+  }
 
   unset _create_opts
   return 0
@@ -129,12 +134,10 @@ _iptables_destroy() {
     return 1
   }
 
-  if [ "${_destroy_opts}" = "--forward" ]; then
-    _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
-      unset _destroy_opts
-      return 1
-    }
-  fi
+  _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
+    unset _destroy_opts
+    return 1
+  }
 
   _erase_chain || {
     unset _destroy_opts
