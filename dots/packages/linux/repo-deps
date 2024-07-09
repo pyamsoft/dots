@@ -336,7 +336,6 @@ lib32-libssh2
 lib32-libtasn1
 lib32-libtirpc
 lib32-libunistring
-lib32-libunwind
 lib32-libx11
 lib32-libxau
 lib32-libxcb
