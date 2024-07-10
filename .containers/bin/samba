@@ -2,7 +2,7 @@
 
 readonly _name="samba"
 readonly _image="docker.io/crazymax/samba"
-readonly _tag="4.18.9"
+readonly _tag="4.19.6"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
