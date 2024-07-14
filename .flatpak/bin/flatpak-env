@@ -109,12 +109,6 @@ main() {
     return 1
   fi
 
-  __run_shell=0
-  if [ "$1" = "--shell" ]; then
-    __run_shell=1
-    shift
-  fi
-
   __flatpak="$1"
   shift
 
@@ -154,17 +148,11 @@ main() {
   # Capture proxy environment
   _pass_through_proxy_env
 
-  # Run the flatpak or a shell in the flatpak (use /bin/sh, if you need bash, run it in shell)
-  if [ "${__run_shell}" -eq 1 ]; then
-    __fp_env="${__fp_env} --command=/bin/sh"
-  fi
-
   if [ -z "${__fp_env}" ]; then
     printf -- 'Running flatpak [%s]\n' "${__flatpak}"
   else
     printf -- 'Running flatpak [%s] with "%s"\n' "${__flatpak}" "${__fp_env}"
   fi
-
 
   # shellcheck disable=SC2086
   exec flatpak run ${__fp_env} "${__flatpak}" "$@" || return 1

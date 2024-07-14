@@ -2,16 +2,28 @@
 
 readonly pak="com.jetbrains.WebStorm"
 
-cmd=""
-if [ "$1" = "--shell" ]; then
-  cmd="${cmd} --shell"
-  shift
-fi
-readonly cmd
+_args=""
+while [ -n "$1" ]; do
+  case "$1" in
+    --shell)
+      _args="${_args} --command=/bin/sh"
+      shift
+      ;;
+    --offline)
+      _args="${_args} --unshare=network"
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+readonly _args
 
 # shellcheck disable=SC2086
-exec flatpak-env ${cmd} "${pak}" \
+exec flatpak-env "${pak}" \
   --filesystem="${HOME}/devel/project" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20" \
+  ${_args} \
   -- "$@" || exit 1
 exit 0

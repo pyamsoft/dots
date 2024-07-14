@@ -13,19 +13,31 @@ path="${path}:${android_root}/cdmline-tools/latest/bin"
 path="${path}:${android_root}/platform-tools"
 readonly path
 
-cmd=""
-if [ "$1" = "--shell" ]; then
-  cmd="${cmd} --shell"
-  shift
-fi
-readonly cmd
+_args=""
+while [ -n "$1" ]; do
+  case "$1" in
+    --shell)
+      _args="${_args} --command=/bin/sh"
+      shift
+      ;;
+    --offline)
+      _args="${_args} --unshare=network"
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+readonly _args
 
 # shellcheck disable=SC2086
-exec flatpak-env ${cmd} "${pak}" \
+exec flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+  ${_args} \
   -- "$@" || exit 1
 exit 0

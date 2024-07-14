@@ -14,17 +14,29 @@ else
 fi
 readonly _def_ld_path
 
-cmd=""
-if [ "$1" = "--shell" ]; then
-  cmd="${cmd} --shell"
-  shift
-fi
-readonly cmd
+_args=""
+while [ -n "$1" ]; do
+  case "$1" in
+    --shell)
+      _args="${_args} --command=/bin/sh"
+      shift
+      ;;
+    --offline)
+      _args="${_args} --unshare=network"
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+readonly _args
 
 # shellcheck disable=SC2086
-exec flatpak-env ${cmd} "${pak}" \
+exec flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --filesystem="${HOME}/games/heroic" \
+  ${_args} \
   -- "$@" || exit 1
 exit 0
