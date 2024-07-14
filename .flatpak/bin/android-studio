@@ -25,5 +25,7 @@ exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node20" \
+  --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
   -- "$@" || exit 1
 exit 0

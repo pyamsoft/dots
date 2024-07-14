@@ -1,5 +1,2 @@
 [Context]
 features=devel;
-
-[Environment]
-FLATPAK_ENABLE_SDK_EXT=node18

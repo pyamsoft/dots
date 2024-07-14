@@ -12,5 +12,6 @@ readonly cmd
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
   --filesystem="${HOME}/devel/project" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node20" \
   -- "$@" || exit 1
 exit 0

@@ -19,5 +19,6 @@ readonly cmd
 exec flatpak-env ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${dev_root}/project" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node20" \
   -- "$@" || exit 1
 exit 0
