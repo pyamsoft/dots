@@ -39,7 +39,10 @@ We basically exclusively use USB, don't allow any program to accidentally start 
 as it will immediately disconnect all of our devices
 
 ### Wayland
-- Sunshine needs cap_sys_admin `sudo setcap cap_sys_admin+p /usr/bin/sunshine`
+- Sunshine needs cap_sys_admin `sudo setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine`
+  - Can be automatically handled by a pacman hook
+- Gamescope may need cap_sys_nice `sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/sunshine`
+  - Can be automatically handled by a pacman hook
 - KDE Connect prompts Screen Sharing every time start remote mouse
   - No real way around this? Not sure if it's Portal or KDEConnect's job to solve.
 
@@ -52,7 +55,9 @@ Use `podman` instead of `docker` to avoid the root daemon
 ### Flatpak
 For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
-You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` and `Adwaita-dark` manually
+You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` manually
+
+For themes, see the `themepak` script.
 
 ### Steam (Flatpak)
 See notes in `~dots/scripts/gaming/README.md`
