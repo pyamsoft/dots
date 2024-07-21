@@ -33,6 +33,7 @@ bluez
 bluez-libs
 bolt
 boost-libs
+botan
 breeze-icons
 brotli
 bubblewrap
@@ -312,8 +313,10 @@ lib32-dbus
 lib32-e2fsprogs
 lib32-expat
 lib32-gcc-libs
+lib32-glew
 lib32-glib2
 lib32-glibc
+lib32-glu
 lib32-icu
 lib32-keyutils
 lib32-krb5
@@ -324,6 +327,7 @@ lib32-libffi
 lib32-libgcrypt
 lib32-libglvnd
 lib32-libgpg-error
+lib32-libice
 lib32-libidn2
 lib32-libldap
 lib32-libnghttp2
@@ -332,6 +336,7 @@ lib32-libnsl
 lib32-libpciaccess
 lib32-libpipewire
 lib32-libpsl
+lib32-libsm
 lib32-libssh2
 lib32-libtasn1
 lib32-libtirpc
@@ -344,9 +349,13 @@ lib32-libxcrypt-compat
 lib32-libxdmcp
 lib32-libxext
 lib32-libxfixes
+lib32-libxi
+lib32-libxkbcommon
 lib32-libxml2
+lib32-libxmu
 lib32-libxshmfence
 lib32-libxss
+lib32-libxt
 lib32-libxxf86vm
 lib32-llvm-libs
 lib32-lm_sensors
@@ -649,6 +658,7 @@ md4c
 mdadm
 media-player-info
 mesa
+mesa-utils
 mesa-vdpau
 miniupnpc
 minizip-ng
@@ -785,7 +795,13 @@ qpdf
 qqc2-desktop-style
 qrencode
 qt5-base
+qt5-charts
+qt5-declarative
+qt5-graphicaleffects
+qt5-quickcontrols2
+qt5-svg
 qt5-translations
+qt5-xmlpatterns
 qt6-5compat
 qt6-base
 qt6-declarative
@@ -795,6 +811,7 @@ qt6-shadertools
 qt6-svg
 qt6-translations
 qt6-wayland
+quazip-qt5
 raptor
 rav1e
 readline
@@ -827,6 +844,7 @@ sord
 sound-theme-freedesktop
 soundtouch
 spandsp
+spdlog
 speex
 speexdsp
 spirv-tools
@@ -882,6 +900,7 @@ vulkan-headers
 vulkan-icd-loader
 vulkan-mesa-layers
 vulkan-radeon
+vulkan-tools
 wavpack
 wayland
 webkitgtk-6.0
@@ -920,6 +939,7 @@ xorg-xhost
 xorg-xkbcomp
 xorg-xprop
 xorg-xrandr
+xorg-xrdb
 xorg-xset
 xorg-xwayland
 xorgproto

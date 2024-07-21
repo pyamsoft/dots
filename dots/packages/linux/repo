@@ -5,6 +5,7 @@ android-udev
 base
 base-devel
 buildah
+corectrl
 cups-pdf
 ddcutil
 dolphin-emu
@@ -23,6 +24,7 @@ irqbalance
 kdeconnect
 kernel-modules-hook
 ldns
+lib32-mangohud
 linux-lts
 man-db
 man-pages
