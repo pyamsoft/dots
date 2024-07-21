@@ -28,9 +28,14 @@ _prepare_env() {
   export RADV_FORCE_VRS="2x2"
   __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
-  # Disable vertical blank
+  # Disable vertical blank for OpenGL
   export vblank_mode=0
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
+
+  # Use Vulkan immediate mode (uncapped FPS and no vblank)
+  # https://docs.mesa3d.org/envvars.html
+  export MESA_VK_WSI_PRESENT_MODE="immediate"
+  __game_environment="${__game_environment} MESA_VK_WSI_PRESENT_MODE=${MESA_VK_WSI_PRESENT_MODE}"
 
   # Enable NVAPI for Nvidia GPUs
   export PROTON_ENABLE_NVAPI=1
@@ -134,7 +139,7 @@ _prepare_gamescope() {
   output_height=1080
   output_width=
   fsr_amount=15
-  fps_max=300
+  fps_max=120
 
   if [ "${__hostname}" = "nerd1" ]; then
     _log 'Using %s gamescope defaults' "${__hostname}"
