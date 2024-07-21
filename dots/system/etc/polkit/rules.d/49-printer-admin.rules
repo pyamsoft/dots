@@ -1,8 +1,12 @@
+// vi: ft=javascript
+// Allow a normal user to manage printers
+
 // Polkit rules are written in Javascript. LOL. Assume ES5
 polkit.addRule(function(action, subject) {
   var isValidGroup = subject.isInGroup("lpadmin") || subject.isInGroup("wheel");
   var isValidAction = action.id === "org.opensuse.cupspkhelper.mechanism.all-edit";
-  if (isValidGroup && isValidAction) {
+  var isValidSubject = subject.local && subject.active;
+  if (isValidGroup && isValidAction && isValidSubject) {
     return polkit.Result.YES;
   }
 });

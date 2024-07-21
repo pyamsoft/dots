@@ -33,3 +33,11 @@ but who knows, the game is so botted that I haven't played in a while.
 
 Shit is usually borked, but this may work:
 [who knows](https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/)
+
+### Wine and niceness
+
+You may need to assign gamescope to allow it to set niceness or it will spam
+the console and cause slowdown
+
+[here](https://github.com/ValveSoftware/Proton/issues/6141)
+`sudo setcap 'CAP_SYS_NICE=eip' $(which gamescope)`

@@ -3,8 +3,8 @@
 
 // Polkit rules are written in Javascript. LOL. Assume ES5
 polkit.addRule(function(action, subject) {
-  var isValidGroup = subject.isInGroup("tailscale") || subject.isInGroup("wheel");
-  var isValidAction = action.id.lastIndexOf("org.freedesktop.resolve1.", 0) === 0;
+  var isValidGroup = subject.isInGroup("corectrl") || subject.isInGroup("wheel");
+  var isValidAction = action.id === "org.corectrl.helper.init" || action.id === "org.corectrl.helperkiller.init";
   var isValidSubject = subject.local && subject.active;
   if (isValidGroup && isValidAction && isValidSubject) {
     return polkit.Result.YES;
