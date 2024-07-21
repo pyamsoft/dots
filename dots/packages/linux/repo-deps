@@ -815,6 +815,7 @@ quazip-qt5
 raptor
 rav1e
 readline
+realtime-privileges
 rsync
 rtkit
 rtl-sdr
