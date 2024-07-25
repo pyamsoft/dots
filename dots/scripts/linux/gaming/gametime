@@ -158,16 +158,16 @@ _prepare_gamescope() {
     fps_max="${GAME_FPS}"
   fi
 
-  # If an output resolution is defined as GAME_OUTPUT_RES=WxH, then use it here
-  if [ -n "${GAME_OUTPUT_RES}" ]; then
-    output_width="$(printf -- '%s' "${GAME_OUTPUT_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
-    output_height="$(printf -- '%s' "${GAME_OUTPUT_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
+  # If an output resolution is defined as GAME_OUTPUT=WxH, then use it here
+  if [ -n "${GAME_OUTPUT}" ]; then
+    output_width="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $1 }')"
+    output_height="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $2 }')"
   fi
 
-  # If a nested resolution is defined as GAME_NESTED_RES=WxH, then use it here
-  if [ -n "${GAME_NESTED_RES}" ]; then
-    nested_width="$(printf -- '%s' "${GAME_NESTED_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
-    nested_height="$(printf -- '%s' "${GAME_NESTED_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
+  # If a nested resolution is defined as GAME_NESTED=WxH, then use it here
+  if [ -n "${GAME_NESTED}" ]; then
+    nested_width="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $1 }')"
+    nested_height="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $2 }')"
   fi
 
   # Options passed to gamescope session
@@ -224,7 +224,7 @@ _prepare_gamescope() {
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
 
-  _log 'gamescope renderer: YES (GAME_OUTPUT_RES=%s, GAME_NESTED_RES=%s, GAME_WINDOW=%s)' "${GAME_OUTPUT_RES}" "${GAME_NESTED_RES}" "${GAME_WINDOW}"
+  _log 'gamescope renderer: YES (GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_WINDOW=%s)' "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_WINDOW}"
 
   unset output_width
   unset output_height
@@ -232,8 +232,8 @@ _prepare_gamescope() {
   unset nested_height
   unset window_type
   unset fps_max
-  unset GAME_OUTPUT_RES
-  unset GAME_NESTED_RES
+  unset GAME_OUTPUT
+  unset GAME_NESTED
   unset GAME_WINDOW
   unset GAME_FPS
   return 0
