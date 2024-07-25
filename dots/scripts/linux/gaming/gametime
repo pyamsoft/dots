@@ -135,9 +135,9 @@ _prepare_gamescope() {
   # Defaults to 1080p windowed
   window_type=""
   output_width=1920
-  nested_width=720
+  nested_width=1280
   output_height=1080
-  nested_height=1280
+  nested_height=720
   fps_max=120
 
   if [ "${__hostname}" = "nerd1" ]; then
