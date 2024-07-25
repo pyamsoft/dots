@@ -129,16 +129,15 @@ _prepare_gamescope() {
   #
   # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
   #       If you open the settings in game, your FPS will go to 2.
-  #       Run it with GAME_FSR=13
   #
   # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
-  #       Or run it with GAME_FSR=15
 
   # Defaults to 1080p windowed
   window_type=""
+  output_width=1920
+  nested_width=720
   output_height=1080
-  output_width=
-  fsr_amount=15
+  nested_height=1280
   fps_max=120
 
   if [ "${__hostname}" = "nerd1" ]; then
@@ -154,38 +153,21 @@ _prepare_gamescope() {
     window_type="${GAME_WINDOW}"
   fi
 
-  # If an output resolution is defined as GAME_RES=WxH, then use it here
-  if [ -n "${GAME_RES}" ]; then
-    output_width="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
-    output_height="$(printf -- '%s' "${GAME_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
-  fi
-
-  # If we have a custom GAME_FSR amount passed in, use it
-  if [ -n "${GAME_FSR}" ]; then
-    fsr_amount="${GAME_FSR}"
-  fi
-
   # If we have a custom GAME_FPS amount passed in, use it
   if [ -n "${GAME_FPS}" ]; then
     fps_max="${GAME_FPS}"
   fi
 
-  # Calculate the nested resolution by mathing the set fsr_amount
-  # fsr_amount of 0 means no FSR
-  nested_height=
-  nested_width=
-  if [ "${fsr_amount}" -eq 0 ]; then
-    # Game has its own FSR, or does not want FSR
-    nested_height="${output_height}"
-    if [ -n "${output_width}" ]; then
-      nested_width="${output_width}"
-    fi
-  else
-    # Calculate nested resolution by applying FSR
-    nested_height="$((output_height * 10 / fsr_amount))"
-    if [ -n "${output_width}" ]; then
-      nested_width="$((output_width * 10 / fsr_amount))"
-    fi
+  # If an output resolution is defined as GAME_OUTPUT_RES=WxH, then use it here
+  if [ -n "${GAME_OUTPUT_RES}" ]; then
+    output_width="$(printf -- '%s' "${GAME_OUTPUT_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
+    output_height="$(printf -- '%s' "${GAME_OUTPUT_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
+  fi
+
+  # If a nested resolution is defined as GAME_NESTED_RES=WxH, then use it here
+  if [ -n "${GAME_NESTED_RES}" ]; then
+    nested_width="$(printf -- '%s' "${GAME_NESTED_RES}" | tr 'x' ' ' | awk '{ print $1 }')"
+    nested_height="$(printf -- '%s' "${GAME_NESTED_RES}" | tr 'x' ' ' | awk '{ print $2 }')"
   fi
 
   # Options passed to gamescope session
@@ -242,7 +224,7 @@ _prepare_gamescope() {
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
 
-  _log 'gamescope renderer: YES (GAME_RES=%s, GAME_FSR=%s, GAME_WINDOW=%s)' "${GAME_RES}" "${GAME_FSR}" "${GAME_WINDOW}"
+  _log 'gamescope renderer: YES (GAME_OUTPUT_RES=%s, GAME_NESTED_RES=%s, GAME_WINDOW=%s)' "${GAME_OUTPUT_RES}" "${GAME_NESTED_RES}" "${GAME_WINDOW}"
 
   unset output_width
   unset output_height
@@ -250,8 +232,8 @@ _prepare_gamescope() {
   unset nested_height
   unset window_type
   unset fps_max
-  unset GAME_RES
-  unset GAME_FSR
+  unset GAME_OUTPUT_RES
+  unset GAME_NESTED_RES
   unset GAME_WINDOW
   unset GAME_FPS
   return 0
