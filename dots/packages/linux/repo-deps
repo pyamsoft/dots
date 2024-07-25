@@ -112,6 +112,7 @@ fuse-common
 fuse3
 fwupd
 fwupd-efi
+gamescope
 gawk
 gc
 gcc
@@ -580,6 +581,7 @@ libunwind
 libusb
 libusbmuxd
 libutempter
+libutf8proc
 libuv
 libva
 libva-mesa-driver
@@ -871,11 +873,9 @@ texinfo
 tpm2-tss
 tracker3
 tree-sitter
-tree-sitter-bash
 tree-sitter-c
 tree-sitter-lua
 tree-sitter-markdown
-tree-sitter-python
 tree-sitter-query
 tree-sitter-vimdoc
 tslib
