@@ -29,9 +29,6 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  _caps="${_caps} --cap-add SETUID"
-  _caps="${_caps} --cap-add SETGID"
-
   readonly _caps
   return 0
 }
@@ -59,8 +56,8 @@ _check_user() {
     fi
   fi
 
-  # Expects to be root (since the cert file is owned by root)
-  _userns=""
+  # No need to run as root
+  _userns="--user 1000:1000"
 
   readonly _userns
 }
@@ -118,8 +115,6 @@ _containerize() {
   _runas ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     -e PROXIED=false \
-    -e PUID=1000 \
-    -e PGID=1000 \
     ${_network} \
     ${_dd} \
     ${_sec} \
