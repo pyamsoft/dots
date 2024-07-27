@@ -164,6 +164,7 @@ graphite
 grep
 groff
 gsettings-desktop-schemas
+gsettings-system-schemas
 gsm
 gsound
 gssdp

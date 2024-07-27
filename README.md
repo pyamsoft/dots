@@ -67,9 +67,11 @@ Make sure you do not block the X11 or fallback x11 sockets for moonlight or else
 Sunshine Right-Alt tweak does not work because Wayland GNOME does not respond to the re-bound key.
 
 ### Sunshine
+Be sure to add the [LizardByte Archlinux repository](https://github.com/LizardByte/pacman-repo)
+to `/etc/pacman.conf`
+
 Don't enable the user level systemd service - it's weird. Use our customer autostart-sunshine user service
 which calls through to the `restart-sunshine` script, which it expects to live in `${HOME}/.local/bin`
-
 The `restart-sunshine` script is unixy platform agnostic and will handle known quirks of sunshine 
 
 ## Tweaks
