@@ -8,4 +8,4 @@ Target = sunshine-bin
 [Action]
 Description = Granting KMS permission to Sunshine
 When = PostTransaction
-Exec = /bin/sh -c "setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine"
+Exec = /bin/sh -c 'setcap "CAP_SYS_ADMIN+p" $(realpath "$(command -v sunshine)")'
