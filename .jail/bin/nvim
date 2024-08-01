@@ -1,3 +1,0 @@
-#!/bin/sh
-
-exec jail --real-home nvim -- "$@"
