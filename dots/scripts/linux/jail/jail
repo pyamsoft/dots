@@ -57,7 +57,7 @@ directory.
 Jails are located in: ${JAIL_DIR} by default
 
 
-\$ jail [--shell] [--name <name>] [--real-home] <command> [bwrap-options] -- [command-options]
+\$ jail [--shell] [--real-home] [--name <name>] <command> [bwrap-options] -- [command-options]
 
 Any arguments passed after the <command> will be interpreted as options for bwrap.
 Any arguments passed after the command and "--" will be passed to the command
@@ -302,23 +302,21 @@ main() {
     _open_shell=0
   fi
 
+  # We want to use the real home
+  if [ "${_cmd}" = "--real-home" ]; then
+    # Do not jail home
+    _real_home=1
+
+    # The next argument is the new command
+    _cmd="$1"
+    shift
+  fi
+
   # If we provide a name, use it instead of the command name
   if [ "${_cmd}" = "--name" ]; then
     # We've shifted, the current argument is the name
     _name="$1"
     shift
-
-    # The next argument is the new command
-    _cmd="$1"
-    shift
-  else
-    _name="${_cmd}"
-  fi
-
-  # We want to use the real home
-  if [ "${_cmd}" = "--real-home" ]; then
-    # Do not jail home
-    _real_home=1
 
     # The next argument is the new command
     _cmd="$1"
