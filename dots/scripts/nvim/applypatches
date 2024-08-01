@@ -1,0 +1,29 @@
+#!/bin/sh
+
+root_dir="$(realpath "$(dirname "$0")")"
+readonly root_dir
+
+main() {
+  cd "${HOME}/.config/nvim" || {
+    printf -- 'Failed to cd into nvim config directory.\n'
+    return 1
+  }
+
+  pwd
+  ls lua
+  ls lua/plugins
+  for _patch in "${root_dir}"/*.patch; do
+    printf -- 'Apply patchfile: %s\n' "${_patch}"
+    patch -p 1 -i "${_patch}" || {
+      printf -- 'Failed to apply patch: %s\n' "${_patch}"
+      return 1
+    }
+    unset _patch
+  done
+
+  unset _patch
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

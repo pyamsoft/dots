@@ -57,13 +57,14 @@ directory.
 Jails are located in: ${JAIL_DIR} by default
 
 
-\$ jail [--name <name>] [--shell] <command> [bwrap-options] -- [command-options]
+\$ jail [--shell] [--name <name>] [--real-home] <command> [bwrap-options] -- [command-options]
 
 Any arguments passed after the <command> will be interpreted as options for bwrap.
 Any arguments passed after the command and "--" will be passed to the command
 
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
+--real-home      Do not jail directories in \$HOME
 --shell          Open a shell in the jail instead of executing the command
 -h | --help      Prints this help
 
@@ -126,12 +127,14 @@ _wrap() {
 }
 
 _run_jail() {
-  _j_open_shell="$1"
-  _j_cmd="$2"
+  _j_cmd="$1"
+  _j_jail="$2"
   _j_name="$3"
-  _j_jail="$4"
+  _j_open_shell="$4"
+  _j_real_home="$5"
 
   # The rest of the arguments are commands
+  shift
   shift
   shift
   shift
@@ -167,6 +170,20 @@ _run_jail() {
     shift
   done
   readonly _args
+
+  if [ -n "${_j_real_home}" ] && [ "${_j_real_home}" -eq 1 ]; then
+    printf -- 'Not jailing \$HOME directory!\n'
+    _j_home_binds=""
+  else
+    _j_home_binds="--bind "${_j_jail}/home" "${HOME}" \
+      $(_bind_in_jail "ro-bind" "${HOME}/.gnupg" "${GNUPGHOME}") \
+      $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
+      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
+      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
+      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/QtProject.conf) \
+      $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/ssh" "${HOME}/.ssh")"
+  fi
 
   # Fail on subshell or pipe failure
   set -eu
@@ -219,19 +236,12 @@ _run_jail() {
     $(_block_in_jail "/etc/systemd") \
     $(_block_in_jail "/etc/flatpak") \
     $(_block_in_jail "/etc/ssh") \
-    --bind "${_j_jail}/home" "${HOME}" \
-    --bind "${_j_jail}/var/tmp" "/var/tmp" \
     $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
     $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix) \
     $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
     $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}") \
-    $(_bind_in_jail "ro-bind" "${HOME}/.gnupg" "${GNUPGHOME}") \
-    $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
-    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
-    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
-    $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/QtProject.conf) \
-    $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
-    $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/ssh" "${HOME}/.ssh") \
+    --bind "${_j_jail}/var/tmp" "/var/tmp" \
+    ${_j_home_binds} \
     ${_args} -- "${_j_cmd}" "$@"
 }
 
@@ -261,6 +271,9 @@ _check_prereq() {
 
 main() {
   _check_prereq || return 1
+  _name=""
+  _open_shell=0
+  _real_home=0
 
   # Assume the first argument is the command to run
   _cmd="$1"
@@ -302,6 +315,18 @@ main() {
     _name="${_cmd}"
   fi
 
+  # We want to use the real home
+  if [ "${_cmd}" = "--real-home" ]; then
+    # Do not jail home
+    _real_home=1
+
+    # The next argument is the new command
+    _cmd="$1"
+    shift
+  else
+    _name="${_cmd}"
+  fi
+
   # Double check the command here after all this proccessing
   if [ -z "${_cmd}" ]; then
     printf -- 'Must provide command as first argument.\n'
@@ -311,8 +336,9 @@ main() {
 
   _jail_dir="${JAIL_DIR}/${_name}"
   _create_home "${_jail_dir}" || return 1
-  _run_jail "${_open_shell}" "${_cmd}" "${_name}" "${_jail_dir}" "$@" || return 1
+  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_real_home}" "$@" || return 1
 
+  unset _real_home
   unset _open_shell
   unset _cmd
   unset _jail_dir
