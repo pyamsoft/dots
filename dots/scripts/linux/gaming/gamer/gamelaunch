@@ -87,7 +87,13 @@ main() {
     return 1
   fi
 
-  printf -- '[gamelaunch] Running command as target user: [%s]"~/bin/launcher %s"\n' "${_real_user}" "$*"
+  # input - Game controllers
+  # pipewire - Faster sound performance (will still work without but may see more XRUNs)
+  readonly _extra_groups="input pipewire"
+
+  printf -- '[gamelaunch] Running command: [%s] "~/bin/launcher %s"\n' "$*"
+  printf -- '[gamelaunch] Running command as target user: %s\n' "${_real_user}"
+  printf -- '[gamelaunch] Running command with extra groups: %s\n' "${_extra_groups}"
   printf -- '[gamelaunch] DISPLAY=%s\n' "${DISPLAY}"
   printf -- '[gamelaunch] XAUTHORITY=%s\n' "${XAUTHORITY}"
   printf -- '[gamelaunch] GAMER_GAMESCOPE=%s\n' "${GAMER_GAMESCOPE:-0}"
@@ -103,12 +109,30 @@ main() {
   #
   # We want this 'raw ~' to not expand so that it is evaluated as the target_user home, not main_user home
   # shellcheck disable=SC2088
-  exec machinectl --quiet \
-    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
-    --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
-    --setenv="GAMER=1" \
-    shell "${_real_user}@.host" \
+  exec systemd-run \
+    --wait \ # Wait for execution to be done
+    --pipe \ # pipe io from the service to the calling terminal
+    --service-type=exec \ # Simple execution type service
+    --collect \ # Garbage collect after success OR fail
+    --send-sighup \ # Send HUP after terminate to signal shells
+    --property="SupplementaryGroups=${_extra_groups}" \ # Run the command with temporary access to these groups
+    --machine=".host" \ # Run against local machine
+    --uid="${_real_user}" \ # Run as target user
+    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \ # Xorg
+    --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \ # Gamescope
+    --setenv="GAMER=1" \ # This is a gamer environment
     /bin/bash -l -c '~/bin/launcher' "$@"
+
+  ## Old way
+  # Required the _real_user to be permanently added to any supplementary groups,
+  # which was less secure. The systemd-run way allows for temporary group access.
+  #
+  # exec machinectl --quiet \
+  #   --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
+  #   --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
+  #   --setenv="GAMER=1" \
+  #   shell "${_real_user}@.host" \
+  #   /bin/bash -l -c '~/bin/launcher' "$@"
 }
 
 main "$@" || exit 1
