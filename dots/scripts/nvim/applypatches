@@ -9,9 +9,6 @@ main() {
     return 1
   }
 
-  pwd
-  ls lua
-  ls lua/plugins
   for _patch in "${root_dir}"/*.patch; do
     printf -- 'Apply patchfile: %s\n' "${_patch}"
     patch -p 1 -i "${_patch}" || {
