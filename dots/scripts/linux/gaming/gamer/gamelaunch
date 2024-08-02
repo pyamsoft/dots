@@ -109,18 +109,12 @@ main() {
   #
   # We want this 'raw ~' to not expand so that it is evaluated as the target_user home, not main_user home
   # shellcheck disable=SC2088
-  exec systemd-run \
-    --wait \ # Wait for execution to be done
-    --pipe \ # pipe io from the service to the calling terminal
-    --service-type=exec \ # Simple execution type service
-    --collect \ # Garbage collect after success OR fail
-    --send-sighup \ # Send HUP after terminate to signal shells
-    --property="SupplementaryGroups=${_extra_groups}" \ # Run the command with temporary access to these groups
-    --machine=".host" \ # Run against local machine
-    --uid="${_real_user}" \ # Run as target user
-    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \ # Xorg
-    --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \ # Gamescope
-    --setenv="GAMER=1" \ # This is a gamer environment
+  exec run0 \
+    --property="SupplementaryGroups=${_extra_groups}" \
+    --user="${_real_user}" \
+    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
+    --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
+    --setenv="GAMER=1" \
     /bin/bash -l -c '~/bin/launcher' "$@"
 
   ## Old way
