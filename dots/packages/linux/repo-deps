@@ -115,6 +115,7 @@ freeglut
 freetype2
 fribidi
 fuse-common
+fuse2
 fuse3
 fwupd
 fwupd-efi
@@ -593,6 +594,7 @@ libtheora
 libtiff
 libtirpc
 libtool
+libtpms
 libtraceevent
 libtracefs
 libunibreak
@@ -929,6 +931,7 @@ startup-notification
 sudo
 svt-av1
 svt-hevc
+swtpm
 sysfsutils
 system-config-printer
 systemd

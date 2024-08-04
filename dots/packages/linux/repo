@@ -41,6 +41,7 @@ podman
 reflector
 rng-tools
 rofi
+sbctl
 shellcheck
 simple-scan
 smartmontools
