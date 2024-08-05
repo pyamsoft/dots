@@ -8,7 +8,6 @@ buildah
 corectrl
 cups-pdf
 ddcutil
-dolphin-emu
 gdm
 git-delta
 gnome-shell-extension-appindicator
@@ -31,7 +30,6 @@ mangohud
 nautilus
 neovim
 noto-fonts
-openrct2
 otf-cascadia-code
 p7zip
 pacman-contrib

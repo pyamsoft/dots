@@ -25,7 +25,6 @@ avahi
 ayatana-ido
 bash
 bash-completion
-benchmark
 binutils
 bison
 blas
@@ -90,7 +89,6 @@ e2fsprogs
 edk2-ovmf
 ell
 enchant
-enet
 exiv2
 expat
 faac
@@ -579,7 +577,6 @@ libsodium
 libsoup
 libsoup3
 libsoxr
-libspng
 libsrtp
 libssh
 libssh2
@@ -659,7 +656,6 @@ libxv
 libxxf86vm
 libyaml
 libyuv
-libzip
 licenses
 lilv
 linux
@@ -688,7 +684,6 @@ mesa
 mesa-utils
 mesa-vdpau
 miniupnpc
-minizip-ng
 mjpegtools
 mkinitcpio
 mkinitcpio-busybox
@@ -894,7 +889,6 @@ seabios
 seatd
 sed
 serd
-sfml
 shaderc
 shadow
 shared-mime-info
