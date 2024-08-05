@@ -22,7 +22,9 @@ fi
 readonly cmd
 
 # Launch gametime
-readonly _run_cmd="--command=${HOME}/.local/bin/gametime-dolphin-emu"
+# Causes weird issues with gamescope and FPS in Melee
+# readonly _run_cmd="--command=${HOME}/.local/bin/gametime-dolphin-emu"
+readonly _run_cmd="--command=dolphin-emu-wrapper"
 
 # shellcheck disable=SC2086
 exec flatpak-env ${cmd} "${pak}" \
