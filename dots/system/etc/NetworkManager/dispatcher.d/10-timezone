@@ -13,6 +13,11 @@ _auto_timezone() {
     return 1
   fi
 
+  if [ -z "${CONNECTIVITY_STATE}" ] || [ "${CONNECTIVITY_STATE}" != "FULL" ]; then 
+    printf -- 'No Internet access, cannot discover current timezone. Try again later.\n'
+    return 0
+  fi
+
   _zone="$(curl --fail --silent "https://ipapi.co/timezone")"
   if [ -z "${_zone}" ]; then
     printf -- 'Failed to find current timezone.\n'
