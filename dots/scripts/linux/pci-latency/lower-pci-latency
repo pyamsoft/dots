@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# Taken from, with modification
+# https://github.com/CachyOS/CachyOS-Settings/blob/master/usr/bin/pci-latency
+#
+# Also see here
+# https://wiki.archlinux.org/title/Gaming#Improve_PCI_Express_Latencies
+
+# This script is designed to improve the performance and reduce audio latency
+# for sound cards by setting the PCI latency timer to an optimal value of 80
+# cycles. It also resets the default value of the latency timer for other PCI
+# devices, which can help prevent devices with high default latency timers from
+# causing gaps in sound.
+
+_tweak_pci() {
+  # Reset the latency timer for all PCI devices
+  printf -- 'Adjust all PCI latency to 20...\n'
+  setpci -v -s '*:*' latency_timer=20 || {
+    printf -- 'Failed resetting latency timer to 20 for all PCI\n'
+    return 1
+  }
+
+  printf -- 'Adjust all bus 0 device PCI latency to 0...\n'
+  setpci -v -s '0:0' latency_timer=0 || {
+    printf -- 'Failed resetting latency timer to 0 for all bus 0 devices\n'
+    return 1
+  }
+
+  # Set latency timer for all sound cards
+  printf -- 'Adjust all sound device PCI latency to 80...\n'
+  setpci -v -d "*:*:04xx" latency_timer=80 || {
+    printf -- 'Failed adjusting latency timer to 80 for all sound devices\n'
+    return 1
+  }
+
+  printf -- 'PCI latency times adjusted!\n'
+  return 0
+}
+
+main() {
+  # Check if the script is run with root privileges
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'Error: This script must be run with root privileges.\n'
+    return 1
+  fi
+
+  if ! command -v setpci >/dev/null; then
+    printf -- 'You must have "setpci"\n'
+    return 1
+  fi
+
+  _tweak_pci || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
