@@ -618,7 +618,6 @@ libwbclient
 libwebp
 libwireplumber
 libwnck3
-libwpe
 libx11
 libxau
 libxcb
@@ -938,6 +937,7 @@ tree-sitter-c
 tree-sitter-lua
 tree-sitter-markdown
 tree-sitter-query
+tree-sitter-vim
 tree-sitter-vimdoc
 tslib
 ttf-dejavu
@@ -981,7 +981,6 @@ wl-clipboard
 woff2
 wolfssl
 wpa_supplicant
-wpebackend-fdo
 x264
 x265
 xcb-proto
