@@ -1,0 +1,28 @@
+# https://0xerr0r.github.io/blocky/latest/configuration
+
+upstreams:
+  groups:
+    default:
+      - "https://cloudflare-dns.com/dns-query" # Cloudflare
+bootstrapDns:
+  - upstream: "https://cloudflare-dns.com/dns-query"
+    ips:
+    - "1.1.1.1"
+    - "1.0.0.1"
+    - "2606:4700:4700::1111"
+    - "2606:4700:4700::1001"
+clientLookup:
+  clients:
+    localhost:
+      - "127.0.0.1"
+blocking:
+  blockType: nxDomain
+  denylists:
+    default:
+      - "https://big.oisd.nl/domainswild" # OISD
+      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt" # Hagezi Normal
+  clientGroupsBlock:
+    default:
+      - "default"
+ports:
+  dns: "53"
