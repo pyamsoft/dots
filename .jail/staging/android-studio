@@ -1,14 +1,30 @@
 #!/bin/sh
 
-# Android Studio with devel
+_devel="${HOME}/devel"
+_sdk="${_devel}/sdk/android"
 
-# Gradle Doctor complains
+_shell=""
+if [ -n "$1" ] && [ "$1" = "--shell" ]; then
+  _shell="--shell"
+  shift
+fi
+
+# Generally speaking, you aren't building by hand on the command line so you
+# won't need this on the PATH
+# PATH="${_sdk}/build-tools/35.0.0:${PATH}"
+PATH="${_sdk}/cmdline-tools/latest:${PATH}"
+PATH="${_sdk}/platform-tools:${PATH}"
+export PATH
+
+export ANDROID_EMULATOR_USE_SYSTEM_LIBS=1
 export JAVA_HOME="/opt/android-studio/jbr"
-export PATH="${HOME}/devel/sdk/android/build-tools/34.0.0:${PATH}"
-export PATH="${HOME}/devel/sdk/android/cmdline-tools/latest:${PATH}"
-export PATH="${HOME}/devel/sdk/android/platform-tools:${PATH}"
 
-exec jail "$(basename "$0")" \
-  --bind "${HOME}/devel" "${HOME}/devel/" \
+exec jail ${_shell} "$(basename "$0")" \
+  --bind "${_sdk}" "${_sdk}" \
+  --bind "${_devel}/project/pyamsoft/android" "${_devel}/project/pyamsoft/android" \
+  --setenv JAVA_HOME "${JAVA_HOME}" \
+  --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS "${ANDROID_EMULATOR_USE_SYSTEM_LIBS}" \
+  --setenv PATH "${PATH}" \
   -- \
   "$@"
+
