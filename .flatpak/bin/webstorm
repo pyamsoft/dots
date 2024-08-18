@@ -2,6 +2,8 @@
 
 readonly pak="com.jetbrains.WebStorm"
 
+readonly dev_root="${HOME}/devel"
+
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
@@ -22,7 +24,8 @@ readonly _args
 
 # shellcheck disable=SC2086
 exec flatpak-env "${pak}" \
-  --filesystem="${HOME}/devel/project" \
+  --filesystem="${dev_root}/project/pyamsoft/js" \
+  --filesystem="${dev_root}/project/pyamsoft/shell" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20" \
   ${_args} \
   -- "$@" || exit 1

@@ -35,7 +35,7 @@ readonly _args
 exec flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
-  --filesystem="${dev_root}/project" \
+  --filesystem="${dev_root}/project/pyamsoft/android" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
   ${_args} \
