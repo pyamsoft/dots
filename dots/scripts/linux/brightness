@@ -10,12 +10,19 @@ main() {
 
   cmd="$1"
   if [ -z "${cmd}" ]; then
-    printf -- 'Must pass command "get" or "set"\n'
-    return 1
+    cmd="get"
+  else
+    # Eat argument
+    shift
   fi
 
-  # Eat argument
-  shift
+  case "${cmd}" in
+    h|help|-h|--help)
+      printf -- 'Pass either "get" or "set"\n'
+      printf -- 'Empty command assumes "get"\n'
+      return 1
+      ;;
+  esac
 
   # If we are in the i2c group attempt a brightness change without root
   needs_sudo=1
