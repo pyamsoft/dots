@@ -26,3 +26,5 @@ blocking:
       - "default"
 ports:
   dns: "53"
+log:
+  level: "warn"
