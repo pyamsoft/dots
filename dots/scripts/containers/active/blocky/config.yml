@@ -1,9 +1,12 @@
 # https://0xerr0r.github.io/blocky/latest/configuration
 
+# DNS Cloudflare HTTPS
 upstreams:
   groups:
     default:
-      - "https://cloudflare-dns.com/dns-query" # Cloudflare
+      - "https://cloudflare-dns.com/dns-query"
+
+# Bootstrap DNS using cloudflare
 bootstrapDns:
   - upstream: "https://cloudflare-dns.com/dns-query"
     ips:
@@ -11,20 +14,39 @@ bootstrapDns:
     - "1.0.0.1"
     - "2606:4700:4700::1111"
     - "2606:4700:4700::1001"
+
+# Group localhost queries
 clientLookup:
   clients:
     localhost:
       - "127.0.0.1"
+
+# Blocking
+#
+# Lists:
+# OISD
+# Hagezi Pro
 blocking:
   blockType: nxDomain
   denylists:
     default:
-      - "https://big.oisd.nl/domainswild" # OISD
-      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt" # Hagezi Normal
+      # OISD
+      - "https://big.oisd.nl/domainswild"
+      # Hagezi Pro
+      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro.txt"
   clientGroupsBlock:
     default:
       - "default"
+
+# Bind to port 53 for normal DNS
 ports:
   dns: "53"
+
+# At least "info" level to view logs when a site is blocked
 log:
-  level: "warn"
+  level: "info"
+
+# Cache boost, enforce a min time to cache all responses
+caching:
+  minTime: "30m"
+  cacheTimeNegative: "30m"
