@@ -12,9 +12,25 @@ fix_pacman_keyring() {
 
 # Update everything
 upall() {
-  paru -Syu --removemake --devel && flatpak update -u && flatpak uninstall -u --unused && {
-    if command -v checkupd-containers >/dev/null; then
-      checkupd-containers
-    fi
-  }
+  if command -v paru >/dev/null; then
+    paru -Syu --removemake --devel || return 1
+  elif command -v yay >/dev/null; then
+    yay -Syu --removemake --devel || return 1
+  elif command -v pacman >/dev/null; then
+    sudo pacman -Syu || return 1
+  fi
+
+  if command -v apt >/dev/null; then
+    sudo sh -c 'apt update && apt upgrade' || return 1
+  fi
+
+  if command -v flatpak >/dev/null; then
+    flatpak update -u && flatpak uninstall -u --unused || {
+      return 1
+    }
+  fi
+
+  if command -v checkupd-containers >/dev/null; then
+    checkupd-containers || return 1
+  fi
 }
