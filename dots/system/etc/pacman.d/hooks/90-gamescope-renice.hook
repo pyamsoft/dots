@@ -7,4 +7,4 @@ Target = gamescope
 [Action]
 Description = Granting Renice permission to Gamescope
 When = PostTransaction
-Exec = /bin/sh -c 'setcap "CAP_SYS_NICE=eip" $(realpath "$(command -v gamescope)")'
+Exec = /bin/sh -c "setcap 'CAP_SYS_NICE=eip' /usr/bin/gamescope"
