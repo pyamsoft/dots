@@ -69,12 +69,13 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:8088:8088/tcp"
-  _ports="${_ports} -p 127.0.0.1:8043:8043/tcp"
-  _ports="${_ports} -p 127.0.0.1:8843:8843/tcp"
-  _ports="${_ports} -p 127.0.0.1:27001:27001/udp"
-  _ports="${_ports} -p 127.0.0.1:29810:29810/udp"
-  _ports="${_ports} -p 127.0.0.1:29811-29816:29811-29816/tcp"
+  # Don't use 127.0.0.1: prefix since we want to bind to all interfaces
+  _ports="${_ports} -p 8088:8088/tcp"
+  _ports="${_ports} -p 8043:8043/tcp"
+  _ports="${_ports} -p 8843:8843/tcp"
+  _ports="${_ports} -p 27001:27001/udp"
+  _ports="${_ports} -p 29810:29810/udp"
+  _ports="${_ports} -p 29811-29816:29811-29816/tcp"
 
   readonly _ports
   return 0
