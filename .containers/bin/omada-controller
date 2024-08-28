@@ -1,0 +1,177 @@
+#!/bin/sh
+
+readonly _name="omada-controller"
+readonly _image="docker.io/mbentley/omada-controller"
+readonly _tag="5.14"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/logs"
+
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/opt/tplink/EAPController/data"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/opt/tplink/EAPController/logs"
+
+  readonly _mounts
+  return 0
+}
+
+_prep_env() {
+  _env=""
+
+  # ULimit increase
+  _env="${_env} --ulimit nofile=4096:8192"
+
+  # Timezone
+  _env="${_env} -e TZ=US/Pacific"
+
+  # Environment to Port binding
+  _env="${_env} -e MANAGE_HTTP_PORT=8088"
+  _env="${_env} -e MANAGE_HTTPS_PORT=8043"
+  _env="${_env} -e PORTAL_HTTP_PORT=8088"
+  _env="${_env} -e PORTAL_HTTPS_PORT=8843"
+  _env="${_env} -e PORT_ADOPT_V1=29812"
+  _env="${_env} -e PORT_APP_DISCOVERY=27001"
+  _env="${_env} -e PORT_DISCOVERY=29810"
+  _env="${_env} -e PORT_MANAGER_V1=29811"
+  _env="${_env} -e PORT_MANAGER_V2=29814"
+  _env="${_env} -e PORT_TRANSFER_V2=29815"
+  _env="${_env} -e PORT_RTTY=29816"
+  _env="${_env} -e PORT_UPGRADE_V1=29813"
+
+  # Logging
+  _env="${_env} -e SHOW_SERVER_LOGS=true"
+  _env="${_env} -e SHOW_MONGODB_LOGS=false"
+
+  readonly _env
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # For file permissions
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:8088:8088/tcp"
+  _ports="${_ports} -p 127.0.0.1:8043:8043/tcp"
+  _ports="${_ports} -p 127.0.0.1:8843:8843/tcp"
+  _ports="${_ports} -p 127.0.0.1:27001:27001/udp"
+  _ports="${_ports} -p 127.0.0.1:29810:29810/udp"
+  _ports="${_ports} -p 127.0.0.1:29811-29816:29811-29816/tcp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  # Need this userns option that is podman specific or we have random OCI permission error
+  _userns=""
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  _oc=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+  readonly _oc
+
+  # Only compare the version minors
+  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+  _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
+  unset _current_version
+
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
+
+  unset _is_cmd_new_enough
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm -i -t \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_network} \
+    ${_oc} \
+    ${_env} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+  _prep_env || return 1
+
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
+
