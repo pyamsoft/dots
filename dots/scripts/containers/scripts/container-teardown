@@ -20,9 +20,11 @@ EOF
 }
 
 _teardown_container() {
+  _teardown_time="$1"
+
   # Attempt nice stop
   printf -- 'Attempt nice stop container: %s\n' "${_CONTAINER}"
-  podman stop -t 5 "${_CONTAINER}" >/dev/null || {
+  podman stop -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
     printf -- 'Failed to nicely stop container %s\n' "${_CONTAINER}"
   }
 
@@ -30,22 +32,35 @@ _teardown_container() {
   printf -- '\nAttempt force-remove container: %s\n' "${_CONTAINER}"
   podman rm -f "${_CONTAINER}" >/dev/null || {
     printf -- 'Failed to force remove the container %s\n' "${_CONTAINER}"
+
+    # If this fails, we failed
     return 1
   }
 
   # Remove the network
   printf -- '\nAttempt remove container network: %s\n' "${_CONTAINER}"
-  podman network rm "${_CONTAINER}" >/dev/null || {
+  podman network rm -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
     printf -- 'Failed to remove the container network: %s\n' "${_CONTAINER}"
   }
 
+  # Remove the network
+  printf -- '\nAttempt force-remove container network: %s\n' "${_CONTAINER}"
+  podman network rm -f "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
+    printf -- 'Failed to force remove the container network: %s\n' "${_CONTAINER}"
+  }
+
   printf -- '\nContainer is completely torn down: %s\n' "${_CONTAINER}"
+
+  unset _teardown_time
   return 0
 }
 
 _is_compose() {
   _COMPOSE_DIR="${HOME}/.local/etc/containers/${_CONTAINER}"
   _COMPOSE_FILE="${_COMPOSE_DIR}/compose.yml"
+
+  readonly _COMPOSE_DIR
+  readonly _COMPOSE_FILE
 
   # Check that the container location exists
   if [ ! -d "${_COMPOSE_DIR}" ]; then
@@ -61,23 +76,28 @@ _is_compose() {
 }
 
 _teardown_compose() {
+  _teardown_time="$1"
+
   cd "${_COMPOSE_DIR}" || {
     printf -- 'Failed to move into project: %s\n' "${_COMPOSE_DIR}"
     return 1
   }
 
   printf -- '\nAttempt bring down compose: %s\n' "${_CONTAINER}"
-  podman compose --file "${_COMPOSE_FILE}" down -t 5 || {
+  podman compose --file "${_COMPOSE_FILE}" down --remove-orphans -t "${_teardown_time}" || {
     printf -- 'Failed to bring down compose: %s\n' "${_CONTAINER}"
     return 1
   }
 
   printf -- '\nCompose is completely torn down: %s\n' "${_CONTAINER}"
+
+  unset _teardown_time
   return 0
 }
 
 main() {
   _CONTAINER="$1"
+  readonly _CONTAINER
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
@@ -94,11 +114,27 @@ main() {
   # Eat name
   shift
 
-  if _is_compose; then
-    _teardown_compose || return 1
-  else
-    _teardown_container || return 1
+  _time=5
+  if [ -n "$1" ] && { [ "$1" = "-t" ] || [ "$1" = "--time" ] }; then
+    # We handle time
+    shift
+
+    # Did we pass an argument and is it a time
+    if [ -n "$1" ] && [ "$1" -eq "$1" ] >/dev/null 2>&1; then
+      _time="$1"
+    else
+      printf -- 'Unexpected "time" argument: "%s". Fallback to default: %s\n' "$1" "${_time}"
+    fi
+    shift
   fi
+
+  if _is_compose; then
+    _teardown_compose "${_time}" || return 1
+  else
+    _teardown_container "${_time}" || return 1
+  fi
+
+  unset _time
   return 0
 }
 
