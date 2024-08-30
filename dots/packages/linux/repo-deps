@@ -107,7 +107,6 @@ flex
 fluidsynth
 fmt
 fontconfig
-foomatic-db-engine
 freeglut
 freetype2
 fribidi
@@ -221,6 +220,7 @@ haskell-indexed-traversable
 haskell-indexed-traversable-instances
 haskell-integer-logarithms
 haskell-onetuple
+haskell-os-string
 haskell-primitive
 haskell-quickcheck
 haskell-random
@@ -735,22 +735,9 @@ pcre
 pcre2
 pcsclite
 perl
-perl-alien-build
-perl-alien-libxml2
-perl-capture-tiny
-perl-clone
-perl-dbi
 perl-error
-perl-ffi-checklib
-perl-file-chdir
-perl-file-which
 perl-mailtools
-perl-path-tiny
 perl-timedate
-perl-xml-libxml
-perl-xml-namespacesupport
-perl-xml-sax
-perl-xml-sax-base
 phodav
 pinentry
 pipewire
@@ -785,7 +772,6 @@ python-contourpy
 python-cycler
 python-dateutil
 python-dbus
-python-distro
 python-fonttools
 python-gobject
 python-greenlet
@@ -804,6 +790,7 @@ python-pynvim
 python-pyparsing
 python-pyqt6
 python-pyqt6-sip
+python-reportlab
 python-requests
 python-six
 python-urllib3
@@ -861,6 +848,7 @@ qt5-translations
 qt5-xmlpatterns
 qt6-5compat
 qt6-base
+qt6-connectivity
 qt6-declarative
 qt6-multimedia
 qt6-multimedia-ffmpeg
@@ -971,7 +959,6 @@ wavpack
 wayland
 webkitgtk-6.0
 webrtc-audio-processing-1
-wget
 which
 wildmidi
 wireless-regdb
