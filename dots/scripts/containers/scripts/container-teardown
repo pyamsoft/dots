@@ -8,12 +8,21 @@ _COMPOSE_FILE=""
 _usage() {
   printf -- '%s\n' "$(cat <<EOF
 
-${_PROG} <name>
+${_PROG} <name> [-t|--time]
 
-<name>    name of the container to teardown
+<name>                name of the container to teardown
+[-t|--time] <value>   time to wait for container to stop (default 5s)
 
-Teardown will nicely stop, then remove the container and
-associated network
+Teardown will:
+
+For normal scripts:
+- Nicely attempt to stop container
+  - If fails, forcibly stop container
+- Nicely stop associated network if one exists
+  - If fails, forcibly stop associated network if one exists
+
+For compose:
+- Nicely attempt to down a compose container, and remove orphan services
 
 EOF
 )"
@@ -115,7 +124,7 @@ main() {
   shift
 
   _time=5
-  if [ -n "$1" ] && { [ "$1" = "-t" ] || [ "$1" = "--time" ] }; then
+  if [ -n "$1" ] && { [ "$1" = "-t" ] || [ "$1" = "--time" ]; }; then
     # We handle time
     shift
 
