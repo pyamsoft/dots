@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone target="DROP">
+  <description>Mesh Private Network</description>
+  <service name="ssh"/>
+  <service name="sunshine"/>
+  <service name="kdeconnect"/>
+  <service name="mdns"/>
+  <service name="omada-controller"/>
+  <service name="localsend"/>
+  <rule family="ipv4">
+    <source address="100.77.161.9"/>
+    <log prefix="ts-nerd2 " level="warning"/>
+    <drop/>
+  </rule>
+  <source address="100.64.216.3"/>
+</zone>
