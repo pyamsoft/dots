@@ -22,13 +22,17 @@ ${_PROG_NAME} <action>
   images       Runs 'podman images', passing all arguments
   inspect      Runs 'podman inspect', passing all arguments
 
+[service]:     Service management related operations
+
+  disable      Runs 'systemctl --user disable --now container@<name>'
+  restart      Runs 'systemctl --user restart container@<name>'
+  status       Runs 'systemctl --user status container@<name>'
+
 [system]:      System management related operations
 
   enter        Runs 'podman exec -it <name> sh'
   prune        Runs 'podman system prune -a'
   pull         Runs 'dotfiles pull'
-  restart      Runs 'systemctl --user restart container@<name>'
-  status       Runs 'systemctl --user status container@<name>'
   teardown     Runs 'container-teardown <name>'
 
 EOF
@@ -107,6 +111,19 @@ main() {
         # Run as the user
         exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
       fi
+      ;;
+    disable)
+      _prep_container || return 1
+
+      _CONTAINER="$1"
+      if [ -z "${_CONTAINER}" ]; then
+        printf -- 'Must call %s with a container name\n' "${_action}"
+        return 1
+      fi
+      shift
+
+      # Run as the user
+      exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
       ;;
     restart)
       _prep_container || return 1
