@@ -48,14 +48,8 @@ _teardown_container() {
 
   # Remove the network
   printf -- '\nAttempt remove container network: %s\n' "${_CONTAINER}"
-  podman network rm -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
+  podman network rm -f -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
     printf -- 'Failed to remove the container network: %s\n' "${_CONTAINER}"
-  }
-
-  # Remove the network
-  printf -- '\nAttempt force-remove container network: %s\n' "${_CONTAINER}"
-  podman network rm -f "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
-    printf -- 'Failed to force remove the container network: %s\n' "${_CONTAINER}"
   }
 
   printf -- '\nContainer is completely torn down: %s\n' "${_CONTAINER}"
