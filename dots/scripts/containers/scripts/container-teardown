@@ -59,7 +59,11 @@ _teardown_container() {
 }
 
 _is_compose() {
-  _COMPOSE_DIR="${HOME}/.local/etc/containers/${_CONTAINER}"
+  if [ "$(id -u)" -eq 0 ]; then
+    _COMPOSE_DIR="/usr/local/etc/containers/${_CONTAINER}"
+  else
+    _COMPOSE_DIR="${HOME}/.local/etc/containers/${_CONTAINER}"
+  fi
   _COMPOSE_FILE="${_COMPOSE_DIR}/compose.yml"
 
   readonly _COMPOSE_DIR
