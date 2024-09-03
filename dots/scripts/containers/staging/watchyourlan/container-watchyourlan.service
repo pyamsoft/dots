@@ -1,0 +1,18 @@
+# WatchYourLan container
+
+[Unit]
+Description=Container: WatchYourLan
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
+Wants=network-online.target
+
+[Service]
+# File must exist or fail
+ExecStartPre=/bin/test -x /usr/local/bin/watchyourlan
+ExecStartPre=-/usr/local/bin/container-teardown watchyourlan
+ExecStart=/usr/local/bin/watchyourlan
+ExecStop=/usr/local/bin/container-teardown watchyourlan
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
