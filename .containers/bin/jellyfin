@@ -48,7 +48,7 @@ _prep_ports() {
   _ports="${_ports} -p 127.0.0.1:8096:8096/tcp"
 
   # Host networking for DLNA
-  _ports="${_ports} --network=host"
+  # _ports="${_ports} --network=host"
 
   readonly _ports
   return 0
