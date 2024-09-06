@@ -23,10 +23,13 @@ _prep_caps() {
   _caps=""
 
   # For file permissions
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
-  _caps="${_caps} --cap-add CHOWN"
-  _caps="${_caps} --cap-add SETGID"
-  _caps="${_caps} --cap-add SETUID"
+  #
+  # Doesn't actually need these?
+  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
+  # _caps="${_caps} --cap-add DAC_OVERRIDE"
+  # _caps="${_caps} --cap-add CHOWN"
+  # _caps="${_caps} --cap-add SETGID"
+  # _caps="${_caps} --cap-add SETUID"
 
   readonly _caps
   return 0

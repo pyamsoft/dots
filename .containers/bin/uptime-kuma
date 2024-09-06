@@ -20,10 +20,16 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
-  _caps="${_caps} --cap-add CHOWN"
+
+  # Start as priv and then drop to lower user
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
+
+  # Doesn't actually need these?
+  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
+  # _caps="${_caps} --cap-add DAC_OVERRIDE"
+  # _caps="${_caps} --cap-add CHOWN"
+
   readonly _caps
   return 0
 }

@@ -56,11 +56,16 @@ _prep_env() {
 _prep_caps() {
   _caps=""
 
-  # For file permissions
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
-  _caps="${_caps} --cap-add CHOWN"
+  # Needed to write omada group to container groupfile
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
+
+  # Drop priv and switch to omada user
+  _caps="${_caps} --cap-add CHOWN"
+
+  # Doesn't actually need
+  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
+  # _caps="${_caps} --cap-add DAC_OVERRIDE"
 
   readonly _caps
   return 0
