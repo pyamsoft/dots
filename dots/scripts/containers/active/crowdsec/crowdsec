@@ -33,13 +33,8 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # Not actually needed?
-  # _caps="${_caps} --cap-add SETUID"
-  # _caps="${_caps} --cap-add SETGID"
-
-  # Doesn't actually need these?
+  # Agent and Server containers can use different CAPS, see runconfig
   # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
-  # _caps="${_caps} --cap-add DAC_OVERRIDE"
 
   readonly _caps
   return 0
