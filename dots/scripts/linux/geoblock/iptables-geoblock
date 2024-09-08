@@ -54,59 +54,71 @@ _nomatch_logdrop() {
 _source_configs() {
   if [ -d "/etc/iptables-geoblock/" ]; then
 
-    # IPv4 allowlist config
-    for _conf in "/etc/iptables-geoblock"/*".allow.4"; do
-      # If there were no matching configuration files, do nothing
-      if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.4" ]; then
-        printf -- 'No configuration for IPv4 Allowlist found.\n'
-        break
-      fi
+    if [ "${_ip}" = "iptables" ]; then
+      # IPv4 allowlist config
+      for _conf in "/etc/iptables-geoblock"/*".allow.4"; do
+        # If there were no matching configuration files, do nothing
+        if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.4" ]; then
+          printf -- 'No configuration for IPv4 Allowlist found.\n'
+          break
+        fi
 
-      # Otherwise source the config
-      if [ -r "${_conf}" ]; then
-        # Trim out all blank or comment lines
-        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
-          | while IFS="" read -r _i4 || [ -n "${_i4}" ]; do
-          if [ -z "${_ALL_ACCEPT_IP4}" ]; then
-            _ALL_ACCEPT_IP4="${_i4}"
-          else
-            _ALL_ACCEPT_IP4="${_ALL_ACCEPT_IP4} ${_i4}"
-          fi
+        # Otherwise source the config
+        if [ -r "${_conf}" ]; then
+          # Trim out all blank or comment lines
+          # We must read this way from an EOF posix-sh heredoc otherwise
+          # this while-loop happens in a subshell which causes the variable write
+          # to not be saved
+          while IFS="" read -r _i4 || [ -n "${_i4}" ]; do
+            if [ -z "${_ALL_ACCEPT_IP4}" ]; then
+              _ALL_ACCEPT_IP4="${_i4}"
+            else
+              _ALL_ACCEPT_IP4="${_ALL_ACCEPT_IP4} ${_i4}"
+            fi
+            unset _i4
+          done << EOF
+$(grep -v '^(#|[[:space:]]*$)' "${_conf}")
+EOF
           unset _i4
-        done
-        unset _i4
-      fi
+        fi
 
+        unset _conf
+      done
       unset _conf
-    done
-    unset _conf
+    fi
 
-    # IPv6 allowlist config
-    for _conf in "/etc/iptables-geoblock"/*".allow.6"; do
-      # If there were no matching configuration files, do nothing
-      if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.6" ]; then
-        printf -- 'No configuration for IPv6 Allowlist found.\n'
-        break
-      fi
+    if [ "${_ip}" = "ip6tables" ]; then
+      # IPv6 allowlist config
+      for _conf in "/etc/iptables-geoblock"/*".allow.6"; do
+        # If there were no matching configuration files, do nothing
+        if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.6" ]; then
+          printf -- 'No configuration for IPv6 Allowlist found.\n'
+          break
+        fi
 
-      # Otherwise source the config
-      if [ -r "${_conf}" ]; then
-        # Trim out all blank or comment lines
-        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
-          | while IFS="" read -r _i6 || [ -n "${_i6}" ]; do
-          if [ -z "${_ALL_ACCEPT_IP6}" ]; then
-            _ALL_ACCEPT_IP6="${_i6}"
-          else
-            _ALL_ACCEPT_IP6="${_ALL_ACCEPT_IP6} ${_i6}"
-          fi
+        # Otherwise source the config
+        if [ -r "${_conf}" ]; then
+          # Trim out all blank or comment lines
+          # We must read this way from an EOF posix-sh heredoc otherwise
+          # this while-loop happens in a subshell which causes the variable write
+          # to not be saved
+          while IFS="" read -r _i6 || [ -n "${_i6}" ]; do
+            if [ -z "${_ALL_ACCEPT_IP6}" ]; then
+              _ALL_ACCEPT_IP6="${_i6}"
+            else
+              _ALL_ACCEPT_IP6="${_ALL_ACCEPT_IP6} ${_i6}"
+            fi
+            unset _i6
+          done << EOF
+$(grep -v '^(#|[[:space:]]*$)' "${_conf}")
+EOF
           unset _i6
-        done
-        unset _i6
-      fi
+        fi
 
+        unset _conf
+      done
       unset _conf
-    done
-    unset _conf
+    fi
 
     # Country allowlist config
     for _conf in "/etc/iptables-geoblock"/*".allow.country"; do
@@ -119,15 +131,19 @@ _source_configs() {
       # Otherwise source the config
       if [ -r "${_conf}" ]; then
         # Trim out all blank or comment lines
-        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
-          | while IFS="" read -r _ic || [ -n "${_ic}" ]; do
+        # We must read this way from an EOF posix-sh heredoc otherwise
+        # this while-loop happens in a subshell which causes the variable write
+        # to not be saved
+        while IFS="" read -r _ic || [ -n "${_ic}" ]; do
           if [ -z "${_ALL_ACCEPT_COUNTRIES}" ]; then
             _ALL_ACCEPT_COUNTRIES="${_ic}"
           else
             _ALL_ACCEPT_COUNTRIES="${_ALL_ACCEPT_COUNTRIES} ${_ic}"
           fi
           unset _ic
-        done
+        done << EOF
+$(grep -v '^(#|[[:space:]]*$)' "${_conf}")
+EOF
         unset _ic
       fi
 
@@ -149,23 +165,27 @@ _apply_whitelist() {
   }
 
   # Accept any good IPv4 address
-  if [ -n "${_ALL_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
-    for _c in ${_ALL_ACCEPT_IP4}; do
-      printf -- 'Accept IPv4: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
-    done
-  else
-    printf -- 'No IPv4 addresses to whitelist.\n'
+  if [ "${_ip}" = "iptables" ]; then
+    if [ -n "${_ALL_ACCEPT_IP4}" ]; then
+      for _c in ${_ALL_ACCEPT_IP4}; do
+        printf -- 'Accept IPv4: %s\n' "${_c}"
+        "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
+      done
+    else
+      printf -- 'No IPv4 addresses to whitelist.\n'
+    fi
   fi
 
   # Accept any good IPv6 address
-  if [ -n "${_ALL_ACCEPT_IP6}" ] && [ "${_ip}" = "ip6tables" ]; then
-    for _c in ${_ALL_ACCEPT_IP6}; do
-      printf -- 'Accept IPv6: %s\n' "${_c}"
-      "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
-    done
-  else
-    printf -- 'No IPv6 addresses to whitelist.\n'
+  if [ "${_ip}" = "ip6tables" ]; then
+    if [ -n "${_ALL_ACCEPT_IP6}" ]; then
+      for _c in ${_ALL_ACCEPT_IP6}; do
+        printf -- 'Accept IPv6: %s\n' "${_c}"
+        "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
+      done
+    else
+      printf -- 'No IPv6 addresses to whitelist.\n'
+    fi
   fi
 
   # Accept any good countries
