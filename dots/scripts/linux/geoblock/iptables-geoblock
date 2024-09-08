@@ -1,10 +1,15 @@
 #!/bin/sh
 
 readonly _CHAIN_NAME="POOT_GEOBLOCK"
+readonly _LOGDROP_CHAIN="${_CHAIN_NAME}-LOGDROP"
 
 readonly _ACCEPT_COUNTRIES=""
+
 readonly _ACCEPT_IP4="127.0.0.1/8"
 readonly _ACCEPT_IP6="::1/128"
+
+readonly _BLOCK_IP4=""
+readonly _BLOCK_IP6=""
 
 _remove_rule() {
   if "${_ip}" -C "$@" >/dev/null 2>&1; then
@@ -25,11 +30,22 @@ _insert_rule_if_not_exists() {
 }
 
 _erase_chain() {
-  printf -- 'Zeroing chain: %s %s\n' "${_ip}" "${_CHAIN_NAME}"
-  "${_ip}" --zero "${_CHAIN_NAME}" || return 1
+  _name="$1"
 
-  printf -- 'Flushing chain: %s %s\n' "${_ip}" "${_CHAIN_NAME}"
-  "${_ip}" --flush "${_CHAIN_NAME}" || return 1
+  printf -- 'Zeroing chain: %s %s\n' "${_ip}" "${_name}"
+  "${_ip}" --zero "${_name}" || {
+    unset _name
+    return 1
+  }
+
+  printf -- 'Flushing chain: %s %s\n' "${_ip}" "${_name}"
+  "${_ip}" --flush "${_name}" || {
+    unset _name
+    return 1
+  }
+
+  unset _name
+  return 0
 }
 
 _prepare_chain() {
@@ -42,11 +58,15 @@ _prepare_chain() {
   return 0
 }
 
-_nomatch_logdrop() {
-  printf -- 'Otherwise drop traffic\n'
+_prepare_logdrop() {
+  "${_ip}" -A "${_LOGDROP_CHAIN}" -j LOG --log-prefix "[${_CHAIN_NAME}]: " || return 1
+  "${_ip}" -A "${_LOGDROP_CHAIN}" -j DROP || return 1
+  return 0
+}
 
-  "${_ip}" -A "${_CHAIN_NAME}" -j LOG --log-prefix "[${_CHAIN_NAME}]: " || return 1
-  "${_ip}" -A "${_CHAIN_NAME}" -j DROP || return 1
+_nomatch_logdrop() {
+  printf -- 'Otherwise drop traffic -> %s\n' "${_LOGDROP_CHAIN}"
+  "${_ip}" -A "${_CHAIN_NAME}" -j "${_LOGDROP_CHAIN}" || return 1
 
   return 0
 }
@@ -74,6 +94,37 @@ _source_configs() {
               _ALL_ACCEPT_IP4="${_i4}"
             else
               _ALL_ACCEPT_IP4="${_ALL_ACCEPT_IP4} ${_i4}"
+            fi
+            unset _i4
+          done << EOF
+$(grep -v '^(#|[[:space:]]*$)' "${_conf}")
+EOF
+          unset _i4
+        fi
+
+        unset _conf
+      done
+      unset _conf
+
+      # IPv4 blocklist config
+      for _conf in "/etc/iptables-geoblock"/*".block.4"; do
+        # If there were no matching configuration files, do nothing
+        if [ "${_conf}" = "/etc/iptables-geoblock/*.block.4" ]; then
+          printf -- 'No configuration for IPv4 Blocklist found.\n'
+          break
+        fi
+
+        # Otherwise source the config
+        if [ -r "${_conf}" ]; then
+          # Trim out all blank or comment lines
+          # We must read this way from an EOF posix-sh heredoc otherwise
+          # this while-loop happens in a subshell which causes the variable write
+          # to not be saved
+          while IFS="" read -r _i4 || [ -n "${_i4}" ]; do
+            if [ -z "${_ALL_BLOCK_IP4}" ]; then
+              _ALL_BLOCK_IP4="${_i4}"
+            else
+              _ALL_BLOCK_IP4="${_ALL_BLOCK_IP4} ${_i4}"
             fi
             unset _i4
           done << EOF
@@ -118,6 +169,37 @@ EOF
         unset _conf
       done
       unset _conf
+
+      # IPv6 blocklist config
+      for _conf in "/etc/iptables-geoblock"/*".block.6"; do
+        # If there were no matching configuration files, do nothing
+        if [ "${_conf}" = "/etc/iptables-geoblock/*.block.6" ]; then
+          printf -- 'No configuration for IPv6 Blocklist found.\n'
+          break
+        fi
+
+        # Otherwise source the config
+        if [ -r "${_conf}" ]; then
+          # Trim out all blank or comment lines
+          # We must read this way from an EOF posix-sh heredoc otherwise
+          # this while-loop happens in a subshell which causes the variable write
+          # to not be saved
+          while IFS="" read -r _i6 || [ -n "${_i6}" ]; do
+            if [ -z "${_ALL_BLOCK_IP6}" ]; then
+              _ALL_BLOCK_IP6="${_i6}"
+            else
+              _ALL_BLOCK_IP6="${_ALL_BLOCK_IP6} ${_i6}"
+            fi
+            unset _i6
+          done << EOF
+$(grep -v '^(#|[[:space:]]*$)' "${_conf}")
+EOF
+          unset _i6
+        fi
+
+        unset _conf
+      done
+      unset _conf
     fi
 
     # Country allowlist config
@@ -151,6 +233,8 @@ EOF
     done
     unset _conf
   fi
+
+  return 0
 }
 
 _apply_whitelist() {
@@ -158,14 +242,17 @@ _apply_whitelist() {
   _ALL_ACCEPT_IP6="${_ACCEPT_IP6}"
   _ALL_ACCEPT_COUNTRIES="${_ACCEPT_COUNTRIES}"
 
+  _ALL_BLOCK_IP4="${_BLOCK_IP4}"
+  _ALL_BLOCK_IP6="${_BLOCK_IP6}"
+
   # Read from configuration if they exist
   _source_configs || {
     printf -- 'Failed to source configuration from /etc/iptables-geoblock\n'
     return 1
   }
 
-  # Accept any good IPv4 address
   if [ "${_ip}" = "iptables" ]; then
+    # Accept any good IPv4 address
     if [ -n "${_ALL_ACCEPT_IP4}" ]; then
       for _c in ${_ALL_ACCEPT_IP4}; do
         printf -- 'Accept IPv4: %s\n' "${_c}"
@@ -174,10 +261,20 @@ _apply_whitelist() {
     else
       printf -- 'No IPv4 addresses to whitelist.\n'
     fi
+
+    # Block any bad IPv4 address
+    if [ -n "${_ALL_BLOCK_IP4}" ]; then
+      for _c in ${_ALL_BLOCK_IP4}; do
+        printf -- 'Block IPv4: %s\n' "${_c}"
+        "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j "${_LOGDROP_CHAIN}"
+      done
+    else
+      printf -- 'No IPv4 addresses to block.\n'
+    fi
   fi
 
-  # Accept any good IPv6 address
   if [ "${_ip}" = "ip6tables" ]; then
+    # Accept any good IPv6 address
     if [ -n "${_ALL_ACCEPT_IP6}" ]; then
       for _c in ${_ALL_ACCEPT_IP6}; do
         printf -- 'Accept IPv6: %s\n' "${_c}"
@@ -185,6 +282,16 @@ _apply_whitelist() {
       done
     else
       printf -- 'No IPv6 addresses to whitelist.\n'
+    fi
+
+    # Block any bad IPv6 address
+    if [ -n "${_ALL_BLOCK_IP6}" ]; then
+      for _c in ${_ALL_BLOCK_IP6}; do
+        printf -- 'Block IPv6: %s\n' "${_c}"
+        "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j "${_LOGDROP_CHAIN}"
+      done
+    else
+      printf -- 'No IPv6 addresses to block.\n'
     fi
   fi
 
@@ -200,15 +307,23 @@ _apply_whitelist() {
   else
     printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
   fi
+
+  return 0
 }
 
 _reset_chain() {
   # If this fails I guess its ok, the chain doesn't exist so we don't need to erase it
-  _erase_chain
+  _erase_chain "${_CHAIN_NAME}"
+  _erase_chain "${_LOGDROP_CHAIN}"
 
   # Conntrack and drop invalid first
   _prepare_chain || {
     printf -- 'Failed to prepare chain %s\n' "${_CHAIN_NAME}"
+    return 1
+  }
+
+  _prepare_logdrop || {
+    printf -- 'Failed to prepare logdrop chain %s\n' "${_LOGDROP_CHAIN}"
     return 1
   }
 
@@ -222,6 +337,8 @@ _reset_chain() {
     printf -- 'Failed final nomatch-logdrop setup for %s\n' "${_CHAIN_NAME}"
     return 1
   }
+
+  return 0
 }
 
 _iptables_create() {
@@ -231,6 +348,12 @@ _iptables_create() {
     printf -- 'Create new chain: %s\n' "${_CHAIN_NAME}"
   else
     printf -- 'Refresh existing chain: %s\n' "${_CHAIN_NAME}"
+  fi
+
+  if "${_ip}" --new-chain "${_LOGDROP_CHAIN}" >/dev/null 2>&1; then
+    printf -- 'Create new chain: %s\n' "${_LOGDROP_CHAIN}"
+  else
+    printf -- 'Refresh existing chain: %s\n' "${_LOGDROP_CHAIN}"
   fi
 
   _remove_rule INPUT -j "${_CHAIN_NAME}" || {
@@ -260,7 +383,12 @@ _iptables_destroy() {
     return 1
   }
 
-  _erase_chain || {
+  _erase_chain "${_CHAIN_NAME}" || {
+    unset _destroy_opts
+    return 1
+  }
+
+  _erase_chain "${_LOGDROP_CHAIN}" || {
     unset _destroy_opts
     return 1
   }
