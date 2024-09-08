@@ -2,7 +2,7 @@
 
 readonly _CHAIN_NAME="POOT_GEOBLOCK"
 
-readonly _ACCEPT_COUNTRIES="US SG"
+readonly _ACCEPT_COUNTRIES=""
 readonly _ACCEPT_IP4="127.0.0.1/8"
 readonly _ACCEPT_IP6="::1/128"
 
@@ -10,15 +10,6 @@ _remove_rule() {
   if "${_ip}" -C "$@" >/dev/null 2>&1; then
     printf -- 'Remove rule: %s -D %s\n' "${_ip}" "$*"
     "${_ip}" -D "$@" || return 1
-  fi
-
-  return 0
-}
-
-_append_rule_if_not_exists() {
-  if ! "${_ip}" -C "$@" >/dev/null 2>&1; then
-    printf -- 'Appending new rule: %s -I %s\n' "${_ip}" "$*"
-    "${_ip}" -A "$@" || return 1
   fi
 
   return 0
@@ -41,19 +32,122 @@ _erase_chain() {
   "${_ip}" --flush "${_CHAIN_NAME}" || return 1
 }
 
-_reset_chain() {
-  # If this fails I guess its ok, the chain doesn't exist so we don't need to erase it
-  _erase_chain
-
+_prepare_chain() {
   # Drop invalid traffic
   "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate INVALID -j DROP || return 1
 
   # Accept related/established traffic
   "${_ip}" -A "${_CHAIN_NAME}" -m conntrack --ctstate RELATED,ESTABLISHED -j RETURN || return 1
 
+  return 0
+}
+
+_nomatch_logdrop() {
+  printf -- 'Otherwise drop traffic\n'
+
+  "${_ip}" -A "${_CHAIN_NAME}" -j LOG --log-prefix "[${_CHAIN_NAME}]: " || return 1
+  "${_ip}" -A "${_CHAIN_NAME}" -j DROP || return 1
+
+  return 0
+}
+
+_source_configs() {
+  if [ -d "/etc/iptables-geoblock/" ]; then
+
+    # IPv4 allowlist config
+    for _conf in "/etc/iptables-geoblock"/*".allow.4"; do
+      # If there were no matching configuration files, do nothing
+      if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.4" ]; then
+        break
+      fi
+
+      # Otherwise source the config
+      if [ -r "${_conf}" ]; then
+        # Trim out all blank or comment lines
+        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
+          | while IFS="" read -r _i4 || [ -n "${_i4}" ]; do
+          if [ -z "${_ALL_ACCEPT_IP4}" ]; then
+            _ALL_ACCEPT_IP4="${_i4}"
+          else
+            _ALL_ACCEPT_IP4="${_ALL_ACCEPT_IP4} ${_i4}"
+          fi
+          unset _i4
+        done
+        unset _i4
+      fi
+
+      unset _conf
+    done
+    unset _conf
+
+    # IPv6 allowlist config
+    for _conf in "/etc/iptables-geoblock"/*".allow.6"; do
+      # If there were no matching configuration files, do nothing
+      if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.6" ]; then
+        break
+      fi
+
+      # Otherwise source the config
+      if [ -r "${_conf}" ]; then
+        # Trim out all blank or comment lines
+        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
+          | while IFS="" read -r _i6 || [ -n "${_i6}" ]; do
+          if [ -z "${_ALL_ACCEPT_IP6}" ]; then
+            _ALL_ACCEPT_IP6="${_i6}"
+          else
+            _ALL_ACCEPT_IP6="${_ALL_ACCEPT_IP6} ${_i6}"
+          fi
+          unset _i6
+        done
+        unset _i6
+      fi
+
+      unset _conf
+    done
+    unset _conf
+
+    # Country allowlist config
+    for _conf in "/etc/iptables-geoblock"/*".allow.country"; do
+      # If there were no matching configuration files, do nothing
+      if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.country" ]; then
+        break
+      fi
+
+      # Otherwise source the config
+      if [ -r "${_conf}" ]; then
+        # Trim out all blank or comment lines
+        grep -v '^(#|[[:space:]]*$)' "${_conf}" \
+          | while IFS="" read -r _ic || [ -n "${_ic}" ]; do
+          if [ -z "${_ALL_ACCEPT_COUNTRIES}" ]; then
+            _ALL_ACCEPT_COUNTRIES="${_ic}"
+          else
+            _ALL_ACCEPT_COUNTRIES="${_ALL_ACCEPT_COUNTRIES} ${_ic}"
+          fi
+          unset _ic
+        done
+        unset _ic
+      fi
+
+      unset _conf
+    done
+    unset _conf
+  fi
+}
+
+_apply_whitelist() {
+  _ALL_ACCEPT_IP4="${_ACCEPT_IP4}"
+  _ALL_ACCEPT_IP6="${_ACCEPT_IP6}"
+  _ALL_ACCEPT_COUNTRIES="${_ACCEPT_COUNTRIES}"
+
+  # Read from configuration if they exist
+  _source_configs || {
+    printf -- 'Failed to source configuration from /etc/iptables-geoblock\n'
+    return 1
+  }
+
   # Accept any good IPv4 address
-  if [ -n "${_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
-    for _c in ${_ACCEPT_IP4}; do
+  if [ -n "${_ALL_ACCEPT_IP4}" ] && [ "${_ip}" = "iptables" ]; then
+    for _c in ${_ALL_ACCEPT_IP4}; do
       printf -- 'Accept IPv4: %s\n' "${_c}"
       "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
     done
@@ -62,8 +156,8 @@ _reset_chain() {
   fi
 
   # Accept any good IPv6 address
-  if [ -n "${_ACCEPT_IP6}" ] && [ "${_ip}" = "ip6tables" ]; then
-    for _c in ${_ACCEPT_IP6}; do
+  if [ -n "${_ALL_ACCEPT_IP6}" ] && [ "${_ip}" = "ip6tables" ]; then
+    for _c in ${_ALL_ACCEPT_IP6}; do
       printf -- 'Accept IPv6: %s\n' "${_c}"
       "${_ip}" -A "${_CHAIN_NAME}" --source "${_c}" -j RETURN
     done
@@ -72,8 +166,8 @@ _reset_chain() {
   fi
 
   # Accept any good countries
-  if [ -n "${_ACCEPT_COUNTRIES}" ]; then
-    for _c in ${_ACCEPT_COUNTRIES}; do
+  if [ -n "${_ALL_ACCEPT_COUNTRIES}" ]; then
+    for _c in ${_ALL_ACCEPT_COUNTRIES}; do
       printf -- 'Accept traffic from country: %s\n' "${_c}"
       "${_ip}" -A "${_CHAIN_NAME}" -m geoip --src-cc "${_c}" -j RETURN || {
         printf -- 'Failed to load "geoip" xtables addon module.\n'
@@ -83,11 +177,23 @@ _reset_chain() {
   else
     printf -- '!!! No Countries to whitelist! You are blocking all traffic !!!\n'
   fi
+}
+
+_reset_chain() {
+  # If this fails I guess its ok, the chain doesn't exist so we don't need to erase it
+  _erase_chain
+
+  # Conntrack and drop invalid first
+  _prepare_chain || {
+    printf -- 'Failed to prepare chain.\n'
+    return 1
+  }
 
   # Otherwise drop
-  printf -- 'Otherwise drop traffic\n'
-  "${_ip}" -A "${_CHAIN_NAME}" -j LOG --log-prefix "[POOT_GEOBLOCK]: "
-  "${_ip}" -A "${_CHAIN_NAME}" -j DROP
+  _nomatch_logdrop || {
+    printf -- 'Failed final nomatch-logdrop setup\n'
+    return 1
+  }
 }
 
 _iptables_create() {
@@ -103,10 +209,6 @@ _iptables_create() {
     unset _create_opts
     return 1
   }
-  _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
-    unset _create_opts
-    return 1
-  }
 
   _reset_chain || {
     unset _create_opts
@@ -114,10 +216,6 @@ _iptables_create() {
   }
 
   _insert_rule_if_not_exists INPUT -j "${_CHAIN_NAME}" || {
-    unset _create_opts
-    return 1
-  }
-  _append_rule_if_not_exists FORWARD -j "${_CHAIN_NAME}" || {
     unset _create_opts
     return 1
   }
@@ -130,11 +228,6 @@ _iptables_destroy() {
   _destroy_opts="$1"
 
   _remove_rule INPUT -j "${_CHAIN_NAME}" || {
-    unset _destroy_opts
-    return 1
-  }
-
-  _remove_rule FORWARD -j "${_CHAIN_NAME}" || {
     unset _destroy_opts
     return 1
   }
