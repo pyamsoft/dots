@@ -58,6 +58,7 @@ _source_configs() {
     for _conf in "/etc/iptables-geoblock"/*".allow.4"; do
       # If there were no matching configuration files, do nothing
       if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.4" ]; then
+        printf -- 'No configuration for IPv4 Allowlist found.\n'
         break
       fi
 
@@ -84,6 +85,7 @@ _source_configs() {
     for _conf in "/etc/iptables-geoblock"/*".allow.6"; do
       # If there were no matching configuration files, do nothing
       if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.6" ]; then
+        printf -- 'No configuration for IPv6 Allowlist found.\n'
         break
       fi
 
@@ -110,6 +112,7 @@ _source_configs() {
     for _conf in "/etc/iptables-geoblock"/*".allow.country"; do
       # If there were no matching configuration files, do nothing
       if [ "${_conf}" = "/etc/iptables-geoblock/*.allow.country" ]; then
+        printf -- 'No configuration for Country Allowlist found.\n'
         break
       fi
 
@@ -185,13 +188,18 @@ _reset_chain() {
 
   # Conntrack and drop invalid first
   _prepare_chain || {
-    printf -- 'Failed to prepare chain.\n'
+    printf -- 'Failed to prepare chain %s\n' "${_CHAIN_NAME}"
+    return 1
+  }
+
+  _apply_whitelist || {
+    printf -- 'Failed applying whitelist to chain %s\n' "${_CHAIN_NAME}"
     return 1
   }
 
   # Otherwise drop
   _nomatch_logdrop || {
-    printf -- 'Failed final nomatch-logdrop setup\n'
+    printf -- 'Failed final nomatch-logdrop setup for %s\n' "${_CHAIN_NAME}"
     return 1
   }
 }
