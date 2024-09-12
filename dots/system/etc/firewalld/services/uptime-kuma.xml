@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>uptime-kuma</short>
+  <description>uptime kuma</description>
+  <port port="3001" protocol="tcp"/>
+</service>
+

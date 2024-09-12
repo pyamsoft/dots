@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>openrct2</short>
+  <description>openrct2</description>
+  <port port="11753" protocol="tcp"/>
+</service>
