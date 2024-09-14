@@ -37,6 +37,7 @@ breeze-icons
 brotli
 bubblewrap
 bzip2
+c-ares
 ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
@@ -62,6 +63,7 @@ cracklib
 criu
 crun
 cryptsetup
+cuda
 cups
 cups-filters
 cups-pk-helper
@@ -107,6 +109,9 @@ flex
 fluidsynth
 fmt
 fontconfig
+foomatic-db
+foomatic-db-engine
+foomatic-db-ppds
 freeglut
 freetype2
 fribidi
@@ -120,6 +125,8 @@ gawk
 gc
 gcc
 gcc-libs
+gcc13
+gcc13-libs
 gcr
 gcr-4
 gd
@@ -529,6 +536,7 @@ libnfs
 libnftnl
 libnghttp2
 libnghttp3
+libngtcp2
 libnice
 libnl
 libnm
@@ -702,8 +710,12 @@ netavark
 nettle
 networkmanager
 nftables
+node-gyp
+nodejs
+nodejs-nopt
 noto-fonts-cjk
 noto-fonts-emoji
+npm
 npth
 nspr
 nss
@@ -711,6 +723,7 @@ numactl
 ocl-icd
 oniguruma
 openal
+opencl-nvidia
 opencore-amr
 openexr
 openjpeg2
@@ -735,9 +748,22 @@ pcre
 pcre2
 pcsclite
 perl
+perl-alien-build
+perl-alien-libxml2
+perl-capture-tiny
+perl-clone
+perl-dbi
 perl-error
+perl-ffi-checklib
+perl-file-chdir
+perl-file-which
 perl-mailtools
+perl-path-tiny
 perl-timedate
+perl-xml-libxml
+perl-xml-namespacesupport
+perl-xml-sax
+perl-xml-sax-base
 phodav
 pinentry
 pipewire
@@ -748,6 +774,7 @@ pipewire-pulse
 pipewire-v4l2
 pixman
 pkgconf
+podman-compose
 polkit
 polkit-qt6
 poppler
@@ -768,10 +795,13 @@ python-cairo
 python-capng
 python-certifi
 python-charset-normalizer
+python-click
 python-contourpy
 python-cycler
 python-dateutil
 python-dbus
+python-distro
+python-dotenv
 python-fonttools
 python-gobject
 python-greenlet
@@ -874,6 +904,7 @@ sdl2_image
 seabios
 seatd
 sed
+semver
 serd
 shaderc
 shadow

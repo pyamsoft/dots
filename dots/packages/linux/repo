@@ -15,6 +15,7 @@ gnome-themes-extra
 gnome-tweaks
 gst-plugin-va
 guake
+hplip
 htop
 inter-font
 irqbalance
@@ -46,7 +47,7 @@ sof-firmware
 sshpass
 starship
 steam
-sunshine
+sunshine-git
 tailscale
 tmux
 tree-sitter-cli
