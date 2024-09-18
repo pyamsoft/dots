@@ -6,9 +6,9 @@ game-devices-udev
 git-ssh-git
 gnome-shell-extension-tiling-assistant
 mullvad-vpn-bin
-paru-bin
 poke-monitor-git
 pstate-frequency-git
 tetrio-desktop
 ttf-ms-win11-auto
 ventoy-bin
+yay-bin
