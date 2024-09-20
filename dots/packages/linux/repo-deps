@@ -91,6 +91,7 @@ e2fsprogs
 edk2-ovmf
 ell
 enchant
+exempi
 exiv2
 expat
 faac
@@ -275,7 +276,7 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
-js115
+js128
 json-c
 json-glib
 karchive
@@ -437,6 +438,7 @@ libcdio
 libcdio-paranoia
 libcloudproviders
 libcolord
+libcue
 libcups
 libcupsfilters
 libdaemon
@@ -477,10 +479,12 @@ libgme
 libgoa
 libgpg-error
 libgphoto2
+libgsf
 libgtop
 libgudev
 libgusb
 libgweather-4
+libgxps
 libhandy
 libheif
 libibus
@@ -496,6 +500,7 @@ libimobiledevice-glue
 libinih
 libinput
 libinstpatch
+libiptcdata
 libisl
 libisoburn
 libisofs
@@ -582,7 +587,6 @@ libslirp
 libsm
 libsndfile
 libsodium
-libsoup
 libsoup3
 libsoxr
 libsrtp
@@ -672,6 +676,7 @@ linux-firmware-whence
 llvm-libs
 lm_sensors
 lmdb
+localsearch
 lsb-release
 lsof
 lua
@@ -948,8 +953,9 @@ tdb
 tecla
 tevent
 texinfo
+tinysparql
+totem-pl-parser
 tpm2-tss
-tracker3
 tree-sitter
 tree-sitter-c
 tree-sitter-lua
@@ -963,6 +969,7 @@ ttf-nerd-fonts-symbols-common
 ttf-nerd-fonts-symbols-mono
 twolame
 tzdata
+uchardet
 udisks2
 unibilium
 unzip
