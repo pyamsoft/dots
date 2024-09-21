@@ -1,33 +1,25 @@
 #!/bin/sh
 
-readonly _name="jellyfin"
-readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.9.8"
+readonly _name="jellyseerr"
+readonly _image="docker.io/fallenbagel/jellyseerr"
+readonly _tag="1.9.2"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
 
 _prep_mounts() {
-  # On a seperate disk
-  readonly _mount1="/cache/${_name}/cache"
-  readonly _mount2="/cache/${_name}/transcodes"
-
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _mount4="${HOME}/.local/etc/containers/${_name}/media"
-  readonly _mount5="${HOME}/.local/etc/containers/${_name}/media2"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media2"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
-  mkdir -p "${_mount4}" || return 1
-  mkdir -p "${_mount5}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/cache"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/.cache"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/config"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/media"
-  _mounts="${_mounts} --mount type=bind,source=${_mount5},target=/media2"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/app/config"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/media"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/media2"
   readonly _mounts
   return 0
 }
@@ -44,14 +36,11 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Jellyfin
-  _ports="${_ports} -p 127.0.0.1:8096:8096/tcp"
+  # Jellyseerr
+  _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
 
   # Host networking for DLNA
   # _ports="${_ports} --network=host"
-
-  # Jellyseerr
-  _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
 
   readonly _ports
   return 0
@@ -70,25 +59,8 @@ _check_user() {
   return 0
 }
 
-_get_gid_for_group() {
-  _grp="$1"
-  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
-
-  printf -- '%s' "${_gid}"
-
-  unset _grp
-  unset _gid
-  return 0
-}
-
 _containerize() {
-  # Needed for GPU rendering
-  _groups=""
-  _groups="${_groups} --group-add=$(_get_gid_for_group "render")"
-  _groups="${_groups} --group-add=$(_get_gid_for_group "video")"
-  readonly _groups
-
-  _jf=""
+  _js=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
@@ -101,18 +73,16 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
-  readonly _jf
+  readonly _js
 
   # Only compare the version minors
   _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
   _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
   unset _current_version
 
-  # MacOS can't launch with host-gateway
-  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
-  fi
+  # Ensure we run in the same network as jellyfin
+  _network="${_network} --network container:jellyfin"
+
   readonly _network
 
   unset _is_cmd_new_enough
@@ -128,10 +98,8 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --device "/dev/dri:/dev/dri" \
     ${_network} \
-    ${_jf} \
-    ${_groups} \
+    ${_js} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
