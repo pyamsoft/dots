@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>jellyseerr</short>
+  <description>jellyseerr</description>
+  <port port="5055" protocol="tcp"/>
+</service>
