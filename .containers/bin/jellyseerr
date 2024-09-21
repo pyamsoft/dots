@@ -75,17 +75,10 @@ _containerize() {
   unset _runconf
   readonly _js
 
-  # Only compare the version minors
-  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
-  _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
-  unset _current_version
-
+  _network=""
   # Ensure we run in the same network as jellyfin
   _network="${_network} --network container:jellyfin"
-
   readonly _network
-
-  unset _is_cmd_new_enough
 
   # Log the commands we use next
   # Fail on errors
