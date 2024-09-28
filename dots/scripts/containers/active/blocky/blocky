@@ -105,7 +105,7 @@ _check_user() {
 
 _containerize() {
   # Runtime configuration
-  _ah=""
+  _bl=""
 
   # Optional runtime config (so we don't have to hardcode keys)
   _runconf="$(_get_env "HOME")/.local/etc/containers/${_name}/runconfig.env"
@@ -117,7 +117,7 @@ _containerize() {
     printf -- 'Optional runconfig.env supported at "%s"\n' "${_runconf}"
   fi
   unset _runconf
-  readonly _ah
+  readonly _bl
 
   # Only compare the version minors
   _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
@@ -148,6 +148,7 @@ _containerize() {
   _runas ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_bl} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
