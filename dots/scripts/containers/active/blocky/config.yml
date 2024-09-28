@@ -45,6 +45,12 @@ ports:
 # At least "info" level to view logs when a site is blocked
 log:
   level: "info"
+  format: "json"
+
+# Log to a CSV file per day per client
+queryLog:
+  type: "csv-client"
+  target: "/logs"
 
 # Cache boost, enforce a min time to cache all responses
 caching:
