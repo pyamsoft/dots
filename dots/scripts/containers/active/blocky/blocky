@@ -42,11 +42,14 @@ _prep_mounts() {
 
   # Prep the directories
   _runas mkdir -m 700 -p "${_mount1}" || return 1
-  _runas mkdir -m 700 -p "${_mount2}" || return 1
+  _runas mkdir -m 770 -p "${_mount2}" || return 1
 
   # Prep the config file (Blocky only runs if this is group readable)
   _runas touch "${_mount1}/config.yml" || return 1
   _runas chmod 640 "${_mount1}/config.yml" || return 1
+
+  # Blocky writes as group to the logs folder
+  _runas chmod 770 "${_mount2}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1}/config.yml,target=/app/config.yml"
