@@ -45,7 +45,6 @@ ports:
 # At least "info" level to view logs when a site is blocked
 log:
   level: "info"
-  format: "json"
 
 # Log to a CSV file per day per client
 queryLog:
