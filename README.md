@@ -57,7 +57,15 @@ For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
 You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` manually
 
-For themes, see the `themepak` script.
+For Dark Mode you'll need the following flatpaks for the correct runtime (assuming GNOME)
+
+QT:
+`QAdwaitaDecorations`
+`QGnomePlatform`
+`QGnomePlatform-decorations`
+
+GTK:
+See the `themepak` script, which copies your GTK theme into the user folders
 
 ### Steam (Flatpak)
 See notes in `~dots/scripts/gaming/README.md`
