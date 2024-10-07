@@ -1,2 +1,2 @@
 # shellcheck shell=bash
-alias ls="ls -CHh --color=auto"
+alias ls="ls -CHh --color=auto "

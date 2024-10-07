@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
 if command -v gls >/dev/null; then
-  alias ls="gls -CHh --color=auto"
+  alias ls="gls -CHh --color=auto "
 else
-  alias ls="ls -CHh --color=auto"
+  alias ls="ls -CHh --color=auto "
 fi

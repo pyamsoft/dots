@@ -3,10 +3,10 @@
 alias grep="grep -E --color=auto"
 
 # Quick ls
-alias ll="ls -CHhl --color=auto"
-alias la="ls -CHhA --color=auto"
-alias lla="ls -CHhAl --color=auto"
-alias lal="ls -CHhAl --color=auto"
+alias ll="ls -l"
+alias la="ls -A"
+alias lla="ls -Al"
+alias lal="ls -Al"
 
 # Verbose
 alias rm="rm -iv"
