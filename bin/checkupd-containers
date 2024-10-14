@@ -1,111 +1,5 @@
 #!/bin/sh
 
-_get_latest_tags() {
-  _container="$1"
-  _number_of_tags="$2"
-
-  if [ -z "${_container}" ]; then
-    printf -- 'Missing required container name\n'
-    unset _container
-    unset _number_of_tags
-    return 1
-  fi
-
-  _split_up="$(printf -- '%s' "${_container}" | tr '/' ' ')"
-  _org="$(printf -- '%s' "${_split_up}" | awk '{ print $2 }')"
-  _image="$(printf -- '%s' "${_split_up}" | awk '{ print $3 }')"
-
-  if [ -z "${_org}" ] || [ -z "${_image}" ]; then
-    printf -- 'Invalid container format: %s\n' "${_container}"
-
-    unset _container
-    unset _number_of_tags
-    unset _split_up
-    unset _org
-    unset _image
-    return 1
-  fi
-
-  printf -- '\nContainer: %s/%s\n' "${_org}" "${_image}"
-  case "${_container}" in
-    docker.io/*)
-      curl -s "https://hub.docker.com/v2/namespaces/${_org}/repositories/${_image}/tags?page_size=${_number_of_tags}" | grep -o '"name": *"[^"]*' | grep --color -o '[^"]*$' | head -n "${_number_of_tags}" | grep --color '.*' || {
-        printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
-      }
-      ;;
-    ghcr.io/*)
-      # First we get a token for a public repo
-      _gh_token="$(curl -s "https://ghcr.io/token?scope=repository:${_org}/${_image}:pull" | tr ':' ' ' | sed 's/"//g' | sed 's/}//g' | awk '{ print $2 }')"
-
-      # And then we do this - oh baby!
-      # tail instead of head because ghcr puts newest containers LAST
-      # sort -r to put newest on top
-      curl -s -H "Authorization: Bearer ${_gh_token}" "https://ghcr.io/v2/${_org}/${_image}/tags/list" | grep --color -o '\[.*\]' | sed 's/\[//g' | sed 's/\]//g' | sed 's/"//g' | tr ',' '\n' | grep -v '\.sig$' | tail -n "${_number_of_tags}" | sort -r | grep --color '.*' || {
-        printf -- 'Failed to lookup container on registry: %s\n' "${_container}"
-      }
-      ;;
-    *)
-      printf -- 'Unsupported container registry: %s\n' "${_container}"
-      ;;
-  esac
-
-  unset _container
-  unset _number_of_tags
-  unset _split_up
-  unset _org
-  unset _image
-  return 0
-}
-
-_check_containers() {
-  _cmd="$1"
-  _amt="$2"
-
-  # A string of <name> <version> <name> <version>
-  # shellcheck disable=SC2086
-  _containers="$(${_cmd} images | grep -e '^docker\.io' -e '^ghcr\.io' | awk '{ printf $1 " " $2 " " }')"
-
-  # Don't look up the same container but with different versions more than once
-  # This would happen if we were running hello-world:1 and pulled down hello-world:2
-  # which podman sees as 2 container images
-  _already_seen=""
-
-  while :; do
-    if [ -z "${_containers}" ]; then
-      break;
-    fi
-
-    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }' )"
-    _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
-
-    # Check that we haven't already done this
-    _skip=0
-    for _c in ${_already_seen}; do
-      if [ "${_name}" = "${_c}" ]; then
-        _skip=1
-        break;
-      fi
-    done
-
-    # Keep track
-    if [ "${_skip}" -eq 0 ]; then
-      if [ -z "${_amt}" ]; then
-        printf -- 'Default to the latest 10 tags.\n'
-        _amt=10
-      fi
-
-      _already_seen="${_already_seen} ${_name}"
-      _get_latest_tags "${_name}" "${_amt}" || return 1
-    fi
-
-    unset _name
-  done
-
-  unset _amt
-  unset _containers
-  return 0
-}
-
 main() {
   _count="$1"
 
@@ -114,13 +8,17 @@ main() {
     return 1
   fi
 
-  _check_containers "podman" "${_count}" || return 1
-  _check_containers "containers" "${_count}" || return 1
+  printf -- '(This User) containers:\n'
+  podman auto-update --dry-run || return 1
+
+  printf -- '(Containers User) containers:\n'
+  containers checkup || return 1
 
   if [ "$(uname)" != "Darwin" ]; then
     # Check again for root containers
     # We don't do this on MacOS since it runs a VM as root
-    _check_containers "sudo podman" "${_count}" || return 1
+    printf -- '(Root) containers:\n'
+    sudo podman auto-update --dry-run || return 1
   fi
 
   unset _count
