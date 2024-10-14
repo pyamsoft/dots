@@ -30,6 +30,7 @@ ${_PROG_NAME} <action>
 
 [system]:      System management related operations
 
+  checkup      Runs 'podman auto-update --dry-run'
   enter        Runs 'podman exec -it <name> sh'
   prune        Runs 'podman system prune -a'
   pull         Runs 'dotfiles pull'
@@ -86,6 +87,9 @@ main() {
     ps|logs|images|inspect)
       exec podman "${_action}" "$@"
       ;;
+    checkup)
+      exec podman auto-update --dry-run "$@"
+      ;;
     enter)
       # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
       exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
@@ -95,22 +99,6 @@ main() {
       ;;
     pull)
       _dotfiles pull "$@"
-      ;;
-    status)
-      _prep_container || return 1
-
-      if [ -n "$1" ]; then
-        _CONTAINER="$1"
-        shift
-      fi
-
-      if [ -z "${_CONTAINER}" ]; then
-        # Run as the user
-        exec systemctl --user "$@"
-      else
-        # Run as the user
-        exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
-      fi
       ;;
     disable)
       _prep_container || return 1
@@ -125,7 +113,7 @@ main() {
       # Run as the user
       exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
       ;;
-    restart)
+    status|restart)
       _prep_container || return 1
 
       _CONTAINER="$1"
