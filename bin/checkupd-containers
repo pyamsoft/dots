@@ -1,27 +1,80 @@
 #!/bin/sh
 
-main() {
-  _count="$1"
+_get_latest_tags() {
+  _container="$1"
 
+  if [ -z "${_container}" ]; then
+    printf -- 'Missing required container name\n'
+    unset _container
+    return 1
+  fi
+
+  printf -- '\nContainer: %s\n' "${_container}"
+  skopeo list-tags "docker://${_container}" || {
+    printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
+  }
+
+  unset _container
+  return 0
+}
+
+_check_containers() {
+  _cmd="$1"
+
+  # A string of <name> <version> <name> <version>
+  # shellcheck disable=SC2086
+  _containers="$(${_cmd} images | grep -e '^docker\.io' -e '^ghcr\.io' | awk '{ printf $1 " " $2 " " }')"
+
+  # Don't look up the same container but with different versions more than once
+  # This would happen if we were running hello-world:1 and pulled down hello-world:2
+  # which podman sees as 2 container images
+  _already_seen=""
+
+  while :; do
+    if [ -z "${_containers}" ]; then
+      break;
+    fi
+
+    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }' )"
+    _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
+
+    # Check that we haven't already done this
+    _skip=0
+    for _c in ${_already_seen}; do
+      if [ "${_name}" = "${_c}" ]; then
+        _skip=1
+        break;
+      fi
+    done
+
+    # Keep track
+    if [ "${_skip}" -eq 0 ]; then
+      _already_seen="${_already_seen} ${_name}"
+      _get_latest_tags "${_name}" || return 1
+    fi
+
+    unset _name
+  done
+
+  unset _containers
+  return 0
+}
+
+main() {
   if ! command -v podman >/dev/null; then
     printf -- 'Must install "podman"\n'
     return 1
   fi
 
-  printf -- '(This User) containers:\n'
-  podman auto-update --dry-run || return 1
-
-  printf -- '(Containers User) containers:\n'
-  containers checkup || return 1
+  _check_containers "podman" || return 1
+  _check_containers "containers" || return 1
 
   if [ "$(uname)" != "Darwin" ]; then
     # Check again for root containers
     # We don't do this on MacOS since it runs a VM as root
-    printf -- '(Root) containers:\n'
-    sudo podman auto-update --dry-run || return 1
+    _check_containers "sudo podman" || return 1
   fi
 
-  unset _count
   return 0
 }
 
