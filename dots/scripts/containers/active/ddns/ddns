@@ -119,9 +119,10 @@ _containerize() {
   _runas ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     -e PROXIED=false \
-    ${_network} \
     ${_dd} \
+    ${_network} \
     ${_sec} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

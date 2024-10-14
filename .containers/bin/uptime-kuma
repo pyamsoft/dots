@@ -112,6 +112,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --net=host \
     ${_uk} \
+    ${_auto} \
     ${_network} \
     ${_env} \
     ${_mounts} \

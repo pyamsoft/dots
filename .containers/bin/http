@@ -71,6 +71,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm -i -t \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_auto} \
     ${_network} \
     ${_mounts} \
     ${_ports} \

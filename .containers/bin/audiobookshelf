@@ -105,8 +105,9 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
-    ${_network} \
     ${_abs} \
+    ${_network} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

@@ -90,6 +90,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
     ${_network} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

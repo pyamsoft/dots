@@ -107,8 +107,9 @@ _containerize() {
     -e CUSTOM_BUTTON_ICON="${_CUSTOM_BUTTON_ICON}" \
     -e FOOTER="${_FOOTER}" \
     -e META_DESCRIPTION="${_META_DESCRIPTION}" \
-    ${_network} \
     ${_ll} \
+    ${_network} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \

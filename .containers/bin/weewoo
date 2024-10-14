@@ -76,6 +76,7 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --init \
+    ${_auto} \
     ${_network} \
     ${_sec} \
     ${_mounts} \

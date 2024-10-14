@@ -173,9 +173,10 @@ _containerize() {
   # shellcheck disable=SC2086
   _runas ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
-    ${_network} \
-    ${_sec} \
     ${_cd} \
+    ${_sec} \
+    ${_network} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
