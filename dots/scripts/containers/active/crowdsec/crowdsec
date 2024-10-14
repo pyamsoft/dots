@@ -109,6 +109,10 @@ _containerize() {
 
   unset _is_cmd_new_enough
 
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned

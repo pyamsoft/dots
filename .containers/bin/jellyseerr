@@ -85,6 +85,10 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086

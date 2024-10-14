@@ -90,6 +90,11 @@ _containerize() {
 
   unset _is_cmd_new_enough
 
+  # Auto Update Checking support
+  # This is a local image
+  _auto="--label=io.containers.autoupdate=local"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
