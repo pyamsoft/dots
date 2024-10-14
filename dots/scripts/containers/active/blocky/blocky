@@ -140,6 +140,10 @@ _containerize() {
 
   unset _is_cmd_new_enough
 
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
   # Open ports to non-root users
   _priv_port_drop || return 1
 
@@ -155,6 +159,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_bl} \
+    ${_auto} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
