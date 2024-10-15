@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-if command -v starship > /dev/null; then
+if command -v starship >/dev/null; then
   eval "$(starship init bash)" || return 1
 else
   export PS1='\u in \h in \w
