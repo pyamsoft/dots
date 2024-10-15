@@ -8,10 +8,8 @@ readonly _tag="10.9.11"
 readonly _cmd="podman"
 
 _prep_mounts() {
-  # On a seperate disk
-  readonly _mount1="/cache/${_name}/cache"
-  readonly _mount2="/cache/${_name}/transcodes"
-
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/transcodes"
   readonly _mount3="${HOME}/.local/etc/containers/${_name}/config"
   readonly _mount4="${HOME}/.local/etc/containers/${_name}/media"
   readonly _mount5="${HOME}/.local/etc/containers/${_name}/media2"
