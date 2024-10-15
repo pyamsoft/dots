@@ -1,0 +1,19 @@
+# Stop if not running interactively
+[[ "$-" != *i* ]] && return
+
+# Aliases
+alias ls="ls -cHh --color=auto "
+alias ll="ls -l"
+alias la="ls -A"
+
+alias rm="rm -iv"
+alias mv="mv -iv"
+alias cp="cp -iv"
+
+# Starship
+if command -v starship >/dev/null; then
+  eval "$(starship init bash)"
+else
+  export PS1='\u in \h in \w
+\$ '
+fi
