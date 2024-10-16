@@ -31,12 +31,19 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
+# Export JDK8 and JDK17 as environment variables for Gradle
+# https://docs.gradle.org/8.10.2/userguide/toolchains.html#sec:custom_loc
+#
+# Needed to build KTOR library
+#
 # shellcheck disable=SC2086
 exec flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20" \
+  --env="JDK8=/usr/lib/sdk/openjdk8/jvm/java-8-openjdk" \
+  --env="JDK17=/usr/lib/sdk/openjdk17/jvm/openjdk-17" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
   ${_args} \
   -- "$@" || exit 1
