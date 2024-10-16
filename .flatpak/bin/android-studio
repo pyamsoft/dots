@@ -7,7 +7,7 @@ readonly dev_root="${HOME}/devel"
 readonly android_root="${dev_root}/sdk/android"
 
 path="${HOME}/.local/bin"
-path="${path}:/app/extra/android-studio/jre/bin"
+path="${path}:/app/extra/android-studio/jbr/bin"
 path="${path}:${android_root}/emulator"
 path="${path}:${android_root}/cdmline-tools/latest/bin"
 path="${path}:${android_root}/platform-tools"
