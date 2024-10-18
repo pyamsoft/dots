@@ -2,7 +2,7 @@
 
 readonly _name="adguardhome"
 readonly _image="docker.io/adguard/adguardhome"
-readonly _tag="v0.107.52"
+readonly _tag="v0.107.53"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -151,6 +151,10 @@ _containerize() {
 
   unset _is_cmd_new_enough
 
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
   # Open ports to non-root users
   _priv_port_drop || return 1
 
@@ -165,6 +169,8 @@ _containerize() {
   _runas ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_ah} \
+    ${_auto} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
