@@ -85,14 +85,14 @@ _prep_ports() {
     _ports="${_ports} -p 53:53/udp"
 
     # Admin Console
-    _ports="${_ports} -p 2081:81/tcp"
+    _ports="${_ports} -p 2080:80/tcp"
   else
     # DNS
     _ports="${_ports} -p 127.0.0.1:53:53/tcp"
     _ports="${_ports} -p 127.0.0.1:53:53/udp"
 
     # Admin Console
-    _ports="${_ports} -p 127.0.0.1:2081:81/tcp"
+    _ports="${_ports} -p 127.0.0.1:2080:80/tcp"
   fi
 
   readonly _ports
