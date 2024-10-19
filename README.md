@@ -33,10 +33,10 @@ You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would 
 want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
 
 ## USBGuard
-[Generally speaking, mask usbguard services](https://wiki.archlinux.org/title/USBGuard)
+[Make sure you setup USBGuard](https://wiki.archlinux.org/title/USBGuard)
+`usbguard generate-policy > /etc/usbguard/rules.conf`
 
-We basically exclusively use USB, don't allow any program to accidentally start the usbguard service
-as it will immediately disconnect all of our devices
+Otherwise, if another service starts usbguard somehow, you will be locked out!
 
 ### Wayland
 - Sunshine needs cap_sys_admin `sudo setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine`
