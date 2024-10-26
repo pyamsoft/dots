@@ -11,6 +11,7 @@ alsa-card-profiles
 alsa-lib
 alsa-topology-conf
 alsa-ucm-conf
+ananicy-cpp
 aom
 appstream
 archlinux-keyring
@@ -332,6 +333,7 @@ lib32-glib2
 lib32-glibc
 lib32-glu
 lib32-icu
+lib32-json-c
 lib32-keyutils
 lib32-krb5
 lib32-libcap
@@ -969,6 +971,7 @@ unibilium
 unzip
 upower
 usbredir
+usbutils
 util-linux
 util-linux-libs
 v4l-utils
@@ -1015,6 +1018,7 @@ xdg-dbus-proxy
 xdg-desktop-portal
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
+xdg-user-dirs-gtk
 xdg-utils
 xkeyboard-config
 xorg-fonts-encodings

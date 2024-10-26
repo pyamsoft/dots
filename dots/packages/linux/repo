@@ -35,6 +35,7 @@ pacman-contrib
 papirus-icon-theme
 pkgstats
 podman
+proxychains-ng
 reflector
 rng-tools
 rofi
@@ -52,7 +53,6 @@ tmux
 tree-sitter-cli
 ttf-gentium-plus
 ttf-liberation
-usbutils
 virt-manager
 xdg-user-dirs
 yt-dlp
