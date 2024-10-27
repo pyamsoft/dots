@@ -346,11 +346,14 @@ _prepare() {
   return 0
 }
 
-_enable_flatpak_options() {
+_enable_steam_options() {
   # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
   if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
     __gamescope_options="${__gamescope_options} --steam"
-    _log 'Steam specific gamescope options: YES'
+    _log 'Steam specific gamescope options: YES (flatpak)'
+  elif [ "$(id -u -n)" = "gaming-steam" ]; then
+    __gamescope_options="${__gamescope_options} --steam"
+    _log 'Steam specific gamescope options: YES (gaming-steam)'
   else
     _log 'Steam specific gamescope options: NO'
   fi
@@ -402,8 +405,8 @@ main() {
     return 1
   }
 
-  _enable_flatpak_options || {
-    _log 'Unable to enable specific flatpak options'
+  _enable_steam_options || {
+    _log 'Unable to enable specific Steam options'
     return 1
   }
 

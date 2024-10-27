@@ -2,7 +2,7 @@
 
 readonly _name="jellyfin"
 readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.9.11"
+readonly _tag="10.10.0"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -49,7 +49,7 @@ _prep_ports() {
   # _ports="${_ports} --network=host"
 
   # Jellyseerr
-  _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
+  # _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
 
   readonly _ports
   return 0
