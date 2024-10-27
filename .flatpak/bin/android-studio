@@ -37,7 +37,7 @@ readonly _args
 # Needed to build KTOR library
 #
 # shellcheck disable=SC2086
-exec flatpak-env "${pak}" \
+flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
@@ -45,5 +45,11 @@ exec flatpak-env "${pak}" \
   --env="JDK17=/usr/lib/sdk/openjdk17/jvm/openjdk-17" \
   --env="FLATPAK_ENABLE_SDK_EXT=node20,openjdk17" \
   ${_args} \
-  -- "$@" || exit 1
+  -- "$@"
+
+# Kill gradle-daemon after exiting
+if command -v kill-gradle>/dev/null; then
+  kill-gradle
+fi
+
 exit 0
