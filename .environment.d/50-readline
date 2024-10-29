@@ -3,7 +3,7 @@
 # Suggestions from xdg-ninja
 export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 
-if [ -d "${XDG_CONFIG_HOME}/readline" ]; then
+if [ ! -d "${XDG_CONFIG_HOME}/readline" ]; then
   mkdir -p "${XDG_CONFIG_HOME}/readline"
 fi
 

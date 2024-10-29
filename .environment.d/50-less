@@ -3,7 +3,7 @@
 # Suggestions from xdg-ninja
 export LESSHISTFILE="${XDG_CACHE_HOME}/less/history"
 
-if [ -d "${XDG_CACHE_HOME}/less" ]; then
+if [ ! -d "${XDG_CACHE_HOME}/less" ]; then
   mkdir -p "${XDG_CACHE_HOME}/less"
 fi
 

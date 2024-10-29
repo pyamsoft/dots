@@ -17,4 +17,9 @@ if [ -z "${XDG_STATE_HOME}" ]; then
   export XDG_STATE_HOME="${HOME}/.local/state"
 fi
 
+mkdir -p "${XDG_CONFIG_HOME}"
+mkdir -p "${XDG_CACHE_HOME}"
+mkdir -p "${XDG_DATA_HOME}"
+mkdir -p "${XDG_STATE_HOME}"
+
 return 0
