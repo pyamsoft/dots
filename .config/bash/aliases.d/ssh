@@ -1,3 +1,7 @@
 # shellcheck shell=bash
 
-alias ssh="ssh -F ${HOME}/.config/ssh/config"
+if [ -z "${XDG_CONFIG_HOME}" ]; then
+  alias ssh="ssh -F '${XDG_CONFIG_HOME}/ssh/config' "
+else
+  alias ssh="ssh -F '${HOME}/.config/ssh/config' "
+fi

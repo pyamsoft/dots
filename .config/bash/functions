@@ -8,16 +8,22 @@ for script in "${HOME}"/.bash_functions.d/* "${XDG_CONFIG_HOME}"/bash/functions.
     case "${script}" in
       *.linux)
         if [ "${os}" = "Linux" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'Linux bash_function setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *.macos)
         if [ "${os}" = "Darwin" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'MacOS bash_function setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *)
-        . "${script}"
+        . "${script}" || {
+          printf -- 'bash_function setup script failed: %s\n' "${script}"
+        }
         ;;
     esac
   }

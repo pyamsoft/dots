@@ -1,7 +1,7 @@
 # shellcheck shell=bash
 
 # No ulimit, no work
-if ! command -v ulimit > /dev/null; then
+if ! command -v ulimit >/dev/null; then
   return 0
 fi
 

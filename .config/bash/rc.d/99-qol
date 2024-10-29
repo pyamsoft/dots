@@ -1,0 +1,16 @@
+# shellcheck shell=bash
+
+for _qol in "aliases" "functions"; do
+  _qol="${XDG_CONFIG_HOME}/bash/${_qol}"
+  [ -r "${_qol}" ] && {
+    # shellcheck disable=SC1090
+    . "${_qol}" || {
+      unset _qol
+      return 1
+    }
+  }
+  unset _qol
+done
+unset _qol
+
+return 0

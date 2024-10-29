@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-alias grep="grep -E --color=auto"
+alias grep="grep -E --color=auto "
 
 # Quick ls
 alias ll="ls -l"

@@ -1,0 +1,10 @@
+# shellcheck shell=bash
+
+if [ -n "${LS_COLORS}" ]; then
+  if command -v dircolors >/dev/null; then
+    eval "$(dircolors -b)" || return 1
+  fi
+fi
+
+return 0
+

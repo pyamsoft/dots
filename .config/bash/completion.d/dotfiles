@@ -1,32 +1,30 @@
 # shellcheck shell=bash
 
+# bash completion support for dotfiles
 __dot_load() {
   . "$1"
 
   __git_complete dotfiles git
 
-  __git_complete dots git_status
-  __git_complete dota git_add
-  __git_complete dotc git_commit
-  __git_complete dotd git_diff
-  __git_complete dotm git_merge
+  __git_complete dots  git_status
+  __git_complete dota  git_add
+  __git_complete dotc  git_commit
+  __git_complete dotd  git_diff
+  __git_complete dotm  git_merge
   __git_complete dotck git_checkout
-  __git_complete dotb git_branch
+  __git_complete dotb  git_branch
   __git_complete dotpl git_pull
-  __git_complete dotf git_fetch
+  __git_complete dotf  git_fetch
   __git_complete dotps git_push
-  __git_complete dotl git_log
+  __git_complete dotl  git_log
 }
 
-__dot_comp="/usr/share/bash-completion/completions/git"
-if [ -f "${__dot_comp}" ]; then
-  __dot_load "${__dot_comp}"
-else
-  __dot_comp="/opt/homebrew/etc/bash_completion.d/git-completion.bash"
-  if [ -f "${__dot_comp}" ]; then
-    __dot_load "${__dot_comp}"
+for _comp in "/usr/share/bash-completion/completions/git" "/opt/homebrew/etc/bash_completion.d/git-completion.bash"; do
+  if [ -f "${_comp}" ]; then
+    __dot_load "${_comp}"
   fi
-fi
-unset __dot_comp
+  unset _comp
+done
+unset _comp
 
 unset -f __dot_load

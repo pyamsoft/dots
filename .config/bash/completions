@@ -8,16 +8,22 @@ for script in "${HOME}"/.bash_completion.d/* "${XDG_CONFIG_HOME}"/bash/completio
     case "${script}" in
       *.linux)
         if [ "${os}" = "Linux" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'Linux bash_completion setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *.macos)
         if [ "${os}" = "Darwin" ]; then
-          . "${script}"
+          . "${script}" || {
+            printf -- 'MacOS bash_completion setup script failed: %s\n' "${script}"
+          }
         fi
         ;;
       *)
-        . "${script}"
+        . "${script}" || {
+          printf -- 'bash_completion setup script failed: %s\n' "${script}"
+        }
         ;;
     esac
   }

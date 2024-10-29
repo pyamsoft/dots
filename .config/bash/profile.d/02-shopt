@@ -1,26 +1,31 @@
 # shellcheck shell=bash
 
-if ! command -v shopt >/dev/null; then
+_set_shopt() {
+  shopt -s "$1" || {
+    printf -- 'Failed to apply shopt: %s\n' "$1"
+    return 1
+  }
+
   return 0
+}
+
+if command -v shopt >/dev/null; then
+  # Window
+  _set_shopt checkwinsize
+
+  # Spellcheck
+  _set_shopt cdspell
+  _set_shopt dirspell
+
+  # Don't destroy history file
+  _set_shopt histappend
+  _set_shopt cmdhist
+
+  # No completion on empty command
+  _set_shopt no_empty_cmd_completion
+
+  # Glob
+  _set_shopt globstar
+  _set_shopt extglob
+  _set_shopt dotglob
 fi
-
-# Window
-shopt -s checkwinsize
-
-# Spellcheck
-shopt -s cdspell
-shopt -s dirspell
-
-# Don't destroy history file
-shopt -s histappend
-shopt -s cmdhist
-
-# No completion on empty command
-shopt -s no_empty_cmd_completion
-
-# Glob
-shopt -s globstar
-shopt -s extglob
-shopt -s dotglob
-
-return 0
