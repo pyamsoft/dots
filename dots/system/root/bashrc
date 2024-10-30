@@ -14,6 +14,6 @@ alias cp="cp -iv"
 if command -v starship >/dev/null; then
   eval "$(starship init bash)"
 else
-  export PS1='\u in \w
+  export PS1='\u in \h in \w
 \$ '
 fi
