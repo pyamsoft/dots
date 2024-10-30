@@ -6,9 +6,8 @@
 # Generally this is 1000 for "your user"
 [Unit]
 Description=Container: Cloudflare DDNS for %i
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
 Wants=network-online.target
-Requires=user@%i.service
 
 [Service]
 # File must exist or fail
