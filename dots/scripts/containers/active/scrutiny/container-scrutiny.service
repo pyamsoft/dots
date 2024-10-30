@@ -2,8 +2,8 @@
 
 [Unit]
 Description=Container: Scrutiny
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
-Wants=network-online.target
+After=network-online.target syslog.target local-fs.target remote-fs.target nss-lookup.target docker.service podman.service
+Wants=network-online.target local-fs.target
 
 [Service]
 # File must exist or fail

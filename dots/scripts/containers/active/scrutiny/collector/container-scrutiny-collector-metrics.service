@@ -2,12 +2,11 @@
 
 [Unit]
 Description=Container: Scrutiny Collector Metrics Runner
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
-Wants=network-online.target
-Requires=container-scrutiny.service
+After=network-online.target syslog.target local-fs.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
+Wants=network-online.target container-scrutiny.service scrutiny.service local-fs.target
 
 [Service]
-# Need oneshot or timer does not restart
+# Need oneshot or timer wont restart
 Type=oneshot
 
 # Let the Scrutiny service start up
