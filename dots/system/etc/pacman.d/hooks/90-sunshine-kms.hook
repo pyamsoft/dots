@@ -4,6 +4,7 @@ Operation = Install
 Operation = Upgrade
 Target = sunshine
 Target = sunshine-bin
+Target = sunshine-git
 
 [Action]
 Description = Granting KMS permission to Sunshine
