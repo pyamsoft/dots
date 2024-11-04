@@ -15,4 +15,4 @@ Restart=on-failure
 RestartSec=10
 
 [Install]
-WantedBy=network-online.target
+WantedBy=graphical.target
