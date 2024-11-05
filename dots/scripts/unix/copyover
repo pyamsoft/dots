@@ -1,13 +1,6 @@
 #!/bin/sh
 
-_path=""
-if [ "$1" = "media" ]; then
-  _path="nerd@nerd2:/home/nerd/media/holding"
-  shift
-else
-  _path="nerd@nerd2:/home/nerd/holding"
-fi
-readonly _path
+readonly _path="nerd@nerd2:/home/nerd/holding"
 
 for f in "$@"; do
   # Remove a trailing space to copy over folders

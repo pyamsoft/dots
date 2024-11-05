@@ -46,7 +46,7 @@ _ping() {
   fi
 
   _backoff=1
-  while ! ping -4 -c 1 -n "$1" >/dev/null 2>&1; do
+  while ! ping -c 1 -n "$1" >/dev/null 2>&1; do
     if [ "${_backoff}" -gt "${BACKOFF_LIMIT_S}" ]; then
       return 1
     fi
