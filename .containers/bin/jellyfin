@@ -2,7 +2,7 @@
 
 readonly _name="jellyfin"
 readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.10.0"
+readonly _tag="10.10.1"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
