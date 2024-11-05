@@ -1,0 +1,105 @@
+#/bin/sh
+
+# Does four things
+
+# Checks that NetworkManager is alive
+# Checks that NetworkManager is online
+# Checks that ping works on Google without DNS (8.8.8.8)
+# Checks that ping works on Google with DNS (google.com)
+
+# Max time to wait for backoff
+readonly BACKOFF_LIMIT_S=30
+
+_nm_online() {
+  if ! command -v nm-online >/dev/null; then
+    printf -- 'Missing "nm-online", cannot run check\n'
+    return 1
+  fi
+
+  # Run nm-online
+  _backoff=1
+  while ! nm-online -q -t "${_backoff}" "$1" >/dev/null 2>&1; do
+    if [ "${_backoff}" -gt "${BACKOFF_LIMIT_S}" ]; then
+      return 1
+    fi
+
+    # Ping failed, wait for backoff time and try again
+    sleep "${_backoff}"
+    _backoff="$(( _backoff * 2 ))"
+  done
+  
+  return 0
+}
+
+_check_nm_alive() {
+  _nm_online -s || return 1
+  return 0
+}
+
+_check_nm_online() {
+  _nm_online || return 1
+  return 0
+}
+
+_ping() {
+  if ! command -v ping >/dev/null; then
+    printf -- 'Missing "ping", cannot run check\n'
+    return 1
+  fi
+
+  _backoff=1
+  while ! ping -4 -c 1 -n "$1" >/dev/null 2>&1; do
+    if [ "${_backoff}" -gt "${BACKOFF_LIMIT_S}" ]; then
+      return 1
+    fi
+
+    # Ping failed, wait for backoff time and try again
+    sleep "${_backoff}"
+    _backoff="$(( _backoff * 2 ))"
+  done
+  
+  return 0
+}
+
+_ping_google_ip() {
+  _ping "8.8.8.8" || return 1
+  return 0
+}
+
+_ping_google_dns() {
+  _ping "google.com" || return 1
+  return 0
+}
+
+main() {
+  _check_nm_alive || {
+    printf -- 'NetworkManager is dead. NOT ONLINE\n'
+    return 1
+  }
+
+  _check_nm_online || {
+    printf -- 'NetworkManager is offline. NOT ONLINE\n'
+    return 2
+  }
+
+  _ping_google_ip || {
+    printf -- 'Could not ping Google IP. NOT ONLINE\n'
+    return 3
+  }
+
+  # Optionally check that we have DNS
+  case "$1" in
+    d|dns|-d|--dns)
+      _ping_google_dns || {
+        printf -- 'Could not ping Google DNS. NOT ONLINE\n'
+        return 4
+      }
+    ;;
+  esac
+
+  printf -- 'NETWORK ONLINE\n'
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
