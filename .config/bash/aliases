@@ -3,6 +3,11 @@
 os="$(uname)"
 
 for script in "${HOME}"/.bash_aliases.d/* "${XDG_CONFIG_HOME}"/bash/aliases.d/*; do
+  # Sometimes os can get unset. Reset it here
+  if [ -z "${os}" ]; then
+    os="$(uname)"
+  fi
+
   # shellcheck disable=SC1090
   [ -r "${script}" ] && {
     case "${script}" in
