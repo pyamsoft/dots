@@ -3,6 +3,7 @@ Description=Freegames check for %i (must be already configured with first-run)
 
 [Timer]
 OnCalendar=0/4:00:00
+Persistent=true
 
 [Install]
 WantedBy=timers.target
