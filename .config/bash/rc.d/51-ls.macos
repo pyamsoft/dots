@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-if [ -n "${LS_COLORS}" ]; then
+if [ -z "${LS_COLORS}" ]; then
   if command -v gdircolors >/dev/null; then
     eval "$(gdircolors -b)" || return 1
   fi
