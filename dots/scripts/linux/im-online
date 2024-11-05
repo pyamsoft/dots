@@ -1,7 +1,5 @@
 #/bin/sh
 
-# Does four things
-
 # Checks that NetworkManager is alive
 # Checks that NetworkManager is online
 # Checks that ping works on Google without DNS (8.8.8.8)
@@ -11,9 +9,9 @@
 readonly BACKOFF_LIMIT_S=30
 
 _nm_online() {
+  # nm-online is optional, only used for systems that use NetworkManager
   if ! command -v nm-online >/dev/null; then
-    printf -- 'Missing "nm-online", cannot run check\n'
-    return 1
+    return 0
   fi
 
   # Run nm-online
