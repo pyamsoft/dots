@@ -114,7 +114,6 @@ _containerize() {
     -e PGID=1000 \
     -e DRINODE=/dev/dri/renderD128 \
     -e DISABLE_IPV6=true \
-    -e TZ=US/Pacific \
     ${_network} \
     ${_ff} \
     ${_mounts} \
