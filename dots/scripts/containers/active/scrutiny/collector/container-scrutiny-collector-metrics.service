@@ -12,3 +12,7 @@ Type=oneshot
 # Let the Scrutiny service start up
 ExecStartPre=-/bin/sh -c 'sleep 5'
 ExecStart=/bin/sh -c 'podman exec scrutiny bash -c "scrutiny-collector-metrics run"'
+
+# If it fails, restart the runner
+Restart=on-failure
+RestartSec=10
