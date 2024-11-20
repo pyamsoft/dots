@@ -10,8 +10,8 @@ _stale_unlink() {
 }
 
 _remove_holdovers() {
-  printf -- 'We remove old device symlinks and logs.\n'
-  printf -- 'Sunshine sometimes has a problem cleaning these up and refuses to start...\n\n'
+  printf -- '[LOG] We remove old device symlinks and logs.\n'
+  printf -- '[LOG] Sunshine sometimes has a problem cleaning these up and refuses to start...\n\n'
 
   # Bad symlinks
   _stale_unlink "${HOME}/.config/sunshine/sunshine_keyboard" || return 1
@@ -32,7 +32,7 @@ _unlock_linux() {
     return 1
   }
 
-  printf -- 'Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+  printf -- '[LOG] Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
   unset _s
   return 0
 }
@@ -41,7 +41,14 @@ _unlock_macos() {
   _s="$1"
 
   # How do we unlock MacOS? Do we need to?
-  printf -- ' '
+  if command -v unlocker>/dev/null 2>&1; then
+    unlocker unlock || {
+      printf -- '[ERROR] Failed unlocking session: %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+      return 1
+    }
+
+    printf -- '[LOG] Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+  fi
 
   unset _s
   return 0
@@ -77,8 +84,8 @@ _list_sessions_macos() {
 }
 
 _unlock_sessions() {
-  printf -- 'We unlock all user-sessions\n'
-  printf -- 'Sunshine will not be able to claim the CPU and GPU for rendering otherwise.\n\n'
+  printf -- '[LOG] We unlock all user-sessions\n'
+  printf -- '[LOG] Sunshine will not be able to claim the CPU and GPU for rendering otherwise.\n\n'
 
   if [ "$(uname)" = "Darwin" ]; then
     _user_sessions="$(_list_sessions_macos)"
@@ -106,110 +113,14 @@ _start_sunshine_linux() {
 }
 
 _stop_sunshine_macos() {
-  # Sunshine installed with MacPorts uses daemondo
-
-  # shellcheck disable=SC2009
-  _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
-  if [ -n "${_d_pid}" ]; then
-
-    # Send kill
-    printf -- 'Attempt to kill running daemondo --label=Sunshine process... %s\n' "${_d_pid}"
-    kill "${_d_pid}" || {
-      printf -- 'Failed to kill daemondo PID: %s\n' "${_d_pid}"
-      return 1
-    }
-
-    # Wait for death
-    _wait_count=0
-    while [ -n "${_d_pid}" ]; do
-      _wait_count="$((_wait_count + 1))"
-
-      # Force kill if we take too long
-      if [ "${_wait_count}" -ge 10 ]; then
-        printf -- "We've waited a long time to stop the old. Force kill it %s\n" "${_d_pid}"
-        kill -9 "${_d_pid}" || {
-          printf -- 'Failed to force-kill daemondo PID: %s\n' "${_d_pid}"
-
-          unset _wait_count
-          unset _d_pid
-          return 1
-        }
-      fi
-
-      # Wait for death
-      sleep 2
-
-      # shellcheck disable=SC2009
-      _d_pid="$(ps aux | grep 'daemondo --label=Sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
-    done
-
-    printf -- 'Stopped old Sunshine daemondo!\n'
-  fi
-  unset _wait_count
-  unset _d_pid
-
-  # Installed with homebrew we just run sunshine
-  
-  # shellcheck disable=SC2009
-  _d_pid="$(ps aux | grep 'sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
-  if [ -n "${_d_pid}" ]; then
-
-    # Send kill
-    printf -- 'Attempt to kill running sunshine process %s...\n' "${_d_pid}"
-    kill "${_d_pid}" || {
-      printf -- 'Failed to kill sunshine PID: %s\n' "${_d_pid}"
-      return 1
-    }
-
-    # Wait for death
-    _wait_count=0
-    while [ -n "${_d_pid}" ]; do
-      _wait_count="$((_wait_count + 1))"
-
-      # Force kill if we take too long
-      if [ "${_wait_count}" -ge 10 ]; then
-        printf -- "We've waited a long time to stop the old. Force kill it %s\n" "${_d_pid}"
-        kill -9 "${_d_pid}" || {
-          printf -- 'Failed to force-kill sunshine PID: %s\n' "${_d_pid}"
-
-          unset _wait_count
-          unset _d_pid
-          return 1
-        }
-      fi
-
-      # Wait for death
-      sleep 2
-
-      # shellcheck disable=SC2009
-      _d_pid="$(ps aux | grep 'sunshine' | grep -v grep | grep -v 'restart-sunshine' | awk '{ print $2 }')"
-    done
-
-    printf -- 'Stopped old Sunshine!\n'
-  fi
-
-  unset _wait_count
-  unset _d_pid
+  # Use the beta branch for now on MacOS
+  brew services stop sunshine-beta >/dev/null 2>&1 || return 1
   return 0
 }
 
 _start_sunshine_macos() {
-  # Restart
-  _stop_sunshine_macos
-
-  # Run sunshine daemon
-  if [ -f "/opt/local/bin/daemondo" ] && [ -f "/opt/local/bin/sunshine" ]; then
-    printf -- 'Run sunshine with daemondo!\n'
-    /opt/local/bin/daemondo \
-      --label=Sunshine \
-      --restart-netchange \
-      --pid=exec \
-      --start-cmd /opt/local/bin/sunshine >"${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs/sunshine" &
-  elif [ -f "/opt/homebrew/bin/sunshine" ]; then
-    printf -- 'Run sunshine from homebrew!\n'
-    /opt/homebrew/bin/sunshine >"${XDG_CONFIG_HOME:-${HOME}/.config}/MacOS/logs/sunshine" &
-  fi
-
+  # Use the beta branch for now on MacOS
+  brew services restart sunshine-beta >/dev/null 2>&1 || return 1
   return 0
 }
 
@@ -234,7 +145,7 @@ _start_sunshine() {
 }
 
 _restart() {
-  printf -- 'Stopping old sunshine service...\n\n'
+  printf -- '[LOG] Stopping old sunshine service...\n\n'
 
   _stop_sunshine || return 1
 
@@ -244,7 +155,7 @@ _restart() {
   # Unlock all sessions (if a session is locked, it causes sunshine to be unable to claim the display and GPU/CPU)
   _unlock_sessions || return 1
 
-  printf -- 'Starting new sunshine service...\n\n'
+  printf -- '[LOG] Starting new sunshine service...\n\n'
 
   _start_sunshine || return 1
 
@@ -252,20 +163,20 @@ _restart() {
 }
 
 _restart_sunshine() {
-  printf -- 'Restarting Sunshine gamestream...\n'
+  printf -- '[LOG] Restarting Sunshine gamestream...\n'
 
   # If we can, we should poke the monitor first just to be safe
   if command -v poke-monitor >/dev/null 2>&1; then
-    printf -- 'Poking the monitor first before doing Sunshine things, just in case...\n'
+    printf -- '[LOG] Poking the monitor first before doing Sunshine things, just in case...\n'
 
     # Just give it our best shot.
     poke-monitor auto || {
-      printf -- 'Poking the monitor failed, continue with Sunshine things anyway.\n'
+      printf -- '[WARN] Poking the monitor failed, continue with Sunshine things anyway.\n'
     }
   fi
 
   if _restart; then
-    printf -- 'Restarted sunshine service!\n'
+    printf -- '[LOG] Restarted sunshine service!\n'
   else
     printf -- '[ERROR] Failed to restart sunshine\n'
     return 1
@@ -281,13 +192,14 @@ main() {
   else
     # On MacOS sometimes we are not on the PATH
     if [ "$(uname)" = "Darwin" ]; then
-      if [ -e /opt/local/bin/sunshine ]; then
+      # Use the beta branch for now on MacOS
+      if [ -e /opt/homebrew/bin/sunshine-beta ]; then
         _restart_sunshine || return 1
         return 0
       fi
     fi
 
-    printf -- 'sunshine is not installed.\n'
+    printf -- '[ERROR] sunshine is not installed.\n'
     exit 1
   fi
 }
