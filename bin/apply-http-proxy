@@ -1,71 +1,154 @@
 #!/bin/sh
 
-proxy="$1"
+set -u
 
-if [ -z "${proxy}" ]; then
+# Argument parsing
+_all=0
+_proxy=""
+
+_NO_PROXY="localhost,127.0.0.1,127.0.0.0/8"
+readonly _NO_PROXY
+
+_help() {
   # We log to stderr to avoid polluting a shell in eval mode
   printf -- '%s\n' "$(
     cat <<EOF
 apply-http-proxy
 
+COMMAND
+
 clear             - Reset proxy
-default           - Apply default proxy values
+default | http    - Apply HTTP proxy values
+socks4 | socks4a  - Apply SOCKS4A proxy values
+socks5 | socks5h  - Apply SOCKS5H proxy values
 systemd-apply     - Export current proxy values to systemd environment
 systemd-clear     - Reset systemd environment proxy values
 <HOSTNAME>:<PORT> - Apply custom proxy values
 
+OPTION
+-a | --all        - Apply to the ALL_PROXY variable
+
+
 [Example]
 $ eval "\$(apply-http-proxy clear)"
-$ eval "\$(apply-http-proxy default)"
-$ eval "\$(apply-http-proxy 192.168.49.1:8228)"
+$ eval "\$(apply-http-proxy http)"
+$ eval "\$(apply-http-proxy -a socks4)"
+$ eval "\$(apply-http-proxy http://192.168.49.1:8228)"
+$ eval "\$(apply-http-proxy --all socks5h://192.168.49.1:8229)"
 $ apply-http-proxy systemd-apply
 $ apply-http-proxy systemd-clear
 EOF
   )" 1>&2
-  exit 1
-elif [ "${proxy}" = "clear" ]; then
-  # We log to stderr to avoid polluting a shell in eval mode
+}
+
+_argparse() {
+  while [ "$#" -gt 0 ]; do
+    # Accept option
+    if [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
+      _all=1
+    elif [ -z "${_proxy}" ]; then
+      # Otherwise accept the first value as proxy
+      _proxy="$1"
+    fi
+
+    shift
+  done
+
+  return 0
+}
+
+_clear_proxy() {
+  printf -- 'export http_proxy=\nunset http_proxy\nexport HTTP_PROXY=\nunset HTTP_PROXY\n'
+  printf -- 'export https_proxy=\nunset https_proxy\nexport HTTPS_PROXY=\nunset HTTPS_PROXY\n'
+  printf -- 'export no_proxy=\nunset no_proxy\nexport NO_PROXY=\nunset NO_PROXY\n'
+  printf -- 'export all_proxy=\nunset all_proxy\nexport ALL_PROXY=\nunset ALL_PROXY\n'
+
   printf -- 'Proxy cleared\n' 1>&2
+  return 0
+}
 
-  printf -- '%s\n' "unset http_proxy"
-  printf -- '%s\n' "unset HTTP_PROXY"
-
-  printf -- '%s\n' "unset https_proxy"
-  printf -- '%s\n' "unset HTTPS_PROXY"
-
-  printf -- '%s\n' "unset no_proxy"
-  printf -- '%s\n' "unset NO_PROXY"
-elif [ "${proxy}" = "systemd-apply" ]; then
+_systemd_apply() {
   if [ "$(id -u)" -eq 0 ]; then
     printf -- 'Export proxy definition to systemd environment\n'
-    exec systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    if [ "${_all}" -eq 1 ]; then
+      exec systemctl import-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
+    else
+      exec systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    fi
   else
     printf -- 'Export proxy definition to systemd environment\n'
-    exec sudo systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    if [ "${_all}" -eq 1 ]; then
+      exec sudo systemctl import-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
+    else
+      exec sudo systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    fi
   fi
-elif [ "${proxy}" = "systemd-clear" ]; then
+
+  return 0
+}
+
+_systemd_clear() {
   if [ "$(id -u)" -eq 0 ]; then
     printf -- 'Remove proxy definition from systemd environment\n'
-    exec systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    exec systemctl unset-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
   else
     printf -- 'Remove proxy definition from systemd environment\n'
-    exec sudo systemctl unset-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
+    exec sudo systemctl unset-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
   fi
-else
-  if [ "${proxy}" = "default" ]; then
-    proxy="192.168.49.1:8228"
+
+  return 0
+}
+
+_parse_proxy() {
+  if [ "${_proxy}" = "default" ] || [ "${_proxy}" = "http" ]; then
+    # HTTP proxy defaults
+    _proxy="http://192.168.49.1:8228"
+  elif [ "${_proxy}" = "socks4" ] || [ "${_proxy}" = "socks4a" ]; then
+    # SOCKS4A proxy defaults
+    _proxy="socks4a://192.168.49.1:8229"
+  elif [ "${_proxy}" = "socks5" ] || [ "${_proxy}" = "socks5h" ]; then
+    # SOCKS5H proxy defaults
+    _proxy="socks5h://192.168.49.1:8229"
   fi
+  # Otherwise we assume the ${_proxy} variable is a "valid" proxy string. So just accept it.
+
+  printf -- '%s\n' "export http_proxy=\"${_proxy}\""
+  printf -- '%s\n' "export HTTP_PROXY=\"${_proxy}\""
+
+  printf -- '%s\n' "export https_proxy=\"${_proxy}\""
+  printf -- '%s\n' "export HTTPS_PROXY=\"${_proxy}\""
+
+  printf -- '%s\n' "export no_proxy=\"${_NO_PROXY}\""
+  printf -- '%s\n' "export NO_PROXY=\"${_NO_PROXY}\""
+
+  if [ "${_all}" -eq 1 ]; then
+    printf -- '%s\n' "export all_proxy=\"${_proxy}\""
+    printf -- '%s\n' "export ALL_PROXY=\"${_proxy}\""
+  fi
+
   # We log to stderr to avoid polluting a shell in eval mode
-  printf -- 'Proxy set as http://%s\n' "${proxy}" 1>&2
+  printf -- 'Proxy set as %s\n' "${_proxy}" 1>&2
 
-  printf -- '%s\n' "export http_proxy=\"http://${proxy}\""
-  printf -- '%s\n' "export HTTP_PROXY=\"http://${proxy}\""
+  return 0
+}
 
-  printf -- '%s\n' "export https_proxy=\"http://${proxy}\""
-  printf -- '%s\n' "export HTTPS_PROXY=\"http://${proxy}\""
+main() {
+  _argparse "$@" || return 1
 
-  printf -- '%s\n' "export no_proxy=\"localhost,127.0.0.1,127.0.0.0/8\""
-  printf -- '%s\n' "export NO_PROXY=\"localhost,127.0.0.1,127.0.0.0/8\""
-fi
+  if [ -z "${_proxy}" ]; then
+    _help "$@" || return 1
+  elif [ "${_proxy}" = "clear" ]; then
+    _clear_proxy "$@" || return 1
+  elif [ "${_proxy}" = "systemd-apply" ]; then
+    _systemd_apply "$@" || return 1
+  elif [ "${_proxy}" = "systemd-clear" ]; then
+    _systemd_clear "$@" || return 1
+  else
+    _parse_proxy "$@" || return 1
+  fi
 
+  return 0
+}
+
+main "$@" || exit 1
 exit 0
