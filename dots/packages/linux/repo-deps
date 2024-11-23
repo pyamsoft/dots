@@ -33,6 +33,7 @@ bluez
 bluez-libs
 bolt
 botan
+bpf
 breeze-icons
 brotli
 bubblewrap
@@ -273,6 +274,7 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
+jq
 js128
 json-c
 json-glib
@@ -612,7 +614,6 @@ libutempter
 libutf8proc
 libuv
 libva
-libva-mesa-driver
 libvdpau
 libvdpau-va-gl
 libverto
@@ -691,7 +692,6 @@ mdadm
 media-player-info
 mesa
 mesa-utils
-mesa-vdpau
 miniupnpc
 mjpegtools
 mkinitcpio
@@ -728,6 +728,7 @@ oniguruma
 openal
 opencore-amr
 openexr
+openh264
 openjpeg2
 openssh
 openssl
@@ -900,6 +901,7 @@ rubberband
 sane
 sane-airscan
 sbc
+scx-scheds
 sdl2
 sdl2_image
 seabios
