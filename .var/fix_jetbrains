@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# Sometimes when closing the IDE, it leaves a lock file around
+# Use this script to quickly remove the lock file
+
+_remove_lock() {
+  _app="$1"
+  _folder="$2"
+
+  _old="$(pwd)"
+  _target="app/${_app}/config/${_folder}"
+
+  # Check exists
+  if [ ! -d "${_target}" ]; then
+    unset _old
+    unset _app
+    unset _folder
+    unset _target
+    return 0
+  fi
+
+  cd "${_target}" || {
+    printf -- 'Failed to cd into target: %s\n' "${_target}"
+    
+    unset _old
+    unset _app
+    unset _folder
+    unset _target
+    return 1
+  }
+
+  rm -v -f ./*/.lock || {
+    printf -- 'Failed to remove lock file in target: %s\n' "${_target}"
+  }
+
+  cd "${_old}" || {
+    printf -- 'Failed to cd out of target: %s\n' "${_target}"
+
+    unset _old
+    unset _app
+    unset _folder
+    unset _target
+    return 1
+  }
+
+  unset _old
+  unset _app
+  unset _folder
+  unset _target
+  return 0
+}
+
+main() {
+  _remove_lock "com.jetbrains.WebStorm" "JetBrains"
+  _remove_lock "com.jetbrains.PyCharm-Community" "JetBrains"
+  _remove_lock "com.google.AndroidStudio" "Google"
+}
+
+main "$@" || exit 1
+exit 0
