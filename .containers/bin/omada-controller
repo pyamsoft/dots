@@ -63,9 +63,8 @@ _prep_caps() {
   # Drop priv and switch to omada user
   _caps="${_caps} --cap-add CHOWN"
 
-  # Doesn't actually need
-  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
-  # _caps="${_caps} --cap-add DAC_OVERRIDE"
+  # Won't be able to create the DB on first launch without this
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
 
   readonly _caps
   return 0
