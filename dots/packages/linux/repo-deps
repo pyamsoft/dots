@@ -33,7 +33,6 @@ bluez
 bluez-libs
 bolt
 botan
-bpf
 breeze-icons
 brotli
 bubblewrap
@@ -274,7 +273,6 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
-jq
 js128
 json-c
 json-glib
@@ -901,7 +899,6 @@ rubberband
 sane
 sane-airscan
 sbc
-scx-scheds
 sdl2
 sdl2_image
 seabios
