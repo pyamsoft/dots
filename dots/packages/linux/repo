@@ -8,6 +8,7 @@ buildah
 corectrl
 cups-pdf
 ddcutil
+distrobox
 gdm
 git-delta
 gnome-themes-extra
@@ -27,7 +28,6 @@ man-db
 man-pages
 mangohud
 nautilus
-neovim
 noto-fonts
 otf-cascadia-code
 p7zip
@@ -50,9 +50,9 @@ steam
 sunshine-git
 tailscale
 tmux
-tree-sitter-cli
 ttf-gentium-plus
 ttf-liberation
+vim
 virt-manager
 xdg-user-dirs
 yt-dlp

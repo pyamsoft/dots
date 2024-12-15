@@ -37,7 +37,6 @@ breeze-icons
 brotli
 bubblewrap
 bzip2
-c-ares
 ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
@@ -351,6 +350,7 @@ lib32-libnghttp3
 lib32-libnsl
 lib32-libpciaccess
 lib32-libpipewire
+lib32-libpng
 lib32-libpsl
 lib32-libsm
 lib32-libssh2
@@ -386,6 +386,7 @@ lib32-pcre2
 lib32-pipewire
 lib32-pipewire-jack
 lib32-pipewire-v4l2
+lib32-spirv-tools
 lib32-sqlite
 lib32-systemd
 lib32-util-linux
@@ -513,7 +514,6 @@ libldap
 liblqr
 liblrdf
 libltc
-libluv
 libmalcontent
 libmanette
 libmbim
@@ -539,7 +539,6 @@ libnfs
 libnftnl
 libnghttp2
 libnghttp3
-libngtcp2
 libnice
 libnl
 libnm
@@ -549,7 +548,6 @@ libnotify
 libnsl
 libnvme
 libogg
-libomxil-bellagio
 libopenmpt
 libosinfo
 libp11
@@ -609,8 +607,6 @@ liburing
 libusb
 libusbmuxd
 libutempter
-libutf8proc
-libuv
 libva
 libvdpau
 libvdpau-va-gl
@@ -621,7 +617,6 @@ libvirt-python
 libvorbis
 libvpl
 libvpx
-libvterm
 libwacom
 libwbclient
 libwebp
@@ -677,8 +672,6 @@ localsearch
 lsb-release
 lsof
 lua
-lua51-lpeg
-luajit
 lv2
 lz4
 lzo
@@ -700,7 +693,6 @@ modemmanager-qt
 mpdecimal
 mpfr
 mpg123
-msgpack-c
 mtdev
 mutter
 ncurses
@@ -711,12 +703,8 @@ netavark
 nettle
 networkmanager
 nftables
-node-gyp
-nodejs
-nodejs-nopt
 noto-fonts-cjk
 noto-fonts-emoji
-npm
 npth
 nspr
 nss
@@ -805,11 +793,9 @@ python-distro
 python-dotenv
 python-fonttools
 python-gobject
-python-greenlet
 python-idna
 python-kiwisolver
 python-matplotlib
-python-msgpack
 python-numpy
 python-packaging
 python-pbr
@@ -817,7 +803,6 @@ python-pillow
 python-protobuf
 python-pycryptodomex
 python-pycups
-python-pynvim
 python-pyparsing
 python-pyqt6
 python-pyqt6-sip
@@ -904,7 +889,6 @@ sdl2_image
 seabios
 seatd
 sed
-semver
 serd
 shaderc
 shadow
@@ -951,13 +935,6 @@ texinfo
 tinysparql
 totem-pl-parser
 tpm2-tss
-tree-sitter
-tree-sitter-c
-tree-sitter-lua
-tree-sitter-markdown
-tree-sitter-query
-tree-sitter-vim
-tree-sitter-vimdoc
 tslib
 ttf-dejavu
 ttf-nerd-fonts-symbols-common
@@ -966,7 +943,6 @@ twolame
 tzdata
 uchardet
 udisks2
-unibilium
 unzip
 upower
 usbredir
@@ -977,6 +953,7 @@ v4l-utils
 vapoursynth
 vde2
 vid.stab
+vim-runtime
 virglrenderer
 virt-install
 virtiofsd
@@ -997,7 +974,6 @@ which
 wildmidi
 wireless-regdb
 wireplumber
-wl-clipboard
 woff2
 wolfssl
 wpa_supplicant
@@ -1012,7 +988,6 @@ xcb-util-keysyms
 xcb-util-renderutil
 xcb-util-wm
 xcb-util-xrm
-xclip
 xdg-dbus-proxy
 xdg-desktop-portal
 xdg-desktop-portal-gnome
