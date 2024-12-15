@@ -7,6 +7,13 @@ if command -v docker >/dev/null || command -v podman >/dev/null; then
   fi
 fi
 
+# Distrobox scrips
+if command -v distrobox >/dev/null; then
+  if [ -d "${HOME}/.distrobox/bin" ]; then
+    PATH="${HOME}/.distrobox/bin:${PATH}"
+  fi
+fi
+
 # Export the PATH
 export PATH
 

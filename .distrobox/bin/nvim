@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Use nvim from distrobox
+exec distrobox enter nvim --clean-path -e nvim "$@"
