@@ -17,7 +17,7 @@ _log() {
   printf -- "[gametime]: ${_msg}\n" "$@"
 }
 
-_prepare_env() {
+_prepare_mesa_env() {
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
   export MESA_DISK_CACHE_SINGLE_FILE=1
@@ -37,6 +37,10 @@ _prepare_env() {
   export MESA_VK_WSI_PRESENT_MODE="immediate"
   __game_environment="${__game_environment} MESA_VK_WSI_PRESENT_MODE=${MESA_VK_WSI_PRESENT_MODE}"
 
+  return 0
+}
+
+_prepare_proton_env() {
   # Enable NVAPI for Nvidia GPUs
   export PROTON_ENABLE_NVAPI=1
   __game_environment="${__game_environment} PROTON_ENABLE_NVAPI=${PROTON_ENABLE_NVAPI}"
@@ -49,11 +53,19 @@ _prepare_env() {
   export PROTON_HEAP_DELAY_FREE=1
   __game_environment="${__game_environment} PROTON_HEAP_DELAY_FREE=${PROTON_HEAP_DELAY_FREE}"
 
+  return 0
+}
+
+_prepare_dxvk_env() {
   # Fun random DXVK variables!
   # https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/
   export DXVK_NVAPI_ALLOW_OTHER_DRIVERS=1
   __game_environment="${__game_environment} DXVK_NVAPI_ALLOW_OTHER_DRIVERS=${DXVK_NVAPI_ALLOW_OTHER_DRIVERS}"
 
+  return 0
+}
+
+_prepare_sdl_env() {
   # These SDL vars can cause random issues with some Steam games, so unset them
   # SDL2, 1.2 compat
   # SDL3 adds underscores lol
@@ -74,22 +86,15 @@ _prepare_env() {
   export SDL_VIDEO_WAYLAND_MODE_SCALING=none
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
 
-  # Optional fixes for messy graphics
-  if [ -n "${GAME_FIX}" ] && [ "${GAME_FIX}" -ne 0 ]; then
-    _log 'Applying AMD driver fixes: YES (GAME_FIX=%s)' "${GAME_FIX}"
+  return 0
+}
 
-    # Fix weird texture bugs
-    # https://github.com/Plagman/gamescope/issues/320
-    export AMD_DEBUG=nodcc
-    __game_environment="${__game_environment} AMD_DEBUG=${AMD_DEBUG}"
+_prepare_env() {
+  _prepare_mesa_env || return 1
+  _prepare_proton_env || return 1
+  _prepare_dxvk_env || return 1
+  _prepare_sdl_env || return 1
 
-    export RADV_DEBUG=nodcc
-    __game_environment="${__game_environment} RADV_DEBUG=${RADV_DEBUG}"
-  else
-    _log 'Applying AMD driver fixes: NO (GAME_FIX=%s)' "${GAME_FIX}"
-  fi
-
-  unset GAME_FIX
   return 0
 }
 
