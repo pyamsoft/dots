@@ -1,0 +1,3 @@
+[Session Bus Policy]
+org.freedesktop.fwupd=talk
+org.freedesktop.login1=talk

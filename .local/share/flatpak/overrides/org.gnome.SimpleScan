@@ -1,0 +1,5 @@
+[Context]
+devices=all;
+
+[Session Bus Policy]
+org.freedesktop.Avahi=talk
