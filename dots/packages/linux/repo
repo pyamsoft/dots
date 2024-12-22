@@ -1,3 +1,4 @@
+7zip
 alsa-firmware
 alsa-plugins
 alsa-utils
@@ -30,7 +31,6 @@ nautilus
 neovim
 noto-fonts
 otf-cascadia-code
-p7zip
 pacman-contrib
 papirus-icon-theme
 pkgstats

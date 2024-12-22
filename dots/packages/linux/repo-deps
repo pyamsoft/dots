@@ -789,6 +789,7 @@ python
 python-cairo
 python-capng
 python-certifi
+python-chardet
 python-charset-normalizer
 python-click
 python-contourpy
