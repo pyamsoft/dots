@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# Tetrio
-
-exec jail "$(basename "$0")" \
-  --new-session \
-  -- \
-  "$@"

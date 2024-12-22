@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# IDE with devel
-
-exec jail "$(basename "$0")" \
-  --bind "${HOME}/devel" "${HOME}/devel/" \
-  -- \
-  "$@"

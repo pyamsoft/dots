@@ -1,9 +1,0 @@
-#!/bin/sh
-
-# Libreoffice with documents
-
-exec jail "$(basename "$0")" \
-  --new-session \
-  --bind "${HOME}/documents" "${HOME}/documents/" \
-  -- \
-  "$@"
