@@ -21,3 +21,15 @@ clear_flatpak_pins() {
  
   return 0
 }
+
+##
+# Remove background permission from all flatpak apps
+remove_flatpak_background_permissions() {
+  for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
+    flatpak permission-set background background "${_app}" no || return 1
+    unset _app
+  done
+  unset _app
+
+  return 0
+}
