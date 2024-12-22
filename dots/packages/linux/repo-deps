@@ -51,7 +51,6 @@ cifs-utils
 colord
 colord-gtk-common
 colord-gtk4
-colord-sane
 composefs
 confuse
 conmon

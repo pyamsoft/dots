@@ -15,6 +15,7 @@ org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
 org.gnome.Connections
 org.gnome.Firmware
+org.gnome.SimpleScan
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.localsend.localsend_app

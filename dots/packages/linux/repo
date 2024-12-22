@@ -41,7 +41,6 @@ rng-tools
 rofi
 sbctl
 shellcheck
-simple-scan
 smartmontools
 sof-firmware
 sshpass
