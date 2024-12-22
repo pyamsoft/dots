@@ -2,7 +2,7 @@
 [[ "$-" != *i* ]] && return
 
 # Aliases
-alias ls="ls -cHh --color=auto "
+alias ls="ls -CHh --color=auto "
 alias ll="ls -l"
 alias la="ls -A"
 
