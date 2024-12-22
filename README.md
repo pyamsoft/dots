@@ -13,7 +13,7 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
-## Proxy
+### Proxy
 
 For proxy usage
 - First you should run `apply-http-proxy default` to see the settings, and then
@@ -22,21 +22,26 @@ For proxy usage
   first, and then restart any services that need to use the proxy.
 - For git, update your git-ssh config to use the socat proxy line
 
-## Fonts
+### Fonts
 
 I code with a monospace Comic Sans like font. Yes, I am serious.  
 Currently I'm using a fork of "Comic Shanns", found here on github:  
 [you have been warned](https://github.com/jesusmgg/comic-shanns-mono)
 
-## Sound on Linux
+### Sound on Linux
 You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would generally
 want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
 
-## USBGuard
+### USBGuard
 [Make sure you setup USBGuard](https://wiki.archlinux.org/title/USBGuard)
 `usbguard generate-policy > /etc/usbguard/rules.conf`
 
 Otherwise, if another service starts usbguard somehow, you will be locked out!
+
+### Firmware Update
+I prefer `fwupd` and using the `org.gnome.Firmware` flatpak for the frontend.
+To enable `fwupd.service`, you may wish to mask `passim.service`, which
+for example reports problems on my machine and prevents fwupd from running.
 
 ### Wayland
 - Sunshine needs cap_sys_admin `sudo setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine`
