@@ -1,10 +1,5 @@
-7zip
-alsa-firmware
-alsa-plugins
-alsa-utils
 android-udev
 base
-base-devel
 buildah
 corectrl
 cups-pdf
@@ -21,15 +16,12 @@ inter-font
 irqbalance
 kdeconnect
 kernel-modules-hook
-ldns
 lib32-mangohud
 linux-lts
 man-db
 man-pages
 mangohud
-nautilus
 neovim
-noto-fonts
 otf-cascadia-code
 pacman-contrib
 papirus-icon-theme
@@ -42,7 +34,6 @@ rofi
 sbctl
 shellcheck
 smartmontools
-sof-firmware
 sshpass
 starship
 steam
@@ -52,7 +43,6 @@ tmux
 ttf-gentium-plus
 ttf-liberation
 virt-manager
-xdg-user-dirs
 yt-dlp
 zip
 zram-generator

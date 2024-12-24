@@ -9,6 +9,7 @@ adwaita-icon-theme
 adwaita-icon-theme-legacy
 alsa-card-profiles
 alsa-lib
+alsa-plugins
 alsa-topology-conf
 alsa-ucm-conf
 ananicy-cpp
@@ -24,6 +25,7 @@ autoconf
 automake
 avahi
 ayatana-ido
+base-devel
 bash
 bash-completion
 binutils
@@ -79,7 +81,6 @@ device-mapper
 diffutils
 dmidecode
 dnsmasq
-dnssec-anchors
 dosfstools
 double-conversion
 dtc
@@ -701,6 +702,7 @@ mpg123
 msgpack-c
 mtdev
 mutter
+nautilus
 ncurses
 ndctl
 neon
@@ -709,6 +711,7 @@ netavark
 nettle
 networkmanager
 nftables
+noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 npth
@@ -1011,6 +1014,7 @@ xdg-dbus-proxy
 xdg-desktop-portal
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
+xdg-user-dirs
 xdg-user-dirs-gtk
 xdg-utils
 xkeyboard-config
