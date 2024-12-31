@@ -1,0 +1,164 @@
+#!/bin/sh
+
+readonly _name="tailscale"
+readonly _image="docker.io/tailscale/tailscale"
+readonly _tag="v1.78.1"
+
+# Use podman, don't use docker
+readonly _cmd="podman"
+
+_prep_mounts() {
+  readonly _mount1="/usr/local/etc/containers/${_name}/data"
+
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/var/lib/tailscale"
+
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # For networking
+  _caps="${_caps} --cap-add NET_ADMIN"
+  _caps="${_caps} --cap-add NET_RAW"
+  
+  # Allow loading kernel module
+  _caps="${_caps} --cap-add SYS_MODULE"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  readonly _ports
+  return 0
+}
+
+_prep_env() {
+  _env=""
+
+  # Kernel networking
+  _env="${_env} -e TS_USERSPACE=false"
+
+  # Assign state dir as bound directory
+  _env="${_env} -e TS_STATE_DIR=/var/lib/tailscale"
+
+  readonly _env
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'You must run this as a rootfull container\n'
+    return 1
+  fi
+
+  # Expects to be root
+  _userns="--user=0:0"
+
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  # tailscale runtime config variable
+  _ts=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="/usr/local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+  readonly _ts
+
+  # Only compare the version minors
+  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+  _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
+  unset _current_version
+
+  # MacOS can't launch with host-gateway
+  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+  readonly _network
+
+  unset _is_cmd_new_enough
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm -i -t \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --device "/dev/net/tun:/dev/net/tun" \
+    ${_ts} \
+    ${_env} \
+    ${_network} \
+    ${_auto} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  if [ "$(uname)" = "Darwin" ]; then
+    printf -- '%s is not supported on MacOS\n' "${_name}"
+    return 1
+  fi
+
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_env || return 1
+  _prep_caps || return 1
+
+  # Launch the containers runtime
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the root /run/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ]; then
+    while [ ! -d "/run/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
+
