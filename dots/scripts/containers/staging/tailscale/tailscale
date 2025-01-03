@@ -2,7 +2,7 @@
 
 readonly _name="tailscale"
 readonly _image="docker.io/tailscale/tailscale"
-readonly _tag="v1.78.1"
+readonly _tag="v1.78.3"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
