@@ -8,4 +8,4 @@ Wants=network-online.target
 [Service]
 # Need oneshot or timer does not restart
 Type=oneshot
-ExecStart=/usr/local/bin/crowdsec-heartbeat --unescape "%i"
+ExecStart=/usr/local/sbin/crowdsec-heartbeat --unescape "%i"
