@@ -7,7 +7,7 @@ Wants=network-online.target local-fs.target
 
 [Service]
 # File must exist or fail
-ExecStartPre=/bin/test -x /usr/local/bin/tailscale
+ExecStartPre=/bin/test -x /usr/local/sbin/tailscaled
 
 # Check the network is online before starting
 # We host a local page, but the network needs to be up for us to bind bridge devices
@@ -16,7 +16,7 @@ ExecStartPre=/bin/sh -c '[ -x /usr/local/bin/im-online ] && /usr/local/bin/im-on
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/usr/local/bin/container-teardown tailscale
 
-ExecStart=/usr/local/bin/tailscale
+ExecStart=/usr/local/sbin/tailscaled
 ExecStop=/usr/local/bin/container-teardown tailscale
 Restart=on-failure
 RestartSec=10
