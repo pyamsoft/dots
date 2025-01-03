@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# This script is designed ONLY to run tailscale in a container as ROOT
+#
+# This is so that we can bind directly to the host IP stack and create a virt device
+# for tailscale on the host
+#
+# The Tailscale container upstream supports non-root running as a normal user via
+# TS_USERSPACE, but this does not allow host access so we do not use it
+
 readonly _name="tailscale"
 readonly _image="docker.io/tailscale/tailscale"
 readonly _tag="v1.78.3"
@@ -48,6 +56,9 @@ _prep_env() {
 
   # Assign state dir as bound directory
   _env="${_env} -e TS_STATE_DIR=/var/lib/tailscale"
+
+  # Use host level networking
+  _env="${_env} --net=host --device /dev/net/tun:/dev/net/tun"
 
   readonly _env
   return 0
@@ -113,7 +124,6 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --device "/dev/net/tun:/dev/net/tun" \
     ${_ts} \
     ${_env} \
     ${_network} \
