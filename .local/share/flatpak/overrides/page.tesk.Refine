@@ -1,0 +1,6 @@
+[Context]
+filesystems=host-os:ro
+
+[Session Bus Policy]
+org.freedesktop.Flatpak=talk
+ca.desrt.dconf=talk
