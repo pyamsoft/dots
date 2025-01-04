@@ -7,7 +7,6 @@ ddcutil
 gdm
 git-delta
 gnome-themes-extra
-gnome-tweaks
 gst-plugin-va
 guake
 hplip
@@ -38,7 +37,6 @@ sshpass
 starship
 steam
 sunshine-git
-tailscale
 tmux
 ttf-gentium-plus
 ttf-liberation

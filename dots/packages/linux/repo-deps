@@ -160,6 +160,7 @@ gnome-online-accounts
 gnome-session
 gnome-settings-daemon
 gnome-shell
+gnulib-l10n
 gnupg
 gnutls
 gobject-introspection-runtime
@@ -635,7 +636,6 @@ libxcrypt-compat
 libxcursor
 libxcvt
 libxdamage
-libxdg-basedir
 libxdmcp
 libxdp
 libxext
@@ -1000,6 +1000,7 @@ wolfssl
 wpa_supplicant
 x264
 x265
+xcb-imdkit
 xcb-proto
 xcb-util
 xcb-util-cursor
@@ -1008,7 +1009,6 @@ xcb-util-image
 xcb-util-keysyms
 xcb-util-renderutil
 xcb-util-wm
-xcb-util-xrm
 xclip
 xdg-dbus-proxy
 xdg-desktop-portal
