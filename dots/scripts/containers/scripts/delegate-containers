@@ -27,6 +27,7 @@ ${_PROG_NAME} <action>
   disable      Runs 'systemctl --user disable --now container@<name>'
   restart      Runs 'systemctl --user restart container@<name>'
   status       Runs 'systemctl --user status container@<name>'
+  stop         Runs 'systemctl --user stop container@<name>'
 
 [system]:      System management related operations
 
@@ -113,7 +114,7 @@ main() {
       # Run as the user
       exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
       ;;
-    status|restart)
+    restart|status|stop)
       _prep_container || return 1
 
       _CONTAINER="$1"
