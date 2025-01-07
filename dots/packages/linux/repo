@@ -1,5 +1,6 @@
 android-udev
 base
+bluez-utils
 buildah
 corectrl
 cups-pdf
