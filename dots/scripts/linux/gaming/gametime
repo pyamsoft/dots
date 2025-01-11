@@ -15,6 +15,7 @@ _log() {
 
   # shellcheck disable=SC2059
   printf -- "[gametime]: ${_msg}\n" "$@"
+  return 0
 }
 
 _prepare_mesa_env() {
@@ -199,6 +200,10 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
   __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
+  # Even though the description says these don't do anything in embedded mode
+  # They ... do?
+  __gamescope_options="${__gamescope_options} --immediate-flips --adaptive-sync"
+
   # Expose Wayland
   if [ -n "${GAME_WAYLAND}" ] && [ "${GAME_WAYLAND}" -ne 0 ] && [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
     _log 'Running with Wayland exposed'
@@ -302,6 +307,20 @@ _prepare_mangohud() {
   return 0
 }
 
+_prepare_compat() {
+  # Apparently some games perform better if you fake that you are a SteamDeck
+  # https://www.reddit.com/r/linux_gaming/comments/1hy320b/seems_like_marvel_rivals_no_longer_runs_on_linux/
+  if [ -n "${GAME_COMPAT}" ] && [ "${GAME_COMPAT}" -ne 0 ]; then
+    __game_environment="${__game_environment} SteamDeck=1"
+    _log 'Running in SteamDeck compat mode (GAME_COMPAT=%s)' "${GAME_COMPAT}"
+  else
+    _log 'Running outside of SteamDeck compat environment (GAME_COMPAT=%s)' "${GAME_COMPAT}"
+  fi
+
+  unset GAME_COMPAT
+  return 0
+}
+
 _prepare_gamemode() {
   if command -v gamemoderun >/dev/null; then
     if [ -n "${GAME_MODE}" ] && [ "${GAME_MODE}" -eq 1 ]; then
@@ -336,6 +355,7 @@ _prepare_obs() {
   fi
 
   unset GAME_OBS
+  return 0
 }
 
 _prepare() {
@@ -347,6 +367,7 @@ _prepare() {
   _prepare_vkbasalt || return 1
   _prepare_zink || return 1
   _prepare_mangohud || return 1
+  _prepare_compat || return 1
 
   return 0
 }
