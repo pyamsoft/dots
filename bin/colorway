@@ -92,6 +92,12 @@ EOF
 )" >> "${XDG_CONFIG_HOME}/ksplashrc"
   fi
 
+  # Flatpak
+  if command -v flatpak >/dev/null; then
+    flatpak override --user --env=GTK_THEME=Adwaita
+    flatpak override --user --env=ICON_THEME=Papirus
+  fi
+
   return 0
 }
 
@@ -195,6 +201,12 @@ Engine=none
 Theme=None
 EOF
 )" >> "${XDG_CONFIG_HOME}/ksplashrc"
+  fi
+
+  # Flatpak
+  if command -v flatpak >/dev/null; then
+    flatpak override --user --env=GTK_THEME=Adwaita-dark
+    flatpak override --user --env=ICON_THEME=Papirus-Dark
   fi
 
   return 0
