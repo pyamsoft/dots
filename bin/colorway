@@ -63,7 +63,7 @@ _light_linux() {
   if command -v gsettings >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
     gsettings set org.gnome.desktop.interface icon-theme "Papirus"
     gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
-    gsettings set org.gnome.desktop.interface color-scheme "default" # GTK-4
+    gsettings set org.gnome.desktop.interface color-scheme "prefer-light" # GTK-4
   fi
 
   # Guake
@@ -94,8 +94,8 @@ EOF
 
   # Flatpak
   if command -v flatpak >/dev/null; then
-    flatpak override --user --env=GTK_THEME=Adwaita
-    flatpak override --user --env=ICON_THEME=Papirus
+    flatpak override --user org.pulseaudio.pavucontrol --env=GTK_THEME=Adwaita
+    flatpak override --user org.pulseaudio.pavucontrol --env=ICON_THEME=Papirus
   fi
 
   return 0
@@ -205,8 +205,8 @@ EOF
 
   # Flatpak
   if command -v flatpak >/dev/null; then
-    flatpak override --user --env=GTK_THEME=Adwaita-dark
-    flatpak override --user --env=ICON_THEME=Papirus-Dark
+    flatpak override --user org.pulseaudio.pavucontrol --env=GTK_THEME=Adwaita-dark
+    flatpak override --user org.pulseaudio.pavucontrol --env=ICON_THEME=Papirus-Dark
   fi
 
   return 0

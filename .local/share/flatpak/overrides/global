@@ -1,6 +1,6 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-data;!/tmp;!xdg-videos;!xdg-run/podman;!~/devel;!xdg-music;!host-etc;!xdg-data/flatpak/app;!xdg-config;!xdg-run/gamescope-0;!xdg-run/keyring;!xdg-download;!/var/lib/flatpak/overrides;!/var/lib/flatpak/app;!xdg-documents;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-templates;xdg-config/gtk-3.0:ro;!home;!xdg-config/containers;!xdg-config/ssh;!xdg-data/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-config/sunshine;!xdg-run/gamescope-0.lock;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
-unset-environment=SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!/tmp;!~/games;!xdg-data;!xdg-run/systemd;!xdg-videos;!xdg-run/podman;!~/devel;!/var/lib/flatpak/overrides;!host-etc;!xdg-config;!xdg-data/flatpak/app;!xdg-run/gamescope-0;!xdg-run/keyring;!xdg-download;!/var/lib/flatpak/app;!xdg-music;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-templates;!xdg-documents;xdg-config/gtk-3.0:ro;!home;!xdg-config/containers;!xdg-config/ssh;!xdg-data/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-config/sunshine;!xdg-run/gamescope-0.lock;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
+unset-environment=GTK_THEME;SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;ICON_THEME;
 persistent=.;
 sockets=!ssh-auth;!pcsc;!gpg-agent;
 devices=!kvm;!shm;
@@ -31,11 +31,11 @@ org.freedesktop.hostname1=none
 org.freedesktop.impl.portal.PermissionStore=none
 
 [Environment]
-GTK_THEME=Adwaita-dark
+GTK_THEME=
 SDL_AUDIODRIVER=
 SDL_VIDEODRIVER=
 SDL_VIDEO_DRIVER=
 PROMPT_COMMAND=
 PS1=
 SDL_AUDIO_DRIVER=
-ICON_THEME=Papirus-Dark
+ICON_THEME=
