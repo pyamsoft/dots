@@ -9,6 +9,7 @@ com.mattjakeman.ExtensionManager
 com.moonlight_stream.Moonlight
 com.obsproject.Studio
 com.valvesoftware.Steam
+io.github.wivrn.wivrn
 io.openrct2.OpenRCT2
 net.davidotek.pupgui2
 org.DolphinEmu.dolphin-emu
