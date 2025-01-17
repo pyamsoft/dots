@@ -13,3 +13,7 @@ if [ -n "${TMUX}" ]; then
   fi
 fi
 
+# Export the PATH
+export PATH
+
+return 0
