@@ -1,0 +1,75 @@
+# shellcheck shell=sh
+
+# Sort the path based on the stuff we expect to have "priority" on the PATH
+_user_home_path=""
+_user_local_path=""
+_opt_path=""
+_system_path=""
+
+for _path in $(printf -- '%s' "${PATH}" | tr ':' ' '); do
+  case "${_path}" in
+    "${HOME}"/*)
+      if [ -z "${_user_home_path}" ]; then
+        _user_home_path="${_path}"
+      else
+        _user_home_path="${_path}:${_user_home_path}"
+      fi
+      ;;
+    /usr/local/*)
+      if [ -z "${_user_local_path}" ]; then
+        _user_local_path="${_path}"
+      else
+        _user_local_path="${_path}:${_user_local_path}"
+      fi
+      ;;
+    /opt/*)
+      if [ -z "${_opt_path}" ]; then
+        _opt_path="${_path}"
+      else
+        _opt_path="${_path}:${_opt_path}"
+      fi
+      ;;
+    *)
+      if [ -z "${_system_path}" ]; then
+        _system_path="${_path}"
+      else
+        _system_path="${_path}:${_system_path}"
+      fi
+      ;;
+  esac
+  unset _path
+done
+unset _path
+
+# Combine the path back in priority order
+#
+# This is "reversed" since we prepend to existing data instead of appending
+# so this keeps our highest priorirty first in the PATH
+_combined_path=""
+for _path in "${_system_path}" "${_opt_path}" "${_user_local_path}" "${_user_home_path}"; do
+  if [ -z "${_path}" ]; then
+    continue
+  fi
+
+  if [ -z "${_combined_path}" ]; then
+    _combined_path="${_path}"
+  else
+    _combined_path="${_path}:${_combined_path}"
+  fi
+  unset _path
+done
+unset _path
+
+# Unset working variables
+unset _system_path
+unset _opt_path
+unset _user_local_path
+unset _user_home_path
+
+# And set the path
+PATH="${_combined_path}"
+unset _combined_path
+export PATH
+
+return 0
+
