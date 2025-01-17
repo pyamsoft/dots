@@ -1,0 +1,12 @@
+# shellcheck shell=sh
+
+# MacOS doesn't have /usr/local/sbin by default.
+# If we made it, add it
+if [ -d "/usr/local/sbin" ]; then
+  PATH="/usr/local/sbin:${PATH}"
+fi
+
+# Export the PATH
+export PATH
+
+return 0

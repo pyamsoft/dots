@@ -1,0 +1,21 @@
+# shellcheck shell=sh
+
+# Add local npm repository: used for things like bash-language-server
+# Set the local npm global path with "npm config set prefix ~/.npm/global"
+if command -v npm >/dev/null; then
+  _npm_path="${HOME}/.npm/global"
+
+  # Set the global path
+  npm config set prefix "${_npm_path}"
+
+  # Export it
+  PATH="${_npm_path}/bin:${PATH}"
+
+  # Clean up
+  unset _npm_path
+fi
+
+# Export the PATH
+export PATH
+
+return 0

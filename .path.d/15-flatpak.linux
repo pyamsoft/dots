@@ -7,13 +7,6 @@ if command -v flatpak >/dev/null; then
   fi
 fi
 
-# Jail scripts
-if command -v bwrap >/dev/null && command -v jail >/dev/null; then
-  if [ -d "${HOME}/.jail/bin" ]; then
-    PATH="${HOME}/.jail/bin:${PATH}"
-  fi
-fi
-
 # Export the PATH
 export PATH
 

@@ -1,0 +1,50 @@
+# shellcheck shell=bash
+
+# If we have already been sourced, exit out
+if [ -n "${PYAMSOFT_PATH}" ]; then
+  return 0
+fi
+
+os="$(uname)"
+
+for script in "${HOME}"/.path.d/*; do
+  # Sometimes os can get unset. Reset it here
+  if [ -z "${os}" ]; then
+    os="$(uname)"
+  fi
+
+  # shellcheck disable=SC1090
+  [ -r "${script}" ] && {
+    case "${script}" in
+      *.linux)
+        if [ "${os}" = "Linux" ]; then
+          . "${script}" || {
+            printf -- 'Linux PATH setup script failed: %s\n' "${script}"
+          }
+        fi
+        ;;
+      *.macos)
+        if [ "${os}" = "Darwin" ]; then
+          . "${script}" || {
+            printf -- 'MacOS PATH setup script failed: %s\n' "${script}"
+          }
+        fi
+        ;;
+      *)
+        . "${script}" || {
+            printf -- 'PATH setup script failed: %s\n' "${script}"
+        }
+        ;;
+    esac
+  }
+  unset script
+done
+unset script
+
+unset os
+
+# Mark path as set up
+export PYAMSOFT_PATH=1
+
+return 0
+

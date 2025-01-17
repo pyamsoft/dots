@@ -1,5 +1,14 @@
 # shellcheck shell=bash
-#
+
+# Source if the path is not setup
+# OR
+# If we are on MacOS and in tmux
+# https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
+if [ -z "${PYAMSOFT_PATH}" ] || { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
+  # shellcheck disable=SC1091
+  [ -f "${HOME}"/.path ] && . "${HOME}"/.path
+fi
+
 # Source if the environment is not setup
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   # shellcheck disable=SC1091
