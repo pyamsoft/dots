@@ -1,47 +1,51 @@
 # shellcheck shell=sh
 
+# We allow scripts to call this file again and again
+# But since pieces of the configuration are controlled by their own variables
+# We are correctly guarded from double executes
+#
 # If we have already been sourced, exit out
-if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
-  return 0
-fi
+# if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
+#   return 0
+# fi
 
-os="$(uname)"
+env_os="$(uname)"
 
-for script in "${HOME}"/.environment.d/*; do
+for _env_conf in "${HOME}"/.environment.d/*.conf; do
   # Sometimes os can get unset. Reset it here
-  if [ -z "${os}" ]; then
-    os="$(uname)"
+  if [ -z "${env_os}" ]; then
+    env_os="$(uname)"
   fi
 
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && {
-    case "${script}" in
+  [ -r "${_env_conf}" ] && {
+    case "${_env_conf}" in
       *.linux)
-        if [ "${os}" = "Linux" ]; then
-          . "${script}" || {
-            printf -- 'Linux environment setup script failed: %s\n' "${script}"
+        if [ "${env_os}" = "Linux" ]; then
+          . "${_env_conf}" || {
+            printf -- 'Linux ENV setup script failed: %s\n' "${_env_conf}"
           }
         fi
         ;;
       *.macos)
-        if [ "${os}" = "Darwin" ]; then
-          . "${script}" || {
-            printf -- 'MacOS environment setup script failed: %s\n' "${script}"
+        if [ "${env_os}" = "Darwin" ]; then
+          . "${_env_conf}" || {
+            printf -- 'MacOS ENV setup script failed: %s\n' "${_env_conf}"
           }
         fi
         ;;
       *)
-        . "${script}" || {
-            printf -- 'environment setup script failed: %s\n' "${script}"
+        . "${_env_conf}" || {
+            printf -- 'ENV setup script failed: %s\n' "${_env_conf}"
         }
         ;;
     esac
   }
-  unset script
+  unset _env_conf
 done
-unset script
+unset _env_conf
 
-unset os
+unset env_os
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1

@@ -11,7 +11,7 @@ if [ -z "${PYAMSOFT_PATH}" ] || { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] 
     unset PYAMSOFT_PATH
 
     # shellcheck disable=SC1091
-    . "${HOME}"/.path
+    . "${HOME}"/.environment
   }
 fi
 
