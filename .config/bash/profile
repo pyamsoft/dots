@@ -5,8 +5,14 @@
 # If we are on MacOS and in tmux
 # https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
 if [ -z "${PYAMSOFT_PATH}" ] || { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.path ] && . "${HOME}"/.path
+  [ -f "${HOME}"/.path ] && {
+    # So that the path re-sources
+    # There is a macOS specific hook that erases the current messed up path
+    unset PYAMSOFT_PATH
+
+    # shellcheck disable=SC1091
+    . "${HOME}"/.path
+  }
 fi
 
 # Source if the environment is not setup
