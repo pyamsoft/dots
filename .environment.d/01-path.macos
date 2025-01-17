@@ -1,5 +1,18 @@
 # shellcheck shell=sh
 
+# https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
+#
+# MacOS has a system helper that messes up our PATH
+# fix it by basically starting over from scratch, but ONLY in tmux
+if [ -n "${TMUX}" ]; then
+  if [ -f /etc/profile ]; then
+    export PATH=""
+
+    # shellcheck disable=SC1091
+    . /etc/profile
+  fi
+fi
+
 # MacOS doesn't have /usr/local/sbin by default.
 # If we made it, add it
 if [ -d "/usr/local/sbin" ]; then
