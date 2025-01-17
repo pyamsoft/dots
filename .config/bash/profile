@@ -1,11 +1,18 @@
 # shellcheck shell=bash
 
-# Source if the path is not setup
-# OR
+# Source if the environment is not setup
+if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  # shellcheck disable=SC1091
+  [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
+fi
+
 # If we are on MacOS and in tmux
+# the PATH gets all messed up by MacOS
+#
+# Fix it by resetting the path and sourcing again
 # https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
-if [ -z "${PYAMSOFT_PATH}" ] || { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
-  [ -f "${HOME}"/.path ] && {
+if { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
+  [ -f "${HOME}"/.environment ] && {
     # So that the path re-sources
     # There is a macOS specific hook that erases the current messed up path
     unset PYAMSOFT_PATH
@@ -13,12 +20,6 @@ if [ -z "${PYAMSOFT_PATH}" ] || { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] 
     # shellcheck disable=SC1091
     . "${HOME}"/.environment
   }
-fi
-
-# Source if the environment is not setup
-if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
 fi
 
 os="$(uname)"
