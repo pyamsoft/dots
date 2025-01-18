@@ -20,6 +20,7 @@ org.freedesktop.UDisks2=none
 org.gnome.Software=none
 org.gnome.SessionManager=none
 org.freedesktop.login1=none
+org.kde.kdeconnect=none
 
 [System Bus Policy]
 org.freedesktop.Flatpak=none
