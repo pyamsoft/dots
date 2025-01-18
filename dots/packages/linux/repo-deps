@@ -38,6 +38,7 @@ breeze-icons
 brotli
 bubblewrap
 bzip2
+c-ares
 ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
@@ -541,6 +542,7 @@ libnfs
 libnftnl
 libnghttp2
 libnghttp3
+libngtcp2
 libnice
 libnl
 libnm
@@ -711,9 +713,13 @@ netavark
 nettle
 networkmanager
 nftables
+node-gyp
+nodejs
+nodejs-nopt
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
+npm
 npth
 nspr
 nss
@@ -902,6 +908,7 @@ sdl2_image
 seabios
 seatd
 sed
+semver
 serd
 shaderc
 shadow
