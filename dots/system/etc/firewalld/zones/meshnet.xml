@@ -4,9 +4,8 @@
   <service name="ssh"/>
   <service name="sunshine"/>
   <service name="kdeconnect"/>
-  <service name="mdns"/>
-  <service name="omada-controller"/>
   <service name="localsend"/>
+  <service name="mdns"/>
   <rule family="ipv4">
     <source address="100.77.161.9"/>
     <log prefix="ts-nerd2 " level="warning"/>

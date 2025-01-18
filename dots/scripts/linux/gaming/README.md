@@ -1,6 +1,23 @@
+# gaming-* users
+
+
+## Managing the gaming-* user
+
+gaming-* users can be managed via `run0`  
+To update the Proton/Wine in the container, I use `net.davidotek.pupgui2`
+from Flatpak
+
+## Wine and niceness
+
+You may need to assign gamescope to allow it to set niceness or it will spam
+the console and cause slowdown
+
+[here](https://github.com/ValveSoftware/Proton/issues/6141)
+`sudo setcap 'CAP_SYS_NICE=eip' $(which gamescope)`
+
 # Flatpak
 
-### Steam (Flatpak)
+## Steam
 
 Sometimes Steam loses the location of game libraries in the "Storage" menu. Going back in to add them
 opens the document portal, which incorrectly adds a /run/user temp path (due to document exporting).
@@ -17,27 +34,10 @@ Make sure you:
    Make sure the "contentid" matches the path of your chosen folder.
 7. Restart steam, should work?
 
-### Games don't launch
+## Games don't launch
 EAC games in particular don't like SDL_VIDEODRIVER being set to anything.
 Make sure you unset it via --unset-env override in the flatpak file
 
-### Old Source Games
-They require `lib32-gperftools` installed from the AUR, and run with  
-`LD_PRELOAD=/usr/lib32/libtcmalloc.so %command%`  
-[see here](https://github.com/ValveSoftware/Source-1-Games/issues/5043)
-
-This may be fixed by the latest TF2 update that moves it to 64bit Vulkan,
-but who knows, the game is so botted that I haven't played in a while.
-
-### XDefiant and Ubisoft Connect
-
-Shit is usually borked, but this may work:
-[who knows](https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/)
-
-### Wine and niceness
-
-You may need to assign gamescope to allow it to set niceness or it will spam
-the console and cause slowdown
-
-[here](https://github.com/ValveSoftware/Proton/issues/6141)
-`sudo setcap 'CAP_SYS_NICE=eip' $(which gamescope)`
+Try using the `gametime` script, try not using the script. See what
+makes things work. Sometimes the `gamescope` version is broken, so play around
+with rolling back.

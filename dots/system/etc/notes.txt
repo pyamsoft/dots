@@ -1,6 +1,0 @@
-# Notes
-
-## mkinitcpio.conf
-
-You may wish to include `usbhid` `xhci_hcd` and `xhci_pci`
-in your modules block to let USB devices work in early ram

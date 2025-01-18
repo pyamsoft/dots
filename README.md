@@ -73,7 +73,7 @@ GTK:
 See the `themepak` script, which copies your GTK theme into the user folders
 
 ### Steam (Flatpak)
-See notes in `~dots/scripts/gaming/README.md`
+See notes in `dots/scripts/gaming/README.md`
 
 ### Moonlight
 Make sure you do not block the X11 or fallback x11 sockets for moonlight or else --grab won't work
