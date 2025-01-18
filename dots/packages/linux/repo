@@ -16,6 +16,7 @@ inter-font
 irqbalance
 kdeconnect
 kernel-modules-hook
+ldns
 lib32-mangohud
 linux-lts
 man-db
