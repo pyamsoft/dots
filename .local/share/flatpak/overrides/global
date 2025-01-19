@@ -1,10 +1,10 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;!/mnt;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!/media;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!xdg-data;!/var/lib/flatpak/overrides;!xdg-run/podman;!xdg-documents;!xdg-music;!host-etc;!xdg-data/flatpak/app;!/tmp;!xdg-run/gamescope-0;!~/devel;!xdg-download;!/run/media;!/var/lib/flatpak/app;!xdg-config/ssh;xdg-config/gtkrc:ro;!xdg-run/keyring;!xdg-data/flatpak;!xdg-templates;xdg-config/gtk-3.0:ro;!home;!xdg-config;!xdg-config/containers;!xdg-data/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-config/sunshine;!xdg-run/gamescope-0.lock;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!/media;!xdg-config/environment.d;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!xdg-data;!xdg-music;!/mnt;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;!xdg-run/gamescope-0;!xdg-run/keyring;!xdg-download;!/run/media;!/var/lib/flatpak/app;!xdg-config/sunshine;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config;!xdg-templates;!/tmp;xdg-config/gtk-3.0:ro;!home;!xdg-data/containers;!xdg-run/podman;!xdg-config/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-run/gamescope-0.lock;!/var/lib/flatpak/overrides;~/.icons;!xdg-pictures;~/.themes;!xdg-data/gnupg;
 unset-environment=GTK_THEME;SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;ICON_THEME;
 persistent=.;
 sockets=!ssh-auth;!pcsc;!gpg-agent;
-devices=!kvm;!shm;
-features=!canbus;
+devices=dri;!all;!kvm;!shm;!input;!usb;
+features=!devel;!multiarch;!bluetooth;!canbus;
 
 [Session Bus Policy]
 org.freedesktop.secrets=none

@@ -1,2 +1,2 @@
 [Context]
-features=devel;
+features=devel;multiarch;

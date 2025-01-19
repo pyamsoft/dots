@@ -1,5 +1,4 @@
 [Context]
-features=devel;
+features=devel;multiarch;
 filesystems=!xdg-run/keyring;
 sockets=!session-bus;
-devices=dri;!all;
