@@ -2,17 +2,22 @@
 
 _light_macos() {
   # MacOS sed is BSD
-  
+
   # Lunarvim
   if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
     sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
+
+  # AstroNvim
+  if command -v nvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua" ]; then
+    sed -i '' 's/catppuccin-macchiato/catppuccin-latte/' "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua"
   fi
 
   # Tmux
   if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
     sed -i '' 's/@catppuccin_flavour "macchiato"/@catppuccin_flavour "latte"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
   fi
-  
+
   # System theme
   if command -v osascript >/dev/null; then
     # https://apple.stackexchange.com/questions/437581/toggle-system-dark-mode-from-terminal
@@ -24,10 +29,15 @@ _light_macos() {
 
 _light_linux() {
   # Linux is GNU sed
-  
+
   # Lunarvim
   if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
     sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
+
+  # AstroNvim
+  if command -v nvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua" ]; then
+    sed -i '0,/catppuccin-macchiato/s//catppuccin-latte/' "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua"
   fi
 
   # Tmux
@@ -62,7 +72,7 @@ _light_linux() {
   # GNOME Desktop
   if command -v gsettings >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
     gsettings set org.gnome.desktop.interface icon-theme "Papirus"
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita" # GTK-3
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"         # GTK-3
     gsettings set org.gnome.desktop.interface color-scheme "prefer-light" # GTK-4
   fi
 
@@ -77,19 +87,21 @@ _light_linux() {
     lookandfeeltool -a "org.kde.breeze.desktop"
 
     # Re-apply the icon theme
-    printf -- '%s' "$(cat <<EOF
+    printf -- '%s' "$(
+      cat <<EOF
 [Icons]
 Theme=Papirus
 EOF
-)" >> "${XDG_CONFIG_HOME}/kdeglobals"
+    )" >>"${XDG_CONFIG_HOME}/kdeglobals"
 
     # Re-apply the splash screen
-    printf -- '%s' "$(cat <<EOF
+    printf -- '%s' "$(
+      cat <<EOF
 [KSplash]
 Engine=none
 Theme=None
 EOF
-)" >> "${XDG_CONFIG_HOME}/ksplashrc"
+    )" >>"${XDG_CONFIG_HOME}/ksplashrc"
   fi
 
   # Flatpak
@@ -119,6 +131,11 @@ _dark_macos() {
     sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
   fi
 
+  # AstroNvim
+  if command -v nvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua" ]; then
+    sed -i '' 's/catppuccin-latte/catppuccin-macchiato/' "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua"
+  fi
+
   # Tmux
   if command -v tmux >/dev/null && [ -n "${TMUX}" ]; then
     sed -i '' 's/@catppuccin_flavour "latte"/@catppuccin_flavour "macchiato"/' "${XDG_CONFIG_HOME}/tmux/tmux.conf"
@@ -139,6 +156,11 @@ _dark_linux() {
   # Lunarvim
   if command -v lvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/lvim/config.lua" ]; then
     sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' "${XDG_CONFIG_HOME}/lvim/config.lua"
+  fi
+
+  # AstroNvim
+  if command -v nvim >/dev/null && [ -f "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua" ]; then
+    sed -i '0,/catppuccin-latte/s//catppuccin-macchiato/' "${XDG_CONFIG_HOME}/nvim/lua/plugins/astroui.lua"
   fi
 
   # Tmux
@@ -173,7 +195,7 @@ _dark_linux() {
   # GNOME Desktop
   if command -v gsettings >/dev/null && [ -n "${XDG_SESSION_DESKTOP}" ] && { [ "${XDG_SESSION_DESKTOP}" = "gnome" ] || [ "${XDG_SESSION_DESKTOP}" = "gnome-xorg" ]; }; then
     gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
-    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark" # GTK-3
+    gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"   # GTK-3
     gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" # GTK-4
   fi
 
@@ -188,19 +210,21 @@ _dark_linux() {
     lookandfeeltool -a "org.kde.breezedark.desktop"
 
     # Re-apply the icon theme
-    printf -- '%s' "$(cat <<EOF
+    printf -- '%s' "$(
+      cat <<EOF
 [Icons]
 Theme=Papirus-Dark
 EOF
-)" >> "${XDG_CONFIG_HOME}/kdeglobals"
+    )" >>"${XDG_CONFIG_HOME}/kdeglobals"
 
     # Re-apply the splash screen
-    printf -- '%s' "$(cat <<EOF
+    printf -- '%s' "$(
+      cat <<EOF
 [KSplash]
 Engine=none
 Theme=None
 EOF
-)" >> "${XDG_CONFIG_HOME}/ksplashrc"
+    )" >>"${XDG_CONFIG_HOME}/ksplashrc"
   fi
 
   # Flatpak
@@ -245,4 +269,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-
