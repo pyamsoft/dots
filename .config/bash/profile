@@ -3,7 +3,7 @@
 # Source if the environment is not setup
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   # shellcheck disable=SC1091
-  [ -f "${HOME}"/.environment ] && . "${HOME}"/.environment
+  [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft
 fi
 
 # If we are on MacOS and in tmux
@@ -12,13 +12,13 @@ fi
 # Fix it by resetting the path and sourcing again
 # https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
 if { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
-  [ -f "${HOME}"/.environment ] && {
+  [ -f "${HOME}"/.pyamsoft ] && {
     # So that the path re-sources
     # There is a macOS specific hook that erases the current messed up path
     unset PYAMSOFT_PATH
 
     # shellcheck disable=SC1091
-    . "${HOME}"/.environment
+    . "${HOME}"/.pyamsoft
   }
 fi
 

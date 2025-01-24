@@ -9,9 +9,11 @@
 #   return 0
 # fi
 
+_cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
+
 env_os="$(uname)"
 
-for _env_conf in "${HOME}"/.environment.d/*.conf; do
+for _env_conf in "${_cfg}"/pyamsoft.d/*.conf; do
   # Sometimes os can get unset. Reset it here
   if [ -z "${env_os}" ]; then
     env_os="$(uname)"
@@ -46,6 +48,7 @@ done
 unset _env_conf
 
 unset env_os
+unset _cfg
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT=1
