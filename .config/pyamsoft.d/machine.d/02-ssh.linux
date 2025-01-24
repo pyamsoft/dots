@@ -17,13 +17,13 @@ if [ -n "${XDG_RUNTIME_DIR}" ]; then
     unset _sock
   done
   unset _sock
-fi
 
-# Set up machine
-if [ -z "${PYAMSOFT_MACHINE}" ]; then
-  PYAMSOFT_MACHINE="ssh-linux"
-else
-  PYAMSOFT_MACHINE="ssh-linux:${PYAMSOFT_MACHINE}"
+  # Set up machine
+  if [ -z "${PYAMSOFT_MACHINE}" ]; then
+    PYAMSOFT_MACHINE="ssh-linux"
+  else
+    PYAMSOFT_MACHINE="ssh-linux:${PYAMSOFT_MACHINE}"
+  fi
 fi
 
 return 0

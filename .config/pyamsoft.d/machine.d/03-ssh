@@ -21,16 +21,16 @@ fi
 if [ -f "${_ssh_home}/ssh-agent.env" ]; then
   # shellcheck disable=SC1091
   . "${_ssh_home}/ssh-agent.env" >/dev/null 2>&1
+
+  # Set up machine
+  if [ -z "${PYAMSOFT_MACHINE}" ]; then
+    PYAMSOFT_MACHINE="ssh"
+  else
+    PYAMSOFT_MACHINE="ssh:${PYAMSOFT_MACHINE}"
+  fi
 fi
 
 unset _ssh_home
-
-# Set up machine
-if [ -z "${PYAMSOFT_MACHINE}" ]; then
-  PYAMSOFT_MACHINE="ssh"
-else
-  PYAMSOFT_MACHINE="ssh:${PYAMSOFT_MACHINE}"
-fi
 
 return 0
 

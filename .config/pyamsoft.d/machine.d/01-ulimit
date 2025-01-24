@@ -11,15 +11,15 @@ fi
 _current_ulimit="$(ulimit -S -n)"
 if [ "${_current_ulimit}" -le 2048 ]; then
   ulimit -S -n 2048 || return 1
+
+  # Set up machine
+  if [ -z "${PYAMSOFT_MACHINE}" ]; then
+    PYAMSOFT_MACHINE="ulimit"
+  else
+    PYAMSOFT_MACHINE="ulimit:${PYAMSOFT_MACHINE}"
+  fi
 fi
 unset _current_ulimit
-
-# Set up machine
-if [ -z "${PYAMSOFT_MACHINE}" ]; then
-  PYAMSOFT_MACHINE="ulimit"
-else
-  PYAMSOFT_MACHINE="ulimit:${PYAMSOFT_MACHINE}"
-fi
 
 return 0
 
