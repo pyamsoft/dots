@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=sh
 
 # SSH socket defined, do nothing
 if [ -n "${SSH_AUTH_SOCK}" ]; then
@@ -19,4 +19,12 @@ if [ -n "${XDG_RUNTIME_DIR}" ]; then
   unset _sock
 fi
 
+# Set up machine
+if [ -z "${PYAMSOFT_MACHINE}" ]; then
+  PYAMSOFT_MACHINE="ssh-linux"
+else
+  PYAMSOFT_MACHINE="ssh-linux:${PYAMSOFT_MACHINE}"
+fi
+
 return 0
+

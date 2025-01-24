@@ -1,8 +1,0 @@
-# shellcheck shell=bash
-
-# Strict umask
-if command -v umask >/dev/null; then
-  umask 077 || return 1
-fi
-
-return 0

@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=sh
 
 # No ulimit, no work
 if ! command -v ulimit >/dev/null; then
@@ -14,4 +14,12 @@ if [ "${_current_ulimit}" -le 2048 ]; then
 fi
 unset _current_ulimit
 
+# Set up machine
+if [ -z "${PYAMSOFT_MACHINE}" ]; then
+  PYAMSOFT_MACHINE="ulimit"
+else
+  PYAMSOFT_MACHINE="ulimit:${PYAMSOFT_MACHINE}"
+fi
+
 return 0
+

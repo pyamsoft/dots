@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+# shellcheck shell=sh
 
 # SSH socket defined, do nothing
 if [ -n "${SSH_AUTH_SOCK}" ]; then
@@ -25,4 +25,12 @@ fi
 
 unset _ssh_home
 
+# Set up machine
+if [ -z "${PYAMSOFT_MACHINE}" ]; then
+  PYAMSOFT_MACHINE="ssh"
+else
+  PYAMSOFT_MACHINE="ssh:${PYAMSOFT_MACHINE}"
+fi
+
 return 0
+

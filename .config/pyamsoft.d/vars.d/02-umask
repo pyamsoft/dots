@@ -1,0 +1,15 @@
+# shellcheck shell=sh
+
+# Strict umask
+if command -v umask >/dev/null; then
+  umask 077 || return 1
+fi
+
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="umask"
+else
+  PYAMSOFT_VARS="umask:${PYAMSOFT_VARS}"
+fi
+
+return 0
