@@ -7,4 +7,11 @@ if [ ! -d "${XDG_DATA_HOME}/gnupg" ]; then
   mkdir -p "${XDG_DATA_HOME}/gnupg"
 fi
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="gnupg"
+else
+  PYAMSOFT_VARS="gnupg:${PYAMSOFT_VARS}"
+fi
+
 return 0

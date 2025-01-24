@@ -18,4 +18,11 @@ fi
 # Export the PATH
 export PATH
 
+# Set up path
+if [ -z "${PYAMSOFT_PATH}" ]; then
+  PYAMSOFT_PATH="npm"
+else
+  PYAMSOFT_PATH="npm:${PYAMSOFT_PATH}"
+fi
+
 return 0

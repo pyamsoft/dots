@@ -22,4 +22,11 @@ mkdir -p "${XDG_CACHE_HOME}"
 mkdir -p "${XDG_DATA_HOME}"
 mkdir -p "${XDG_STATE_HOME}"
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="xdg"
+else
+  PYAMSOFT_VARS="xdg:${PYAMSOFT_VARS}"
+fi
+
 return 0

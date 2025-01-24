@@ -18,4 +18,11 @@ fi
 # Export the PATH
 export PATH
 
+# Set up path
+if [ -z "${PYAMSOFT_PATH}" ]; then
+  PYAMSOFT_PATH="home-bin"
+else
+  PYAMSOFT_PATH="home-sbin:${PYAMSOFT_PATH}"
+fi
+
 return 0

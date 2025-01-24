@@ -14,4 +14,11 @@ for e in ${_editors}; do
 done;
 unset _editors
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="editor"
+else
+  PYAMSOFT_VARS="editor:${PYAMSOFT_VARS}"
+fi
+
 return 0

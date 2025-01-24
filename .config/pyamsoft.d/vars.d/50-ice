@@ -3,4 +3,11 @@
 # Suggestions from xdg-ninja
 export ICEAUTHORITY="${XDG_CACHE_HOME}/ICEauthority"
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="ice"
+else
+  PYAMSOFT_VARS="ice:${PYAMSOFT_VARS}"
+fi
+
 return 0

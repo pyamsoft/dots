@@ -7,4 +7,11 @@ if [ ! -d "${XDG_CACHE_HOME}/less" ]; then
   mkdir -p "${XDG_CACHE_HOME}/less"
 fi
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="less"
+else
+  PYAMSOFT_VARS="less:${PYAMSOFT_VARS}"
+fi
+
 return 0

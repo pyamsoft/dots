@@ -7,4 +7,11 @@ if [ ! -d "${XDG_CONFIG_HOME}/readline" ]; then
   mkdir -p "${XDG_CONFIG_HOME}/readline"
 fi
 
+# Set up vars
+if [ -z "${PYAMSOFT_VARS}" ]; then
+  PYAMSOFT_VARS="readline"
+else
+  PYAMSOFT_VARS="readline:${PYAMSOFT_VARS}"
+fi
+
 return 0
