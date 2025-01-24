@@ -3,16 +3,16 @@
 # Add homebrew scripts (generally MacOS)
 if [ -e /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+
+  # Set up path
+  if [ -z "${PYAMSOFT_PATH}" ]; then
+    PYAMSOFT_PATH="homebrew"
+  else
+    PYAMSOFT_PATH="homebrew:${PYAMSOFT_PATH}"
+  fi
 fi
 
 # Export the PATH
 export PATH
-
-# Set up path
-if [ -z "${PYAMSOFT_PATH}" ]; then
-  PYAMSOFT_PATH="homebrew"
-else
-  PYAMSOFT_PATH="homebrew:${PYAMSOFT_PATH}"
-fi
 
 return 0

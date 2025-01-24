@@ -10,15 +10,15 @@ for e in ${_editors}; do
     export SUDO_EDITOR="${e}"
     export DIFFPROG="${e} -d"
     break
+
+    # Set up vars
+    if [ -z "${PYAMSOFT_VARS}" ]; then
+      PYAMSOFT_VARS="editor"
+    else
+      PYAMSOFT_VARS="editor:${PYAMSOFT_VARS}"
+    fi
   fi
 done;
 unset _editors
-
-# Set up vars
-if [ -z "${PYAMSOFT_VARS}" ]; then
-  PYAMSOFT_VARS="editor"
-else
-  PYAMSOFT_VARS="editor:${PYAMSOFT_VARS}"
-fi
 
 return 0

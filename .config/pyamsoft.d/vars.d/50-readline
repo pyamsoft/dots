@@ -1,17 +1,19 @@
 # shellcheck shell=sh
 
-# Suggestions from xdg-ninja
-export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
+if [ -z "${INPUTRC}" ]; then
+  # Suggestions from xdg-ninja
+  export INPUTRC="${XDG_CONFIG_HOME}/readline/inputrc"
 
-if [ ! -d "${XDG_CONFIG_HOME}/readline" ]; then
-  mkdir -p "${XDG_CONFIG_HOME}/readline"
-fi
+  if [ ! -d "${XDG_CONFIG_HOME}/readline" ]; then
+    mkdir -p "${XDG_CONFIG_HOME}/readline"
+  fi
 
-# Set up vars
-if [ -z "${PYAMSOFT_VARS}" ]; then
-  PYAMSOFT_VARS="readline"
-else
-  PYAMSOFT_VARS="readline:${PYAMSOFT_VARS}"
+  # Set up vars
+  if [ -z "${PYAMSOFT_VARS}" ]; then
+    PYAMSOFT_VARS="readline"
+  else
+    PYAMSOFT_VARS="readline:${PYAMSOFT_VARS}"
+  fi
 fi
 
 return 0

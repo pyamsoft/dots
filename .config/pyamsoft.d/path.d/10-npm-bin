@@ -13,16 +13,16 @@ if command -v npm >/dev/null; then
 
   # Clean up
   unset _npm_path
+
+  # Set up path
+  if [ -z "${PYAMSOFT_PATH}" ]; then
+    PYAMSOFT_PATH="npm-bin"
+  else
+    PYAMSOFT_PATH="npm-bin:${PYAMSOFT_PATH}"
+  fi
 fi
 
 # Export the PATH
 export PATH
-
-# Set up path
-if [ -z "${PYAMSOFT_PATH}" ]; then
-  PYAMSOFT_PATH="npm"
-else
-  PYAMSOFT_PATH="npm:${PYAMSOFT_PATH}"
-fi
 
 return 0

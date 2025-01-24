@@ -4,6 +4,13 @@
 if command -v docker >/dev/null || command -v podman >/dev/null; then
   if [ -d "${HOME}/.containers/bin" ]; then
     PATH="${HOME}/.containers/bin:${PATH}"
+
+    # Set up path
+    if [ -z "${PYAMSOFT_PATH}" ]; then
+      PYAMSOFT_PATH="containers-bin"
+    else
+      PYAMSOFT_PATH="containers-bin:${PYAMSOFT_PATH}"
+    fi
   fi
 fi
 
@@ -11,17 +18,17 @@ fi
 if command -v distrobox >/dev/null; then
   if [ -d "${HOME}/.distrobox/bin" ]; then
     PATH="${HOME}/.distrobox/bin:${PATH}"
+
+    # Set up path
+    if [ -z "${PYAMSOFT_PATH}" ]; then
+      PYAMSOFT_PATH="distrobox-bin"
+    else
+      PYAMSOFT_PATH="distrobox-bin:${PYAMSOFT_PATH}"
+    fi
   fi
 fi
 
 # Export the PATH
 export PATH
-
-# Set up path
-if [ -z "${PYAMSOFT_PATH}" ]; then
-  PYAMSOFT_PATH="containers"
-else
-  PYAMSOFT_PATH="containers:${PYAMSOFT_PATH}"
-fi
 
 return 0

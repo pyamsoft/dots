@@ -1,17 +1,19 @@
 # shellcheck shell=sh
 
-# Suggestions from xdg-ninja
-export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
+if [ -z "${GNUPGHOME}" ]; then
+  # Suggestions from xdg-ninja
+  export GNUPGHOME="${XDG_DATA_HOME}/gnupg"
 
-if [ ! -d "${XDG_DATA_HOME}/gnupg" ]; then
-  mkdir -p "${XDG_DATA_HOME}/gnupg"
-fi
+  if [ ! -d "${XDG_DATA_HOME}/gnupg" ]; then
+    mkdir -p "${XDG_DATA_HOME}/gnupg"
+  fi
 
-# Set up vars
-if [ -z "${PYAMSOFT_VARS}" ]; then
-  PYAMSOFT_VARS="gnupg"
-else
-  PYAMSOFT_VARS="gnupg:${PYAMSOFT_VARS}"
+  # Set up vars
+  if [ -z "${PYAMSOFT_VARS}" ]; then
+    PYAMSOFT_VARS="gnupg"
+  else
+    PYAMSOFT_VARS="gnupg:${PYAMSOFT_VARS}"
+  fi
 fi
 
 return 0

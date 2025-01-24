@@ -10,17 +10,17 @@ if [ -n "${TMUX}" ]; then
 
     # shellcheck disable=SC1091
     . /etc/profile
+
+    # Export the PATH
+    export PATH
+
+    # Set up path
+    if [ -z "${PYAMSOFT_PATH}" ]; then
+      PYAMSOFT_PATH="tmux"
+    else
+      PYAMSOFT_PATH="tmux:${PYAMSOFT_PATH}"
+    fi
   fi
-fi
-
-# Export the PATH
-export PATH
-
-# Set up path
-if [ -z "${PYAMSOFT_PATH}" ]; then
-  PYAMSOFT_PATH="tmux"
-else
-  PYAMSOFT_PATH="tmux:${PYAMSOFT_PATH}"
 fi
 
 return 0

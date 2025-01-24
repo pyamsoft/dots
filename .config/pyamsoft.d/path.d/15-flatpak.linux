@@ -4,17 +4,17 @@
 if command -v flatpak >/dev/null; then
   if [ -d "${HOME}/.flatpak/bin" ]; then
     PATH="${HOME}/.flatpak/bin:${PATH}"
+
+    # Set up path
+    if [ -z "${PYAMSOFT_PATH}" ]; then
+      PYAMSOFT_PATH="flatpak-bin"
+    else
+      PYAMSOFT_PATH="flatpak-bin:${PYAMSOFT_PATH}"
+    fi
   fi
 fi
 
 # Export the PATH
 export PATH
-
-# Set up path
-if [ -z "${PYAMSOFT_PATH}" ]; then
-  PYAMSOFT_PATH="flatpak"
-else
-  PYAMSOFT_PATH="flatpak:${PYAMSOFT_PATH}"
-fi
 
 return 0
