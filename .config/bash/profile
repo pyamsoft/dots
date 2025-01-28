@@ -13,12 +13,33 @@ fi
 # https://superuser.com/questions/544989/does-tmux-sort-the-path-variable
 if { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
   [ -f "${HOME}"/.pyamsoft ] && {
-    # So that the path re-sources
-    # There is a macOS specific hook that erases the current messed up path
-    unset PYAMSOFT_PATH
+    # At this point in tmux, we basically want to "reset" everything
+    # and start over
+    if [ -n "${PYAMSOFT_ENVIRONMENT}" ]; then
+      _pieces="$(printf -- '%s' "${PYAMSOFT_ENVIRONMENT}" | tr ':' ' ')"
 
-    # shellcheck disable=SC1091
-    . "${HOME}"/.pyamsoft
+      PYAMSOFT_ENVIRONMENT=""
+      # Remove "path" to re-initialize it
+      for _piece in ${_pieces}; do
+        if [ "${_piece}" != "path" ]; then
+          PYAMSOFT_ENVIRONMENT="${_piece}:${PYAMSOFT_ENVIRONMENT}"
+        fi
+        unset _piece
+      done
+
+      unset _piece
+      unset _pieces
+
+      # Re-export
+      export PYAMSOFT_ENVIRONMENT
+
+      # Unset
+      unset PYAMSOFT_PATH
+
+      # And start again
+      # shellcheck disable=SC1091
+      . "${HOME}"/.pyamsoft
+    fi
   }
 fi
 

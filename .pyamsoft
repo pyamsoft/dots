@@ -14,7 +14,9 @@ _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
 env_os="$(uname)"
 
 # Create the environment flag
-PYAMSOFT_ENVIRONMENT=""
+if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+  PYAMSOFT_ENVIRONMENT=""
+fi
 
 for _env_conf in "${_cfg}"/pyamsoft.d/*.conf; do
   # Sometimes os can get unset. Reset it here
