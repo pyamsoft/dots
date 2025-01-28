@@ -22,7 +22,11 @@ if { [ "$(uname)" = "Darwin" ] && [ -n "${TMUX}" ] ; }; then
       # Remove "path" to re-initialize it
       for _piece in ${_pieces}; do
         if [ "${_piece}" != "path" ]; then
-          PYAMSOFT_ENVIRONMENT="${_piece}:${PYAMSOFT_ENVIRONMENT}"
+          if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+            PYAMSOFT_ENVIRONMENT="${_piece}"
+          else
+            PYAMSOFT_ENVIRONMENT="${_piece}:${PYAMSOFT_ENVIRONMENT}"
+          fi
         fi
         unset _piece
       done
