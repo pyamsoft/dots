@@ -252,7 +252,6 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
-http-parser
 hwdata
 hyphen
 i2c-tools
@@ -671,6 +670,7 @@ linux
 linux-api-headers
 linux-firmware
 linux-firmware-whence
+llhttp
 llvm-libs
 lm_sensors
 lmdb
@@ -903,8 +903,9 @@ rubberband
 sane
 sane-airscan
 sbc
-sdl2
+sdl2-compat
 sdl2_image
+sdl3
 seabios
 seatd
 sed
@@ -918,6 +919,7 @@ slang
 slirp4netns
 smbclient
 snappy
+sndio
 socat
 solid
 sonnet
