@@ -10,7 +10,11 @@ _get_latest_tags() {
   fi
 
   printf -- '\nContainer: %s\n' "${_container}"
-  skopeo list-tags "docker://${_container}" || {
+  # Trim off the json, just get the list of tags
+  # Remove anything like -latest- or -beta-
+  # Sort by reverse version order (newest version on top)
+  # max 10
+  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'latest' | grep -v 'beta' | sort -r -V | head || {
     printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
   }
 
@@ -32,10 +36,10 @@ _check_containers() {
 
   while :; do
     if [ -z "${_containers}" ]; then
-      break;
+      break
     fi
 
-    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }' )"
+    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }')"
     _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
 
     # Check that we haven't already done this
@@ -43,7 +47,7 @@ _check_containers() {
     for _c in ${_already_seen}; do
       if [ "${_name}" = "${_c}" ]; then
         _skip=1
-        break;
+        break
       fi
     done
 
