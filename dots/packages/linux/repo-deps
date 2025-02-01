@@ -15,7 +15,6 @@ alsa-ucm-conf
 ananicy-cpp
 aom
 appstream
-archlinux-keyring
 argyllcms
 at-spi2-core
 attr
@@ -24,9 +23,6 @@ autoconf
 automake
 avahi
 ayatana-ido
-base-devel
-bash
-bash-completion
 binutils
 bison
 blas
@@ -70,7 +66,6 @@ curl
 dav1d
 db5.3
 dbus
-dbus-broker
 dbus-broker-units
 dconf
 debugedit
@@ -120,7 +115,6 @@ fuse2
 fuse3
 fwupd
 fwupd-efi
-gamescope
 gawk
 gc
 gcc
@@ -177,7 +171,6 @@ gsettings-system-schemas
 gsm
 gsound
 gssdp
-gst-libav
 gst-plugin-libcamera
 gst-plugin-pipewire
 gst-plugins-bad
@@ -196,7 +189,6 @@ guile
 gupnp
 gupnp-igd
 gvfs
-gvfs-mtp
 gvfs-nfs
 gvfs-smb
 gzip
@@ -268,7 +260,6 @@ iptables-nft
 iputils
 iso-codes
 iw
-iwd
 jansson
 jbig2dec
 jbigkit
@@ -672,7 +663,6 @@ linux-firmware
 linux-firmware-whence
 llhttp
 llvm-libs
-lm_sensors
 lmdb
 localsearch
 lsb-release
@@ -685,7 +675,6 @@ lz4
 lzo
 m4
 make
-malcontent
 md4c
 mdadm
 media-player-info
@@ -718,8 +707,6 @@ nodejs
 nodejs-nopt
 noto-fonts
 noto-fonts-cjk
-noto-fonts-emoji
-npm
 npth
 nspr
 nss
@@ -738,7 +725,6 @@ orc
 osinfo-db
 ostree
 p11-kit
-pacman
 pacman-mirrorlist
 pam
 pambase
@@ -774,11 +760,9 @@ pipewire
 pipewire-alsa
 pipewire-audio
 pipewire-jack
-pipewire-pulse
 pipewire-v4l2
 pixman
 pkgconf
-podman-compose
 polkit
 polkit-qt6
 poppler
@@ -895,13 +879,11 @@ raptor
 rav1e
 readline
 realtime-privileges
-rsync
 rtkit
 rtl-sdr
 rtmpdump
 rubberband
 sane
-sane-airscan
 sbc
 sdl2-compat
 sdl2_image
@@ -920,7 +902,6 @@ slirp4netns
 smbclient
 snappy
 sndio
-socat
 solid
 sonnet
 sord
@@ -943,7 +924,6 @@ svt-av1
 svt-hevc
 swtpm
 sysfsutils
-system-config-printer
 systemd
 systemd-libs
 systemd-sysvcompat
@@ -977,7 +957,6 @@ unzip
 upower
 usbredir
 usbutils
-util-linux
 util-linux-libs
 v4l-utils
 vapoursynth
@@ -993,7 +972,6 @@ vte3
 vulkan-headers
 vulkan-icd-loader
 vulkan-mesa-layers
-vulkan-radeon
 vulkan-tools
 wavpack
 wayland
