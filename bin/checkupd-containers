@@ -35,7 +35,7 @@ _get_latest_tags() {
           grep -v '.sig' | grep -v 'stable'
           ;;
         */omada-controller)
-          grep -v 'chromium' | grep -v 'arm' | grep -v 'openj' | grep -v 'amd'
+          grep -v 'chromium' | grep -v 'arm' | grep -v 'openj' | grep -v 'amd' | grep -v 'test'
           ;;
         */uptime-kuma)
           grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test'

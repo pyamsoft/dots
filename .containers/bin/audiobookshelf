@@ -2,7 +2,7 @@
 
 readonly _name="audiobookshelf"
 readonly _image="ghcr.io/advplyr/audiobookshelf"
-readonly _tag="2.17.7"
+readonly _tag="2.18.1"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -144,4 +144,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-
