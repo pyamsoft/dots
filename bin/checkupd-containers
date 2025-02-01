@@ -38,7 +38,7 @@ _get_latest_tags() {
           grep -v 'chromium' | grep -v 'arm' | grep -v 'openj' | grep -v 'amd' | grep -v 'test'
           ;;
         */cloudflare-ddns)
-          grep -v '.sig'
+          grep -v '.sig' | grep -v 'artifacthub'
           ;;
         */uptime-kuma)
           grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test'
