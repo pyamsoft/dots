@@ -14,7 +14,24 @@ _get_latest_tags() {
   # Remove anything like latest, beta, other unstable versions
   # Sort by reverse version order (newest version on top)
   # max 10
-  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'latest' | grep -v 'beta' | grep -v '.sig' | grep -v 'nightly' | grep -v 'test' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'windows' | grep -v 'alpine' | sort -r -V | head || {
+
+  case "${_container}" in
+  esac
+  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'latest' | grep -v 'beta' | grep -v '.sig' | grep -v 'nightly' | grep -v 'test' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' |
+    case "${_container}" in
+    */jellyfin)
+      grep -v '202.'
+      ;;
+    */caddy)
+      grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
+      ;;
+    */omada-controller)
+      grep -v 'chromium' | grep -v 'arm' | grep -v 'openj' | grep -v 'amd'
+      ;;
+    *)
+      cat
+      ;;
+    esac | sort -r -V | head || {
     printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
   }
 
