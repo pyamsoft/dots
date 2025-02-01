@@ -14,7 +14,7 @@ _get_latest_tags() {
   # Remove anything like -latest- or -beta-
   # Sort by reverse version order (newest version on top)
   # max 10
-  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'latest' | grep -v 'beta' | sort -r -V | head || {
+  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'latest' | grep -v 'beta' | grep -v '.sig' | grep -v 'nightly' | grep -v 'test' | grep -v 'edge' | sort -r -V | head || {
     printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
   }
 
