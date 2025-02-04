@@ -83,8 +83,10 @@ dtc
 duktape
 e2fsprogs
 edk2-ovmf
+elfutils
 ell
 enchant
+ethtool
 exempi
 exiv2
 expat
@@ -241,6 +243,7 @@ haskell-uuid-types
 haskell-vector
 haskell-vector-stream
 haskell-witherable
+hdparm
 hicolor-icon-theme
 hidapi
 highway
@@ -549,6 +552,7 @@ libp11-kit
 libpaper
 libpcap
 libpciaccess
+libpfm
 libpgm
 libpipeline
 libpipewire
@@ -737,6 +741,7 @@ pciutils
 pcre
 pcre2
 pcsclite
+perf
 perl
 perl-alien-build
 perl-alien-libxml2
@@ -770,7 +775,6 @@ poppler-data
 poppler-glib
 popt
 portaudio
-power-profiles-daemon
 ppp
 procps-ng
 protobuf
@@ -785,6 +789,7 @@ python-certifi
 python-chardet
 python-charset-normalizer
 python-click
+python-configobj
 python-contourpy
 python-cycler
 python-dateutil
@@ -796,6 +801,7 @@ python-gobject
 python-greenlet
 python-idna
 python-kiwisolver
+python-linux-procfs
 python-matplotlib
 python-msgpack
 python-numpy
@@ -805,10 +811,12 @@ python-pillow
 python-protobuf
 python-pycryptodomex
 python-pycups
+python-pyinotify
 python-pynvim
 python-pyparsing
 python-pyqt6
 python-pyqt6-sip
+python-pyudev
 python-reportlab
 python-requests
 python-six
@@ -948,6 +956,7 @@ tslib
 ttf-dejavu
 ttf-nerd-fonts-symbols-common
 ttf-nerd-fonts-symbols-mono
+tuned
 twolame
 tzdata
 uchardet

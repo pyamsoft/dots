@@ -62,6 +62,7 @@ system-config-printer
 tmux
 ttf-gentium-plus
 ttf-liberation
+tuned-ppd
 util-linux
 virt-manager
 vulkan-radeon
