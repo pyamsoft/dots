@@ -10,7 +10,7 @@
 
 readonly _name="tailscale"
 readonly _image="docker.io/tailscale/tailscale"
-readonly _tag="v1.78.3"
+readonly _tag="v1.80.0"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -33,7 +33,7 @@ _prep_caps() {
   # For networking
   _caps="${_caps} --cap-add NET_ADMIN"
   _caps="${_caps} --cap-add NET_RAW"
-  
+
   # Allow loading kernel module
   _caps="${_caps} --cap-add SYS_MODULE"
 
@@ -171,4 +171,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-
