@@ -2,7 +2,7 @@
 
 readonly _name="subsyncarr"
 readonly _image="docker.io/mrorbitman/subsyncarr"
-readonly _tag="0.0.5"
+readonly _tag="0.0.8"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
