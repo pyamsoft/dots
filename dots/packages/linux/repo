@@ -45,7 +45,6 @@ pipewire-pulse
 pkgstats
 podman
 podman-compose
-proxychains-ng
 reflector
 rng-tools
 rofi
