@@ -39,7 +39,7 @@ _check_user() {
   fi
 
   # Need this userns option that is podman specific or we have random OCI permission error
-  _userns=""
+  _userns="--userns keep-id"
   readonly _userns
 
   return 0
