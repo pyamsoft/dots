@@ -5,17 +5,17 @@
 #
 # This is a very specific problem with a very specific fix.
 # Do not -Sy anywhere else, always -Syu
-fix_pacman_keyring() {
-  sudo pacman -Sy archlinux-keyring && sudo pacman -Syu
+pacman__fix_keyring() {
+  sudo pacman -Sy archlinux-keyring && sudo pacman -Syu "$@"
 }
 
 __up_linux_arch() {
   if command -v paru >/dev/null; then
-    paru -Syu --removemake --devel || return 1
+    paru -Syu --removemake --devel "$@" || return 1
   elif command -v yay >/dev/null; then
-    yay -Syu --removemake --devel || return 1
+    yay -Syu --removemake --devel "$@" || return 1
   elif command -v pacman >/dev/null; then
-    sudo pacman -Syu || return 1
+    sudo pacman -Syu "$@" || return 1
   fi
 
   return 0
@@ -23,22 +23,22 @@ __up_linux_arch() {
 
 __up_linux_debian() {
   if command -v apt >/dev/null; then
-    sudo sh -c 'apt update && apt upgrade' || return 1
+    sudo sh -c "apt update && apt upgrade $@" || return 1
   fi
 
   return 0
 }
 
 __up_linux() {
-  __up_linux_arch || return 1
-  __up_linux_debian || return 1
+  __up_linux_arch "$@" || return 1
+  __up_linux_debian "$@" || return 1
 
   return 0
 }
 
 __up_flatpak() {
   if command -v flatpak >/dev/null; then
-    flatpak update -u && flatpak uninstall -u --unused || {
+    flatpak --user update "$@" && flatpak --user uninstall --unused || {
       return 1
     }
   fi
@@ -48,7 +48,7 @@ __up_flatpak() {
 
 __up_containers() {
   if command -v checkupd-containers >/dev/null; then
-    checkupd-containers || return 1
+    checkupd-containers "$@" || return 1
   fi
 
   return 0
@@ -57,8 +57,8 @@ __up_containers() {
 
 # Update everything
 upall() {
-  __up_linux || return 1
-  __up_flatpak || return 1
-  __up_containers || return 1
+  __up_linux "$@" || return 1
+  __up_flatpak "$@" || return 1
+  __up_containers "$@" || return 1
   return 0
 }
