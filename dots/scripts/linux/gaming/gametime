@@ -54,6 +54,18 @@ _prepare_proton_env() {
   export PROTON_HEAP_DELAY_FREE=1
   __game_environment="${__game_environment} PROTON_HEAP_DELAY_FREE=${PROTON_HEAP_DELAY_FREE}"
 
+  # Borderless window
+  export PROTON_NO_WM_DECORATION=1
+  export WINE_NO_WM_DECORATION=1
+  __game_environment="${__game_environment} PROTON_NO_WM_DECORATION=${PROTON_NO_WM_DECORATION}"
+  __game_environment="${__game_environment} WINE_NO_WM_DECORATION=${WINE_NO_WM_DECORATION}"
+
+  # Fix input in some games that expect SDL
+  export PROTON_PREFER_SDL=1
+  export WINE_PREFER_SDL=1
+  __game_environment="${__game_environment} PROTON_PREFER_SDL=${PROTON_PREFER_SDL}"
+  __game_environment="${__game_environment} WINE_PREFER_SDL=${WINE_PREFER_SDL}"
+
   return 0
 }
 
@@ -183,6 +195,11 @@ _prepare_gamescope() {
   #
   # Scaling causes the mouse to not be in the right place
   #__gamescope_options="${__gamescope_options} --scaler fill"
+
+  # Set borderless window, which should fix "clickthrough" issues in some games
+  #
+  # Scaling causes the mouse to not be in the right place
+  __gamescope_options="${__gamescope_options} --borderless"
 
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
@@ -345,11 +362,11 @@ _prepare_gamemode() {
 _prepare_obs() {
   if command -v obs-gamecapture >/dev/null; then
     if [ -n "${GAME_OBS}" ] && [ "${GAME_OBS}" -ne 0 ]; then
-        __env_tools="${__env_tools} obs-gamecapture"
-        _log 'OBS Game Capture: YES (GAME_OBS=%s)' "${GAME_OBS}"
-      else
-        _log 'OBS Game Capture: NO (GAME_OBS=%s)' "${GAME_OBS}"
-      fi
+      __env_tools="${__env_tools} obs-gamecapture"
+      _log 'OBS Game Capture: YES (GAME_OBS=%s)' "${GAME_OBS}"
+    else
+      _log 'OBS Game Capture: NO (GAME_OBS=%s)' "${GAME_OBS}"
+    fi
   else
     _log 'OBS Game Capture: MISSING (GAME_OBS=%s)' "${GAME_OBS}"
   fi
