@@ -7,17 +7,17 @@ readonly dev_root="${HOME}/devel"
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
-    --shell)
-      _args="${_args} --command=/bin/sh"
-      shift
-      ;;
-    --offline)
-      _args="${_args} --unshare=network"
-      shift
-      ;;
-    *)
-      break
-      ;;
+  --shell)
+    _args="${_args} --command=/bin/sh"
+    shift
+    ;;
+  --offline)
+    _args="${_args} --unshare=network"
+    shift
+    ;;
+  *)
+    break
+    ;;
   esac
 done
 readonly _args
@@ -26,7 +26,7 @@ readonly _args
 exec flatpak-env "${pak}" \
   --filesystem="${dev_root}/project/pyamsoft/js" \
   --filesystem="${dev_root}/project/pyamsoft/shell" \
-  --env="FLATPAK_ENABLE_SDK_EXT=node20" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node22" \
   ${_args} \
   -- "$@" || exit 1
 exit 0

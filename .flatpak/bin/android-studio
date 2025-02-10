@@ -16,17 +16,17 @@ readonly path
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
-    --shell)
-      _args="${_args} --command=/bin/sh"
-      shift
-      ;;
-    --offline)
-      _args="${_args} --unshare=network"
-      shift
-      ;;
-    *)
-      break
-      ;;
+  --shell)
+    _args="${_args} --command=/bin/sh"
+    shift
+    ;;
+  --offline)
+    _args="${_args} --unshare=network"
+    shift
+    ;;
+  *)
+    break
+    ;;
   esac
 done
 readonly _args
@@ -43,12 +43,12 @@ flatpak-env "${pak}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
   --env="JDK17=/usr/lib/sdk/openjdk17/jvm/openjdk-17" \
-  --env="FLATPAK_ENABLE_SDK_EXT=node20,openjdk17" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node22,openjdk17" \
   ${_args} \
   -- "$@"
 
 # Kill gradle-daemon after exiting
-if command -v kill-gradle>/dev/null; then
+if command -v kill-gradle >/dev/null; then
   kill-gradle
 fi
 
