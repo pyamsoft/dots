@@ -38,7 +38,7 @@ __up_linux() {
 
 __up_flatpak() {
   if command -v flatpak >/dev/null; then
-    flatpak --user update "$@" && flatpak --user uninstall --unused || {
+    flatpak --user update && flatpak --user uninstall --unused || {
       return 1
     }
   fi
@@ -48,7 +48,7 @@ __up_flatpak() {
 
 __up_containers() {
   if command -v checkupd-containers >/dev/null; then
-    checkupd-containers "$@" || return 1
+    checkupd-containers || return 1
   fi
 
   return 0
@@ -58,7 +58,7 @@ __up_containers() {
 # Update everything
 upall() {
   __up_linux "$@" || return 1
-  __up_flatpak "$@" || return 1
-  __up_containers "$@" || return 1
+  __up_flatpak || return 1
+  __up_containers || return 1
   return 0
 }
