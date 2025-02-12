@@ -25,7 +25,6 @@ avahi
 ayatana-ido
 binutils
 bison
-blas
 bluez
 bluez-libs
 bolt
@@ -42,7 +41,6 @@ cairo
 cantarell-fonts
 capstone
 catatonit
-cblas
 cdparanoia
 chromaprint
 cifs-utils
@@ -135,8 +133,6 @@ ghostscript
 giflib
 git
 gjs
-glew
-glfw
 glib-networking
 glib2
 glibc
@@ -309,9 +305,9 @@ kwindowsystem
 kxmlgui
 l-smash
 lame
-lapack
 lcms2
 ldb
+leancrypto
 less
 lib32-alsa-lib
 lib32-alsa-plugins
@@ -322,10 +318,8 @@ lib32-dbus
 lib32-e2fsprogs
 lib32-expat
 lib32-gcc-libs
-lib32-glew
 lib32-glib2
 lib32-glibc
-lib32-glu
 lib32-icu
 lib32-json-c
 lib32-keyutils
@@ -337,7 +331,6 @@ lib32-libffi
 lib32-libgcrypt
 lib32-libglvnd
 lib32-libgpg-error
-lib32-libice
 lib32-libidn2
 lib32-libldap
 lib32-libnghttp2
@@ -347,7 +340,6 @@ lib32-libpciaccess
 lib32-libpipewire
 lib32-libpng
 lib32-libpsl
-lib32-libsm
 lib32-libssh2
 lib32-libtasn1
 lib32-libtirpc
@@ -359,14 +351,9 @@ lib32-libxcrypt
 lib32-libxcrypt-compat
 lib32-libxdmcp
 lib32-libxext
-lib32-libxfixes
-lib32-libxi
-lib32-libxkbcommon
 lib32-libxml2
-lib32-libxmu
 lib32-libxshmfence
 lib32-libxss
-lib32-libxt
 lib32-libxxf86vm
 lib32-llvm-libs
 lib32-lm_sensors
@@ -790,21 +777,14 @@ python-chardet
 python-charset-normalizer
 python-click
 python-configobj
-python-contourpy
-python-cycler
-python-dateutil
 python-dbus
 python-distro
 python-dotenv
-python-fonttools
 python-gobject
 python-greenlet
 python-idna
-python-kiwisolver
 python-linux-procfs
-python-matplotlib
 python-msgpack
-python-numpy
 python-packaging
 python-pbr
 python-pillow
@@ -813,7 +793,6 @@ python-pycryptodomex
 python-pycups
 python-pyinotify
 python-pynvim
-python-pyparsing
 python-pyqt6
 python-pyqt6-sip
 python-pyudev
@@ -861,7 +840,6 @@ qemu-ui-sdl
 qemu-ui-spice-app
 qemu-ui-spice-core
 qemu-vhost-user-gpu
-qhull
 qpdf
 qqc2-desktop-style
 qrencode

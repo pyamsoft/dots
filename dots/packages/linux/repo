@@ -26,13 +26,11 @@ iwd
 kdeconnect
 kernel-modules-hook
 ldns
-lib32-mangohud
 linux-lts
 lm_sensors
 malcontent
 man-db
 man-pages
-mangohud
 neovim
 noto-fonts-emoji
 npm
