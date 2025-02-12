@@ -456,12 +456,12 @@ _execute() {
   unset __hostname
 
   if [ -z "${_gamescope}" ]; then
-    _log 'exec %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
+    _log 'exec %s -- env %s %s (%%command%%="%s")' "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
     exec ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
   else
-    _log 'exec %s %s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+    _log 'exec %s %s %s -- env %s %s (%%command%%="%s")' "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
     exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
@@ -500,7 +500,7 @@ main() {
   }
 
   _execute "$@" || {
-    _log 'gametime] Failed execute'
+    _log 'Failed execute'
     return 1
   }
 }
