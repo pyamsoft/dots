@@ -456,15 +456,15 @@ _execute() {
   unset __hostname
 
   if [ -z "${_gamescope}" ]; then
-    _log '%s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
+    _log 'exec %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
-    exec ${__game_environment} ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
+    exec ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
   else
-    _log '%s %s %s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+    _log 'exec %s %s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
-    exec ${__game_environment} ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+    exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
   fi
 
   return 0
