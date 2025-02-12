@@ -38,6 +38,20 @@ _prepare_mesa_env() {
   export MESA_VK_WSI_PRESENT_MODE="immediate"
   __game_environment="${__game_environment} MESA_VK_WSI_PRESENT_MODE=${MESA_VK_WSI_PRESENT_MODE}"
 
+  # Copy over some environment fixes from gamescope-session
+  # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
+  ############################################
+
+  # Enable threading
+  export mesa_glthread=true
+  __game_environment="${__game_environment} mesa_glthread=${mesa_glthread}"
+
+  # Don't wait for buffers to idle on the client side before sending them to gamescope
+  export vk_xwayland_wait_ready=false
+  __game_environment="${__game_environment} vk_xwayland_wait_ready=${vk_xwayland_wait_ready}"
+
+  ############################################
+
   return 0
 }
 
@@ -66,6 +80,16 @@ _prepare_proton_env() {
   __game_environment="${__game_environment} PROTON_PREFER_SDL=${PROTON_PREFER_SDL}"
   __game_environment="${__game_environment} WINE_PREFER_SDL=${WINE_PREFER_SDL}"
 
+  # Copy over some environment fixes from gamescope-session
+  # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
+  ############################################
+
+  # To expose vram info from radv
+  export WINEDLLOVERRIDES="dxgi=n"
+  __game_environment="${__game_environment} WINEDLLOVERRIDES=${WINEDLLOVERRIDES}"
+
+  ############################################
+
   return 0
 }
 
@@ -74,6 +98,16 @@ _prepare_dxvk_env() {
   # https://www.reddit.com/r/linux_gaming/comments/1cyl7us/guide_to_make_xdefiant_work_without_issues_no/
   export DXVK_NVAPI_ALLOW_OTHER_DRIVERS=1
   __game_environment="${__game_environment} DXVK_NVAPI_ALLOW_OTHER_DRIVERS=${DXVK_NVAPI_ALLOW_OTHER_DRIVERS}"
+
+  # Copy over some environment fixes from gamescope-session
+  # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
+  ############################################
+
+  # Fix bugs in old vkd3d
+  export VKD3D_SWAPCHAIN_LATENCY_FRAMES=3
+  __game_environment="${__game_environment} VKD3D_SWAPCHAIN_LATENCY_FRAMES=${VKD3D_SWAPCHAIN_LATENCY_FRAMES}"
+
+  ############################################
 
   return 0
 }
@@ -96,7 +130,7 @@ _prepare_sdl_env() {
   __game_environment="${__game_environment} SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=${SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS}"
 
   # Wayland caling mode none (default stretch)
-  export SDL_VIDEO_WAYLAND_MODE_SCALING=none
+  export SDL_VIDEO_WAYLAND_MODE_SCALING="none"
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
 
   return 0
@@ -250,6 +284,20 @@ _prepare_gamescope() {
   if [ -n "${nested_width}" ]; then
     __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
+
+  # Copy over some environment fixes from gamescope-session
+  # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
+  ############################################
+
+  # Some kind of color stream
+  export GAMESCOPE_NV12_COLORSPACE="k_EStreamColorspace_BT601"
+  __game_environment="${__game_environment} GAMESCOPE_NV12_COLORSPACE=${GAMESCOPE_NV12_COLORSPACE}"
+
+  # Temporary crutch until dummy plane interactions / etc are figured out
+  export GAMESCOPE_DISABLE_ASYNC_FLIPS=1
+  __game_environment="${__game_environment} GAMESCOPE_DISABLE_ASYNC_FLIPS=${GAMESCOPE_DISABLE_ASYNC_FLIPS}"
+
+  ############################################
 
   _log 'gamescope renderer: YES (GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_WINDOW=%s)' "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_WINDOW}"
 
@@ -408,17 +456,15 @@ _execute() {
   unset __hostname
 
   if [ -z "${_gamescope}" ]; then
-    _log '%s -- env %s %s %s' \
-      "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
+    _log '%s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
-    exec ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
+    exec ${__game_environment} ${__env_tools} -- env ${__game_environment} ${__game_tools} "$@"
   else
-    _log '%s %s %s -- env %s %s %s' \
-      "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
+    _log '%s %s %s %s -- env %s %s %s' "${__game_environment}" "${__env_tools}" "${_gamescope}" "${__gamescope_options}" "${__game_environment}" "${__game_tools}" "$*"
 
     # shellcheck disable=SC2086
-    exec ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
+    exec ${__game_environment} ${__env_tools} ${_gamescope} ${__gamescope_options} -- env ${__game_environment} ${__game_tools} "$@"
   fi
 
   return 0
