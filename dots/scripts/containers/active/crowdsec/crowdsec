@@ -4,7 +4,7 @@ readonly _name="crowdsec"
 readonly _image="docker.io/crowdsecurity/crowdsec"
 
 # -debian images support journalctl
-readonly _tag="v1.6.4-debian"
+readonly _tag="v1.6.5-debian"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -164,4 +164,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-

@@ -2,7 +2,7 @@
 
 readonly _name="home-assistant"
 readonly _image="ghcr.io/home-assistant/home-assistant"
-readonly _tag="2025.1.4"
+readonly _tag="2025.2.2"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
