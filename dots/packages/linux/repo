@@ -26,6 +26,7 @@ iwd
 kdeconnect
 kernel-modules-hook
 ldns
+libvirt
 linux-lts
 lm_sensors
 malcontent
@@ -62,6 +63,7 @@ ttf-gentium-plus
 ttf-liberation
 tuned-ppd
 util-linux
+virt-manager
 vulkan-radeon
 yt-dlp
 zip
