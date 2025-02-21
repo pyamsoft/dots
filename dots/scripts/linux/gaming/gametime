@@ -145,16 +145,6 @@ _prepare_env() {
   return 0
 }
 
-_get_hostname() {
-  if command -v hostname >/dev/null; then
-    __hostname="$(hostname)"
-  elif command -v hostnamectl >/dev/null && [ -n "${XDG_RUNTIME_DIR}" ]; then
-    __hostname="$(hostnamectl hostname)"
-  fi
-
-  return 0
-}
-
 ##
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
@@ -167,79 +157,64 @@ _prepare_gamescope() {
   #
   # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
   # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
-  #
-  # NOTE: If we only provide a height, gamescope will assume the width as 16x9
-  #
-  # NOTE: FSR performance is 2.0x nested resolution. (20)
-  # NOTE: FSR balanced is 1.7x nested resolution. (17)
-  # NOTE: FSR quality is 1.5x nested resolution. (15)
-  # NOTE: FSR ultra-quality is 1.3x nested resolution. (13)
-  #
-  # NOTE: Shell math doesn't like decimals, so divide stuff by 10 instead
-  #
-  ####
-  #
-  # NOTE: ReadyOrNot has a minimum of 1368x768, change the config file and do not touch settings to have it be lower
-  #       If you open the settings in game, your FPS will go to 2.
-  #
-  # NOTE: Slay the Spire won't launch in Fullscreen if the resolution is below 1280x720, use Windowed mode
 
-  # Defaults to 1080p windowed
-  window_type=""
-  output_width=1920
-  nested_width=1280
-  output_height=1080
-  nested_height=720
-  fps_max=120
-
-  if [ "${__hostname}" = "nerd1" ]; then
-    _log 'Using %s gamescope defaults' "${__hostname}"
-  elif [ "${__hostname}" = "nerd2" ]; then
-    _log 'Using %s gamescope defaults' "${__hostname}"
-    window_type="--fullscreen"
-  else
-    _log 'Hostname "%s" unknown, use gamescope defaults' "${__hostname}"
+  # Use a custom game window OR default to --borderless
+  # borderless window should fix "clickthrough" issues in some games
+  if [ -z "${GAME_WINDOW}" ]; then
+    GAME_WINDOW="--borderless"
   fi
-
-  if [ -n "${GAME_WINDOW}" ]; then
-    window_type="${GAME_WINDOW}"
-  fi
+  window_type="${GAME_WINDOW}"
 
   # If we have a custom GAME_FPS amount passed in, use it
-  if [ -n "${GAME_FPS}" ]; then
-    fps_max="${GAME_FPS}"
+  # otherwise default to 120fps max
+  if [ -z "${GAME_FPS}" ]; then
+    GAME_FPS="120"
   fi
+  fps_max="${GAME_FPS}"
 
   # If an output resolution is defined as GAME_OUTPUT=WxH, then use it here
-  if [ -n "${GAME_OUTPUT}" ]; then
-    output_width="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $1 }')"
-    output_height="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $2 }')"
+  # Otherwise default the output to 1080p
+  # Unless we have an eGPU plugged in, then use 1440p
+  if [ -z "${GAME_OUTPUT}" ]; then
+    if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
+      GAME_OUTPUT="2560x1440"
+    else
+      GAME_OUTPUT="1920x1080"
+    fi
   fi
+  output_width="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $1 }')"
+  output_height="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $2 }')"
 
   # If a nested resolution is defined as GAME_NESTED=WxH, then use it here
-  if [ -n "${GAME_NESTED}" ]; then
-    nested_width="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $1 }')"
-    nested_height="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $2 }')"
+  # Otherwise default the nested resolution to 720p
+  # Unless we have an eGPU plugged in, then use 1080p
+  if [ -z "${GAME_NESTED}" ]; then
+    if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
+      GAME_NESTED="1920x1080"
+    else
+      GAME_NESTED="1280x720"
+    fi
   fi
+  nested_width="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $1 }')"
+  nested_height="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $2 }')"
 
   # Options passed to gamescope session
-  __gamescope_options="${__gamescope_options} ${window_type} --output-height ${output_height} --nested-height ${nested_height}"
+  __gamescope_options="${__gamescope_options} ${window_type}"
+  __gamescope_options="${__gamescope_options} --output-height ${output_height}"
+  __gamescope_options="${__gamescope_options} --output-width ${output_width}"
+  __gamescope_options="${__gamescope_options} --nested-height ${nested_height}"
+  __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
 
   # Scale the window to fill
   #
   # Scaling causes the mouse to not be in the right place
   #__gamescope_options="${__gamescope_options} --scaler fill"
 
-  # Set borderless window, which should fix "clickthrough" issues in some games
-  #
-  # Scaling causes the mouse to not be in the right place
-  __gamescope_options="${__gamescope_options} --borderless"
-
   # Apply most sharpness through gamescope so it works for OpenGL
   # Then use vkBasalt for any slight extra
   # 0 is max sharpness, 20 is min sharpness
   # Slight sharpness by default and drop vkbasalt by default
-  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 16"
+  __gamescope_options="${__gamescope_options} --filter fsr --fsr-sharpness 12"
 
   # Force cursor grab to keep cursor in focus on Wayland
   __gamescope_options="${__gamescope_options} --force-grab-cursor"
@@ -276,13 +251,6 @@ _prepare_gamescope() {
     # Otherwise we run with gamescope-wl on wayland, but we want normal gamescope
     _log 'Force running with SDL backend'
     __gamescope_options="${__gamescope_options} --backend sdl"
-  fi
-
-  if [ -n "${output_width}" ]; then
-    __gamescope_options="${__gamescope_options} --output-width ${output_width}"
-  fi
-  if [ -n "${nested_width}" ]; then
-    __gamescope_options="${__gamescope_options} --nested-width ${nested_width}"
   fi
 
   # Copy over some environment fixes from gamescope-session
@@ -453,8 +421,6 @@ _enable_steam_options() {
 }
 
 _execute() {
-  unset __hostname
-
   if [ -z "${_gamescope}" ]; then
     _log 'exec %s -- env %s %s (%%command%%="%s")' "${__env_tools}" "${__game_environment}" "${__game_tools}" "$*"
 
@@ -478,11 +444,6 @@ main() {
     _log 'Using gamescope'
     _gamescope="gamescope"
   fi
-
-  _get_hostname || {
-    _log 'Unable to resolve hostname'
-    __hostname=""
-  }
 
   _prepare || {
     _log 'Unable to prepare gaming environment'
