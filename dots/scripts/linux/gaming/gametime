@@ -24,11 +24,6 @@ _prepare_mesa_env() {
   export MESA_DISK_CACHE_SINGLE_FILE=1
   __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
 
-  # Force VRS shading
-  # https://www.phoronix.com/review/radeon-radv-vrs
-  export RADV_FORCE_VRS="2x2"
-  __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
-
   # Disable vertical blank for OpenGL
   export vblank_mode=0
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
@@ -37,6 +32,12 @@ _prepare_mesa_env() {
   # https://docs.mesa3d.org/envvars.html
   export MESA_VK_WSI_PRESENT_MODE="immediate"
   __game_environment="${__game_environment} MESA_VK_WSI_PRESENT_MODE=${MESA_VK_WSI_PRESENT_MODE}"
+
+  # Force VRS shading
+  # https://www.phoronix.com/review/radeon-radv-vrs
+  #
+  # export RADV_FORCE_VRS="2x2"
+  # __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
   # Copy over some environment fixes from gamescope-session
   # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
