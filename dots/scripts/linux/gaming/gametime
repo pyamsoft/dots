@@ -291,7 +291,7 @@ _prepare_gamescope() {
 
   ############################################
 
-  _log 'gamescope renderer: YES (GAME_WINDOW=%s, GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_FPS=%s)' "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_WINDOW}" "${GAME_FPS}"
+  _log 'gamescope renderer: YES (GAME_WINDOW=%s, GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_FPS=%s)' "${GAME_WINDOW}" "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_FPS}"
 
   unset output_width
   unset output_height
