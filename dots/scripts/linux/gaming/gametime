@@ -146,6 +146,16 @@ _prepare_env() {
 }
 
 ##
+# Sometimes our eGPU is connected, sometimes it's not
+_has_egpu() {
+  if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+##
 # For gamescope, the following is needed
 # --devices=all;shm; is needed for Steam overlay and Steam input
 # --env SDL_VIDEODRIVER=x11 must be set on the flatpak itself, not just in this file.
@@ -176,8 +186,15 @@ _prepare_gamescope() {
   # Otherwise default the output to 1080p
   # Unless we have an eGPU plugged in, then use 1440p
   if [ -z "${GAME_OUTPUT}" ]; then
-    if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
-      GAME_OUTPUT="2560x1440"
+    if _has_egpu; then
+      # You can also provide GAME_OUTPUT_EGPU=WxH to override output resolution ONLY
+      # when an eGPU is detected
+      if [ -n "${GAME_OUTPUT_EGPU}" ]; then
+        GAME_OUTPUT="${GAME_OUTPUT_EGPU}"
+        unset GAME_OUTPUT_EGPU
+      else
+        GAME_OUTPUT="2560x1440"
+      fi
     else
       GAME_OUTPUT="1920x1080"
     fi
@@ -189,8 +206,15 @@ _prepare_gamescope() {
   # Otherwise default the nested resolution to 720p
   # Unless we have an eGPU plugged in, then use 1080p
   if [ -z "${GAME_NESTED}" ]; then
-    if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
-      GAME_NESTED="1920x1080"
+    if _has_egpu; then
+      # You can also provide GAME_NESTED_EGPU=WxH to override nested resolution ONLY
+      # when an eGPU is detected
+      if [ -n "${GAME_NESTED_EGPU}" ]; then
+        GAME_NESTED="${GAME_NESTED_EGPU}"
+        unset GAME_NESTED_EGPU
+      else
+        GAME_NESTED="1920x1080"
+      fi
     else
       GAME_NESTED="1280x720"
     fi
@@ -267,7 +291,7 @@ _prepare_gamescope() {
 
   ############################################
 
-  _log 'gamescope renderer: YES (GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_WINDOW=%s)' "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_WINDOW}"
+  _log 'gamescope renderer: YES (GAME_WINDOW=%s, GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_FPS)' "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_WINDOW}" "${GAME_FPS}"
 
   unset output_width
   unset output_height
