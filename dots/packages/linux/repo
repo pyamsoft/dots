@@ -27,6 +27,7 @@ kdeconnect
 kernel-modules-hook
 ldns
 libvirt
+linux
 linux-lts
 lm_sensors
 malcontent

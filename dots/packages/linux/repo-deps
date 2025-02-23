@@ -647,7 +647,6 @@ libyaml
 libyuv
 licenses
 lilv
-linux
 linux-api-headers
 linux-firmware
 linux-firmware-whence
@@ -797,7 +796,6 @@ python-pyqt6-sip
 python-pyudev
 python-reportlab
 python-requests
-python-six
 python-urllib3
 python-yaml
 qca-qt6
@@ -881,6 +879,7 @@ serd
 shaderc
 shadow
 shared-mime-info
+simdjson
 skopeo
 slang
 slirp4netns
