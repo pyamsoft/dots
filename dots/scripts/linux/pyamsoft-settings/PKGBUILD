@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2496.8647d661
+pkgver=v2497.b42bc2e0
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -137,7 +137,7 @@ package() {
     case "${_my_hostname}" in
     nerd1)
       case "${_file_name}" in
-      *-caddy* | crowdsec-* | -crowdsec* | -home-assistant*)
+      *-caddy* | crowdsec-* | *-crowdsec* | *-home-assistant* | *-ddns*)
         msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
         continue
         ;;
@@ -181,7 +181,7 @@ package() {
     case "${_my_hostname}" in
     nerd1)
       case "${_file_name}" in
-      crowdsec* | cscli | home-assistant | caddy | ddns)
+      *crowdsec* | *cscli* | *home-assistant | *caddy* | *ddns*)
         msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
         continue
         ;;
@@ -190,7 +190,7 @@ package() {
       ;;
     nerd2)
       case "${_file_name}" in
-      *gamelaunch* | ddns)
+      *gamelaunch* | *ddns*)
         msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
         continue
         ;;
