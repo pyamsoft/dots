@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2490.1ef794e0
+pkgver=v2491.97dbd20d
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -130,7 +130,7 @@ package() {
     case "${_my_hostname}" in
     nerd1)
       case "${_file_name}" in
-      caddy* | crowdsec* | container-home-assistant*)
+      *-caddy* | crowdsec-* | -crowdsec* | -home-assistant*)
         msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
         continue
         ;;
