@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2488.81131921
+pkgver=v2490.1ef794e0
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -126,6 +126,21 @@ package() {
 
     # shellcheck disable=SC2154
     _install_dir="${pkgdir}/${_file_dir#\.\/}"
+
+    case "${_my_hostname}" in
+    nerd1)
+      case "${_file_name}" in
+      caddy* | crowdsec* | container-home-assistant*)
+        msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
+    nerd2) ;;
+    aws*) ;;
+    *) ;;
+    esac
 
     case "${_file_dir}" in
     */sudoers.d)
