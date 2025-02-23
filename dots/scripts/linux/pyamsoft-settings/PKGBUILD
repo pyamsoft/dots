@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2491.97dbd20d
+pkgver=v2492.dbd089d8
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -64,7 +64,7 @@ _package_install() {
   _package_install__dir_chmod="$4"
   _package_install__file_chmod="$5"
 
-  msg2 "INSTALL: ${_package_install__src_dir}/${_package_install__file} -> ${_package_install__file}"
+  msg2 "INSTALL: ${_package_install__install_dir}/${_package_install__file}"
 
   # Setup directory
   mkdir -p "${_package_install__install_dir}" || {
