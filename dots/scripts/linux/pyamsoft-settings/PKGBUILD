@@ -15,9 +15,11 @@ arch=('any')
 # shellcheck disable=SC2034
 makedepends=('git')
 # shellcheck disable=SC2034
-depends=()
+depends=('udev' 'polkit' 'sudo' 'podman' 'firewalld' 'networkmanager' 'openssh' 'systemd')
 # shellcheck disable=SC2034
-optdepends=()
+optdepends=(
+  'ddcutil: For use with brightness script'
+)
 # shellcheck disable=SC2034
 provides=('pyamsoft-settings')
 # shellcheck disable=SC2034
