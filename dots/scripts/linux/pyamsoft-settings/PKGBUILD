@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2497.b42bc2e0
+pkgver=v2498.332a0edc
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -144,7 +144,15 @@ package() {
       *) ;;
       esac
       ;;
-    nerd2) ;;
+    nerd2)
+      case "${_file_name}" in
+      *gamelaunch* | *-ddns*)
+        msg2 "SKIP INSTALL ${_install_dir}/${_file_name} on ${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
     aws*) ;;
     *) ;;
     esac
