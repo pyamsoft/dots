@@ -7,7 +7,7 @@ pkgname=pyamsoft-settings
 # shellcheck disable=SC2034
 pkgdesc="pyamsoft Settings"
 # shellcheck disable=SC2034
-pkgver=v2492.dbd089d8
+pkgver=v2493.104ca062
 # shellcheck disable=SC2034
 pkgrel=1
 # shellcheck disable=SC2034
@@ -65,29 +65,36 @@ _package_install() {
   _package_install__file_chmod="$5"
 
   msg2 "INSTALL: ${_package_install__install_dir}/${_package_install__file}"
-
   # Setup directory
-  mkdir -p "${_package_install__install_dir}" || {
+
+  # shellcheck disable=SC2154
+  mkdir -p "${pkgdir}/${_package_install__install_dir}" || {
     error "Failed to create install directory: ${_package_install__install_dir}"
     return 1
   }
-  chmod "${_package_install__dir_chmod}" "${_package_install__install_dir}" || {
+
+  # shellcheck disable=SC2154
+  chmod "${_package_install__dir_chmod}" "${pkgdir}/${_package_install__install_dir}" || {
     error "Failed to chmod install directory: ${_package_install__install_dir}"
     return 1
   }
 
   # Install file
-  cp "${_package_install__src_dir}/${_package_install__file}" "${_package_install__install_dir}" || {
+  # shellcheck disable=SC2154
+  cp "${_package_install__src_dir}/${_package_install__file}" "${pkgdir}/${_package_install__install_dir}" || {
     error "Failed to copy install file: ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
-  chmod "${_package_install__file_chmod}" "${_package_install__install_dir}/${_package_install__file}" || {
+
+  # shellcheck disable=SC2154
+  chmod "${_package_install__file_chmod}" "${pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
     error "Failed to chmod install file: ${_package_install__install_dir}/${_package_install__file}"
     return 1
   }
 
   # Replace any placeholders
-  sed --in-place "s/<<MY_USER>>/${_my_username}/g" "${_package_install__install_dir}/${_package_install__file}"
+  # shellcheck disable=SC2154
+  sed --in-place "s/<<MY_USER>>/${_my_username}/g" "${pkgdir}/${_package_install__install_dir}/${_package_install__file}"
 
   unset _package_install__file_chmod
   unset _package_install__dir_chmod
@@ -125,7 +132,7 @@ package() {
     _file_name="$(basename "${_file_or_folder}")"
 
     # shellcheck disable=SC2154
-    _install_dir="${pkgdir}/${_file_dir#\.\/}"
+    _install_dir="${_file_dir#\.\/}"
 
     case "${_my_hostname}" in
     nerd1)
@@ -169,7 +176,7 @@ package() {
     _file_name="$(basename "${_file_or_folder}")"
 
     # shellcheck disable=SC2154
-    _install_dir="${pkgdir}/${_file_dir#\.\/}"
+    _install_dir="${_file_dir#\.\/}"
 
     case "${_my_hostname}" in
     nerd1)
