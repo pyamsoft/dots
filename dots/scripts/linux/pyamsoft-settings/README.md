@@ -5,7 +5,6 @@ A package that installs pyamsoft custom settings
 ## After Install
 
 Create a system group called `ssh-users` and add your user to it
-Add a line for your user into the `/etc/sudoers` file (or `.d` folder)
 
 ### License
 

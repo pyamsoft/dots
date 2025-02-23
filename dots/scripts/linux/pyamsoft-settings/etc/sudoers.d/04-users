@@ -1,0 +1,2 @@
+# Users with sudo access
+<<MY_USER>> ALL=(root) ALL
