@@ -1,2 +1,0 @@
-# Adds our HP all-in-one printer as a recognized SANE scanner
-ATTRS{idVendor}=="03f0", ATTRS{idProduct}=="6412", MODE="0660", GROUP="lpadmin", ENV{libsane_matched}="yes"

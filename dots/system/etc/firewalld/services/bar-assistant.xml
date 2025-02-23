@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <port port="3000" protocol="tcp"/>
-</service>

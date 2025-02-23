@@ -1,7 +1,0 @@
-# Keep gamer related vars only for gamelaunch script
-Defaults!/usr/local/sbin/gamelaunch env_keep += "GAMER_*"
-
-# Gaming access for user
-#
-# Replace "primary-user" and "gaming-secondary-user"
-primary-user ALL=(root) NOPASSWD:/usr/local/sbin/gamelaunch gaming-secondary-user

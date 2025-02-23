@@ -1,0 +1,6 @@
+# Keep gamer related vars only for gamelaunch script
+Defaults!/opt/pyamsoft/sbin/gamelaunch env_keep += "GAMER_*"
+
+# Gaming access for user
+# Replace gaming-secondary-user with the command to run
+# <<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/gamelaunch gaming-secondary-user

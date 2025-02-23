@@ -51,35 +51,34 @@ main() {
 
   # Consume gamescope
   case "$1" in
-    --gamescope)
-      if [ -z "$2" ]; then
-        printf -- '[gamelaunch] Missing required --gamescope argument value!\n'
-        return 1
-      fi
+  --gamescope)
+    if [ -z "$2" ]; then
+      printf -- '[gamelaunch] Missing required --gamescope argument value!\n'
+      return 1
+    fi
 
-      # Export gamescope
-      export GAMER_GAMESCOPE="$2"
+    # Export gamescope
+    export GAMER_GAMESCOPE="$2"
 
-      # Eat both
-      shift
-      shift
-      ;;
-    --gamescope=*)
-      _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
-      if [ -z "${_split}" ]; then
-        printf -- '[gamelaunch] Missing required --gamescope= argument value!\n'
-        return 1
-      fi
+    # Eat both
+    shift
+    shift
+    ;;
+  --gamescope=*)
+    _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
+    if [ -z "${_split}" ]; then
+      printf -- '[gamelaunch] Missing required --gamescope= argument value!\n'
+      return 1
+    fi
 
-      # Export gamescope
-      export GAMER_GAMESCOPE="${_split}"
-      unset _split
+    # Export gamescope
+    export GAMER_GAMESCOPE="${_split}"
+    unset _split
 
-      # Eat just one
-      shift
-      ;;
-    *)
-      ;;
+    # Eat just one
+    shift
+    ;;
+  *) ;;
   esac
 
   _real_user="gaming-${_target_user}"
@@ -91,7 +90,7 @@ main() {
   # pipewire - Faster sound performance (will still work without but may see more XRUNs)
   readonly _extra_groups="input pipewire"
 
-  printf -- '[gamelaunch] Running command: [%s] "~/bin/launcher %s"\n' "$*"
+  printf -- '[gamelaunch] Running command: [%s] "~/bin/launcher %s"\n' "${_target_user}" "$*"
   printf -- '[gamelaunch] Running command as target user: %s\n' "${_real_user}"
   printf -- '[gamelaunch] Running command with extra groups: %s\n' "${_extra_groups}"
   printf -- '[gamelaunch] DISPLAY=%s\n' "${DISPLAY}"
@@ -116,17 +115,6 @@ main() {
     --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
     --setenv="GAMER=1" \
     /bin/bash -l -c '~/bin/launcher' "$@"
-
-  ## Old way
-  # Required the _real_user to be permanently added to any supplementary groups,
-  # which was less secure. The systemd-run way allows for temporary group access.
-  #
-  # exec machinectl --quiet \
-  #   --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
-  #   --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
-  #   --setenv="GAMER=1" \
-  #   shell "${_real_user}@.host" \
-  #   /bin/bash -l -c '~/bin/launcher' "$@"
 }
 
 main "$@" || exit 1

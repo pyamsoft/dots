@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>jellyfin</short>
-  <description>jellyfin</description>
-  <port port="8096" protocol="tcp"/>
-</service>

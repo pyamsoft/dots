@@ -1,2 +1,0 @@
-# Run "podman ps" without password
-primary-user ALL=(root) NOPASSWD:/usr/bin/podman ps
