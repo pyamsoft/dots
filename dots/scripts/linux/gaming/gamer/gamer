@@ -97,8 +97,8 @@ main() {
   # is call machinectl to open a systemd connected user session as
   # the _target_user
   #
-  # See gamelaunch script in /usr/local/sbin
-  sudo /usr/local/sbin/gamelaunch "${_cmd}" "$@"
+  # See gamelaunch script in /opt/pyamsoft/sbin
+  sudo /opt/pyamsoft/sbin/gamelaunch "${_cmd}" "$@"
 
   # Clean up after
   _after "${_target_user}" || return 1
