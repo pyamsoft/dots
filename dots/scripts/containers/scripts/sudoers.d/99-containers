@@ -1,2 +1,0 @@
-# Allow user to run commands as secondary-user
-primary-user ALL=(secondary-user) NOPASSWD:/usr/local/bin/delegate-containers

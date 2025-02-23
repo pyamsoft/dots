@@ -1,0 +1,66 @@
+##
+# Maintainer: pyamsoft <developer(dot)pyamsoft(at)gmail(dot)com>
+##
+
+# shellcheck disable=SC2034
+pkgname=pyamsoft-settings
+# shellcheck disable=SC2034
+pkgdesc="pyamsoft Settings"
+# shellcheck disable=SC2034
+pkgver=v2487.ca3ecd4d
+# shellcheck disable=SC2034
+pkgrel=1
+# shellcheck disable=SC2034
+arch=('any')
+# shellcheck disable=SC2034
+makedepends=('git')
+# shellcheck disable=SC2034
+depends=()
+# shellcheck disable=SC2034
+optdepends=()
+# shellcheck disable=SC2034
+provides=('pyamsoft-settings')
+# shellcheck disable=SC2034
+conflicts=('pyamsoft-settings')
+# shellcheck disable=SC2034
+license=('GPL2')
+url="https://github.com/pyamsoft/dots.git"
+
+##
+# The SHA256 is constantly changing since this is
+# pulled from git so skip the verification check
+##
+# shellcheck disable=SC2034
+source=("git+${url}#branch=main")
+# shellcheck disable=SC2034
+sha256sums=('SKIP')
+
+pkgver() {
+  # shellcheck disable=SC2154
+  cd "${srcdir}/dots" || {
+    msg "Failed to cd into ${srcdir}/dots"
+    return 1
+  }
+
+  printf "v%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package__hostname() {
+  hostnamectl hostname
+}
+
+package() {
+  # shellcheck disable=SC2154
+  cd "${srcdir}/dots/scripts/linux/pyamsoft-settings" || {
+    msg "Failed to cd into ${srcdir}/dots/scripts/linux/pyamsoft-settings"
+    return 1
+  }
+
+  # Open up the umask in case you are running something more restrictive
+  umask 0022
+
+  ls --color -l
+  pwd
+  msg "hi"
+  package__hostname
+}

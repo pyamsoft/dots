@@ -1,0 +1,30 @@
+# Runs the blocky container when the target user logs in
+#
+# Should be enabled as `systemctl enable blocky@UID.service`
+# where UID is the UID of the target user you want to run the container
+#
+# Generally this is 1000 for "your user"
+
+[Unit]
+Description=Container: Blocky for %i
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
+Wants=network-online.target user@%i.service
+
+[Service]
+# File must exist or fail
+ExecStartPre=/bin/test -x /opt/pyamsoft/bin/blocky
+
+# Check the network is online before starting (wait up to 30 seconds)
+# We don't want to check DNS, we are the DNS
+ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online'
+
+# Teardown before starting, if this 'fails' because nothing else is running, we don't mind
+ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown blocky'
+
+ExecStart=/opt/pyamsoft/bin/blocky "%i"
+ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown blocky'
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target

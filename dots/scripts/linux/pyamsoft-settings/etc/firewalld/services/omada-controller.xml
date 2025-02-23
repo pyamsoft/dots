@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="0.0.1">
+  <short>omada-controller</short>
+  <description>TP Link Omada Controller</description>
+  <port port="19810" protocol="udp" />
+  <port port="29810" protocol="udp" />
+  <port port="29811-29816" protocol="tcp" />
+  <port port="8043" protocol="tcp" />
+</service>

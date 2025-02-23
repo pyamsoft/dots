@@ -1,2 +1,0 @@
-# Allow user to run status without password
-primary-user ALL=(root) NOPASSWD:/usr/local/bin/delegate-containers

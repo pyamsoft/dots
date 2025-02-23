@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>littlelink</short>
+  <description>LittleLink Home Page</description>
+  <port port="8420" protocol="tcp" />
+</service>

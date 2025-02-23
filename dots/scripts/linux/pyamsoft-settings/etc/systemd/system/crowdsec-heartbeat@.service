@@ -1,0 +1,11 @@
+# Check that Crowdsec is Alive
+
+[Unit]
+Description=Crowdsec Heartbeat Report to %i
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service container-scrutiny.service scrutiny.service
+Wants=network-online.target
+
+[Service]
+# Need oneshot or timer does not restart
+Type=oneshot
+ExecStart=/opt/pyamsoft/sbin/crowdsec-heartbeat --unescape "%i"

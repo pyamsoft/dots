@@ -1,0 +1,13 @@
+# Adapted from: https://www.reddit.com/r/archlinux/comments/1ez8p75/what_pacman_hooks_do_you_use_to_make_your_life/
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/lib/systemd/boot/efi/systemd-bootx64.efi
+
+[Action]
+Description = Signing systemd-boot EFI binary for Secure Boot...
+When = PostTransaction
+Exec = /usr/bin/sbctl sign -s -o /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /usr/lib/systemd/boot/efi/systemd-bootx64.efi
+Depends = sbctl

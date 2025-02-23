@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>audiobookshelf</short>
+  <description>Audio Bookshelf</description>
+  <port port="13378" protocol="tcp" />
+</service>
