@@ -1,0 +1,7 @@
+# This must be first, as a future NOPASSWD command would be overridden otherwise
+#
+# Sudo reads these files in order. This file goes first to declare that <<MY_USER>> can perform
+# any command as root.
+#
+# Then future files declare things like NOPASSWD needed when entering certain approved commands.
+<<MY_USER>> ALL=(root) ALL
