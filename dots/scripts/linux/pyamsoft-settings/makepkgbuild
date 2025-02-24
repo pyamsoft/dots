@@ -1,0 +1,37 @@
+#!/bin/sh
+
+_clean() {
+  rm -rf ./dots ./pkg ./src ./testing
+}
+
+main() {
+  _clean
+
+  if [ "$1" = "install" ]; then
+    makepkg -sfci
+  else
+    makepkg -sfc
+  fi
+
+  if [ "$1" = "test" ]; then
+    mkdir "./testing"
+    cd "./testing" || {
+      printf -- 'Failed to cd in to testing\n'
+      return 1
+    }
+
+    mv ../pyamsoft-settings*.tar.zst .
+    tar xvf ./*.tar.zst
+    cd .. || {
+      printf -- 'Failed to cd out of testing\n'
+      return 1
+    }
+  fi
+
+  _clean
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

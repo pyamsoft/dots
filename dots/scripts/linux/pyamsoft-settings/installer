@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+
+# Need to run with bash instead of /bin/sh to use glob options
+
+_package__hostname() {
+  if command -v hostnamectl >/dev/null; then
+    hostnamectl hostname || return 1
+  elif command -v hostname >/dev/null; then
+    hostname || return 1
+  fi
+
+  return 0
+}
+
+_package_install() {
+  _package_install__src_dir="$1"
+  _package_install__install_dir="$2"
+  _package_install__file="$3"
+  _package_install__dir_chmod="$4"
+  _package_install__file_chmod="$5"
+
+  printf -- "INSTALL %s\n" "${_package_install__install_dir}/${_package_install__file}"
+
+  # Create directory
+  mkdir -p "${_my_pkgdir}/${_package_install__install_dir}" || {
+    error "Failed to create install directory: ${_package_install__install_dir}"
+    return 1
+  }
+  chmod "${_package_install__dir_chmod}" "${_my_pkgdir}/${_package_install__install_dir}" || {
+    error "Failed to chmod install directory: ${_package_install__install_dir}"
+    return 1
+  }
+
+  # Install file
+  cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
+    error "Failed to copy install file: ${_package_install__src_dir}/${_package_install__file}"
+    return 1
+  }
+  chmod "${_package_install__file_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
+    error "Failed to chmod install file: ${_package_install__install_dir}/${_package_install__file}"
+    return 1
+  }
+
+  # Replace any placeholders
+  sed --in-place "s/<<MY_USER>>/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
+
+  unset _package_install__file_chmod
+  unset _package_install__dir_chmod
+  unset _package_install__src_dir
+  unset _package_install__install_dir
+  unset _package_install__file
+  return 0
+}
+
+main() {
+  _my_pkgdir="$1"
+  _target_uid="$2"
+
+  if [ -z "${_my_pkgdir}" ] || [ "${_my_pkgdir}" = "/" ]; then
+    printf -- 'You MUST provide a packaging directory as the first argument.\n'
+    printf -- 'It must be a writeable location. It cannot be /\n'
+    return 1
+  fi
+
+  # This is an assumption that the user account you would consider "my user" is UID 1000
+  # at this point in the script, we are running as fakeroot, so we have to hard-assume this
+  if [ -z "${_target_uid}" ]; then
+    _target_uid="1000"
+  fi
+
+  # We may want different codepaths for different machines
+  _my_hostname="$(_package__hostname)"
+
+  # This is an assumption that the user account you would consider "my user" is UID 1000
+  # at this point in the script, we are running as fakeroot, so we have to hard-assume this
+  _my_username="$(id -un "${_target_uid}")"
+
+  # Turn on globbing options (bash specific, but PKGBUILDs are run in bash right?)
+  shopt -s globstar nullglob
+
+  # Loop through etc
+  for _file_or_folder in ./etc/**/*; do
+    # Skip folders
+    if [ -d "${_file_or_folder}" ]; then
+      continue
+    fi
+
+    _file_dir="$(dirname "${_file_or_folder}")"
+    _file_name="$(basename "${_file_or_folder}")"
+    _install_dir="${_file_dir#\.\/}"
+
+    case "${_my_hostname}" in
+    nerd1)
+      case "${_file_name}" in
+      *-caddy* | crowdsec-* | *-crowdsec* | *-home-assistant* | *-ddns*)
+        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
+    nerd2)
+      case "${_file_name}" in
+      *gamelaunch* | *-ddns*)
+        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
+    aws*) ;;
+    *) ;;
+    esac
+
+    case "${_file_dir}" in
+    */sudoers.d)
+      _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "600" || return 1
+      ;;
+    *)
+      _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
+      ;;
+    esac
+
+    unset _install_dir
+    unset _file_dir
+    unset _file_name
+    unset _file_or_folder
+  done
+  unset _file_or_folder
+
+  # Loop through opt
+  for _file_or_folder in ./opt/**/*; do
+    # Skip folders
+    if [ -d "${_file_or_folder}" ]; then
+      continue
+    fi
+
+    _file_dir="$(dirname "${_file_or_folder}")"
+    _file_name="$(basename "${_file_or_folder}")"
+    _install_dir="${_file_dir#\.\/}"
+
+    case "${_my_hostname}" in
+    nerd1)
+      case "${_file_name}" in
+      *crowdsec* | *cscli* | *home-assistant | *caddy* | *ddns*)
+        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
+    nerd2)
+      case "${_file_name}" in
+      *gamelaunch* | *ddns*)
+        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
+        continue
+        ;;
+      *) ;;
+      esac
+      ;;
+    aws*) ;;
+    *) ;;
+    esac
+
+    _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+
+    unset _install_dir
+    unset _file_dir
+    unset _file_name
+    unset _file_or_folder
+  done
+  unset _file_or_folder
+
+  unset _my_username
+  unset _my_hostname
+  unset _target_uid
+  unset _my_pkgdir
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
