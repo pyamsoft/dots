@@ -44,7 +44,7 @@ pkgver() {
     return 1
   }
 
-  printf -- 'v%s' "$(date "+%Y-%m-%d")"
+  printf -- 'v%s' "$(date "+%Y.%m.%d")"
 }
 
 _package__hostname() {
