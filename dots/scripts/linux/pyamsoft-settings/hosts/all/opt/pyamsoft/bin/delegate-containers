@@ -130,6 +130,8 @@ main() {
     exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
     ;;
   reload)
+    _prep_container || return 1
+
     # Run as the user
     exec systemctl --user daemon-reload "$@"
     ;;
