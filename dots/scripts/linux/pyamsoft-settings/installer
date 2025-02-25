@@ -55,7 +55,7 @@ main() {
   _my_pkgdir="$1"
   _target_uid="$2"
 
-  if [ -z "${_my_pkgdir}" ] || [ "${_my_pkgdir}" = "/" ]; then
+  if [ -z "${_my_pkgdir}" ]; then
     printf -- 'You MUST provide a packaging directory as the first argument.\n'
     printf -- 'It must be a writeable location.\n'
     return 1
