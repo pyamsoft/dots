@@ -41,9 +41,6 @@ _package_install() {
     return 1
   }
 
-  # Replace any placeholders
-  sed --in-place "s/<<MY_USER>>/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
-
   unset _package_install__file_chmod
   unset _package_install__dir_chmod
   unset _package_install__src_dir
