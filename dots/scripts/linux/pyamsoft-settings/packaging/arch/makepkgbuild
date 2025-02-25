@@ -4,14 +4,20 @@ _clean() {
   rm -rf ./dots ./pkg ./src ./testing
 }
 
+_makepkg() {
+  if [ "$1" = "install" ]; then
+    makepkg -sfci || return 1
+  else
+    makepkg -sfc || return 1
+  fi
+
+  return 0
+}
+
 main() {
   _clean
 
-  if [ "$1" = "install" ]; then
-    makepkg -sfci
-  else
-    makepkg -sfc
-  fi
+  _makepkg "$1" || return 1
 
   if [ "$1" = "test" ]; then
     mkdir "./testing"
