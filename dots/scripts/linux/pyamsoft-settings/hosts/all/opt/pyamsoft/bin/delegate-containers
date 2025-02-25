@@ -9,7 +9,8 @@ _dotfiles() {
 }
 
 _usage() {
-  printf -- '%s\n' "$(cat <<EOF
+  printf -- '%s\n' "$(
+    cat <<EOF
 
 ${_PROG_NAME} <action>
 
@@ -24,6 +25,7 @@ ${_PROG_NAME} <action>
 
 [service]:     Service management related operations
 
+  reload       Runs 'systemctl --user daemon-reload'
   disable      Runs 'systemctl --user disable --now container@<name>'
   restart      Runs 'systemctl --user restart container@<name>'
   status       Runs 'systemctl --user status container@<name>'
@@ -38,7 +40,7 @@ ${_PROG_NAME} <action>
   teardown     Runs 'container-teardown <name>'
 
 EOF
-)"
+  )"
 }
 
 _check_user() {
@@ -85,56 +87,60 @@ main() {
   shift
 
   case "${_action}" in
-    ps|logs|images|inspect)
-      exec podman "${_action}" "$@"
-      ;;
-    checkup)
-      exec podman auto-update --dry-run "$@"
-      ;;
-    enter)
-      # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
-      exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
-      ;;
-    prune)
-      exec podman system prune -a
-      ;;
-    pull)
-      _dotfiles pull "$@"
-      ;;
-    disable)
-      _prep_container || return 1
+  ps | logs | images | inspect)
+    exec podman "${_action}" "$@"
+    ;;
+  checkup)
+    exec podman auto-update --dry-run "$@"
+    ;;
+  enter)
+    # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
+    exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
+    ;;
+  prune)
+    exec podman system prune -a
+    ;;
+  pull)
+    _dotfiles pull "$@"
+    ;;
+  disable)
+    _prep_container || return 1
 
-      _CONTAINER="$1"
-      if [ -z "${_CONTAINER}" ]; then
-        printf -- 'Must call %s with a container name\n' "${_action}"
-        return 1
-      fi
-      shift
-
-      # Run as the user
-      exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
-      ;;
-    restart|status|stop)
-      _prep_container || return 1
-
-      _CONTAINER="$1"
-      if [ -z "${_CONTAINER}" ]; then
-        printf -- 'Must call %s with a container name\n' "${_action}"
-        return 1
-      fi
-      shift
-
-      # Run as the user
-      exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
-      ;;
-    teardown)
-      exec container-teardown "$@"
-      ;;
-    *)
-      printf -- 'Invalid action: "%s"\n' "${_action}"
-      _usage || return 1
+    _CONTAINER="$1"
+    if [ -z "${_CONTAINER}" ]; then
+      printf -- 'Must call %s with a container name\n' "${_action}"
       return 1
-      ;;
+    fi
+    shift
+
+    # Run as the user
+    exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
+    ;;
+  restart | status | stop)
+    _prep_container || return 1
+
+    _CONTAINER="$1"
+    if [ -z "${_CONTAINER}" ]; then
+      printf -- 'Must call %s with a container name\n' "${_action}"
+      return 1
+    fi
+    shift
+
+    # Run as the user
+    exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
+    ;;
+  reload)
+    # Run as the user
+    exec systemctl --user daemon-reload "$@"
+    ;;
+  teardown)
+    exec container-teardown "$@"
+    ;;
+  *)
+    printf -- 'Invalid action: "%s"\n' "${_action}"
+    _usage || return 1
+    return 1
+    ;;
   esac
 
   return 0

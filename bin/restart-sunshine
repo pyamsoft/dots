@@ -41,7 +41,7 @@ _unlock_macos() {
   _s="$1"
 
   # How do we unlock MacOS? Do we need to?
-  if command -v unlocker>/dev/null 2>&1; then
+  if command -v unlocker >/dev/null 2>&1; then
     unlocker unlock || {
       printf -- '[ERROR] Failed unlocking session: %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
       return 1

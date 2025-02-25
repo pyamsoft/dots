@@ -6,7 +6,8 @@ _COMPOSE_DIR=""
 _COMPOSE_FILE=""
 
 _usage() {
-  printf -- '%s\n' "$(cat <<EOF
+  printf -- '%s\n' "$(
+    cat <<EOF
 
 ${_PROG} <name> [-t|--time]
 
@@ -25,7 +26,7 @@ For compose:
 - Nicely attempt to down a compose container, and remove orphan services
 
 EOF
-)"
+  )"
 }
 
 _teardown_container() {
