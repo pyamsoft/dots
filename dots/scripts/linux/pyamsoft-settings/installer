@@ -13,34 +13,36 @@ _package__hostname() {
 }
 
 _package_install() {
-  _package_install__src_dir="$1"
-  _package_install__install_dir="$2"
-  _package_install__file="$3"
-  _package_install__dir_chmod="$4"
-  _package_install__file_chmod="$5"
+  _package_install__tag="$1"
+  _package_install__src_dir="$2"
+  _package_install__install_dir="$3"
+  _package_install__file="$4"
+  _package_install__dir_chmod="$5"
+  _package_install__file_chmod="$6"
 
-  printf -- "INSTALL %s\n" "${_package_install__install_dir}/${_package_install__file}"
+  printf -- "INSTALL%s %s\n" "${_package_install__tag}" "${_package_install__install_dir}/${_package_install__file}"
 
   # Create directory
   mkdir -p "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to create install directory: ${_package_install__install_dir}"
+    error "Failed to create install directory:${_package_install__tag} ${_package_install__install_dir}"
     return 1
   }
   chmod "${_package_install__dir_chmod}" "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to chmod install directory: ${_package_install__install_dir}"
+    error "Failed to chmod install directory:${_package_install__tag} ${_package_install__install_dir}"
     return 1
   }
 
   # Install file
   cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to copy install file: ${_package_install__src_dir}/${_package_install__file}"
+    error "Failed to copy install file:${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
   chmod "${_package_install__file_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
-    error "Failed to chmod install file: ${_package_install__install_dir}/${_package_install__file}"
+    error "Failed to chmod install file:${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
     return 1
   }
 
+  unset _package_install__tag
   unset _package_install__file_chmod
   unset _package_install__dir_chmod
   unset _package_install__src_dir
@@ -55,9 +57,22 @@ main() {
 
   if [ -z "${_my_pkgdir}" ] || [ "${_my_pkgdir}" = "/" ]; then
     printf -- 'You MUST provide a packaging directory as the first argument.\n'
-    printf -- 'It must be a writeable location. It cannot be /\n'
+    printf -- 'It must be a writeable location.\n'
     return 1
   fi
+
+  if [ "${_my_pkgdir}" = "/" ]; then
+    printf -- 'Packaging directory cannot be /\n'
+    return 1
+  fi
+
+  case "${_my_pkgdir}" in
+  /*) ;;
+  *)
+    printf -- 'Packaging directory must be an absolute path\n'
+    return 1
+    ;;
+  esac
 
   # This is an assumption that the user account you would consider "my user" is UID 1000
   # at this point in the script, we are running as fakeroot, so we have to hard-assume this
@@ -75,98 +90,161 @@ main() {
   # Turn on globbing options (bash specific, but PKGBUILDs are run in bash right?)
   shopt -s globstar nullglob
 
-  # Loop through etc
-  for _file_or_folder in ./etc/**/*; do
-    # Skip folders
-    if [ -d "${_file_or_folder}" ]; then
-      continue
+  # Move into hosts directory
+  cd "hosts" || {
+    printf -- 'Unable to cd into "hosts" directory.\n'
+    return 1
+  }
+
+  for _target_host_or_skip_host in ./*/; do
+    _target_host_or_skip_host="${_target_host_or_skip_host#\.\/}"
+    _target_host_or_skip_host="${_target_host_or_skip_host%\/}"
+
+    # Do we want to keep going and install files from a host directory
+    _dig=1
+
+    # We always work with the special "all" host
+    if [ "${_target_host_or_skip_host}" = "all" ]; then
+      _specific_tag=""
+    else
+      case "${_target_host_or_skip_host}" in
+      skip:*)
+        _skip_host="$(printf -- '%s' "${_target_host_or_skip_host}" | tr ':' ' ' | awk '{ print $2 }')"
+        ;;
+      *)
+        _target_host="${_target_host_or_skip_host}"
+        ;;
+      esac
+
+      # Check if we are skipping EXACT, or skipping 'like it'
+      if [ -n "${_skip_host}" ]; then
+        if [ "${_my_hostname}" = "${_skip_host}" ]; then
+          _dig=0
+        fi
+
+        case "${_skip_host}" in
+        *-)
+          case "${_my_hostname}" in
+          "${_skip_host}"*)
+            _dig=0
+            ;;
+          esac
+          ;;
+        -*)
+          case "${_my_hostname}" in
+          *"${_skip_host}")
+            _dig=0
+            ;;
+          esac
+          ;;
+        esac
+      fi
+
+      # Check if we are targeting EXACT, or targeting 'like it'
+      if [ -n "${_target_host}" ]; then
+        _keep_going=0
+        if [ "${_my_hostname}" = "${_target_host}" ]; then
+          _keep_going=1
+        fi
+
+        case "${_target_host}" in
+        *-)
+          case "${_my_hostname}" in
+          "${_target_host}"*)
+            _keep_going=1
+            ;;
+          *) ;;
+          esac
+          ;;
+        -*)
+          case "${_my_hostname}" in
+          *"${_target_host}")
+            _keep_going=1
+            ;;
+          *) ;;
+          esac
+          ;;
+        esac
+
+        if [ "${_keep_going}" -eq 0 ]; then
+          _dig=0
+        fi
+        unset _keep_going
+      fi
+
+      _specific_tag="(${_target_host_or_skip_host})"
     fi
 
-    _file_dir="$(dirname "${_file_or_folder}")"
-    _file_name="$(basename "${_file_or_folder}")"
-    _install_dir="${_file_dir#\.\/}"
+    if [ "${_dig}" -eq 1 ]; then
+      cd "${_target_host_or_skip_host}" || {
+        printf -- 'Failed to cd into target host directory: "%s"\n' "${_target_host_or_skip_host}"
+        return 1
+      }
 
-    case "${_my_hostname}" in
-    nerd1)
-      case "${_file_name}" in
-      *-caddy* | crowdsec-* | *-crowdsec* | *-home-assistant* | *-ddns*)
-        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
-        continue
-        ;;
-      *) ;;
-      esac
-      ;;
-    nerd2)
-      case "${_file_name}" in
-      *gamelaunch* | *-ddns*)
-        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
-        continue
-        ;;
-      *) ;;
-      esac
-      ;;
-    aws*) ;;
-    *) ;;
-    esac
+      # Loop through etc
+      for _file_or_folder in ./etc/**/*; do
+        # Skip folders
+        if [ -d "${_file_or_folder}" ]; then
+          continue
+        fi
 
-    case "${_file_dir}" in
-    */sudoers.d)
-      _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "600" || return 1
-      ;;
-    *)
-      _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
-      ;;
-    esac
+        _file_dir="$(dirname "${_file_or_folder}")"
+        _file_name="$(basename "${_file_or_folder}")"
+        _install_dir="${_file_dir#\.\/}"
 
-    unset _install_dir
-    unset _file_dir
-    unset _file_name
-    unset _file_or_folder
-  done
-  unset _file_or_folder
+        case "${_file_dir}" in
+        */sudoers.d)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "600" || return 1
+          ;;
+        *)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
+          ;;
+        esac
 
-  # Loop through opt
-  for _file_or_folder in ./opt/**/*; do
-    # Skip folders
-    if [ -d "${_file_or_folder}" ]; then
-      continue
+        unset _install_dir
+        unset _file_dir
+        unset _file_name
+        unset _file_or_folder
+      done
+      unset _file_or_folder
+
+      # Loop through opt
+      for _file_or_folder in ./opt/**/*; do
+        # Skip folders
+        if [ -d "${_file_or_folder}" ]; then
+          continue
+        fi
+
+        _file_dir="$(dirname "${_file_or_folder}")"
+        _file_name="$(basename "${_file_or_folder}")"
+        _install_dir="${_file_dir#\.\/}"
+
+        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+
+        unset _install_dir
+        unset _file_dir
+        unset _file_name
+        unset _file_or_folder
+      done
+      unset _file_or_folder
+
+      # cd back out
+      cd .. || {
+        printf -- 'Failed to cd out of target host directory: "%s"\n' "${_target_host_or_skip_host}"
+        return 1
+      }
     fi
 
-    _file_dir="$(dirname "${_file_or_folder}")"
-    _file_name="$(basename "${_file_or_folder}")"
-    _install_dir="${_file_dir#\.\/}"
-
-    case "${_my_hostname}" in
-    nerd1)
-      case "${_file_name}" in
-      *crowdsec* | *cscli* | *home-assistant | *caddy* | *ddns*)
-        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
-        continue
-        ;;
-      *) ;;
-      esac
-      ;;
-    nerd2)
-      case "${_file_name}" in
-      *gamelaunch* | *ddns*)
-        printf -- "SKIP INSTALL %s on %s\n" "${_install_dir}/${_file_name}" "${_my_hostname}"
-        continue
-        ;;
-      *) ;;
-      esac
-      ;;
-    aws*) ;;
-    *) ;;
-    esac
-
-    _package_install "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
-
-    unset _install_dir
-    unset _file_dir
-    unset _file_name
-    unset _file_or_folder
+    unset _dig
+    unset _specific_tag
+    unset _target_host_or_skip_host
+    unset _skip_host
+    unset _target_host
   done
-  unset _file_or_folder
+  unset _specific_tag
+  unset _target_host_or_skip_host
+  unset _skip_host
+  unset _target_host
 
   unset _my_username
   unset _my_hostname
