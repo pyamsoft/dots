@@ -24,21 +24,21 @@ _package_install() {
 
   # Create directory
   mkdir -p "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to create install directory:${_package_install__tag} ${_package_install__install_dir}"
+    printf -- 'Failed to create install directory: %s\n' "${_package_install__tag} ${_package_install__install_dir}"
     return 1
   }
   chmod "${_package_install__dir_chmod}" "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to chmod install directory:${_package_install__tag} ${_package_install__install_dir}"
+    printf -- 'Failed to chmod install directory:%s\n' "${_package_install__tag} ${_package_install__install_dir}"
     return 1
   }
 
   # Install file
   cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
-    error "Failed to copy install file:${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
+    printf -- 'Failed to copy install file: %s\n' "${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
   chmod "${_package_install__file_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
-    error "Failed to chmod install file:${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
+    printf -- 'Failed to chmod install file: %s\n' "${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
     return 1
   }
 
