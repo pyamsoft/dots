@@ -3,7 +3,6 @@
 # Migrating major version data:
 # https://www.cloudytuts.com/tutorials/docker/how-to-upgrade-postgresql-in-docker-and-kubernetes
 
-
 # For some reason, on a fresh first launch, the container hangs at:
 #
 # syncing data to disk ...

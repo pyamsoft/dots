@@ -113,6 +113,5 @@ main() {
   return 0
 }
 
-
 main "$@" || exit 1
 exit 0

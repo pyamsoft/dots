@@ -28,15 +28,15 @@ _prep_mounts() {
   # Mount password files if possible
   for f in "${_mount2}/passwd".*; do
     case "$f" in
-      *\**)
-        # No password files
-        ;;
-      *)
-        _f_name="$(basename "$f")"
-        _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name}"
-        unset _f_name
-        unset _f
-        ;;
+    *\**)
+      # No password files
+      ;;
+    *)
+      _f_name="$(basename "$f")"
+      _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name}"
+      unset _f_name
+      unset _f
+      ;;
     esac
   done
   unset _f_name
@@ -174,4 +174,3 @@ main() {
 
 main "$@" || exit 1
 exit 0
-

@@ -17,17 +17,17 @@ readonly _def_ld_path
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
-    --shell)
-      _args="${_args} --command=/bin/sh"
-      shift
-      ;;
-    --offline)
-      _args="${_args} --unshare=network"
-      shift
-      ;;
-    *)
-      break
-      ;;
+  --shell)
+    _args="${_args} --command=/bin/sh"
+    shift
+    ;;
+  --offline)
+    _args="${_args} --unshare=network"
+    shift
+    ;;
+  *)
+    break
+    ;;
   esac
 done
 readonly _args

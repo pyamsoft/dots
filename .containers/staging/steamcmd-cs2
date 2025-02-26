@@ -17,19 +17,19 @@ main() {
 
   _cmd=""
   case "$1" in
-    install)
-      shift
-      _cmd="+force_install_dir /data +login anonymous +app_update 730 validate +quit"
-      ;;
-    run)
-      shift
-      _cmd="+force_install_dir /data +login anonymous +app_update 730 validate +quit"
-      ;;
-    *)
-      printf -- 'Unable to handle command: %s\n' "$1"
-      printf -- 'Must be one of "install" "run"\n'
-      return 1
-      ;;
+  install)
+    shift
+    _cmd="+force_install_dir /data +login anonymous +app_update 730 validate +quit"
+    ;;
+  run)
+    shift
+    _cmd="+force_install_dir /data +login anonymous +app_update 730 validate +quit"
+    ;;
+  *)
+    printf -- 'Unable to handle command: %s\n' "$1"
+    printf -- 'Must be one of "install" "run"\n'
+    return 1
+    ;;
   esac
   readonly _cmd
 
