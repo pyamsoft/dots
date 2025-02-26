@@ -1,0 +1,51 @@
+# shellcheck shell=bash
+
+_select() {
+  case "$1" in
+  ps | pull | checkup | prune | reload)
+    # No further arguments
+    COMPREPLY=()
+    ;;
+  logs | images | inspect | enter | teardown | disable | restart | status | stop)
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "$(containers ps --noheading --format '{{ .Names }}')" -- "$3"))
+    ;;
+  *)
+    # Nothing, fill with suggestions
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "$2" -- "$3"))
+    ;;
+  esac
+}
+
+_strip() {
+  printf -- '%s' "$1" | tr -d '[:space:]'
+}
+
+# bash completion support for containers script
+__containers() {
+  COMPREPLY=()
+  local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local commands="ps logs images inspect reload disable restart status stop checkup enter prune pull teardown"
+
+  if [ -z "${cur}" ] && [ -z "${prev}" ]; then
+    # Nothing, fill with suggestions
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "${commands}" -- "${cur}"))
+  else
+    _stripped="$(_strip "${cur}")"
+    if [ -n "${_stripped}" ]; then
+      _select "${_stripped}" "${commands}" "${cur}"
+    else
+      _select "$(_strip "${prev}")" "${commands}" "${cur}"
+    fi
+    unset _stripped
+  fi
+
+  unset cur
+  unset prev
+  unset commands
+}
+
+complete -o bashdefault -o default -o nospace -F __containers containers
