@@ -1,7 +1,7 @@
 #!/bin/sh
 
 _check_user() {
-  if  id -u "${_target_user}" >/dev/null 2>&1; then
+  if id -u "${_target_user}" >/dev/null 2>&1; then
     printf -- '[setup] Target user %s already exists!\n' "${_target_user}"
     return 1
   fi
@@ -12,7 +12,8 @@ _check_user() {
 _install_launcher() {
   printf -- '[setup] Install user launcher: %s\n' "${_target_user}"
 
-  printf -- '%s' "$(cat <<EOF
+  printf -- '%s' "$(
+    cat <<EOF
 #!/bin/sh
 
 # Export graphical environment if it exists
@@ -37,10 +38,10 @@ else
   exec "${_cmd}" "\$@"
 fi
 EOF
-)" | sudo tee /home/"${_target_user}"/bin/launcher >/dev/null || {
-  printf -- '[setup] Failed to install launcher for user %s\n' "${_target_user}"
-  return 1
-}
+  )" | sudo tee /home/"${_target_user}"/bin/launcher >/dev/null || {
+    printf -- '[setup] Failed to install launcher for user %s\n' "${_target_user}"
+    return 1
+  }
 
   # Mark exec
   sudo chmod 700 /home/"${_target_user}"/bin/launcher || {

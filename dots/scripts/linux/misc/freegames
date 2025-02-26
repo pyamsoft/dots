@@ -98,7 +98,6 @@ EOF
   return 0
 }
 
-
 main() {
   _user="$1"
 

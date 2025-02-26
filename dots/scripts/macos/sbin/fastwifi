@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # https://www.reddit.com/r/macbookpro/comments/rtyjbt/finally_solved_my_slow_wifi_speeds_on_my_2021/
-main () {
+main() {
   set -eux
 
   ifconfig awdl0 down || {

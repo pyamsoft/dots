@@ -30,12 +30,11 @@ _run() {
   return 0
 }
 
-
 main() {
   _user="$1"
   _logdir="$2"
 
-  if [ "$(id -u )" -ne 0 ]; then
+  if [ "$(id -u)" -ne 0 ]; then
     printf -- 'You must run this as root.\n'
 
     unset _user

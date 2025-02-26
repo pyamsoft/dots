@@ -16,24 +16,27 @@ _do__theme() {
   mkdir -p "${HOME}/.themes"
   cp -r "${_t}" "${HOME}/.themes"
   if [ "${__dark}" -eq 1 ]; then
-    printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}"
     _t="/usr/share/themes/${__theme}-Dark"
     if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}-Dark"
       cp -r "${_t}" "${HOME}/.themes"
     fi
 
     _t="/usr/share/themes/${__theme}-dark"
     if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}-dark"
       cp -r "${_t}" "${HOME}/.themes"
     fi
 
     _t="/usr/share/themes/${__theme}_Dark"
     if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}_Dark"
       cp -r "${_t}" "${HOME}/.themes"
     fi
 
     _t="/usr/share/themes/${__theme}_dark"
     if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}_dark"
       cp -r "${_t}" "${HOME}/.themes"
     fi
   fi
@@ -56,24 +59,27 @@ _do__icon() {
   mkdir -p "${HOME}/.icons"
   cp -r "${_i}" "${HOME}/.icons"
   if [ "${__dark}" -eq 1 ]; then
-    printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}"
     _i="/usr/share/icons/${__icon}-Dark"
     if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}-Dark"
       cp -r "${_i}" "${HOME}/.icons"
     fi
 
     _i="/usr/share/icons/${__icon}-dark"
     if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}-dark"
       cp -r "${_i}" "${HOME}/.icons"
     fi
 
     _i="/usr/share/icons/${__icon}_Dark"
     if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}_Dark"
       cp -r "${_i}" "${HOME}/.icons"
     fi
 
     _i="/usr/share/icons/${__theme}_dark"
     if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}_dark"
       cp -r "${_i}" "${HOME}/.icons"
     fi
   fi
@@ -94,24 +100,24 @@ main() {
 
   while [ -n "$1" ]; do
     case "$1" in
-      -d | --dark )
-        __dark=1
-        shift
-        ;;
-      -t | --theme )
-        shift
-        __theme="$1"
-        shift
-        ;;
-      -i | --icon )
-        shift
-        __icon="$1"
-        shift
-        ;;
-      *)
-        printf -- 'Invalid option: "%s\". Must be one of ["-d|--dark"] <"-t|--theme" "-i|--icon">\n' "$1"
-        return 1
-        ;;
+    -d | --dark)
+      __dark=1
+      shift
+      ;;
+    -t | --theme)
+      shift
+      __theme="$1"
+      shift
+      ;;
+    -i | --icon)
+      shift
+      __icon="$1"
+      shift
+      ;;
+    *)
+      printf -- 'Invalid option: "%s\". Must be one of ["-d|--dark"] <"-t|--theme" "-i|--icon">\n' "$1"
+      return 1
+      ;;
     esac
   done
 

@@ -47,7 +47,8 @@ _create_home() {
 }
 
 _usage() {
-  printf -- '%s\n' "$(cat<<EOF
+  printf -- '%s\n' "$(
+    cat <<EOF
 jail [${_VERSION}]
 
 Runs a command in a jail.
@@ -69,7 +70,7 @@ Any arguments passed after the command and "--" will be passed to the command
 -h | --help      Prints this help
 
 EOF
-)"
+  )"
 }
 
 ##

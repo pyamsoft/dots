@@ -20,4 +20,3 @@ else
   # Launch PYCharm
   exec open -a "${_py_path}" "$@"
 fi
-

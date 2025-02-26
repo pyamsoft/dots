@@ -156,11 +156,10 @@ if command -v gamescope >/dev/null; then
   # Gaming as another user
   for _u in /home/gaming-*; do
     case "${_u}" in
-      gaming-\*)
-        ;;
-      *)
-        _local_install "gametime" "${_u}" || exit 1
-        ;;
+    gaming-\*) ;;
+    *)
+      _local_install "gametime" "${_u}" || exit 1
+      ;;
     esac
   done
 
