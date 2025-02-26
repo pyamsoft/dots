@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Get the root directory of the project
+root_dir="$(dirname "$(realpath "$0")")"
+root_dir="$(realpath "${root_dir}/../..")"
+readonly root_dir
+
+_get_version() {
+  # No v in version codes
+  printf -- '%s' "$(date "+%Y.%m.%d")"
+}
+
+main() {
+  _version="$(_get_version)" || return 1
+
+  cd "${root_dir}" || {
+    printf -- 'Failed to move into project root_dir: %s\n' "${root_dir}"
+    return 1
+  }
+
+  # Run from the root dir with the Makefile
+  sudo checkinstall \
+    --pkgname 'pyamsoft-settings' \
+    --pkgversion "${_version}" \
+    --pkgrelease "1" \
+    --pkglicense "GPL2" \
+    --maintainer "pyamsoft" \
+    --provides "pyamsoft-settings" \
+    --requires "udev,polkit,sudo,podman,openssh,systemd" \
+    ./installer '*#*#CHECKINSTALL*#*#' "$(id -u)"
+
+  unset _version
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

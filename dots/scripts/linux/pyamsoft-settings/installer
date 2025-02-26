@@ -66,6 +66,26 @@ main() {
     return 1
   fi
 
+  # On aws machines, we run debian
+  # Since debian packaging is tough, we use checkinstall
+  # but checkinstall is 1. old, 2. messed up on this script for some reason
+  #
+  # checkinstall internally sets the INSTW_ROOTPATH variable to the build directory it
+  # creates in a temporary location.
+  #
+  # It expects files to live in this directory in /package, but for whatever reason
+  # it's normal install watcher process fails to pick up our files.
+  #
+  # So fuck it, we manually force our files into this directory ourselves because yolodolo
+  if [ -f "/etc/os-release" ] && grep -q 'ID=debian' /etc/os-release; then
+    if [ "${_my_pkgdir}" = '*#*#CHECKINSTALL*#*#' ]; then
+      if [ -n "${INSTW_ROOTPATH}" ]; then
+        _my_pkgdir="${INSTW_ROOTPATH}/package"
+        printf -- 'Override _my_pkgdir for Debian-based checkinstall: %s\n' "${_my_pkgdir}"
+      fi
+    fi
+  fi
+
   case "${_my_pkgdir}" in
   /*) ;;
   *)
