@@ -1,0 +1,9 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
+
+__dotfiles_branch() {
+  __dotfiles_wrap "branch" "$@"
+}
+
+complete -o bashdefault -o default -o nospace -F __dotfiles_branch dotb

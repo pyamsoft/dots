@@ -1,0 +1,9 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
+
+__dotfiles_commit() {
+  __dotfiles_wrap "commit" "$@"
+}
+
+complete -o bashdefault -o default -o nospace -F __dotfiles_commit dotc

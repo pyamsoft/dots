@@ -1,0 +1,11 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
+
+__dotfiles_log() {
+  # lg is our log alias
+  __dotfiles_wrap "lg" "$@"
+}
+
+# Complete aliases
+complete -o bashdefault -o default -o nospace -F __dotfiles_log dotl

@@ -15,7 +15,12 @@ readonly _image="docker.io/postgres"
 readonly _tag="16.1"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+else
+  _cmd="docker"
+fi
+readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
@@ -62,8 +67,11 @@ _check_user() {
     return 1
   fi
 
-  # Otherwise we keep OCI
-  _userns="--userns keep-id"
+  # Only for podman
+  if [ "${_cmd}" = "podman" ]; then
+    # Otherwise we keep OCI
+    _userns="--userns keep-id"
+  fi
 
   # On MacOS we need to own the files to chown them
   # because just VM things
@@ -122,13 +130,16 @@ main() {
     printf -- 'Unable to check %s version.\n' "${_cmd}"
     return 1
   }
-  while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-    sleep 1 || {
-      printf -- 'Cancelled while waiting for container runtime to stand up.\n'
-      return 1
-    }
-  done
-  printf -- 'Container runtime is ready, start %s\n' "${_name}"
+
+  if [ "$(uname)" = "Linux" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
 
   _containerize "$@" || return 1
   return 0

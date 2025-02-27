@@ -1,64 +1,74 @@
 # shellcheck shell=bash
 
-# This file is meant to be sourced by the other git alias completions
+# Completions for dotfiles commands
+#
+# This lets us target the correct directory
+if ! declare -f __dotfiles_comp >/dev/null 2>&1; then
+  __dotfiles_comp() {
+    GIT_DIR="${HOME}/.dotfiles" GIT_WORK_TREE="${HOME}" __git_wrap__git_main "$@"
+  }
 
-if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
-  __git_alias_wrap() {
+  # Load the git completion
+  _comp_load git
+fi
+
+if ! declare -f __dotfiles_wrap >/dev/null 2>&1; then
+  __dotfiles_wrap() {
     local cmd="$1"
     shift
 
-    # Replace the short hand alias with "git" for better completion
+    # Replace the short hand alias with "dotfiles" for better completion
     #
     # Update the CWORDs to get as close as we can replicate
-    # making the command line the same as calling "git" long form
+    # making the command line the same as calling "dotfiles" long form
     local alias_or_command="${COMP_WORDS[0]}"
-    if [ "${alias_or_command}" != "git" ]; then
+    if [ "${alias_or_command}" != "dotfiles" ]; then
       # COMP_WORDS for long form looks like
-      # (git fetch origin)
+      # (dotfiles fetch origin)
       #
       # But in shorthand alias looks like
-      # (gitf origin)
+      # (dotf origin)
       #
-      # We fix the array by shoving the long form "git fetch" in place of "gitf"
+      # We fix the array by shoving the long form "dotfiles fetch" in place of "dotf"
 
       # Remove the alias
       unset "COMP_WORDS[0]"
 
       # Replace the array with the longform command
-      COMP_WORDS=("git" "${cmd}" "${COMP_WORDS[@]}")
+      COMP_WORDS=("dotfiles" "${cmd}" "${COMP_WORDS[@]}")
 
       # Since we added another argument, bump the CWORD index
       COMP_CWORD=$((COMP_CWORD + 1))
 
       # Replace the line shorthand with the long form
-      COMP_LINE="${COMP_LINE/${alias_or_command}/git ${cmd}}"
+      COMP_LINE="${COMP_LINE/${alias_or_command}/dotfiles ${cmd}}"
 
       # Move the comp point (this allows us to complete -|-- options too)
       # Remove the alias shorthand
       COMP_POINT=$((COMP_POINT - ${#alias_or_command}))
       # add long form
-      # git (len=3)
+      # dotfiles (len=8)
       # a space (len=1)
       # command (len=dynamic)
-      COMP_POINT=$((COMP_POINT + 3 + 1 + ${#cmd}))
+      COMP_POINT=$((COMP_POINT + 8 + 1 + ${#cmd}))
 
-      # There are always three arguments, we need to replace the first with git
+      # There are always three arguments, we need to replace the first with dotfiles
       # and may possibly need to replace the third command IFF the third is the same alias
       # as the first
       #
       if [ "${alias_or_command}" = "$3" ]; then
         # Keep only the second command
-        set -- "git" "$2" "${cmd}"
+        set -- "dotfiles" "$2" "${cmd}"
       else
         # Remove the first command
         shift
 
         # Keep everything else
-        set -- "git" "$@"
+        set -- "dotfiles" "$@"
       fi
     fi
 
-    __git_wrap__git_main "$@"
+    __dotfiles_comp "$@"
 
     unset alias_or_command
     unset cmd
