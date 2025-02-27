@@ -1,0 +1,9 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
+
+__git_alias_branch() {
+  __git_alias_wrap "branch" "$@"
+}
+
+complete -o bashdefault -o default -o nospace -F __git_alias_branch gitb

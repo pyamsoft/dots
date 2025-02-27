@@ -1,6 +1,13 @@
 # shellcheck shell=bash
 
 if [ -n "${XDG_CONFIG_HOME}" ]; then
-  # Move bash_completion file
-  export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completions"
+  # Do not set this file, use the completions subdirectory instead
+  export BASH_COMPLETION_USER_FILE=""
+  unset BASH_COMPLETION_USER_FILE
+
+  # Mark the bash config folder as the completion directory
+  #
+  # Bash completion internals look at the subdirectory /completions for files
+  # that it will lazy load to offer completions
+  export BASH_COMPLETION_USER_DIR="${XDG_CONFIG_HOME}/bash"
 fi

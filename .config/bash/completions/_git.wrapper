@@ -1,0 +1,61 @@
+# shellcheck shell=bash
+
+# This file is meant to be sourced by the other git alias completions
+
+if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
+  __git_alias_wrap() {
+    local cmd="$1"
+    shift
+
+    # Replace the short hand alias with "git" for better completion
+    #
+    # Update the CWORDs to get as close as we can replicate
+    # making the command line the same as calling "git" long form
+    local alias_or_command="${COMP_WORDS[0]}"
+    if [ "${alias_or_command}" != "git" ]; then
+      # COMP_WORDS for long form looks like
+      # (git fetch origin)
+      #
+      # But in shorthand alias looks like
+      # (gitf origin)
+      #
+      # We fix the array by shoving the long form "git fetch" in place of "gitf"
+
+      # Remove the alias
+      unset "COMP_WORDS[0]"
+
+      # Replace the array with the longform command
+      COMP_WORDS=("git" "${cmd}" "${COMP_WORDS[@]}")
+
+      # Since we added another argument, bump the CWORD index
+      COMP_CWORD=$((COMP_CWORD + 1))
+
+      # Replace the line shorthand with the long form
+      COMP_LINE="${COMP_LINE/${alias_or_command}/git ${cmd}}"
+
+      # There are always three arguments, we need to replace the first with git
+      # and may possibly need to replace the third command IFF the third is the same alias
+      # as the first
+      #
+      # TODO: For some reason, we can't complete -|-- options with the shorthand alias commands
+      if [ "${alias_or_command}" = "$3" ]; then
+        # Keep only the second command
+        set -- "git" "$2" "${cmd}"
+      else
+        # Remove the first command
+        shift
+
+        # Keep everything else
+        set -- "git" "$@"
+      fi
+    fi
+
+    __git_wrap__git_main "$@"
+
+    unset alias_or_command
+    unset cmd
+  }
+
+  # Load the git completion
+  _comp_load git
+fi

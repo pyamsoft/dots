@@ -1,0 +1,9 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
+
+__git_alias_status() {
+  __git_alias_wrap "status" "$@"
+}
+
+complete -o bashdefault -o default -o nospace -F __git_alias_status gits

@@ -1,0 +1,10 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
+
+__git_alias_log() {
+  # lg is our log alias
+  __git_alias_wrap "lg" "$@"
+}
+
+complete -o bashdefault -o default -o nospace -F __git_alias_log gitl

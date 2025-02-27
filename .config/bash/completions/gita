@@ -1,0 +1,10 @@
+# shellcheck shell=bash
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
+
+__git_alias_add() {
+  __git_alias_wrap "add" "$@"
+}
+
+# Complete aliases (-|-- options are buggy :( )
+complete -o bashdefault -o default -o nospace -F __git_alias_add gita
