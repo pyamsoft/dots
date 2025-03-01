@@ -7,6 +7,48 @@
 # The dotfiles alias
 alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
 
+_dot_config() {
+  dotfiles config --local "$@" || {
+    printf -- 'Failed dotfiles config: %s\n' "$*"
+    return 1
+  }
+
+  return 0
+}
+
+_git_config() {
+  _dot_config "core.excludesfile" "${HOME}/.gitignore" || return 1
+  _dot_config --int "core.compression" 4 || return 1
+
+  _dot_config --bool "commit.verbose" true || return 1
+
+  _dot_config "init.defaultBranch" "main" || return 1
+
+  _dot_config "diff.algorithm" "histogram" || return 1
+  _dot_config "diff.colorMoved" "plain" || return 1
+  _dot_config --bool "diff.mnemonicPrefix" true || return 1
+  _dot_config --bool "renames" true || return 1
+
+  _dot_config --bool "push.autoSetupRemote" true || return 1
+  _dot_config --bool "push.followTags" true || return 1
+
+  _dot_config --bool "fetch.prune" true || return 1
+  _dot_config --bool "fetch.all" true || return 1
+
+  _dot_config "help.autocorrect" "prompt" || return 1
+
+  _dot_config --bool "rerere.enabled" true || return 1
+  _dot_config --bool "rerere.autoupdate" true || return 1
+
+  _dot_config --bool "rebase.autoSquash" true || return 1
+  _dot_config --bool "rebase.autoStash" true || return 1
+  _dot_config --bool "rebase.updateRefs" true || return 1
+
+  _dot_config --bool "pull.rebase" true || return 1
+
+  return 0
+}
+
 main() {
   # Clone the repo as bare into the dotfiles folder
   # This will only pull in repo information but not any files yet
@@ -30,6 +72,11 @@ main() {
   # Mark our repo as not bare
   dotfiles config --local --bool core.bare false || {
     printf -- 'Failed updating local repository from bare => normal\n'
+    return 1
+  }
+
+  _git_config || {
+    printf -- 'Failed to configure local dotfiles repository\n'
     return 1
   }
 
