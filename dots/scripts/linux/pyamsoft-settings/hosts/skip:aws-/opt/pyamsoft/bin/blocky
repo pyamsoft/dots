@@ -19,20 +19,6 @@ _get_env() {
   return 0
 }
 
-_priv_port_drop() {
-  if [ "$(uname)" != "Darwin" ]; then
-    # Open privileged ports for non-root users
-    # After a few seconds, close them back up.
-    #
-    # Since we run this overall script as root, we are "trusted" to open this
-    sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
-    (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
-    return 0
-  fi
-
-  return 0
-}
-
 _prep_mounts() {
   _root_path="$(_get_env "HOME")/.local"
   readonly _root_path
@@ -80,8 +66,8 @@ _prep_ports() {
     _ports="${_ports} -p 53:53/udp"
   else
     # DNS
-    _ports="${_ports} -p 127.0.0.1:53:53/tcp"
-    _ports="${_ports} -p 127.0.0.1:53:53/udp"
+    _ports="${_ports} -p 127.0.0.1:2053:53/tcp"
+    _ports="${_ports} -p 127.0.0.1:2053:53/udp"
   fi
 
   readonly _ports
@@ -143,9 +129,6 @@ _containerize() {
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
-
-  # Open ports to non-root users
-  _priv_port_drop || return 1
 
   # Log the commands we use next
   # Fail on errors
