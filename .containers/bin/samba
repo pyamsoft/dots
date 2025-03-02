@@ -105,19 +105,23 @@ _containerize() {
   unset _runconf
   readonly _smb
 
-  # Only compare the version minors
-  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
-  _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
-  unset _current_version
-
+  # We use our container DNS resolver
   # MacOS can't launch with host-gateway
-  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
+  # On Linux we run systemd-resolved on our host machine for DNS caching
+  _network="--add-host localhost:127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    # Only compare the version minors
+    _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+    _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
+    unset _current_version
+
+    if [ 1 -eq "${_is_cmd_new_enough}" ]; then
+      _network="${_network} --add-host host.containers.internal:host-gateway"
+    fi
+
+    unset _is_cmd_new_enough
   fi
   readonly _network
-
-  unset _is_cmd_new_enough
 
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"

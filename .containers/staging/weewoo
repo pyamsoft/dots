@@ -38,27 +38,29 @@ _check_user() {
 }
 
 _containerize() {
-  # Only compare the version minors
-  _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
-  _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
-  unset _current_version
-
   # We don't use --security-opt no-new-privileges:true since
   # the AWS VPS that this runs on does not support that option
   _sec="--cap-drop=ALL"
-  if [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _sec="${_sec} --security-opt no-new-privileges:true"
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  # On Linux we run systemd-resolved on our host machine for DNS caching
+  _network="--add-host localhost:127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ]; then
+    # Only compare the version minors
+    _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+    _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
+    unset _current_version
+
+    if [ 1 -eq "${_is_cmd_new_enough}" ]; then
+      _sec="${_sec} --security-opt no-new-privileges:true"
+      _network="${_network} --add-host host.containers.internal:host-gateway"
+    fi
+
+    unset _is_cmd_new_enough
   fi
   readonly _sec
-
-  # MacOS can't launch with host-gateway
-  _network="--add-host localhost:127.0.0.1 --dns 1.1.1.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ] && [ 1 -eq "${_is_cmd_new_enough}" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
-  fi
   readonly _network
-
-  unset _is_cmd_new_enough
 
   # Auto Update Checking support
   # This is a local image
