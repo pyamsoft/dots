@@ -41,6 +41,7 @@ blocking:
 # Bind to port 53 for normal DNS
 ports:
   dns: "53"
+  tls: "853"
 
 # At least "info" level to view logs when a site is blocked
 log:
