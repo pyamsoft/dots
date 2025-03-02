@@ -1,5 +1,9 @@
 # shellcheck shell=bash
 
+# This file is meant to be sourced by the other dotfiles alias completions
+
+. "${BASH_COMPLETION_USER_DIR}/completions/_completion.wrapper"
+
 # Completions for dotfiles commands
 #
 # This lets us target the correct directory
@@ -8,12 +12,7 @@ if ! declare -f __dotfiles_comp >/dev/null 2>&1; then
     GIT_DIR="${HOME}/.dotfiles" GIT_WORK_TREE="${HOME}" __git_wrap__git_main "$@"
   }
 
-  # Load the git completion
-  if declare -f _comp_load >/dev/null 2>&1; then
-    _comp_load git
-  else
-    __load_completion git
-  fi
+  _load_completion_from git
 fi
 
 if ! declare -f __dotfiles_wrap >/dev/null 2>&1; then
@@ -78,10 +77,7 @@ if ! declare -f __dotfiles_wrap >/dev/null 2>&1; then
     unset cmd
   }
 
-  # Load the git completion
-  if declare -f _comp_load >/dev/null 2>&1; then
-    _comp_load git
-  else
-    __load_completion git
-  fi
+  _load_completion_from git
 fi
+
+unset _load_completion_from

@@ -2,6 +2,8 @@
 
 # This file is meant to be sourced by the other git alias completions
 
+. "${BASH_COMPLETION_USER_DIR}/completions/_completion.wrapper"
+
 if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
   __git_alias_wrap() {
     local cmd="$1"
@@ -64,10 +66,7 @@ if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
     unset cmd
   }
 
-  # Load the git completion
-  if declare -f _comp_load >/dev/null 2>&1; then
-    _comp_load git
-  else
-    __load_completion git
-  fi
+  _load_completion_from git
 fi
+
+unset _load_completion_from
