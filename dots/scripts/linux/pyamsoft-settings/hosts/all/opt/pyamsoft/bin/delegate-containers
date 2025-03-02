@@ -2,7 +2,6 @@
 
 _PROG_NAME="$(basename "$0")"
 _TARGET_USER="containers"
-_CONTAINER=""
 
 _dotfiles() {
   exec git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
@@ -34,7 +33,8 @@ ${_PROG_NAME} <action>
 [system]:      System management related operations
 
   checkup      Runs 'podman auto-update --dry-run'
-  enter        Runs 'podman exec -it <name> sh'
+  enter        Runs 'podman exec -it <name> /bin/sh'
+  exec         Runs 'podman exec -it <name>'
   prune        Runs 'podman system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
@@ -45,7 +45,7 @@ EOF
 
 _check_user() {
   if ! id -u "${_TARGET_USER}" >/dev/null 2>&1; then
-    printf -- 'Target user %s does not exist!\n' "${_TARGET_USER}"
+    printf -- '[delegate] Target user %s does not exist!\n' "${_TARGET_USER}"
     return 1
   fi
 
@@ -61,6 +61,40 @@ _prep_container() {
   return 0
 }
 
+_collect_containers() {
+  _containers_and_args=""
+
+  for _c in "$@"; do
+    if [ -z "${_containers_and_args}" ]; then
+      case "$1" in
+      -*)
+        _containers_and_args="$1"
+        ;;
+      *)
+        _containers_and_args="containers@$1"
+        ;;
+      esac
+    else
+      case "$1" in
+      -*)
+        # In order
+        _containers_and_args="$1 ${_containers_and_args}"
+        ;;
+      *)
+        # In order
+        _containers_and_args="containers@$1 ${_containers_and_args}"
+        ;;
+      esac
+    fi
+    unset _c
+
+    shift
+  done
+  unset _c
+
+  return 0
+}
+
 main() {
   if [ -z "$1" ]; then
     _usage || return 1
@@ -69,7 +103,7 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- 'Unable to cd to user HOME for podman usage\n'
+    printf -- '[delegate] Unable to cd to user HOME for podman usage\n'
     return 1
   }
 
@@ -78,7 +112,7 @@ main() {
   fi
 
   if [ "$(id -u)" -ne "$(id -u "${_TARGET_USER}")" ]; then
-    printf -- 'Must run this script as %s user\n' "${_TARGET_USER}"
+    printf -- '[delegate] Must run this script as %s user\n' "${_TARGET_USER}"
     return 1
   fi
 
@@ -97,49 +131,59 @@ main() {
     # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
     exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
     ;;
+  exec)
+    exec podman exec -i -t "$1" "$@"
+    ;;
   prune)
-    exec podman system prune -a
+    exec podman system prune -a "$@"
     ;;
   pull)
     _dotfiles pull "$@"
     ;;
   disable)
     _prep_container || return 1
+    _collect_containers "$@" || return 1
 
-    _CONTAINER="$1"
-    if [ -z "${_CONTAINER}" ]; then
-      printf -- 'Must call %s with a container name\n' "${_action}"
+    if [ -z "${_containers_and_args}" ]; then
+      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
       return 1
     fi
-    shift
 
     # Run as the user
-    exec systemctl --user "${_action}" --now "container@${_CONTAINER}" "$@"
+    # shellcheck disable=SC2086
+    exec systemctl --user "${_action}" --now ${_containers_and_args}
     ;;
   restart | status | stop)
     _prep_container || return 1
+    _collect_containers "$@" || return 1
 
-    _CONTAINER="$1"
-    if [ -z "${_CONTAINER}" ]; then
-      printf -- 'Must call %s with a container name\n' "${_action}"
+    if [ -z "${_containers_and_args}" ]; then
+      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
       return 1
     fi
-    shift
 
     # Run as the user
-    exec systemctl --user "${_action}" "container@${_CONTAINER}" "$@"
+    # shellcheck disable=SC2086
+    exec systemctl --user "${_action}" ${_containers_and_args}
     ;;
   reload)
     _prep_container || return 1
+    _collect_containers "$@" || return 1
+
+    if [ -z "${_containers_and_args}" ]; then
+      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
+      return 1
+    fi
 
     # Run as the user
-    exec systemctl --user daemon-reload "$@"
+    # shellcheck disable=SC2086
+    exec systemctl --user "daemon-reload" ${_containers_and_args}
     ;;
   teardown)
     exec container-teardown "$@"
     ;;
   *)
-    printf -- 'Invalid action: "%s"\n' "${_action}"
+    printf -- '[delegate] Invalid action: "%s"\n' "${_action}"
     _usage || return 1
     return 1
     ;;
