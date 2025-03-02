@@ -57,4 +57,4 @@ caching:
   #
   # We rely on systemd-resolved to do local DNS caching
   # we only want to use blocky as DNS blocking mechanism
-  maxTime: "-1"
+  maxTime: "-1m"
