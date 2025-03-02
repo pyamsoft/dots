@@ -51,10 +51,9 @@ queryLog:
   type: "csv-client"
   target: "/logs"
 
-# Cache boost, enforce a min time to cache all responses
+# Do not cache responses
+#
+# We rely on systemd-resolved to do local DNS caching
+# we only want to use blocky as DNS blocking mechanism
 caching:
-  # Do not cache responses
-  #
-  # We rely on systemd-resolved to do local DNS caching
-  # we only want to use blocky as DNS blocking mechanism
   maxTime: "-1m"
