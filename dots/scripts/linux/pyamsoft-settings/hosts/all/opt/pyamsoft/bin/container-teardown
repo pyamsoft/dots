@@ -1,17 +1,14 @@
 #!/bin/sh
 
 _PROG="$(basename "$0")"
-_CONTAINER=""
-_COMPOSE_DIR=""
-_COMPOSE_FILE=""
 
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
 
-${_PROG} <name> [-t|--time]
+${_PROG} <name(s)> [-t|--time]
 
-<name>                name of the container to teardown
+<name>                name of the container to teardown (one or more)
 [-t|--time] <value>   time to wait for container to stop (default 5s)
 
 Teardown will:
@@ -30,53 +27,54 @@ EOF
 }
 
 _teardown_container() {
-  _teardown_time="$1"
+  _container="$1"
+  _teardown_time="$2"
 
   # Attempt nice stop
-  printf -- 'Attempt nice stop container: %s\n' "${_CONTAINER}"
-  podman stop -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
-    printf -- 'Failed to nicely stop container %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Attempt nice stop container: %s\n' "${_container}"
+  podman stop -t "${_teardown_time}" "${_container}" >/dev/null || {
+    printf -- '[teardown] Failed to nicely stop container %s\n' "${_container}"
   }
 
   # Remove the container
-  printf -- '\nAttempt force-remove container: %s\n' "${_CONTAINER}"
-  podman rm -f "${_CONTAINER}" >/dev/null || {
-    printf -- 'Failed to force remove the container %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Attempt force-remove container: %s\n' "${_container}"
+  podman rm -f "${_container}" >/dev/null || {
+    printf -- '[teardown] Failed to force remove the container %s\n' "${_container}"
 
     # If this fails, we failed
     return 1
   }
 
   # Remove the network
-  printf -- '\nAttempt remove container network: %s\n' "${_CONTAINER}"
-  podman network rm -f -t "${_teardown_time}" "${_CONTAINER}" >/dev/null || {
-    printf -- 'Failed to remove the container network: %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Attempt remove container network: %s\n' "${_container}"
+  podman network rm -f -t "${_teardown_time}" "${_container}" >/dev/null || {
+    printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
   }
 
-  printf -- '\nContainer is completely torn down: %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Container is completely torn down: %s\n\n' "${_container}"
 
   unset _teardown_time
+  unset _container
   return 0
 }
 
 _is_compose() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _COMPOSE_DIR="/usr/local/etc/containers/${_CONTAINER}"
-  else
-    _COMPOSE_DIR="${HOME}/.local/etc/containers/${_CONTAINER}"
-  fi
-  _COMPOSE_FILE="${_COMPOSE_DIR}/compose.yml"
+  _container="$1"
 
-  readonly _COMPOSE_DIR
-  readonly _COMPOSE_FILE
+  if [ "$(id -u)" -eq 0 ]; then
+    _compose_dir="/usr/local/etc/containers/${_container}"
+  else
+    _compose_dir="${HOME}/.local/etc/containers/${_container}"
+  fi
+  _compose_file="${_compose_dir}/compose.yml"
 
   # Check that the container location exists
-  if [ ! -d "${_COMPOSE_DIR}" ]; then
+  if [ ! -d "${_compose_dir}" ]; then
     return 1
   fi
 
   # Check that it's compose
-  if [ ! -e "${_COMPOSE_FILE}" ]; then
+  if [ ! -e "${_compose_file}" ]; then
     return 1
   fi
 
@@ -84,65 +82,85 @@ _is_compose() {
 }
 
 _teardown_compose() {
-  _teardown_time="$1"
+  _container="$1"
+  _teardown_time="$2"
 
-  cd "${_COMPOSE_DIR}" || {
-    printf -- 'Failed to move into project: %s\n' "${_COMPOSE_DIR}"
+  cd "${_compose_dir}" || {
+    printf -- '[teardown] Failed to move into project: %s\n' "${_compose_dir}"
     return 1
   }
 
-  printf -- '\nAttempt bring down compose: %s\n' "${_CONTAINER}"
-  podman compose --file "${_COMPOSE_FILE}" down --remove-orphans -t "${_teardown_time}" || {
-    printf -- 'Failed to bring down compose: %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Attempt bring down compose: %s\n' "${_container}"
+  podman compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" || {
+    printf -- '[teardown] Failed to bring down compose: %s\n' "${_container}"
     return 1
   }
 
-  printf -- '\nCompose is completely torn down: %s\n' "${_CONTAINER}"
+  printf -- '[teardown] Compose is completely torn down: %s\n' "${_container}"
 
   unset _teardown_time
   return 0
 }
 
 main() {
-  _CONTAINER="$1"
-  readonly _CONTAINER
-
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- 'Unable to cd to user HOME for podman usage\n'
+    printf -- '[teardown] Unable to cd to user HOME for podman usage\n'
     return 1
   }
 
-  if [ -z "${_CONTAINER}" ]; then
-    printf -- 'Must provide container name to teardown\n.'
+  _time=5
+  _containers=""
+  for _arg in "$@"; do
+    if [ -z "$1" ]; then
+      # Done looping
+      break
+    fi
+    if [ "$1" = "-t" ] || [ "$1" = "--time" ]; then
+      # We handle time
+      shift
+
+      # Did we pass an argument and is it a time
+      if [ "$1" -eq "$1" ] >/dev/null 2>&1; then
+        _time="$1"
+      else
+        printf -- '[teardown] Unexpected "time" argument: "%s". Fallback to default: %s\n' "$1" "${_time}"
+      fi
+    else
+      # Add to containers
+      if [ -z "${_containers}" ]; then
+        _containers="$1"
+      else
+        # Go in order
+        _containers="${_containers} $1"
+      fi
+    fi
+
+    # Eat
+    shift
+  done
+
+  if [ -z "${_containers}" ]; then
+    printf -- '[teardown] Must provide at least one container name to teardown\n.'
     _usage || return 1
     return 1
   fi
 
-  # Eat name
-  shift
-
-  _time=5
-  if [ -n "$1" ] && { [ "$1" = "-t" ] || [ "$1" = "--time" ]; }; then
-    # We handle time
-    shift
-
-    # Did we pass an argument and is it a time
-    if [ -n "$1" ] && [ "$1" -eq "$1" ] >/dev/null 2>&1; then
-      _time="$1"
+  for _c in ${_containers}; do
+    if _is_compose "${_c}"; then
+      _teardown_compose "${_c}" "${_time}" || return 1
     else
-      printf -- 'Unexpected "time" argument: "%s". Fallback to default: %s\n' "$1" "${_time}"
+      _teardown_container "${_c}" "${_time}" || return 1
     fi
-    shift
-  fi
 
-  if _is_compose; then
-    _teardown_compose "${_time}" || return 1
-  else
-    _teardown_container "${_time}" || return 1
-  fi
+    unset _container
+    unset _compose_dir
+    unset _compose_file
+    unset _c
+  done
 
   unset _time
+  unset _containers
   return 0
 }
 
