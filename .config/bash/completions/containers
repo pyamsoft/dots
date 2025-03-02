@@ -19,7 +19,7 @@ __containers() {
       # No further arguments
       COMPREPLY=()
       ;;
-    logs | images | inspect | enter | teardown | disable | restart | status | stop)
+    logs | images | inspect | enter | exec | teardown | disable | restart | status | stop)
       # Offer contains
       _reply "$(containers ps --noheading --format '{{ .Names }}')" "$3"
       ;;
