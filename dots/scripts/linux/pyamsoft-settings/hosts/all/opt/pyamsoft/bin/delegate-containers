@@ -132,7 +132,10 @@ main() {
     exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
     ;;
   exec)
-    exec podman exec -i -t "$1" "$@"
+    _container="$1"
+    shift
+
+    exec podman exec -i -t "${_container}" "$@"
     ;;
   prune)
     exec podman system prune -a "$@"
