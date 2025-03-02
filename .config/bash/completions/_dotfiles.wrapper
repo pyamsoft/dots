@@ -9,7 +9,11 @@ if ! declare -f __dotfiles_comp >/dev/null 2>&1; then
   }
 
   # Load the git completion
-  _comp_load git
+  if declare -f _comp_load >/dev/null 2>&1; then
+    _comp_load git
+  else
+    __load_completion git
+  fi
 fi
 
 if ! declare -f __dotfiles_wrap >/dev/null 2>&1; then
@@ -75,5 +79,9 @@ if ! declare -f __dotfiles_wrap >/dev/null 2>&1; then
   }
 
   # Load the git completion
-  _comp_load git
+  if declare -f _comp_load >/dev/null 2>&1; then
+    _comp_load git
+  else
+    __load_completion git
+  fi
 fi
