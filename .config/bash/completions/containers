@@ -6,7 +6,7 @@ __containers() {
   COMPREPLY=()
   local prev="${COMP_WORDS[COMP_CWORD - 1]}"
   local cur="${COMP_WORDS[COMP_CWORD]}"
-  local commands="ps logs images inspect reload disable restart status stop checkup enter prune pull teardown"
+  local commands="ps logs images inspect reload disable restart status stop checkup enter prune pull teardown exec"
 
   _reply() {
     # shellcheck disable=SC2207
