@@ -66,6 +66,7 @@ db5.3
 dbus
 dbus-broker-units
 dconf
+ddcutil
 debugedit
 debuginfod
 default-cursors
@@ -74,7 +75,6 @@ device-mapper
 diffutils
 dmidecode
 dnsmasq
-dnssec-anchors
 dosfstools
 double-conversion
 dtc
@@ -454,7 +454,6 @@ libgcrypt
 libgdm
 libgexiv2
 libgirepository
-libgit2
 libglvnd
 libgme
 libgoa
@@ -650,7 +649,6 @@ lilv
 linux-api-headers
 linux-firmware
 linux-firmware-whence
-llhttp
 llvm-libs
 lmdb
 localsearch
@@ -701,7 +699,6 @@ nspr
 nss
 numactl
 ocl-icd
-oniguruma
 openal
 opencore-amr
 openexr

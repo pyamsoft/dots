@@ -8,11 +8,10 @@ bluez-utils
 buildah
 corectrl
 cups-pdf
+dante
 dbus-broker
-ddcutil
 gamescope
 gdm
-git-delta
 gnome-themes-extra
 gst-libav
 gst-plugin-va
@@ -25,7 +24,6 @@ irqbalance
 iwd
 kdeconnect
 kernel-modules-hook
-ldns
 libvirt
 linux
 linux-lts
@@ -57,7 +55,7 @@ socat
 sshpass
 starship
 steam
-sunshine
+sunshine-git
 system-config-printer
 tmux
 ttf-gentium-plus
