@@ -64,18 +64,10 @@ _prep_ports() {
     # DNS
     _ports="${_ports} -p 53:53/tcp"
     _ports="${_ports} -p 53:53/udp"
-
-    # DNS over TLS
-    _ports="${_ports} -p 853:853/tcp"
-    _ports="${_ports} -p 853:853/udp"
   else
-    # dns
+    # DNS
     _ports="${_ports} -p 127.0.0.1:2053:53/tcp"
     _ports="${_ports} -p 127.0.0.1:2053:53/udp"
-
-    # DNS over TLS
-    _ports="${_ports} -p 127.0.0.1:2853:853/tcp"
-    _ports="${_ports} -p 127.0.0.1:2853:853/udp"
   fi
 
   readonly _ports
