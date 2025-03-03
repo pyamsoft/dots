@@ -71,7 +71,7 @@ _collect_containers() {
         _containers_and_args="$1"
         ;;
       *)
-        _containers_and_args="containers@$1"
+        _containers_and_args="container@$1"
         ;;
       esac
     else
@@ -82,7 +82,7 @@ _collect_containers() {
         ;;
       *)
         # In order
-        _containers_and_args="containers@$1 ${_containers_and_args}"
+        _containers_and_args="container@$1 ${_containers_and_args}"
         ;;
       esac
     fi
