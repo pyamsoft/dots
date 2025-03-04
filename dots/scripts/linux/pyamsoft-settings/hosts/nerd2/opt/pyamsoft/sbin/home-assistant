@@ -34,9 +34,6 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Host networking
-  _ports="${_ports} --network=host"
-
   readonly _ports
   return 0
 }
