@@ -95,11 +95,13 @@ _containerize() {
 
   # Don't quote so that if user is empty it still expands
   #
+  # Instead of running with privileged, you should pass devices in
+  # via runconfig
+  #
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --privileged \
     ${_ha} \
     ${_network} \
     ${_auto} \
