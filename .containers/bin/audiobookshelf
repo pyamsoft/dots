@@ -2,7 +2,7 @@
 
 readonly _name="audiobookshelf"
 readonly _image="ghcr.io/advplyr/audiobookshelf"
-readonly _tag="2.18.1"
+readonly _tag="2.19.5"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
