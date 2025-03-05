@@ -1,32 +1,51 @@
 # Stop if not running interactively
 [[ "$-" != *i* ]] && return
 
-# Aliases
-alias ls="ls -CHh --color=auto "
-alias ll="ls -l"
-alias la="ls -A"
+_aliases() {
+  # Aliases
+  alias ls="ls -CHh --color=auto "
+  alias ll="ls -l"
+  alias la="ls -A"
 
-alias rm="rm -iv"
-alias mv="mv -iv"
-alias cp="cp -iv"
+  alias rm="rm -iv"
+  alias mv="mv -iv"
+  alias cp="cp -iv"
 
-# Debian resets the path in /etc/profile, regardless of sudo secure_path
-#
-# we need to add our pyamsoft path back to this
-if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
-  if [ -d "/opt/pyamsoft/sbin" ]; then
-    PATH="/opt/pyamsoft/sbin:${PATH}"
+  return 0
+}
+
+_pyamsoft_path() {
+  # Debian resets the path in /etc/profile, regardless of sudo secure_path
+  #
+  # we need to add our pyamsoft path back to this
+  if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
+    if [ -d "/opt/pyamsoft/sbin" ]; then
+      PATH="/opt/pyamsoft/sbin:${PATH}"
+    fi
+    if [ -d "/opt/pyamsoft/bin" ]; then
+      PATH="/opt/pyamsoft/bin:${PATH}"
+    fi
+    export PATH
   fi
-  if [ -d "/opt/pyamsoft/bin" ]; then
-    PATH="/opt/pyamsoft/bin:${PATH}"
-  fi
-  export PATH
-fi
 
-# Starship
-if command -v starship >/dev/null; then
-  eval "$(starship init bash)"
-else
+  return 0
+}
+
+_starship() {
+  # Starship
+  if command -v starship >/dev/null && [ -x "$(command -v starship)" ]; then
+    eval "$(starship init bash)" && return 0
+  fi
+
   export PS1='\u in \h in \w
 \$ '
-fi
+  return 0
+}
+
+_aliases
+_pyamsoft_path
+_starship
+
+unset _aliases
+unset _pyamsoft_path
+unset _starship

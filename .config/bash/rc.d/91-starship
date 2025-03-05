@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 
-if command -v starship >/dev/null; then
+if command -v starship >/dev/null && [ -x "$(command -v starship)" ]; then
   # Execute starship if we have it, and it is valid
   #
   # If it fails for any reason, fallback to preset PS1
