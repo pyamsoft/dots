@@ -1,10 +1,13 @@
 # shellcheck shell=bash
 
 if command -v starship >/dev/null; then
-  eval "$(starship init bash)" || return 1
-else
-  export PS1='\u in \h in \w
-\$ '
+  # Execute starship if we have it, and it is valid
+  #
+  # If it fails for any reason, fallback to preset PS1
+  eval "$(starship init bash)" && return 0
 fi
+
+export PS1='\u in \h in \w
+\$ '
 
 return 0
