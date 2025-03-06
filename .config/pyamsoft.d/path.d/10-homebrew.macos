@@ -1,7 +1,7 @@
 # shellcheck shell=sh
 
 # Add homebrew scripts (generally MacOS)
-if [ -e /opt/homebrew/bin/brew ]; then
+if [ -x "/opt/homebrew/bin/brew" ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 
   # Set up path
