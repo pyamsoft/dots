@@ -4,11 +4,19 @@
 if [ -z "${LS_COLORS}" ]; then
   if command -v vivid >/dev/null; then
     # We are dark if tmux identifies our theme as "macchiato"
-    if grep -q '"macchiato"' "${XDG_CONFIG_HOME}/tmux/tmux.conf"; then
-      export LS_COLORS="$(vivid generate catppuccin-macchiato)"
+    if [ -n "${XDG_CONFIG_HOME}" ]; then
+      _tmux_here_root="${XDG_CONFIG_HOME}"
     else
-      export LS_COLORS="$(vivid generate catppuccin-latte)"
+      _tmux_here_root="${HOME}/.config"
     fi
+
+    if grep -q '"macchiato"' "${_tmux_here_root}/tmux/tmux.conf"; then
+      LS_COLORS="$(vivid generate catppuccin-macchiato)"
+    else
+      LS_COLORS="$(vivid generate catppuccin-latte)"
+    fi
+    unset _tmux_here_root
+    export LS_COLORS
   fi
 fi
 

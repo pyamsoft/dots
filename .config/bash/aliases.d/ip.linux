@@ -1,3 +1,4 @@
 # shellcheck shell=bash
 
+# Ip with colored output
 alias ip="ip --color=auto "

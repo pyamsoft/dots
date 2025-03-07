@@ -22,4 +22,3 @@ fi
 unset _current_ulimit
 
 return 0
-

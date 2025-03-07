@@ -1,3 +1,4 @@
 # shellcheck shell=bash
 
+# Allow for alias expansion
 alias paccache="paccache -v "

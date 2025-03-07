@@ -16,4 +16,3 @@ alias dotpl="dotfiles pull"
 alias dotf="dotfiles fetch"
 alias dotps="dotfiles push"
 alias dotl="dotfiles lg"
-

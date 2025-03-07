@@ -7,4 +7,3 @@ if [ -z "${LS_COLORS}" ]; then
 fi
 
 return 0
-

@@ -12,3 +12,5 @@ for _bcomp in "/usr/share/bash-completion/bash_completion" "/etc/bash_completion
   unset _bcomp
 done
 unset _bcomp
+
+return 0

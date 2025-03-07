@@ -27,25 +27,25 @@ for _env_conf in "${_cfg}"/pyamsoft.d/*.conf; do
   # shellcheck disable=SC1090
   [ -r "${_env_conf}" ] && {
     case "${_env_conf}" in
-      *.linux)
-        if [ "${env_os}" = "Linux" ]; then
-          . "${_env_conf}" || {
-            printf -- 'Linux ENV setup script failed: %s\n' "${_env_conf}"
-          }
-        fi
-        ;;
-      *.macos)
-        if [ "${env_os}" = "Darwin" ]; then
-          . "${_env_conf}" || {
-            printf -- 'MacOS ENV setup script failed: %s\n' "${_env_conf}"
-          }
-        fi
-        ;;
-      *)
+    *.linux)
+      if [ "${env_os}" = "Linux" ]; then
         . "${_env_conf}" || {
-            printf -- 'ENV setup script failed: %s\n' "${_env_conf}"
+          printf -- 'Linux ENV setup script failed: %s\n' "${_env_conf}"
         }
-        ;;
+      fi
+      ;;
+    *.macos)
+      if [ "${env_os}" = "Darwin" ]; then
+        . "${_env_conf}" || {
+          printf -- 'MacOS ENV setup script failed: %s\n' "${_env_conf}"
+        }
+      fi
+      ;;
+    *)
+      . "${_env_conf}" || {
+        printf -- 'ENV setup script failed: %s\n' "${_env_conf}"
+      }
+      ;;
     esac
   }
   unset _env_conf

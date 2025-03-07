@@ -14,4 +14,3 @@ alias gitpl="git pull"
 alias gitf="git fetch"
 alias gitps="git push"
 alias gitl="git lg"
-

@@ -1,7 +1,11 @@
 # shellcheck shell=bash
 
 for _qol in "aliases" "functions"; do
-  _qol="${XDG_CONFIG_HOME}/bash/${_qol}"
+  if [ -n "${XDG_CONFIG_HOME}" ]; then
+    _qol="${XDG_CONFIG_HOME}/bash/${_qol}"
+  else
+    _qol="${HOME}/.config/bash/${_qol}"
+  fi
   [ -r "${_qol}" ] && {
     # shellcheck disable=SC1090
     . "${_qol}" || {

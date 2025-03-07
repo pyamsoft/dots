@@ -8,10 +8,10 @@ __upall_macos_macports() {
   if [ -e /opt/local/bin/port ]; then
     if [ -n "$1" ] && [ "$1" = "--shell" ]; then
       printf -- 'Entering macports shell environment...\n'
-    
+
       export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
       export MANPATH="/opt/local/share/man:${MANPATH}"
-    
+
       # Normal user shell
       exec bash
     elif [ -n "$1" ] && [ "$1" = "--root-shell" ]; then

@@ -29,3 +29,5 @@ if command -v shopt >/dev/null; then
   _set_shopt extglob
   _set_shopt dotglob
 fi
+
+return 0

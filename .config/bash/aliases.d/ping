@@ -1,4 +1,5 @@
 # shellcheck shell=bash
 
+# Quick ping aliases
 alias p8="ping 8.8.8.8"
 alias pingg="ping google.com"

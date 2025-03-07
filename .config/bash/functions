@@ -11,25 +11,25 @@ for script in "${HOME}"/.bash_functions.d/* "${XDG_CONFIG_HOME}"/bash/functions.
   # shellcheck disable=SC1090
   [ -r "${script}" ] && {
     case "${script}" in
-      *.linux)
-        if [ "${os}" = "Linux" ]; then
-          . "${script}" || {
-            printf -- 'Linux bash_function setup script failed: %s\n' "${script}"
-          }
-        fi
-        ;;
-      *.macos)
-        if [ "${os}" = "Darwin" ]; then
-          . "${script}" || {
-            printf -- 'MacOS bash_function setup script failed: %s\n' "${script}"
-          }
-        fi
-        ;;
-      *)
+    *.linux)
+      if [ "${os}" = "Linux" ]; then
         . "${script}" || {
-          printf -- 'bash_function setup script failed: %s\n' "${script}"
+          printf -- 'Linux bash_function setup script failed: %s\n' "${script}"
         }
-        ;;
+      fi
+      ;;
+    *.macos)
+      if [ "${os}" = "Darwin" ]; then
+        . "${script}" || {
+          printf -- 'MacOS bash_function setup script failed: %s\n' "${script}"
+        }
+      fi
+      ;;
+    *)
+      . "${script}" || {
+        printf -- 'bash_function setup script failed: %s\n' "${script}"
+      }
+      ;;
     esac
   }
   unset script

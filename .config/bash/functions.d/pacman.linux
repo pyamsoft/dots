@@ -38,9 +38,12 @@ __up_linux() {
 
 __up_flatpak() {
   if command -v flatpak >/dev/null; then
-    flatpak --user update && flatpak --user uninstall --unused || {
-      return 1
-    }
+    if flatpak --user update; then
+      flatpak --user uninstall --unused || return 1
+      return 0
+    fi
+
+    return 1
   fi
 
   return 0
@@ -53,7 +56,6 @@ __up_containers() {
 
   return 0
 }
-
 
 # Update everything
 upall() {

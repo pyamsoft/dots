@@ -19,7 +19,7 @@ for e in ${_editors}; do
 
     break
   fi
-done;
+done
 unset _editors
 
 return 0

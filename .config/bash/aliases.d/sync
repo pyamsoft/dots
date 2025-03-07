@@ -1,3 +1,5 @@
+# shellcheck shell=bash
+
 # Call sync twice
 # https://www.man7.org/linux/man-pages/man2/sync.2.html
 # According to POXIS, sync can "finish" before actually "finishing"
@@ -5,4 +7,4 @@
 # Linux technically avoids this at an FS level, but just to be safe
 # calling sync twice will ensure that by the time the second one
 # returns, the first one is done
-alias sync="sync && sync"
+alias sync="sync && sync "

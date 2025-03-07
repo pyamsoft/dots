@@ -18,7 +18,7 @@ flatpak__clear_pins() {
   for p in $(flatpak pin -u | tail -n +1); do
     flatpak pin -u --remove "${p}" || return 1
   done
- 
+
   return 0
 }
 

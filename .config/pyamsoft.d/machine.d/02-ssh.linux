@@ -27,4 +27,3 @@ if [ -n "${XDG_RUNTIME_DIR}" ]; then
 fi
 
 return 0
-

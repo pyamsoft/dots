@@ -1,5 +1,6 @@
 # shellcheck shell=bash
 
+# ls, allow room for aliases
 if command -v gls >/dev/null; then
   alias ls="gls -CHh --color=auto "
 else
