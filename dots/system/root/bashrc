@@ -28,7 +28,7 @@ _pyamsoft_path() {
   # Debian resets the path in /etc/profile, regardless of sudo secure_path
   #
   # we need to add our pyamsoft path back to this
-  if [ "$(uname)" = "Darwin" ] || { [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; }; then
+  if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
     if [ -d "/opt/pyamsoft/sbin" ]; then
       PATH="/opt/pyamsoft/sbin:${PATH}"
     fi
