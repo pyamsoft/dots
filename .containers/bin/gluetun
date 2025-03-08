@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="gluetun-jp"
+readonly _name="gluetun"
 readonly _image="docker.io/qmcgaw/gluetun"
-readonly _tag="v3.35.0"
+readonly _tag="v3.40.0"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -22,13 +22,17 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  _caps="${_caps} --cap-add NET_BIND_SERVICE"
+  # Gluetun
   _caps="${_caps} --cap-add NET_ADMIN"
 
-  # For unbound
+  # File writing for /tmp/gluetun/ip during setup
   _caps="${_caps} --cap-add CHOWN"
 
-  # Files
+  # DNS binding permission (for running local unbound server)
+  _caps="${_caps} --cap-add NET_BIND_SERVICE"
+
+  # Make DNS work inside container
+  # Allow healthcheck on startup to succeed
   _caps="${_caps} --cap-add DAC_OVERRIDE"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
@@ -40,14 +44,11 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # Expose control server
+  # Control
   _ports="${_ports} -p 127.0.0.1:9998:8000/tcp"
 
-  # Expose healthcheck port
+  # Health check
   _ports="${_ports} -p 127.0.0.1:9999:9999/tcp"
-
-  # Firefox
-  _ports="${_ports} -p 127.0.0.1:7184:3000/tcp"
 
   readonly _ports
   return 0
@@ -82,6 +83,15 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+  readonly _gt
+
+  # Gluetun internally runs its own DNS stack. Do NOT specify --dns here
+  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
+  readonly _network
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
 
   # Log the commands we use next
   # Fail on errors
@@ -91,14 +101,15 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run ${_how} \
+  exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --device=/dev/net/tun:/dev/net/tun \
     -e VPN_SERVICE_PROVIDER="mullvad" \
     -e VPN_TYPE="wireguard" \
-    -e COUNTRY="JAPAN" \
     ${_gt} \
+    ${_network} \
+    ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -112,14 +123,22 @@ main() {
   _prep_ports || return 1
   _prep_caps || return 1
 
-  # How do we run?
-  if [ "$1" = "-d" ] || [ "$1" = "--detach" ]; then
-    shift
-    _how="-d --restart=unless-stopped"
-  else
-    _how="--rm -i -t"
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
   fi
-  readonly _how
 
   _containerize "$@" || return 1
   return 0
