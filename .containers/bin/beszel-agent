@@ -97,8 +97,12 @@ _containerize() {
 
   # Agent must run with host networking
   _network="${_network} --net=host"
-
   readonly _network
+
+  if [ -z "${BESZEL_KEY}" ]; then
+    printf -- 'You must export the Beszel Agent key as "BESZEL_KEY"\n'
+    return 1
+  fi
 
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"
