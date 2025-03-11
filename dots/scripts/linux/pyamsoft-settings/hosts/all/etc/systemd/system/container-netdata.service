@@ -1,0 +1,24 @@
+# NetData container
+
+[Unit]
+Description=Container: NetData
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
+Wants=network-online.target
+
+[Service]
+# File must exist or fail
+ExecStartPre=/bin/test -x /opt/pyamsoft/sbin/netdata
+
+# Check the network is online before starting (wait up to 30 seconds)
+ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online --dns'
+
+# Teardown before starting, if this 'fails' because nothing else is running, we don't mind
+ExecStartPre=-/opt/pyamsoft/bin/container-teardown -t 10 netdata
+
+ExecStart=/opt/pyamsoft/sbin/netdata
+ExecStop=/opt/pyamsoft/bin/container-teardown -t 10 netdata
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target
