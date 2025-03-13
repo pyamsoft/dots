@@ -121,6 +121,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e LISTEN="/beszel_socket/beszel.sock" \
     -e KEY="${BESZEL_KEY}" \
+    ${_ba} \
     ${_network} \
     ${_auto} \
     ${_mounts} \
