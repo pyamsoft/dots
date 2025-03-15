@@ -3,7 +3,7 @@
 readonly _basename="beszel"
 readonly _name="${_basename}-hub"
 readonly _image="docker.io/henrygd/beszel"
-readonly _tag="0.10.1"
+readonly _tag="0.10.2"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
