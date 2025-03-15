@@ -8,15 +8,32 @@ readonly _tag="0.10.1"
 # Use podman, don't use docker
 readonly _cmd="podman"
 
+_prep_ssh_key() {
+  _data_dir="$1"
+
+  # Read the SSH pubkey
+  if [ -e "${_data_dir}/id_ed25519.pub" ]; then
+    BESZEL_KEY="$(cat "${_data_dir}/id_ed25519.pub")"
+    export BESZEL_KEY
+  fi
+
+  unset _data_dir
+  return 0
+}
+
 _prep_mounts() {
   # Hub and Agent share a socket
   readonly _socket="${HOME}/.local/etc/containers/${_basename}/socket"
+  readonly _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
 
   # Ensure socket
   mkdir -p "${_socket}" || return 1
 
   # Make agent mounts
   mkdir -p "${HOME}/.local/etc/containers/${_name}" || return 1
+
+  # Make the SSH keys
+  _prep_ssh_key "${_hub_data}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_socket},target=/beszel_socket"
@@ -68,14 +85,13 @@ _containerize() {
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
+    printf -- 'Optional runconf file supported at %s\n' "${_runconf}"
+  else
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+    unset _runconf
   fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
-  unset _runconf
   readonly _ba
 
   # We use our container DNS resolver
@@ -100,7 +116,7 @@ _containerize() {
   readonly _network
 
   if [ -z "${BESZEL_KEY}" ]; then
-    printf -- 'You must export the Beszel Agent key as "BESZEL_KEY"\n'
+    printf -- 'You must export the Beszel Agent SSH Key as "BESZEL_KEY"\n'
     return 1
   fi
 

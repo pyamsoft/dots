@@ -8,6 +8,29 @@ readonly _tag="0.10.1"
 # Use podman, don't use docker
 readonly _cmd="podman"
 
+_prep_ssh_key() {
+  _data_dir="$1"
+
+  # Create the private SSH key if it does not already exist
+  if [ ! -e "${_data_dir}/id_ed25519" ]; then
+    ssh-keygen -i ed25519 -f "${_data_dir}/id_ed25519" || {
+      printf -- 'Failed to generate private SSH key\n'
+      return 1
+    }
+  fi
+
+  # Create the public SSH key if it does not already exist
+  if [ ! -e "${_data_dir}/id_ed25519.pub" ]; then
+    ssh-keygen -y -f "${_data_dir}/id_ed25519" || {
+      printf -- 'Failed to generate public SSH key\n'
+      return 1
+    }
+  fi
+
+  unset _data_dir
+  return 0
+}
+
 _prep_mounts() {
   # Hub and Agent share a socket
   readonly _socket="${HOME}/.local/etc/containers/${_basename}/socket"
@@ -18,6 +41,9 @@ _prep_mounts() {
 
   # Make hub mounts
   mkdir -p "${_mount1}" || return 1
+
+  # Make the SSH keys
+  _prep_ssh_key "${_mount1}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_socket},target=/beszel_socket"
@@ -72,14 +98,13 @@ _containerize() {
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
+    printf -- 'Optional runconf file supported at %s\n' "${_runconf}"
+  else
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+    unset _runconf
   fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
-  unset _runconf
   readonly _bh
 
   # We use our container DNS resolver
