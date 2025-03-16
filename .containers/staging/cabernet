@@ -29,6 +29,7 @@ _prep_caps() {
   _caps=""
 
   # For startup
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
   _caps="${_caps} --cap-add CHOWN"
   _caps="${_caps} --cap-add SETGID"
   _caps="${_caps} --cap-add SETUID"
