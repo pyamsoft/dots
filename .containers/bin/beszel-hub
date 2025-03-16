@@ -13,7 +13,7 @@ _prep_ssh_key() {
 
   # Create the private SSH key if it does not already exist
   if [ ! -e "${_data_dir}/id_ed25519" ]; then
-    ssh-keygen -t ed25519 -f "${_data_dir}/id_ed25519" || {
+    ssh-keygen -q -N "" -t ed25519 -f "${_data_dir}/id_ed25519" || {
       printf -- 'Failed to generate private SSH key\n'
       return 1
     }
@@ -21,7 +21,7 @@ _prep_ssh_key() {
 
   # Create the public SSH key if it does not already exist
   if [ ! -e "${_data_dir}/id_ed25519.pub" ]; then
-    ssh-keygen -y -f "${_data_dir}/id_ed25519" || {
+    ssh-keygen -q -N "" -y -f "${_data_dir}/id_ed25519" || {
       printf -- 'Failed to generate public SSH key\n'
       return 1
     }
