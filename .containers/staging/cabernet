@@ -53,8 +53,8 @@ _check_user() {
     return 1
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  # Fix user permissions (container starts as root and then drops perms)
+  _userns="-e PUID=$(id -u) -e PGID=$(id -g)"
   readonly _userns
 
   return 0
