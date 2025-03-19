@@ -46,6 +46,30 @@ _create_home() {
   return 0
 }
 
+# Bind a symlink into the jail, and resolve it's real path
+_bind_symlink() {
+  _bind_symlink_bind="$1"
+  _bind_symlink_path="$2"
+
+  if [ -L "${_bind_symlink_path}" ]; then
+    _resolv_link="$(readlink "${_bind_symlink_path}")"
+    _resolv_real_link="$(readlink -f "${_bind_symlink_path}")"
+
+    printf -- '--%s %s %s ' "${_bind_symlink_bind}" "${_bind_symlink_path}" "${_resolv_link}"
+
+    if [ "${_resolv_link}" != "${_resolv_real_link}" ]; then
+      printf -- '--%s %s %s ' "${_bind_symlink_bind}" "${_resolv_link}" "${_resolv_real_link}"
+    fi
+
+    unset _resolv_link
+    unset _resolv_real_link
+  fi
+
+  unset _bind_symlink_bind
+  unset _bind_symlink_path
+  return 0
+}
+
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
@@ -173,10 +197,10 @@ _run_jail() {
   readonly _args
 
   if [ -n "${_j_real_home}" ] && [ "${_j_real_home}" -eq 1 ]; then
-    printf -- 'Not jailing \$HOME directory!\n'
+    printf -- 'Not jailing %s directory!\n' "\$HOME"
     _j_home_binds=""
   else
-    _j_home_binds="--bind "${_j_jail}/home" "${HOME}" \
+    _j_home_binds="--bind ${_j_jail}/home ${HOME} \
       $(_bind_in_jail "ro-bind" "${HOME}/.gnupg" "${GNUPGHOME}") \
       $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
@@ -185,6 +209,14 @@ _run_jail() {
       $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
       $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/ssh" "${HOME}/.ssh")"
   fi
+
+  _j_sys_binds=""
+
+  # If resolv conf is a symlink, bind the real file too
+  _j_sys_binds="${_j_sys_binds} $(_bind_symlink "ro-bind" "/etc/resolv.conf")"
+
+  readonly _j_home_binds
+  readonly _j_sys_binds
 
   # Fail on subshell or pipe failure
   set -eu
@@ -243,6 +275,7 @@ _run_jail() {
     $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}") \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     ${_j_home_binds} \
+    ${_j_sys_binds} \
     ${_args} -- "${_j_cmd}" "$@"
 }
 
