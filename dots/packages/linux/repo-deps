@@ -311,6 +311,7 @@ leancrypto
 less
 lib32-alsa-lib
 lib32-alsa-plugins
+lib32-audit
 lib32-brotli
 lib32-bzip2
 lib32-curl
@@ -437,6 +438,7 @@ libdrm
 libdv
 libdvdnav
 libdvdread
+libebur128
 libedit
 libei
 libelf
