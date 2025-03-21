@@ -2,7 +2,7 @@
 
 readonly _name="omada-controller"
 readonly _image="docker.io/mbentley/omada-controller"
-readonly _tag="5.15.8.2"
+readonly _tag="5.15.20.16"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
