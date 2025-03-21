@@ -1,0 +1,6 @@
+[Unit]
+Description=Freegames check for %i (must be already configured with first-run)
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/freegames %i
