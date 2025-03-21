@@ -1,6 +1,7 @@
 #!/bin/sh
 
-readonly _target_user="containers"
+_target_user="$(basename "$0")"
+readonly _target_user
 
 _check_user() {
   if ! id -u "${_target_user}" >/dev/null 2>&1; then

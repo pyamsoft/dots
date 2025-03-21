@@ -1,7 +1,7 @@
 #!/bin/sh
 
 _PROG_NAME="$(basename "$0")"
-_TARGET_USER="containers"
+readonly _PROG_NAME
 
 _dotfiles() {
   exec git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
@@ -11,7 +11,7 @@ _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
 
-${_PROG_NAME} <action>
+($(id -un)) ${_PROG_NAME} <action>
 
 <actions>
 
@@ -41,15 +41,6 @@ ${_PROG_NAME} <action>
 
 EOF
   )"
-}
-
-_check_user() {
-  if ! id -u "${_TARGET_USER}" >/dev/null 2>&1; then
-    printf -- '[delegate] Target user %s does not exist!\n' "${_TARGET_USER}"
-    return 1
-  fi
-
-  return 0
 }
 
 _prep_container() {
@@ -103,18 +94,9 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- '[delegate] Unable to cd to user HOME for podman usage\n'
+    printf -- '[delegate-containers] Unable to cd to user HOME for podman usage\n'
     return 1
   }
-
-  if ! _check_user; then
-    return 1
-  fi
-
-  if [ "$(id -u)" -ne "$(id -u "${_TARGET_USER}")" ]; then
-    printf -- '[delegate] Must run this script as %s user\n' "${_TARGET_USER}"
-    return 1
-  fi
 
   # Eat argument
   _action="$1"
@@ -148,7 +130,7 @@ main() {
     _collect_containers "$@" || return 1
 
     if [ -z "${_containers_and_args}" ]; then
-      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
+      printf -- '[delegate-containers] Must call %s with at least one container name\n' "${_action}"
       return 1
     fi
 
@@ -161,7 +143,7 @@ main() {
     _collect_containers "$@" || return 1
 
     if [ -z "${_containers_and_args}" ]; then
-      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
+      printf -- '[delegate-containers] Must call %s with at least one container name\n' "${_action}"
       return 1
     fi
 
@@ -174,7 +156,7 @@ main() {
     _collect_containers "$@" || return 1
 
     if [ -z "${_containers_and_args}" ]; then
-      printf -- '[delegate] Must call %s with at least one container name\n' "${_action}"
+      printf -- '[delegate-containers] Must call %s with at least one container name\n' "${_action}"
       return 1
     fi
 
@@ -186,7 +168,7 @@ main() {
     exec container-teardown "$@"
     ;;
   *)
-    printf -- '[delegate] Invalid action: "%s"\n' "${_action}"
+    printf -- '[delegate-containers] Invalid action: "%s"\n' "${_action}"
     _usage || return 1
     return 1
     ;;
