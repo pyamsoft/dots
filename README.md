@@ -16,6 +16,7 @@ For other files that are copied into place, see `dots/`
 ### Proxy
 
 For proxy usage
+
 - First you should run `apply-http-proxy default` to see the settings, and then
   `eval $(apply-http-proxy default)` to set the environment.
 - For systemd services that need proxy access, you should run `apply-http-proxy systemd-apply`
@@ -29,21 +30,25 @@ Currently I'm using a fork of "Comic Shanns", found here on github:
 [you have been warned](https://github.com/jesusmgg/comic-shanns-mono)
 
 ### Sound on Linux
+
 You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would generally
 want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
 
 ### USBGuard
+
 [Make sure you setup USBGuard](https://wiki.archlinux.org/title/USBGuard)
 `usbguard generate-policy > /etc/usbguard/rules.conf`
 
 Otherwise, if another service starts usbguard somehow, you will be locked out!
 
 ### Firmware Update
+
 I prefer `fwupd` and using the `org.gnome.Firmware` flatpak for the frontend.
 To enable `fwupd.service`, you may wish to mask `passim.service`, which
 for example reports problems on my machine and prevents fwupd from running.
 
 ### Wayland
+
 - Sunshine needs cap_sys_admin `sudo setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine`
   - Can be automatically handled by a pacman hook
 - Gamescope may need cap_sys_nice `sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/sunshine`
@@ -52,15 +57,17 @@ for example reports problems on my machine and prevents fwupd from running.
   - No real way around this? Not sure if it's Portal or KDEConnect's job to solve.
 
 ### Docker
+
 For video acceleration in docker, make sure you
 [setup hardware accel in the container](https://jellyfin.org/docs/general/administration/hardware-acceleration#hardware-acceleration-on-docker-linux)
 
 Use `podman` instead of `docker` to avoid the root daemon
 
 ### Flatpak
+
 For OBS capture, install `OBSVkCapture` from freedesktop.Platform and ObsStudio
 Also include `gstreamer-vaapi` from Freedesktop and `Plugins.Gstreamer` from ObsStudio
-You will need to install `MangoHud` `vkBasalt` `gamescope` `protonup-qt` manually
+You will need to install `MangoHud` `gamescope` `protonup-qt` manually
 
 For Dark Mode you'll need the following flatpaks for the correct runtime (assuming GNOME)
 
@@ -73,23 +80,27 @@ GTK:
 See the `themepak` script, which copies your GTK theme into the user folders
 
 ### Steam (Flatpak)
+
 See notes in `dots/scripts/gaming/README.md`
 
 ### Moonlight
+
 Make sure you do not block the X11 or fallback x11 sockets for moonlight or else --grab won't work
 Sunshine Right-Alt tweak does not work because Wayland GNOME does not respond to the re-bound key.
 
 ### Sunshine
+
 Be sure to add the [LizardByte Archlinux repository](https://github.com/LizardByte/pacman-repo)
 to `/etc/pacman.conf`
 
 Don't enable the user level systemd service - it's weird. Use our customer autostart-sunshine user service
 which calls through to the `restart-sunshine` script, which it expects to live in `${HOME}/.local/bin`
-The `restart-sunshine` script is unixy platform agnostic and will handle known quirks of sunshine 
+The `restart-sunshine` script is unixy platform agnostic and will handle known quirks of sunshine
 
 ## Tweaks
 
 ### FS performance
+
 Enable [fast_commit for ext4](https://wiki.archlinux.org/title/Ext4#Enabling_fast_commit_in_existing_filesystems)
 Disable [crypt workqueues](https://wiki.archlinux.org/title/Dm-crypt/Specialties)
 

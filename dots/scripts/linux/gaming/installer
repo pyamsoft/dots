@@ -10,7 +10,13 @@ _installer() {
   target="$2"
   script="$3"
   mark="$4"
+
   current_directory="$(pwd)"
+
+  if [ ! -e "${script}" ]; then
+    printf -- 'Target script does not exist, skipping install: %s => %s\n' "${script}" "${app_name}"
+    return 0
+  fi
 
   printf -- 'Attempt install script %s into flatpak app %s\n' "${script}" "${app_name}"
 
