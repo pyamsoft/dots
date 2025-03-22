@@ -27,4 +27,4 @@ Restart=on-failure
 RestartSec=10
 
 [Install]
-WantedBy=user@%i.target
+WantedBy=user@%i.service
