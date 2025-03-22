@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Execute a shell as a containers-* user, even if the user's shell is
+# set as /bin/nologin
+
+_runas() {
+  exec sudo run0 -u "$1" --setenv=SHELL=/bin/bash
+}
+
+main() {
+  _user="containers-$1"
+  if ! id -un "${_user}" >/dev/null 2>&1; then
+    printf -- 'Target user %s does not exist\n' "${_user}"
+    return 1
+  fi
+
+  _runas "${_user}" || return 1
+
+  unset _user
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
