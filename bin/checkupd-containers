@@ -110,8 +110,21 @@ main() {
     return 1
   fi
 
+  # Our user
   _check_containers "podman" || return 1
-  _check_containers "containers" || return 1
+
+  # Direct "containers" delegate
+  if id -un containers >/dev/null 2>&1; then
+    _check_containers "containers" || return 1
+  fi
+
+  # Any containers delegates
+  for _container_delegate_user in /home/containers-*; do
+    _container_delegate_user="$(basename "${_container_delegate_user}")"
+    _check_containers "${_container_delegate_user}" || return 1
+    unset _container_delegate_user
+  done
+  unset _container_delegate_user
 
   if [ "$(uname)" != "Darwin" ]; then
     # Check again for root containers
