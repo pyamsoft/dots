@@ -7,8 +7,8 @@
 
 [Unit]
 Description=Container: Blocky for %i
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service user@%i.service
-Wants=network-online.target user@%i.service
+After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
+Wants=network-online.target
 
 [Service]
 # File must exist or fail
@@ -27,4 +27,4 @@ Restart=on-failure
 RestartSec=10
 
 [Install]
-WantedBy=graphical.target
+WantedBy=user@%i.target
