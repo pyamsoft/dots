@@ -12,15 +12,17 @@ else
   _ssh_home="${XDG_RUNTIME_DIR}"
 fi
 
+_agent_path="${_ssh_home}/ssh-agent-$(id -u).env"
+
 # Check if an SSH agent is already running
 if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
   # Launch a new agent and save the details in this runtime file
-  ssh-agent -s >"${_ssh_home}/ssh-agent.env"
+  ssh-agent -s >"${_agent_path}"
 fi
 
-if [ -f "${_ssh_home}/ssh-agent.env" ]; then
-  # shellcheck disable=SC1091
-  . "${_ssh_home}/ssh-agent.env" >/dev/null 2>&1
+if [ -f "${_agent_path}" ]; then
+  # shellcheck disable=SC1090
+  . "${_agent_path}" >/dev/null 2>&1
 
   # Set up machine
   if [ -z "${PYAMSOFT_MACHINE}" ]; then
@@ -30,6 +32,7 @@ if [ -f "${_ssh_home}/ssh-agent.env" ]; then
   fi
 fi
 
+unset _agent_path
 unset _ssh_home
 
 return 0
