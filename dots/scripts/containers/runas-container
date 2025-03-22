@@ -9,7 +9,7 @@ _runas() {
     exec sudo run0 -u "$1" --setenv=SHELL=/bin/bash
   else
     # Otherwise fake the environment with sudo
-    exec sudo -u "$1" env SHELL=/bin/bash XDG_RUNTIME_DIR="/run/user/$(id -u "$1")" -s /bin/bash -l
+    exec sudo -u "$1" env SHELL=/bin/bash XDG_RUNTIME_DIR="/run/user/$(id -u "$1")" /bin/bash -l
   fi
 }
 
