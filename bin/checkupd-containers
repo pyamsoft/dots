@@ -121,7 +121,12 @@ main() {
   # Any containers delegates
   for _container_delegate_user in /home/containers-*; do
     _container_delegate_user="$(basename "${_container_delegate_user}")"
-    _check_containers "${_container_delegate_user}" || return 1
+
+    # Check the delegated command exists
+    if command -v "${_container_delegate_user}" >/dev/null 2>&1; then
+      _check_containers "${_container_delegate_user}" || return 1
+    fi
+
     unset _container_delegate_user
   done
   unset _container_delegate_user
