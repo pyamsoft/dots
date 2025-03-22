@@ -13,7 +13,7 @@ _prep_ssh_key() {
 
   # Read the SSH pubkey
   if [ -e "${_data_dir}/id_ed25519.pub" ]; then
-    BESZEL_KEY="$(cat "${_data_dir}/id_ed25519.pub")"
+    BESZEL_KEY="$(awk '{ print $1 " " $2 }' <"${_data_dir}/id_ed25519.pub")"
     export BESZEL_KEY
   fi
 
