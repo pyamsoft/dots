@@ -1,45 +1,7 @@
+# shellcheck shell=bash
+
 # Stop if not running interactively
 [[ "$-" != *i* ]] && return
-
-_aliases() {
-  # Aliases
-  alias ls="ls -CHh --color=auto "
-  alias ll="ls -l"
-  alias la="ls -A"
-
-  alias rm="rm -iv"
-  alias mv="mv -iv"
-  alias cp="cp -iv"
-
-  return 0
-}
-
-_homebrew_path() {
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ -x "/opt/homebrew/bin/brew" ]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
-  fi
-
-  return 0
-}
-
-_pyamsoft_path() {
-  # Debian resets the path in /etc/profile, regardless of sudo secure_path
-  #
-  # we need to add our pyamsoft path back to this
-  if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
-    if [ -d "/opt/pyamsoft/sbin" ]; then
-      PATH="/opt/pyamsoft/sbin:${PATH}"
-    fi
-    if [ -d "/opt/pyamsoft/bin" ]; then
-      PATH="/opt/pyamsoft/bin:${PATH}"
-    fi
-    export PATH
-  fi
-
-  return 0
-}
 
 _starship() {
   # Starship
@@ -52,12 +14,6 @@ _starship() {
   return 0
 }
 
-_aliases
-_homebrew_path
-_pyamsoft_path
 _starship
 
-unset _aliases
-unset _pyamsoft_path
-unset _homebrew_path
 unset _starship

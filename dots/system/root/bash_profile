@@ -1,1 +1,82 @@
+# shellcheck shell=bash
+
+# Some nice aliases
+_aliases() {
+  alias ls="ls -CHh --color=auto "
+  alias ll="ls -l"
+  alias la="ls -A"
+
+  alias rm="rm -iv"
+  alias mv="mv -iv"
+  alias cp="cp -iv"
+
+  return 0
+}
+
+# Fix homebrew on macos
+_homebrew_path() {
+  if [ "$(uname)" = "Darwin" ]; then
+    if [ -x "/opt/homebrew/bin/brew" ]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+  fi
+
+  return 0
+}
+
+# Debian resets the path in /etc/profile, regardless of sudo secure_path
+#
+# we need to add our pyamsoft path back to this
+_pyamsoft_path() {
+  if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
+    if [ -d "/opt/pyamsoft/sbin" ]; then
+      PATH="/opt/pyamsoft/sbin:${PATH}"
+    fi
+    if [ -d "/opt/pyamsoft/bin" ]; then
+      PATH="/opt/pyamsoft/bin:${PATH}"
+    fi
+    export PATH
+  fi
+
+  return 0
+}
+
+# Pick an editor
+_editor() {
+  # Do nothing if already set
+  if [ -n "${EDITOR}" ]; then
+    return 0
+  fi
+
+  if [ -x /usr/bin/nvim ]; then
+    EDITOR=/usr/bin/nvim
+  elif [ -x /usr/bin/vim ]; then
+    EDITOR=/usr/bin/nvim
+  elif [ -x /usr/bin/vi ]; then
+    EDITOR=/usr/bin/nvim
+  else
+    return 0
+  fi
+
+  SUDO_EDITOR="${EDITOR}"
+  SYSTEMD_EDITOR="${EDITOR}"
+
+  export EDITOR
+  export SUDO_EDITOR
+  export SYSTEMD_EDITOR
+
+  return 0
+}
+
+_aliases
+_homebrew_path
+_pyamsoft_path
+_editor
+
+unset _aliases
+unset _pyamsoft_path
+unset _homebrew_path
+unset _editor
+
+# Source bashrc
 [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
