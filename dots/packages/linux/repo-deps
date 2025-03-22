@@ -3,8 +3,8 @@ aardvark-dns
 abseil-cpp
 accountsservice
 acl
-adobe-source-code-pro-fonts
 adwaita-cursors
+adwaita-fonts
 adwaita-icon-theme
 adwaita-icon-theme-legacy
 alsa-card-profiles
@@ -81,6 +81,8 @@ dtc
 duktape
 e2fsprogs
 edk2-ovmf
+egl-wayland
+eglexternalplatform
 elfutils
 ell
 enchant
@@ -185,6 +187,7 @@ gtk4
 gtksourceview4
 guile
 gupnp
+gupnp-dlna
 gupnp-igd
 gvfs
 gvfs-nfs
@@ -767,6 +770,8 @@ psmisc
 pugixml
 pulseaudio-qt
 python
+python-argcomplete
+python-autocommand
 python-cairo
 python-capng
 python-certifi
@@ -780,11 +785,17 @@ python-dotenv
 python-gobject
 python-greenlet
 python-idna
+python-jaraco.collections
+python-jaraco.context
+python-jaraco.functools
+python-jaraco.text
 python-linux-procfs
+python-more-itertools
 python-msgpack
 python-packaging
 python-pbr
 python-pillow
+python-platformdirs
 python-protobuf
 python-pycryptodomex
 python-pycups
@@ -795,7 +806,9 @@ python-pyqt6-sip
 python-pyudev
 python-reportlab
 python-requests
+python-setuptools
 python-urllib3
+python-wheel
 python-yaml
 qca-qt6
 qemu-audio-alsa
