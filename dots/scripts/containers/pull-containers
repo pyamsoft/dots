@@ -1,0 +1,31 @@
+#!/bin/sh
+
+_pull() {
+  "$1" pull || {
+    printf -- 'Failed to pull for delegate: %s\n' "$1"
+    return 1
+  }
+
+  return 0
+}
+
+main() {
+  # Direct "containers" delegate
+  if id -un containers >/dev/null 2>&1; then
+    # Ignore error
+    _pull containers || return 1
+  fi
+
+  # Any containers delegates
+  for _container_delegate_user in /home/containers-*; do
+    _container_delegate_user="$(basename "${_container_delegate_user}")"
+    _pull "${_container_delegate_user}" || return 1
+    unset _container_delegate_user
+  done
+  unset _container_delegate_user
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
