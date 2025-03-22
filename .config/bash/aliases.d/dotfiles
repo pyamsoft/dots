@@ -3,7 +3,7 @@
 # git lg setup:
 # git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
-alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" '
+alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
 
 alias dots="dotfiles status"
 alias dota="dotfiles add"
