@@ -24,7 +24,8 @@ readonly _cmd="podman"
 _prep_mounts() {
   _mounts=""
 
-  if [ "${_name}" = "dozzle-agent" ]; then
+  # Bind the socket IF we are the agent OR if the DOZZLE_BIND_SOCKET variable is set
+  if [ "${_name}" = "dozzle-agent" ] || [ -n "${DOZZLE_BIND_SOCKET}" ] && [ "${DOZZLE_BIND_SOCKET}" -ne 0 ]; then
     if [ "$(id -u)" -eq 0 ]; then
       _podman_socket="/var/run/podman/podman.sock"
     else
@@ -38,7 +39,7 @@ _prep_mounts() {
     elif [ -S "${_docker_socket}" ]; then
       _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock"
     else
-      printf -- 'Missing both podman and docket socket.\n'
+      printf -- 'Missing both podman and docker socket.\n'
       return 1
     fi
   fi
@@ -120,16 +121,6 @@ _containerize() {
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
 
-  # Agent requires a command to start as an agent
-  if [ "${_name}" = "dozzle-agent" ]; then
-    if [ -z "${DOZZLE_COMMAND}" ]; then
-      printf -- 'You must export the Dozzle command as "DOZZLE_COMMAND"\n'
-      return 1
-    fi
-  else
-    DOZZLE_COMMAND=""
-  fi
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -148,7 +139,7 @@ _containerize() {
     ${_ports} \
     ${_caps} \
     ${_userns} \
-    "${_image}:${_tag}" ${DOZZLE_COMMAND} "$@"
+    "${_image}:${_tag}" "$@"
 }
 
 main() {
@@ -165,12 +156,18 @@ main() {
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
   if [ "$(uname)" = "Linux" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+    if [ "$(id -u)" -eq 0 ]; then
+      _livepath="/var/run/containers"
+    else
+      _livepath="${XDG_RUNTIME_DIR}/containers"
+    fi
+    while [ ! -d "${_livepath}" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'
         return 1
       }
     done
+    unset _livepath
     printf -- 'Container runtime is ready, start %s\n' "${_name}"
   fi
 
