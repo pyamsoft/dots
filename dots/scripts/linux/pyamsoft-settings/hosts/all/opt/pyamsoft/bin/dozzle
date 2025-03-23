@@ -1,5 +1,8 @@
 #!/bin/sh
 
+readonly _image="docker.io/amir20/dozzle"
+readonly _tag="v8.11.9"
+
 # Pick name based on environment mode
 case "${DOZZLE_MODE}" in
 agent)
@@ -15,8 +18,6 @@ hub)
 esac
 
 readonly _name
-readonly _image="docker.io/amir20/dozzle"
-readonly _tag="v8.11.9"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
@@ -24,24 +25,21 @@ readonly _cmd="podman"
 _prep_mounts() {
   _mounts=""
 
-  # Bind the socket IF we are the agent OR if the DOZZLE_BIND_SOCKET variable is set
-  if [ "${_name}" = "dozzle-agent" ] || { [ -n "${DOZZLE_BIND_SOCKET}" ] && [ "${DOZZLE_BIND_SOCKET}" -ne 0 ]; }; then
-    if [ "$(id -u)" -eq 0 ]; then
-      _podman_socket="/var/run/podman/podman.sock"
-    else
-      _podman_socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
-    fi
-    readonly _podman_socket
-    readonly _docker_socket="/var/run/docker.sock"
+  if [ "$(id -u)" -eq 0 ]; then
+    _podman_socket="/var/run/podman/podman.sock"
+  else
+    _podman_socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
+  fi
+  readonly _podman_socket
+  readonly _docker_socket="/var/run/docker.sock"
 
-    if [ -S "${_podman_socket}" ]; then
-      _mounts="${_mounts} --mount type=bind,source=${_podman_socket},target=/var/run/docker.sock"
-    elif [ -S "${_docker_socket}" ]; then
-      _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock"
-    else
-      printf -- 'Missing both podman and docker socket.\n'
-      return 1
-    fi
+  if [ -S "${_podman_socket}" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_podman_socket},target=/var/run/docker.sock"
+  elif [ -S "${_docker_socket}" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock"
+  else
+    printf -- 'Missing both podman and docker socket.\n'
+    return 1
   fi
 
   readonly _mounts
@@ -52,10 +50,8 @@ _prep_caps() {
   _caps=""
 
   if [ "${_name}" = "dozzle-agent" ]; then
+    # For agent to create a /tmp file
     _caps="${_caps} --cap-add DAC_OVERRIDE"
-    #_caps="${_caps} --cap-add SETUID"
-    #_caps="${_caps} --cap-add SETGID"
-    #_caps="${_caps} --cap-add CHOWN"
   fi
 
   readonly _caps
@@ -95,13 +91,20 @@ _containerize() {
   fi
 
   # Ensure config directory for the hub to set up remote ports
+  mkdir -p "$(dirname "${_runconf}")" || return 1
+
   if [ "${_name}" = "dozzle-hub" ]; then
-    mkdir -p "$(dirname "${_runconf}")" || return 1
     if [ ! -e "${_runconf}" ]; then
       printf -- 'You must provide %s\n' "${_runconf}"
       return 1
     fi
+  else
+    if [ ! -e "${_runconf}" ]; then
+      printf -- 'Optional runconfig support at %s\n' "${_runconf}"
+    fi
+  fi
 
+  if [ -e "${_runconf}" ]; then
     # Source the file into the environment
     # shellcheck disable=SC1090
     . "${_runconf}" || return 1
