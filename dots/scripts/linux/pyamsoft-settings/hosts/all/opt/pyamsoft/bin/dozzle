@@ -51,6 +51,13 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
+  if [ "${_name}" = "dozzle-agent" ]; then
+    _caps="${_caps} --cap-add DAC_OVERRIDE"
+    #_caps="${_caps} --cap-add SETUID"
+    #_caps="${_caps} --cap-add SETGID"
+    #_caps="${_caps} --cap-add CHOWN"
+  fi
+
   readonly _caps
   return 0
 }
@@ -60,6 +67,8 @@ _prep_ports() {
 
   if [ "${_name}" = "dozzle-hub" ]; then
     _ports="${_ports} -p 127.0.0.1:8910:8080/tcp"
+  else
+    _ports="${_ports} -p 127.0.0.1:4$(id -u):7007/tcp"
   fi
 
   readonly _ports
@@ -85,18 +94,33 @@ _containerize() {
     _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   fi
 
-  # Ensure config directory
-  mkdir -p "$(dirname "${_runconf}")" || return 1
+  # Ensure config directory for the hub to set up remote ports
+  if [ "${_name}" = "dozzle-hub" ]; then
+    mkdir -p "$(dirname "${_runconf}")" || return 1
+    if [ ! -e "${_runconf}" ]; then
+      printf -- 'You must provide %s\n' "${_runconf}"
+      return 1
+    fi
 
-  if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+    unset _runconf
   fi
 
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
-  unset _runconf
+  if [ "${_name}" = "dozzle-agent" ]; then
+    # Set the name for the agent
+    DOZZLE_HOSTNAME="$(id -un)"
+    # Remove the "containers" prefix if we are a delegated user
+    if [ "${DOZZLE_HOSTNAME}" != "containers" ]; then
+      DOZZLE_HOSTNAME="${DOZZLE_HOSTNAME#containers-}"
+    fi
+    _dz="${_dz} -e DOZZLE_HOSTNAME=${DOZZLE_HOSTNAME}"
+    unset DOZZLE_HOSTNAME
+
+    # Add the agent command
+    set -- "agent" "$@"
+  fi
 
   readonly _dz
 

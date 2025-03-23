@@ -1,7 +1,7 @@
-# Dozzle (Hub)
+# Dozzle Agent in a container
 
 [Unit]
-Description=Container: Dozzle (Hub)
+Description=Container: Dozzle (Agent)
 After=network-online.target syslog.target local-fs.target remote-fs.target nss-lookup.target docker.service podman.service
 Wants=network-online.target local-fs.target
 
@@ -14,19 +14,15 @@ ExecStartPre=/bin/test -x /opt/pyamsoft/bin/dozzle
 ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online'
 
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
-ExecStartPre=-/opt/pyamsoft/bin/container-teardown dozzle-hub
+ExecStartPre=-/opt/pyamsoft/bin/container-teardown dozzle-agent
 
 # Run as the hub
-Environment=DOZZLE_MODE=hub
-
-# Bind to our system level podman/docker socket
-Environment=DOZZLE_BIND_SOCKET=1
+Environment=DOZZLE_MODE=agent
 
 ExecStart=/opt/pyamsoft/bin/dozzle
-ExecStop=/opt/pyamsoft/bin/container-teardown dozzle-hub
+ExecStop=/opt/pyamsoft/bin/container-teardown dozzle-agent
 Restart=on-failure
 RestartSec=10
 
 [Install]
-WantedBy=graphical.target
-
+WantedBy=default.target
