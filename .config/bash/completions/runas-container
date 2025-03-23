@@ -1,0 +1,38 @@
+#!/bin/bash
+# shellcheck shell=bash
+
+# bash completion support for containers script
+if ! declare -f __runas_container >/dev/null 2>&1; then
+  __runas_container() {
+    COMPREPLY=()
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    local _all_container_users=""
+
+    if id -u containers >/dev/null 2>&1; then
+      if [ -z "${_all_container_users}" ]; then
+        _all_container_users="containers"
+      else
+        _all_container_users="containers ${_all_container_users}"
+      fi
+    fi
+
+    for _container_user in /home/containers-*; do
+      _container_user="$(basename "${_container_user}")"
+      if id -u "${_container_user}" >/dev/null 2>&1; then
+        if [ -z "${_all_container_users}" ]; then
+          _all_container_users="${_container_user#containers-}"
+        else
+          _all_container_users="${_container_user#containers-} ${_all_container_users}"
+        fi
+      fi
+      unset _container_user
+    done
+    unset _container_user
+
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "${_all_container_users[*]}" -- "${cur}"))
+  }
+fi
+
+complete -o bashdefault -o default -o nospace -F __runas_container runas-container

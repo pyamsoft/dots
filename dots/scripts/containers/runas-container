@@ -14,7 +14,13 @@ _runas() {
 }
 
 main() {
-  _user="containers-$1"
+  # Support the "containers" user or "containers-" delegate
+  if [ "$1" = "containers" ]; then
+    _user="$1"
+  else
+    _user="containers-$1"
+  fi
+
   if ! id -un "${_user}" >/dev/null 2>&1; then
     printf -- 'Target user %s does not exist\n' "${_user}"
     return 1
