@@ -1,42 +1,42 @@
 #!/bin/sh
 
-readonly _basename="beszel"
-readonly _name="${_basename}-agent"
-readonly _image="docker.io/henrygd/beszel-agent"
-readonly _tag="0.10.2"
+# Pick name based on environment mode
+case "${DOZZLE_MODE}" in
+agent)
+  _name="dozzle-agent"
+  ;;
+hub)
+  _name="dozzle-hub"
+  ;;
+*)
+  printf -- 'You must export the Dozzle mode as "DOZZLE_MODE": "agent" "hub"\n'
+  exit 1
+  ;;
+esac
+
+readonly _name
+readonly _image="docker.io/amir20/dozzle"
+readonly _tag="v8.11.9"
 
 # Use podman, don't use docker
 readonly _cmd="podman"
 
-_prep_ssh_key() {
-  _data_dir="$1"
-
-  # Read the SSH pubkey
-  if [ -e "${_data_dir}/id_ed25519.pub" ]; then
-    BESZEL_KEY="$(awk '{ print $1 " " $2 }' <"${_data_dir}/id_ed25519.pub")"
-    export BESZEL_KEY
-  fi
-
-  unset _data_dir
-  return 0
-}
-
 _prep_mounts() {
-  # Hub and Agent share a socket
-  readonly _socket="${HOME}/.local/etc/containers/${_basename}/socket"
-  readonly _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
-
-  # Ensure socket
-  mkdir -p "${_socket}" || return 1
-
-  # Make agent mounts
-  mkdir -p "${HOME}/.local/etc/containers/${_name}" || return 1
-
-  # Make the SSH keys
-  _prep_ssh_key "${_hub_data}" || return 1
-
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_socket},target=/beszel_socket"
+
+  if [ "${_name}" = "dozzle-hub" ]; then
+    readonly _podman_socket="/var/run/podman/podman.sock"
+    readonly _docker_socket="/var/run/docker.sock"
+
+    if [ -S "${_podman_socket}" ]; then
+      _mounts="${_mounts} --mount type=bind,source=${_podman_socket},target=/var/run/docker.sock"
+    elif [ -S "${_docker_socket}" ]; then
+      _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock"
+    else
+      printf -- 'Missing both podman and docket socket.\n'
+      return 1
+    fi
+  fi
 
   readonly _mounts
   return 0
@@ -51,6 +51,10 @@ _prep_caps() {
 
 _prep_ports() {
   _ports=""
+
+  if [ "${_name}" = "dozzle-hub" ]; then
+    _ports="${_ports} -p 127.0.0.1:8910:8080/tcp"
+  fi
 
   readonly _ports
   return 0
@@ -71,19 +75,21 @@ _check_user() {
 }
 
 _containerize() {
-  _ba=""
+  _dz=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'Optional runconf file supported at %s\n' "${_runconf}"
-  else
-    # Source the file into the environment
-    # shellcheck disable=SC1090
-    . "${_runconf}" || return 1
-    unset _runconf
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
   fi
-  readonly _ba
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
+  readonly _dz
 
   # We use our container DNS resolver
   # MacOS can't launch with host-gateway
@@ -102,18 +108,14 @@ _containerize() {
     unset _is_cmd_new_enough
   fi
 
-  # Agent must run with host networking
-  _network="${_network} --net=host"
-  readonly _network
-
-  if [ -z "${BESZEL_KEY}" ]; then
-    printf -- 'You must export the Beszel Agent SSH Key as "BESZEL_KEY"\n'
-    return 1
-  fi
-
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+
+  if [ -z "${DOZZLE_COMMAND}" ]; then
+    printf -- 'You must export the Dozzle command as "DOZZLE_COMMAND"\n'
+    return 1
+  fi
 
   # Log the commands we use next
   # Fail on errors
@@ -126,16 +128,14 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    -e LISTEN="/beszel_socket/beszel.sock" \
-    -e KEY="${BESZEL_KEY}" \
-    ${_ba} \
+    ${_dz} \
     ${_network} \
     ${_auto} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
     ${_userns} \
-    "${_image}:${_tag}" "$@"
+    "${_image}:${_tag}" ${DOZZLE_COMMAND} "$@"
 }
 
 main() {

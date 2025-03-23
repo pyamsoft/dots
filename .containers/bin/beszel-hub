@@ -56,15 +56,6 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # For file permissions
-  #
-  # Doesn't actually need these?
-  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
-  # _caps="${_caps} --cap-add DAC_OVERRIDE"
-  # _caps="${_caps} --cap-add CHOWN"
-  # _caps="${_caps} --cap-add SETGID"
-  # _caps="${_caps} --cap-add SETUID"
-
   readonly _caps
   return 0
 }
@@ -84,7 +75,7 @@ _check_user() {
     return 1
   fi
 
-  # Run with root for samba binding but also keep-id for /var/cache/samba/msg.lock
+  # Need this userns option that is podman specific or we have random OCI permission error
   _userns="--userns keep-id"
 
   readonly _userns
