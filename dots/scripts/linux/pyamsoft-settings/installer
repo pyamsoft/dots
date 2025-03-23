@@ -248,6 +248,26 @@ main() {
       done
       unset _file_or_folder
 
+      # Loop through usr
+      for _file_or_folder in ./usr/**/*; do
+        # Skip folders
+        if [ -d "${_file_or_folder}" ]; then
+          continue
+        fi
+
+        _file_dir="$(dirname "${_file_or_folder}")"
+        _file_name="$(basename "${_file_or_folder}")"
+        _install_dir="${_file_dir#\.\/}"
+
+        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+
+        unset _install_dir
+        unset _file_dir
+        unset _file_name
+        unset _file_or_folder
+      done
+      unset _file_or_folder
+
       # cd back out
       cd .. || {
         printf -- 'Failed to cd out of target host directory: "%s"\n' "${_target_host_or_skip_host}"
