@@ -64,7 +64,11 @@ _prep_ports() {
   if [ "${_name}" = "dozzle-hub" ]; then
     _ports="${_ports} -p 127.0.0.1:8910:8080/tcp"
   else
-    _ports="${_ports} -p 127.0.0.1:4$(id -u):7007/tcp"
+    if [ "$(id -u)" -eq 0 ]; then
+      _ports="${_ports} -p 127.0.0.1:51234:7007/tcp"
+    else
+      _ports="${_ports} -p 127.0.0.1:4$(id -u):7007/tcp"
+    fi
   fi
 
   readonly _ports
