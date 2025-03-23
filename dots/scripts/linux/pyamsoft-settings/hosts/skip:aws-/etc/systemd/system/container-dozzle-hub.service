@@ -3,7 +3,7 @@
 [Unit]
 Description=Container: Dozzle (Hub)
 After=network-online.target syslog.target local-fs.target remote-fs.target nss-lookup.target docker.service podman.service
-Wants=network-online.target local-fs.target
+Wants=network-online.target local-fs.target podman.service docker.service
 
 [Service]
 # File must exist or fail
