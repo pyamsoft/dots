@@ -118,7 +118,21 @@ _containerize() {
     if [ "${DOZZLE_HOSTNAME}" != "containers" ]; then
       DOZZLE_HOSTNAME="${DOZZLE_HOSTNAME#containers-}"
     fi
-    _dz="${_dz} -e DOZZLE_HOSTNAME=${DOZZLE_HOSTNAME}"
+
+    _hostname=""
+    if command -v hostnamectl >/dev/null; then
+      _hostname="$(hostnamectl hostname)"
+    elif command -v hostname >/dev/null; then
+      _hostname="$(hostname)"
+    elif [ -r /etc/hostname ]; then
+      _hostname="$(cat /etc/hostname)"
+    fi
+
+    if [ -n "${_hostname}" ]; then
+      _dz="${_dz} -e DOZZLE_HOSTNAME=${_hostname}:${DOZZLE_HOSTNAME}"
+    else
+      _dz="${_dz} -e DOZZLE_HOSTNAME=${DOZZLE_HOSTNAME}"
+    fi
     unset DOZZLE_HOSTNAME
 
     # Add the agent command
