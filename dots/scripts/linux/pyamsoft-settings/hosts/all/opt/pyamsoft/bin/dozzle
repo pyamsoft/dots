@@ -25,7 +25,7 @@ _prep_mounts() {
   _mounts=""
 
   # Bind the socket IF we are the agent OR if the DOZZLE_BIND_SOCKET variable is set
-  if [ "${_name}" = "dozzle-agent" ] || [ -n "${DOZZLE_BIND_SOCKET}" ] && [ "${DOZZLE_BIND_SOCKET}" -ne 0 ]; then
+  if [ "${_name}" = "dozzle-agent" ] || { [ -n "${DOZZLE_BIND_SOCKET}" ] && [ "${DOZZLE_BIND_SOCKET}" -ne 0 ]; }; then
     if [ "$(id -u)" -eq 0 ]; then
       _podman_socket="/var/run/podman/podman.sock"
     else
