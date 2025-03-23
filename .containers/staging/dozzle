@@ -25,7 +25,12 @@ _prep_mounts() {
   _mounts=""
 
   if [ "${_name}" = "dozzle-hub" ]; then
-    readonly _podman_socket="/var/run/podman/podman.sock"
+    if [ "$(id -u)" -eq 0 ]; then
+      _podman_socket="/var/run/podman/podman.sock"
+    else
+      _podman_socket="${XDG_RUNTIME_DIR}/podman/podman.sock"
+    fi
+    readonly _podman_socket
     readonly _docker_socket="/var/run/docker.sock"
 
     if [ -S "${_podman_socket}" ]; then
@@ -61,13 +66,8 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'You must run this as a rootless container\n'
-    return 1
-  fi
-
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  # This can be run by either root or a normal user
+  _userns=""
 
   readonly _userns
 
@@ -78,7 +78,12 @@ _containerize() {
   _dz=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ "$(id -u)" -eq 0 ]; then
+    _runconf="/usr/local/etc/containers/${_name}/runconfig.env"
+  else
+    _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  fi
+
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
