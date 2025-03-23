@@ -24,7 +24,7 @@ readonly _cmd="podman"
 _prep_mounts() {
   _mounts=""
 
-  if [ "${_name}" = "dozzle-hub" ]; then
+  if [ "${_name}" = "dozzle-agent" ]; then
     if [ "$(id -u)" -eq 0 ]; then
       _podman_socket="/var/run/podman/podman.sock"
     else
@@ -84,6 +84,9 @@ _containerize() {
     _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   fi
 
+  # Ensure config directory
+  mkdir -p "$(dirname "${_runconf}")" || return 1
+
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
@@ -117,9 +120,14 @@ _containerize() {
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
 
-  if [ -z "${DOZZLE_COMMAND}" ]; then
-    printf -- 'You must export the Dozzle command as "DOZZLE_COMMAND"\n'
-    return 1
+  # Agent requires a command to start as an agent
+  if [ "${_name}" = "dozzle-agent" ]; then
+    if [ -z "${DOZZLE_COMMAND}" ]; then
+      printf -- 'You must export the Dozzle command as "DOZZLE_COMMAND"\n'
+      return 1
+    fi
+  else
+    DOZZLE_COMMAND=""
   fi
 
   # Log the commands we use next
