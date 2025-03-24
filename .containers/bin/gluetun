@@ -5,7 +5,15 @@ readonly _image="docker.io/qmcgaw/gluetun"
 readonly _tag="v3.40.0"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
@@ -62,7 +70,6 @@ _check_user() {
 
   # Expects to be root (since the cert file is owned by root)
   _userns="--user 0:0"
-
   readonly _userns
 
   return 0
@@ -130,7 +137,7 @@ main() {
 
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'

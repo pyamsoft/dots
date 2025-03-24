@@ -12,13 +12,16 @@
 
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
-readonly _tag="16.1"
+readonly _tag="17.4"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
-else
+elif command -v docker >/dev/null; then
   _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
 fi
 readonly _cmd
 
@@ -71,6 +74,8 @@ _check_user() {
   if [ "${_cmd}" = "podman" ]; then
     # Otherwise we keep OCI
     _userns="--userns keep-id"
+  else
+    _userns=""
   fi
 
   # On MacOS we need to own the files to chown them
@@ -88,7 +93,7 @@ _containerize() {
   # MacOS can't launch with host-gateway
   # On Linux we run systemd-resolved on our host machine for DNS caching
   _network="--add-host localhost:127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     # Only compare the version minors
     _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
     _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
@@ -135,7 +140,7 @@ main() {
     return 1
   }
 
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'

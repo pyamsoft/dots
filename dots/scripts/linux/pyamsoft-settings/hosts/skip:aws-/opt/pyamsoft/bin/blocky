@@ -5,7 +5,15 @@ readonly _image="docker.io/spx01/blocky"
 readonly _tag="v0.25"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _runas() {
   sudo -u "${_user}" -- "$@" || return 1
@@ -120,7 +128,7 @@ _containerize() {
   # TO the blocky container
   _network="${_network} --dns=127.0.0.1"
 
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     # Only compare the version minors
     _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
     _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
@@ -203,7 +211,7 @@ main() {
 
   # Wait for the target user's ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "/run/user/${_uid}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'

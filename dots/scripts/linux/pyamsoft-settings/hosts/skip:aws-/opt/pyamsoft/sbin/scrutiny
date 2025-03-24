@@ -5,7 +5,15 @@ readonly _image="ghcr.io/analogj/scrutiny"
 readonly _tag="v0.8.1-omnibus"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="/usr/local/etc/containers/${_name}/config"
@@ -89,7 +97,7 @@ _containerize() {
   # MacOS can't launch with host-gateway
   # On Linux we run systemd-resolved on our host machine for DNS caching
   _network="--add-host localhost:127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     # Only compare the version minors
     _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
     _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
@@ -148,7 +156,7 @@ main() {
 
   # Wait for the root /run/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "/run/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'

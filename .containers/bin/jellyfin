@@ -5,7 +5,15 @@ readonly _image="docker.io/jellyfin/jellyfin"
 readonly _tag="10.10.6"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
@@ -61,8 +69,13 @@ _check_user() {
     return 1
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  # Only for podman
+  if [ "${_cmd}" = "podman" ]; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    _userns="--userns keep-id"
+  else
+    _userns=""
+  fi
   readonly _userns
 
   return 0
@@ -105,7 +118,7 @@ _containerize() {
   # MacOS can't launch with host-gateway
   # On Linux we run systemd-resolved on our host machine for DNS caching
   _network="--add-host localhost:127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     # Only compare the version minors
     _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
     _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
@@ -159,7 +172,7 @@ main() {
 
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'

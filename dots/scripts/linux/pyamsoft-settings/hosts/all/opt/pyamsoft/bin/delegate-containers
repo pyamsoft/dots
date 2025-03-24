@@ -3,6 +3,17 @@
 _PROG_NAME="$(basename "$0")"
 readonly _PROG_NAME
 
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
+
 _dotfiles() {
   exec git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
 }
@@ -15,12 +26,12 @@ _usage() {
 
 <actions>
 
-[container]:   Exectue podman operations on containers
+[container]:   Exectue ${_cmd} operations on containers
 
-  ps           Runs 'podman ps', passing all arguments
-  logs         Runs 'podman logs', passing all arguments
-  images       Runs 'podman images', passing all arguments
-  inspect      Runs 'podman inspect', passing all arguments
+  ps           Runs '${_cmd} ps', passing all arguments
+  logs         Runs '${_cmd} logs', passing all arguments
+  images       Runs '${_cmd} images', passing all arguments
+  inspect      Runs '${_cmd} inspect', passing all arguments
 
 [service]:     Service management related operations
 
@@ -32,10 +43,10 @@ _usage() {
 
 [system]:      System management related operations
 
-  checkup      Runs 'podman auto-update --dry-run'
-  enter        Runs 'podman exec -it <name> /bin/sh'
-  exec         Runs 'podman exec -it <name>'
-  prune        Runs 'podman system prune -a'
+  checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
+  enter        Runs '${_cmd} exec -it <name> /bin/sh'
+  exec         Runs '${_cmd} exec -it <name>'
+  prune        Runs '${_cmd} system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
 
@@ -94,7 +105,7 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- '[delegate-containers] Unable to cd to user HOME for podman usage\n'
+    printf -- '[delegate-containers] Unable to cd to user HOME for %s usage\n' "${_cmd}"
     return 1
   }
 
@@ -104,23 +115,28 @@ main() {
 
   case "${_action}" in
   ps | logs | images | inspect)
-    exec podman "${_action}" "$@"
+    exec "${_cmd}" "${_action}" "$@"
     ;;
   checkup)
-    exec podman auto-update --dry-run "$@"
+    if [ "${_cmd}" != "podman" ]; then
+      printf -- '[delegate-containers] The "checkup" option is only supported with podman\n'
+      return 1
+    fi
+
+    exec "${_cmd}" auto-update --dry-run "$@"
     ;;
   enter)
     # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
-    exec podman exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
+    exec "${_cmd}" exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
     ;;
   exec)
     _container="$1"
     shift
 
-    exec podman exec -i -t "${_container}" "$@"
+    exec "${_cmd}" exec -i -t "${_container}" "$@"
     ;;
   prune)
-    exec podman system prune -a "$@"
+    exec "${_cmd}" system prune -a "$@"
     ;;
   pull)
     _dotfiles pull "$@"

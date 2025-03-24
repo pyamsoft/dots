@@ -2,6 +2,17 @@
 
 _PROG="$(basename "$0")"
 
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
+
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
@@ -32,13 +43,13 @@ _teardown_container() {
 
   # Attempt nice stop
   printf -- '[teardown] Attempt nice stop container: %s\n' "${_container}"
-  podman stop -t "${_teardown_time}" "${_container}" >/dev/null || {
+  "${_cmd}" stop -t "${_teardown_time}" "${_container}" >/dev/null || {
     printf -- '[teardown] Failed to nicely stop container %s\n' "${_container}"
   }
 
   # Remove the container
   printf -- '[teardown] Attempt force-remove container: %s\n' "${_container}"
-  podman rm -f "${_container}" >/dev/null || {
+  "${_cmd}" rm -f "${_container}" >/dev/null || {
     printf -- '[teardown] Failed to force remove the container %s\n' "${_container}"
 
     # If this fails, we failed
@@ -47,9 +58,16 @@ _teardown_container() {
 
   # Remove the network
   printf -- '[teardown] Attempt remove container network: %s\n' "${_container}"
-  podman network rm -f -t "${_teardown_time}" "${_container}" >/dev/null || {
-    printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
-  }
+  if [ "${_cmd}" = "podman" ]; then
+    "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null || {
+      printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
+    }
+  else
+    # Docker does not support -t flag for network rm
+    "${_cmd}" network rm -f "${_container}" >/dev/null || {
+      printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
+    }
+  fi
 
   printf -- '[teardown] Container is completely torn down: %s\n\n' "${_container}"
 
@@ -91,7 +109,7 @@ _teardown_compose() {
   }
 
   printf -- '[teardown] Attempt bring down compose: %s\n' "${_container}"
-  podman compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" || {
+  "${_cmd}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" || {
     printf -- '[teardown] Failed to bring down compose: %s\n' "${_container}"
     return 1
   }
@@ -105,7 +123,7 @@ _teardown_compose() {
 main() {
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- '[teardown] Unable to cd to user HOME for podman usage\n'
+    printf -- '[teardown] Unable to cd to user HOME for %s usage\n' "${_cmd}"
     return 1
   }
 
