@@ -201,32 +201,35 @@ main() {
         return 1
       }
 
-      # Loop through etc
-      for _file_or_folder in ./etc/**/*; do
-        # Skip folders
-        if [ -d "${_file_or_folder}" ]; then
-          continue
-        fi
+      # Only on Linux machines
+      if [ "$(uname)" = "Linux" ]; then
+        # Loop through etc
+        for _file_or_folder in ./etc/**/*; do
+          # Skip folders
+          if [ -d "${_file_or_folder}" ]; then
+            continue
+          fi
 
-        _file_dir="$(dirname "${_file_or_folder}")"
-        _file_name="$(basename "${_file_or_folder}")"
-        _install_dir="${_file_dir#\.\/}"
+          _file_dir="$(dirname "${_file_or_folder}")"
+          _file_name="$(basename "${_file_or_folder}")"
+          _install_dir="${_file_dir#\.\/}"
 
-        case "${_file_dir}" in
-        */sudoers.d)
-          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
-          ;;
-        *)
-          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
-          ;;
-        esac
+          case "${_file_dir}" in
+          */sudoers.d)
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
+            ;;
+          *)
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
+            ;;
+          esac
 
-        unset _install_dir
-        unset _file_dir
-        unset _file_name
+          unset _install_dir
+          unset _file_dir
+          unset _file_name
+          unset _file_or_folder
+        done
         unset _file_or_folder
-      done
-      unset _file_or_folder
+      fi
 
       # Loop through opt
       for _file_or_folder in ./opt/**/*; do
