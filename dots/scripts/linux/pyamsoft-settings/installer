@@ -214,7 +214,7 @@ main() {
 
         case "${_file_dir}" in
         */sudoers.d)
-          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "600" || return 1
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
           ;;
         *)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
@@ -259,7 +259,14 @@ main() {
         _file_name="$(basename "${_file_or_folder}")"
         _install_dir="${_file_dir#\.\/}"
 
-        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+        case "${_file_dir}" in
+        */containers)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
+          ;;
+        *)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
+          ;;
+        esac
 
         unset _install_dir
         unset _file_dir
