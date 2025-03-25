@@ -215,7 +215,7 @@ main() {
           _install_dir="${_file_dir#\.\/}"
 
           case "${_file_dir}" in
-          */sudoers.d/*)
+          */sudoers.d | */sudoers.d/*)
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
             ;;
           *)
@@ -263,7 +263,7 @@ main() {
         _install_dir="${_file_dir#\.\/}"
 
         case "${_file_dir}" in
-        */containers/*)
+        */containers | */containers/*)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "600" || return 1
           ;;
         *)
