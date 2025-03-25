@@ -2,10 +2,18 @@
 
 readonly _name="jellyseerr"
 readonly _image="docker.io/fallenbagel/jellyseerr"
-readonly _tag="1.9.2"
+readonly _tag="2.5.1"
 
 # Use podman, don't use docker
-readonly _cmd="podman"
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
@@ -39,9 +47,6 @@ _prep_ports() {
   # Jellyseerr
   _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
 
-  # Host networking for DLNA
-  # _ports="${_ports} --network=host"
-
   readonly _ports
   return 0
 }
@@ -52,8 +57,13 @@ _check_user() {
     return 1
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="--userns keep-id"
+  # Only for podman
+  if [ "${_cmd}" = "podman" ]; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    _userns="--userns keep-id"
+  else
+    _userns=""
+  fi
   readonly _userns
 
   return 0
@@ -77,17 +87,17 @@ _containerize() {
 
   _network=""
   # Ensure we run in the same network as jellyfin
-  _network="${_network} --network container:jellyfin"
+  _network="${_network} --network container:gluetun"
   readonly _network
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
 
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
   set -xeu
-
-  # Auto Update Checking support
-  _auto="--label=io.containers.autoupdate=registry"
-  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
 
   # Don't quote so that if user is empty it still expands
   #
@@ -118,7 +128,7 @@ main() {
 
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ]; then
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'
