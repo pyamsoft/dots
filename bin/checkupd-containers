@@ -25,6 +25,9 @@ _get_latest_tags() {
       # Otherwise remove latest and let's keep going
       grep -v 'latest' |
         case "${_container}" in
+        */jellyseerr)
+          grep -v 'preview'
+          ;;
         */jellyfin)
           grep -v '202.' | grep -v 'master' | grep -v 'test'
           ;;
