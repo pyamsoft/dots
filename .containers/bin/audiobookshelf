@@ -126,7 +126,6 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --init \
     ${_abs} \
     ${_network} \
     ${_auto} \
