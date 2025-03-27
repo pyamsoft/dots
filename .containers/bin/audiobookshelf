@@ -48,7 +48,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:13378:80/tcp"
+  _ports="${_ports} -p 127.0.0.1:13378:13378/tcp"
 
   readonly _ports
   return 0
@@ -126,6 +126,7 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    -e PORT=13378 \
     ${_abs} \
     ${_network} \
     ${_auto} \
