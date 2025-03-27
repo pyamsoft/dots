@@ -72,11 +72,6 @@ _check_containers() {
   # shellcheck disable=SC2086
   _containers="$(${_cmd} images | grep -e '^docker\.io' -e '^ghcr\.io' | awk '{ printf $1 " " $2 " " }')"
 
-  # Don't look up the same container but with different versions more than once
-  # This would happen if we were running hello-world:1 and pulled down hello-world:2
-  # which podman sees as 2 container images
-  _already_seen=""
-
   while :; do
     if [ -z "${_containers}" ]; then
       break
@@ -112,6 +107,11 @@ main() {
     printf -- 'Must install "podman"\n'
     return 1
   fi
+
+  # Don't look up the same container but with different versions more than once
+  # This would happen if we were running hello-world:1 and pulled down hello-world:2
+  # which podman sees as 2 container images
+  _already_seen=""
 
   # Our user
   _check_containers "podman" || return 1
