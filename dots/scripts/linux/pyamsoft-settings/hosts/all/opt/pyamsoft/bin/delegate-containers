@@ -169,16 +169,10 @@ main() {
     ;;
   reload)
     _prep_container || return 1
-    _collect_containers "$@" || return 1
-
-    if [ -z "${_containers_and_args}" ]; then
-      printf -- '[delegate-containers] Must call %s with at least one container name\n' "${_action}"
-      return 1
-    fi
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user "daemon-reload" ${_containers_and_args}
+    exec systemctl --user "daemon-reload"
     ;;
   teardown)
     exec container-teardown "$@"

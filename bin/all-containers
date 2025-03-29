@@ -1,0 +1,71 @@
+#!/bin/sh
+
+_prune() {
+  if command -v "$1" >/dev/null 2>&1; then
+    "$1" prune || {
+      printf -- 'Failed to prune for delegate: %s\n' "$1"
+      return 1
+    }
+  fi
+
+  return 0
+}
+
+_pull() {
+  if command -v "$1" >/dev/null 2>&1; then
+    "$1" pull || {
+      printf -- 'Failed to pull for delegate: %s\n' "$1"
+      return 1
+    }
+  fi
+
+  return 0
+}
+
+_reload() {
+  if command -v "$1" >/dev/null 2>&1; then
+    "$1" reload || {
+      printf -- 'Failed to reload for delegate: %s\n' "$1"
+      return 1
+    }
+  fi
+
+  return 0
+}
+
+_act() {
+  case "$1" in
+  prune)
+    _prune "$2" || return 1
+    ;;
+  reload)
+    _reload "$2" || return 1
+    ;;
+  pull)
+    _pull "$2" || return 1
+    ;;
+  *)
+    printf -- 'Invalid action %s\n' "$1"
+    ;;
+  esac
+}
+
+main() {
+  # Direct "containers" delegate
+  if id -un containers >/dev/null 2>&1; then
+    _act "$1" containers || return 1
+  fi
+
+  # Any containers delegates
+  for _container_delegate_user in /home/containers-*; do
+    _container_delegate_user="$(basename "${_container_delegate_user}")"
+    _act "$1" "${_container_delegate_user}" || return 1
+    unset _container_delegate_user
+  done
+  unset _container_delegate_user
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
