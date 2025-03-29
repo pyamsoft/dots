@@ -2,7 +2,7 @@
 
 # Need to run with bash instead of /bin/sh to use glob options
 
-_package__hostname() {
+_package_hostname() {
   if command -v hostnamectl >/dev/null; then
     hostnamectl hostname || return 1
   elif command -v hostname >/dev/null; then
@@ -101,7 +101,7 @@ main() {
   fi
 
   # We may want different codepaths for different machines
-  _my_hostname="$(_package__hostname)"
+  _my_hostname="$(_package_hostname)"
 
   # This is an assumption that the user account you would consider "my user" is UID 1000
   # at this point in the script, we are running as fakeroot, so we have to hard-assume this
