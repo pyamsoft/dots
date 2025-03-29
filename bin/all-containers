@@ -51,6 +51,11 @@ _act() {
 }
 
 main() {
+  if [ -z "$1" ]; then
+    printf -- 'Invalid action %s\n' "$1"
+    return 1
+  fi
+
   # Direct "containers" delegate
   if id -un containers >/dev/null 2>&1; then
     _act "$1" containers || return 1
