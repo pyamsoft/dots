@@ -184,6 +184,7 @@ _containerize() {
   exec ${_cmd} run --rm -i -t \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    -e DOZZLE_NO_ANALYTICS=1 \
     ${_dz} \
     ${_network} \
     ${_auto} \
