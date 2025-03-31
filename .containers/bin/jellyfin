@@ -127,8 +127,8 @@ _containerize() {
   readonly _jf
 
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
-    # We have optional support for a gluetun VPN container
-    _network="--network container:gluetun"
+    # We have optional support for a wireguard VPN container
+    _network="--network container:wireguard"
   else
     # We use our container DNS resolver
     # MacOS can't launch with host-gateway
