@@ -70,6 +70,15 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  if [ "$(uname)" = "Linux" ] && { [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; }; then
+    if [ "${_cmd}" = "podman" ]; then
+      _ha="${_ha} --log-driver json-file"
+    fi
+  else
+    _ha="${_ha} -i -t"
+  fi
   readonly _ha
 
   # We use our container DNS resolver
@@ -93,6 +102,7 @@ _containerize() {
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
 
   # Log the commands we use next
   # Fail on errors
@@ -105,7 +115,7 @@ _containerize() {
   # via runconfig
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm -i -t \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_ha} \

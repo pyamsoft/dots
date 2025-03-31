@@ -117,7 +117,6 @@ _containerize() {
   else
     _bh="${_bh} -i -t"
   fi
-
   readonly _bh
 
   # We use our container DNS resolver
@@ -141,6 +140,7 @@ _containerize() {
   # Auto Update Checking support
   _auto="--label=io.containers.autoupdate=registry"
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
 
   # Log the commands we use next
   # Fail on errors

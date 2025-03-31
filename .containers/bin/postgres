@@ -89,6 +89,18 @@ _check_user() {
 }
 
 _containerize() {
+  _pg=""
+
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  if [ "$(uname)" = "Linux" ] && { [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; }; then
+    if [ "${_cmd}" = "podman" ]; then
+      _pg="${_pg} --log-driver json-file"
+    fi
+  else
+    _pg="${_pg} -i -t"
+  fi
+  readonly _pg
+
   # We use our container DNS resolver
   # MacOS can't launch with host-gateway
   # On Linux we run systemd-resolved on our host machine for DNS caching
@@ -107,6 +119,11 @@ _containerize() {
   fi
   readonly _network
 
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -115,10 +132,12 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm -i -t \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
+    ${_pg} \
+    ${_auto} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
