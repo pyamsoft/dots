@@ -97,7 +97,7 @@ _containerize() {
   fi
   readonly _abs
 
-  if [ -n "${USE_VPN}" ] || [ "${USE_VPN}" -ne 0 ]; then
+  if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
     # We have optional support for a gluetun VPN container
     _network="--network container:gluetun"
   else
