@@ -150,6 +150,15 @@ _containerize() {
     set -- "agent" "$@"
   fi
 
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  if [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _dz="${_dz} --log-driver json-file"
+    fi
+  else
+    _dz="${_dz} -i -t"
+  fi
+
   readonly _dz
 
   # We use our container DNS resolver
@@ -181,7 +190,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm -i -t \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e DOZZLE_NO_ANALYTICS=1 \

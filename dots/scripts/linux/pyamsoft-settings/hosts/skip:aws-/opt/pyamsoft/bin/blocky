@@ -117,6 +117,16 @@ _containerize() {
     printf -- 'Optional runconfig.env supported at "%s"\n' "${_runconf}"
   fi
   unset _runconf
+
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  if [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _bl="${_bl} --log-driver json-file"
+    fi
+  else
+    _bl="${_bl} -i -t"
+  fi
+
   readonly _bl
 
   # We use our container DNS resolver
@@ -154,7 +164,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  _runas ${_cmd} run --rm -i -t \
+  _runas ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_bl} \
