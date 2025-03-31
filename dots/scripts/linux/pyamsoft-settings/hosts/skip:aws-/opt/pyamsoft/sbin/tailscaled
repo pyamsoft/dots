@@ -101,6 +101,16 @@ _containerize() {
   # shellcheck disable=SC1090
   . "${_runconf}" || return 1
   unset _runconf
+
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  if [ "$(uname)" = "Linux" ] && { [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; }; then
+    if [ "${_cmd}" = "podman" ]; then
+      _ts="${_ts} --log-driver json-file"
+    fi
+  else
+    _ts="${_ts} -i -t"
+  fi
+
   readonly _ts
 
   # We use our container DNS resolver
@@ -133,7 +143,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm -i -t \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_ts} \

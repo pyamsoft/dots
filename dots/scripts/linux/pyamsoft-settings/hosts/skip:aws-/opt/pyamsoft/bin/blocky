@@ -119,7 +119,7 @@ _containerize() {
   unset _runconf
 
   # Executing from systemd, one or both of these are set, otherwise, we are CLI
-  if [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; then
+  if [ "$(uname)" = "Linux" ] && { [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; }; then
     if [ "${_cmd}" = "podman" ]; then
       _bl="${_bl} --log-driver json-file"
     fi
