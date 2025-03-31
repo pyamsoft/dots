@@ -92,7 +92,9 @@ _containerize() {
   unset _runconf
 
   # Executing from systemd, one or both of these are set, otherwise, we are CLI
-  if [ "$(uname)" = "Linux" ] && { [ -n "${INVOCATION_ID}" ] || [ -z "${JOURNAL_STREAM}" ]; }; then
+  # INVOCATION_ID is set for shells using run0, so we don't want to track on that
+  # Just expect JOURNAL_STREAM for services connected to journald
+  if [ "$(uname)" = "Linux" ] && [ -n "${JOURNAL_STREAM}" ]; then
     if [ "${_cmd}" = "podman" ]; then
       _gt="${_gt} --log-driver json-file"
     fi
