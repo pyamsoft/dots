@@ -15,28 +15,9 @@ else
 fi
 readonly _cmd
 
-_runas() {
-  sudo -u "${_user}" -- "$@" || return 1
-  return 0
-}
-
-_get_env() {
-  _runas env | grep "^${1}=" | tr '=' ' ' | awk '{ print $2 }' || return 1
-
-  unset _env_user
-  return 0
-}
-
 _prep_mounts() {
-  _root_path="$(_get_env "HOME")/.local"
-  readonly _root_path
-
-  readonly _mount1="${_root_path}/etc/containers/${_name}"
-  readonly _mount2="${_root_path}/etc/containers/${_name}/logs"
-
-  # Prep the directories
-  _runas mkdir -m 700 -p "${_mount1}" || return 1
-  _runas mkdir -m 770 -p "${_mount2}" || return 1
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/logs"
 
   # Prep the config file (Blocky only runs if this is group readable)
   _runas touch "${_mount1}/config.yml" || return 1
@@ -66,38 +47,22 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # MacOS doesn't like us binding to localhost only priv ports, use the general syntax and it
-  # does not complain for some rason
-  if [ "$(uname)" = "Darwin" ]; then
-    # DNS
-    _ports="${_ports} -p 53:53/tcp"
-    _ports="${_ports} -p 53:53/udp"
-  else
-    # DNS
-    _ports="${_ports} -p 127.0.0.1:2053:53/tcp"
-    _ports="${_ports} -p 127.0.0.1:2053:53/udp"
-  fi
+  # This is just our upstream DNS, we run a different system specific DNS
+  # local caching service. On Linux, it's systemd-resolved
+  _ports="${_ports} -p 127.0.0.1:2053:53/tcp"
+  _ports="${_ports} -p 127.0.0.1:2053:53/udp"
 
   readonly _ports
   return 0
 }
 
 _check_user() {
-  # On MacOS we use a VM, make sure it is rootful to bind to port 53
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ "$(id -u)" -eq 0 ]; then
-      printf -- 'You must run this as a normal user with a rootful VM\n'
-      return 1
-    fi
-  else
-    if [ "$(id -u)" -ne 0 ]; then
-      printf -- 'You must run this as a rootful container\n'
-      return 1
-    fi
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a normal user\n'
+    return 1
   fi
 
   _userns=""
-  # No user namespace
   readonly _userns
 
   return 0
@@ -108,7 +73,7 @@ _containerize() {
   _bl=""
 
   # Optional runtime config (so we don't have to hardcode keys)
-  _runconf="$(_get_env "HOME")/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ -e "${_runconf}" ]; then
     # Source the file into the environment
     # shellcheck disable=SC1090
@@ -178,51 +143,20 @@ _containerize() {
 }
 
 main() {
-  if [ -z "$1" ]; then
-    printf -- 'Must provide target runas user\n'
-    return 1
-  fi
-
-  # Make sure the target user is provided
-  _user="$(id -un "$1")"
-  readonly _user
-
-  if [ -z "${_user}" ]; then
-    printf -- 'Must provide target runas user\n'
-    return 1
-  fi
-
-  # Consume the used var
-  shift
-
-  # Check that we are not targeting root
-  _uid="$(id -u "${_user}")"
-  if [ "${_uid}" -eq 0 ]; then
-    printf -- 'Your target user must not be root: %s\n' "${_user}"
-    return 1
-  fi
-
-  # Podman expects us to be in a accessible CWD
-  cd / || {
-    printf -- 'Unable to cd to root for podman usage\n'
-    return 1
-  }
-
   _check_user || return 1
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
 
-  # Launch the containers runtime
-  _runas "${_cmd}" --version >/dev/null 2>&1 || {
+  "${_cmd}" --version >/dev/null 2>&1 || {
     printf -- 'Unable to check %s version.\n' "${_cmd}"
     return 1
   }
 
-  # Wait for the target user's ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "/run/user/${_uid}/containers" ]; do
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'
         return 1
