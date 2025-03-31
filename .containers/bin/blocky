@@ -20,11 +20,11 @@ _prep_mounts() {
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/logs"
 
   # Prep the config file (Blocky only runs if this is group readable)
-  _runas touch "${_mount1}/config.yml" || return 1
-  _runas chmod 640 "${_mount1}/config.yml" || return 1
+  touch "${_mount1}/config.yml" || return 1
+  chmod 640 "${_mount1}/config.yml" || return 1
 
   # Blocky writes as group to the logs folder
-  _runas chmod 770 "${_mount2}" || return 1
+  chmod 770 "${_mount2}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1}/config.yml,target=/app/config.yml"
@@ -129,7 +129,7 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  _runas ${_cmd} run --rm \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     ${_bl} \
