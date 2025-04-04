@@ -18,9 +18,9 @@
 #/dev/MediaCache/media_backing           /mnt/MediaCache  ext4   rw,noatime,discard,nofail,defaults,auto,rw,nosuid,nodev,errors=remount-ro                                      0 2
 
 [Unit]
-Description=Dependency unit alive while /MediaCache is mounted
-After=mnt.path
-Requires=mnt.path
+Description=Dependency unit alive while /mnt/MediaCache is mounted
+After=mnt-MediaCache.path
+Requires=mnt-MediaCache.path
 
 [Service]
 # Need to wait a little bit so that the symlinks to places mount correctly
