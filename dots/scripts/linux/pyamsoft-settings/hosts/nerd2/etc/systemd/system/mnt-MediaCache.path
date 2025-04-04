@@ -1,0 +1,31 @@
+# Run a systemd unit when an external USB disk is mounted
+#
+# Normally, external disks are mounted by udisks2
+# but the path can be inconsistent, or user specific
+#
+# We want automount behavior that is system available, and the ability
+# to chain other services off of the mountpoint
+#
+# Adding our external disk as "nofail" in the fstab stops udisks2 from auto mounting us
+#
+# So instead, we work around it with this "path activates service which activates mount"
+
+
+# Need this line in /etc/fstab
+#
+# /MediaCache (External USB disk)
+# LVM mounted disk
+#/dev/MediaCache/media_backing           /mnt/MediaCache  ext4   rw,noatime,discard,nofail,defaults,auto,rw,nosuid,nodev,errors=remount-ro                                      0 2
+
+[Unit]
+Description=Run Services when /mnt/MediaCache is mounted
+
+[Path]
+# Once the path is mounted by LVM
+# this file will exist
+#
+# Otherwise, the directory may exist but it will be empty when unmounted
+PathExists=/dev/MediaCache/media_backing
+
+[Install]
+WantedBy=multi-user.target
