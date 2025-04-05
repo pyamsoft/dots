@@ -14,8 +14,10 @@
 # Need this line in /etc/fstab
 #
 # /MediaCache (External USB disk)
+# LUKS encrypted disk
+#UUID=7049f6e7-ac40-4774-9929-2a20bedfd1a8 /mnt/MediaCache  ext4   rw,noatime,discard,nofail,defaults,auto,rw,nosuid,nodev,errors=remount-ro                                      0 2
 # LVM mounted disk
-#/dev/MediaCache/media_backing           /mnt/MediaCache  ext4   rw,noatime,discard,nofail,defaults,auto,rw,nosuid,nodev,errors=remount-ro                                      0 2
+#/dev/MediaCache/media_backing             /mnt/MediaCache  ext4   rw,noatime,discard,nofail,defaults,auto,rw,nosuid,nodev,errors=remount-ro                                      0 2
 
 [Unit]
 Description=Dependency unit alive while /mnt/MediaCache is mounted
