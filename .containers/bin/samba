@@ -18,15 +18,18 @@ readonly _cmd
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/shares"
+  readonly _mount3="${HOME}/.local/etc/containers/${_name}/shares1"
+  readonly _mount4="${HOME}/.local/etc/containers/${_name}/shares2"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
   mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba/1"
+  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/samba/2"
 
   # Mount config if possible
   if [ -f "${_mount2}/config.yml" ]; then
