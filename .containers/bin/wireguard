@@ -1,8 +1,8 @@
 #!/bin/sh
 
 readonly _name="wireguard"
-readonly _image="docker.io/linuxserver/wireguard"
-readonly _tag="1.0.20210914"
+readonly _image="docker.io/jordanpotter/wireguard"
+readonly _tag="2025-04-08"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -22,7 +22,7 @@ _prep_mounts() {
   mkdir -p "${_mount1}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/etc/wireguard"
 
   # Bind kernel modules
   _mounts="${_mounts} --mount type=bind,source=/lib/modules,target=/lib/modules"
@@ -42,10 +42,10 @@ _prep_caps() {
   _caps="${_caps} --cap-add SYS_MODULE"
 
   # Needs this for file access and config writing
-  _caps="${_caps} --cap-add CHOWN"
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
-  _caps="${_caps} --cap-add SETGID"
-  _caps="${_caps} --cap-add SETUID"
+  # _caps="${_caps} --cap-add CHOWN"
+  # _caps="${_caps} --cap-add DAC_OVERRIDE"
+  # _caps="${_caps} --cap-add SETGID"
+  # _caps="${_caps} --cap-add SETUID"
 
   readonly _caps
   return 0
@@ -54,7 +54,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:51280:51280/udp"
+  #_ports="${_ports} -p 127.0.0.1:51280:51280/udp"
 
   readonly _ports
   return 0
@@ -73,7 +73,6 @@ _check_user() {
 }
 
 _containerize() {
-  # Gluetun runtime config variable
   _wg=""
 
   # Source the runtime config (so we don't have to hardcode keys)
