@@ -1,0 +1,44 @@
+#!/bin/sh
+
+_PROG_NAME="$(basename "$0")"
+
+_check() {
+  # Try curl first (silence if curl is not present in the image)
+  podman exec "$1" curl -s "$2" 2>/dev/null && return 0
+
+  # Try wget if the curl check fails (maybe curl is not present) (silent if wget is not present in the image)
+  podman exec "$1" wget -q -O - "$2" 2>/dev/null && return 0
+
+  # Otherwise we have no way of checking, fail
+  return 1
+}
+
+_check_mullvad() {
+  _vpn_output="$(_check "$1" "https://am.i.mullvad.net/json")" || {
+    printf -- '[%s] Failed to check container (%s) VPN status for Mullvad VPN\n' "${_PROG_NAME}" "$1"
+    return 1
+  }
+
+  if printf -- '%s' "${_vpn_output}" | grep -q '"mullvad_exit_ip":true'; then
+    unset _vpn_output
+    return 0
+  fi
+
+  printf -- '[%s] Container (%s) IS NOT CONNECTED to Mullvad VPN.\n' "${_PROG_NAME}" "$1"
+  unset _vpn_output
+
+  return 1
+}
+
+main() {
+  if [ -z "$1" ]; then
+    printf -- '[%s] You must specify a container\n' "${_PROG_NAME}"
+    return 1
+  fi
+
+  _check_mullvad "$1" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
