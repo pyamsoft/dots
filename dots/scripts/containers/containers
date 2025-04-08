@@ -17,7 +17,7 @@ main() {
     return 1
   fi
 
-  exec sudo -u "${_target_user}" /opt/pyamsoft/bin/delegate-containers "$@"
+  exec sudo -u "${_target_user}" /opt/pyamsoft/bin/container-delegate "$@"
   return 0
 }
 

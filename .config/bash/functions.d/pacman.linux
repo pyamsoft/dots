@@ -50,8 +50,8 @@ __up_flatpak() {
 }
 
 __up_containers() {
-  if command -v checkupd-containers >/dev/null; then
-    checkupd-containers || return 1
+  if command -v container-checkupd >/dev/null; then
+    container-checkupd || return 1
   fi
 
   return 0
