@@ -126,7 +126,6 @@ _containerize() {
   else
     _jf="${_jf} -i -t"
   fi
-
   readonly _jf
 
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then

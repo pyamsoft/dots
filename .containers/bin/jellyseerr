@@ -97,7 +97,6 @@ _containerize() {
   else
     _js="${_js} -i -t"
   fi
-
   readonly _js
 
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
