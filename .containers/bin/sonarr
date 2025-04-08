@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="bazarr"
-readonly _image="ghcr.io/linuxserver/bazarr"
-readonly _tag="1.5.1"
+readonly _name="sonarr"
+readonly _image="docker.io/hotio/sonarr"
+readonly _tag="release-4.0.14.2939"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
@@ -49,8 +49,8 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:16767:6767/tcp"
-  _ports="${_ports} -p 127.0.0.1:16767:6767/udp"
+  _ports="${_ports} -p 127.0.0.1:18989:8989/tcp"
+  _ports="${_ports} -p 127.0.0.1:18989:8989/udp"
 
   readonly _ports
   return 0
