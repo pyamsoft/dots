@@ -4,6 +4,9 @@ readonly _name="jellyseerr"
 readonly _image="docker.io/fallenbagel/jellyseerr"
 readonly _tag="2.5.1"
 
+# Require a VPN unless you absolutely know what you are doing
+readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
@@ -101,6 +104,12 @@ _containerize() {
     # We have optional support for a wireguard VPN container
     _network="--network container:wireguard"
   else
+    # Require a VPN
+    if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
+      printf -- 'You MUST use a VPN connection to run %s\n' "${_name}"
+      return 1
+    fi
+
     # We use our container DNS resolver
     # MacOS can't launch with host-gateway
     # On Linux we run systemd-resolved on our host machine for DNS caching
