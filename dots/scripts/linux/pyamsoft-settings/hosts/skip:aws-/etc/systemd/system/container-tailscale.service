@@ -9,10 +9,6 @@ Wants=network-online.target local-fs.target
 # File must exist or fail
 ExecStartPre=/bin/test -x /opt/pyamsoft/sbin/tailscaled
 
-# Check the network is online before starting
-# We host a local page, but the network needs to be up for us to bind bridge devices
-ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online'
-
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown tailscale
 
