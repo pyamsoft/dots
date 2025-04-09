@@ -5,16 +5,25 @@ After=network-online.target syslog.target remote-fs.target nss-lookup.target doc
 Wants=network-online.target
 
 [Service]
+# Check the network is up
+Environment=PYAM_CHECK_NETWORK=1
+# Check DNS resolves
+Environment=PYAM_CHECK_NETWORK_DNS=1
+# The path to the container script
+Environment=PYAM_CONTAINER=%h/.containers/bin/%i
+
 # Check the file exists, do not attempt to start otherwise
-ExecStartPre=/bin/test -x %h/.containers/bin/%i
+ExecStartPre=/bin/test -x $PYAM_CONTAINER
 
 # Check the network is online before starting (wait up to 30 seconds)
-ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online --dns'
+# If the container does NOT need networking, set PYAM_CHECK_NETWORK to 0
+# If the container needs networking but does NOT require DNS, set PYAM_CHECK_NETWORK_DNS to 0
+ExecStartPre=/bin/sh -c 'if [ -x /opt/pyamsoft/bin/im-online ] && [ -n "${PYAM_CHECK_NETWORK}" ] && [ "${PYAM_CHECK_NETWORK}" -eq 1 ]; then if [ -n "${PYAM_CHECK_NETWORK_DNS}" ] && [ "${PYAM_CHECK_NETWORK_DNS}" -eq 1 ]; then /opt/pyamsoft/bin/im-online --dns; else /opt/pyamsoft/bin/im-online; fi; fi;'
 
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
 
-ExecStart=%h/.containers/bin/%i
+ExecStart=/bin/sh -c '$PYAM_CONTAINER'
 ExecStop=/opt/pyamsoft/bin/container-teardown %i
 Restart=on-failure
 RestartSec=10
