@@ -27,7 +27,7 @@ _git_config() {
   _dot_config "diff.algorithm" "histogram" || return 1
   _dot_config "diff.colorMoved" "plain" || return 1
   _dot_config --bool "diff.mnemonicPrefix" true || return 1
-  _dot_config --bool "renames" true || return 1
+  _dot_config --bool "diff.renames" true || return 1
 
   _dot_config --bool "push.autoSetupRemote" true || return 1
   _dot_config --bool "push.followTags" true || return 1
