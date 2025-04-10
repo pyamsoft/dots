@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# For some weird reason, TailScale does not work correctly until AFTER
+# the SSH server is restarted, after the boot has finished.
+#
+# I suspect this is because, at bootup, the TailScale interface does not
+# actually exist but I have no idea.
+#
+# This is a bandaid but not the solution
+
+_PROGNAME="pyamsoft-restart-ssh-tailscale"
+
+main() {
+  # Wait a bit after bootup
+  sleep 30 || {
+    printf -- '[%s] Failed sleep(30) before restarting.\n' "${_PROGNAME}"
+    return 1
+  }
+
+  # Restart the SSH service
+  printf -- '[%s] Restarting openssh service...\n'
+  configctl service restart openssh || {
+    printf -- '[%s] Failed to restart openssh service.\n' "${_PROGNAME}"
+    return 1
+  }
+
+  # Restart the TailScale service
+  printf -- '[%s] Restarting tailscale service...\n'
+  configctl service restart tailscale || {
+    printf -- '[%s] Failed to restart tailscale service.\n' "${_PROGNAME}"
+    return 1
+  }
+
+  printf -- '[%s] openssh and tailscale services restarted\n'
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
