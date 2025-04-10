@@ -32,8 +32,8 @@ blocking:
     default:
       # OISD
       - "https://big.oisd.nl/domainswild"
-      # Hagezi Pro
-      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/pro.txt"
+      # Hagezi Normal
+      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt"
   clientGroupsBlock:
     default:
       - "default"
