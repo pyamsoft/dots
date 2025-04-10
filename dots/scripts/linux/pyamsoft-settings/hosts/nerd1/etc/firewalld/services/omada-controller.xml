@@ -5,5 +5,4 @@
   <port port="19810" protocol="udp" />
   <port port="29810" protocol="udp" />
   <port port="29811-29816" protocol="tcp" />
-  <port port="8043" protocol="tcp" />
 </service>
