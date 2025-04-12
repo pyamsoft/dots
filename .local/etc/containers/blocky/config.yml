@@ -30,10 +30,8 @@ blocking:
   blockType: nxDomain
   denylists:
     default:
-      # OISD
-      - "https://big.oisd.nl/domainswild"
-      # Hagezi Normal
-      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/multi.txt"
+      # Hagezi Light
+      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/light.txt"
   clientGroupsBlock:
     default:
       - "default"
