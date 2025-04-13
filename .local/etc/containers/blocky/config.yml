@@ -32,6 +32,8 @@ blocking:
     default:
       # Hagezi Light
       - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/light.txt"
+      # Hagezi Thread Intelligence Feeds
+      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.txt"
   clientGroupsBlock:
     default:
       - "default"
