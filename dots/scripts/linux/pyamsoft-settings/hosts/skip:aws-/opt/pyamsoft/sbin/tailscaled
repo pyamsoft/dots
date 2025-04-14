@@ -142,12 +142,22 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
+  # We want to disable telemetry, which also turns off our ability
+  # for support - but that's ok because we don't need support right?
+  # Things just work right?
+  #
+  # Provide the daemon with a port argument. The container runs with a random port
+  # so it makes it difficult to setup SNAT rules in a firewall like Opnsense, as the
+  # port would need to be a wildcard. Instead, we allow the runconfig to specify a port
+  # via TS_PORT and fallback to the Tailscale default of 41641
+  #
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    -e TS_TAILSCALED_EXTRA_ARGS="--port=${TS_PORT:-41641} --no-logs-no-support" \
     ${_ts} \
     ${_env} \
     ${_network} \
