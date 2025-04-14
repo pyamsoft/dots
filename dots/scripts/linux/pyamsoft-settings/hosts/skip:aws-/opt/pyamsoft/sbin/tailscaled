@@ -68,6 +68,9 @@ _prep_env() {
   # Use host level networking
   _env="${_env} --net=host --device /dev/net/tun:/dev/net/tun"
 
+  # Force firewall to nftables (the container picks iptables-legacy by default)
+  _env="${_env} -e TS_DEBUG_FIREWALL_MODE=nftables"
+
   readonly _env
   return 0
 }
