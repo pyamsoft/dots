@@ -15,17 +15,16 @@ else
 fi
 readonly _cmd
 
-_runas() {
-  sudo -u "${_user}" -- "$@" || return 1
-  return 0
-}
-
-_get_env() {
-  _runas env | grep "^${1}=" | tr '=' ' ' | awk '{ print $2 }' || return 1
-
-  unset _env_user
-  return 0
-}
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
 
 _prep_mounts() {
   _mounts=""
@@ -44,50 +43,24 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # No ports
-
   readonly _ports
   return 0
 }
 
 _check_user() {
-  # On MacOS we use a VM, make sure it is rootful to bind to port 53
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ "$(id -u)" -eq 0 ]; then
-      printf -- 'You must run this as a normal user with a rootful VM\n'
-      return 1
-    fi
-  else
-    if [ "$(id -u)" -ne 0 ]; then
-      printf -- 'You must run this as a rootful container\n'
-      return 1
-    fi
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
   fi
 
-  # No need to run as root
-  _userns="--user 1000:1000"
-
+  _userns="--user $(id -u):$(id -g)"
   readonly _userns
+
+  return 0
 }
 
 _containerize() {
-  # Runtime configuration
   _dd=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _confdir="$(_get_env "HOME")/.local/etc/containers/${_name}"
-  _runconf="${_confdir}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _runas mkdir -p "${_confdir}" || return 1
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
-  fi
-  unset _confdir
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
-  unset _runconf
 
   # Executing from systemd, one or both of these are set, otherwise, we are CLI
   # INVOCATION_ID is set for shells using run0, so we don't want to track on that
@@ -138,13 +111,13 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  _runas ${_cmd} run --rm \
+  exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     -e PROXIED=false \
     ${_dd} \
-    ${_network} \
     ${_sec} \
     ${_auto} \
+    ${_network} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -153,51 +126,20 @@ _containerize() {
 }
 
 main() {
-  if [ -z "$1" ]; then
-    printf -- 'Must provide target runas user\n'
-    return 1
-  fi
-
-  # Make sure the target user is provided
-  _user="$(id -un "$1")"
-  readonly _user
-
-  if [ -z "${_user}" ]; then
-    printf -- 'Must provide target runas user\n'
-    return 1
-  fi
-
-  # Consume the used var
-  shift
-
-  # Check that we are not targeting root
-  _uid="$(id -u "${_user}")"
-  if [ "${_uid}" -eq 0 ]; then
-    printf -- 'Your target user must not be root: %s\n' "${_user}"
-    return 1
-  fi
-
-  # Podman expects us to be in a accessible CWD
-  cd / || {
-    printf -- 'Unable to cd to root for podman usage\n'
-    return 1
-  }
-
   _check_user || return 1
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
 
-  # Launch the containers runtime
-  _runas "${_cmd}" --version >/dev/null 2>&1 || {
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  "${_cmd}" --version >/dev/null 2>&1 || {
     printf -- 'Unable to check %s version.\n' "${_cmd}"
     return 1
   }
 
-  # Wait for the target user's ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "/run/user/${_uid}/containers" ]; do
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'
         return 1
