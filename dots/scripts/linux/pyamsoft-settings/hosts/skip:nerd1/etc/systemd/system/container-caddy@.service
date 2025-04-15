@@ -7,8 +7,7 @@
 
 [Unit]
 Description=Container: Caddy for %i
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service 
-Wants=network-online.target
+After=network.target syslog.target local-fs.target docker.service podman.service 
 
 [Service]
 # File must exist or fail

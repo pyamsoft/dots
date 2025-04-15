@@ -1,16 +1,17 @@
 # Run a container as a user
 [Unit]
-Description=On %u login, start container %i
-After=network-online.target syslog.target remote-fs.target nss-lookup.target docker.service podman.service
-Wants=network-online.target
+Description=Run Container: %i
+After=network.target syslog.target local-fs.target docker.service podman.service
 
 [Service]
 # Check the network is up
 Environment=PYAM_CHECK_NETWORK=1
-# Check DNS resolves
+# Check the network is up AND that DNS resolves
 Environment=PYAM_CHECK_NETWORK_DNS=1
 # The path to the container script
-Environment=PYAM_CONTAINER=%h/.containers/bin/%i
+Environment=PYAM_CONTAINER=/opt/pyamsoft/sbin/%i
+
+## Generally you should NOT need to change these
 
 # Check the file exists, do not attempt to start otherwise
 ExecStartPre=/bin/test -x $PYAM_CONTAINER
@@ -23,6 +24,7 @@ ExecStartPre=/bin/sh -c 'if [ -x /opt/pyamsoft/bin/im-online ] && [ -n "${PYAM_C
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
 
+# Start the container and tear it down after
 ExecStart=/bin/sh -c '$PYAM_CONTAINER'
 ExecStop=/opt/pyamsoft/bin/container-teardown %i
 Restart=on-failure

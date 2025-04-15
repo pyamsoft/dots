@@ -1,5 +1,6 @@
 [Unit]
 Description=Healthcheck ping @ healthcheck.io %i
+After=network.target syslog.target local-fs.target docker.service podman.service
 
 [Service]
 Type=oneshot
