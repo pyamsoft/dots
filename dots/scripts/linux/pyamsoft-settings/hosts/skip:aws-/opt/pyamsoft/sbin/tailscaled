@@ -142,6 +142,14 @@ _containerize() {
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
   readonly _auto
 
+  # Assign a port or else the container picks one at random
+  #
+  # Provide the daemon with a port argument. The container runs with a random port
+  # so it makes it difficult to setup SNAT rules in a firewall like Opnsense, as the
+  # port would need to be a wildcard. Instead, we allow the runconfig to specify a port
+  # via TS_PORT and fallback to the Tailscale default of 41641
+  PORT="${TS_PORT:-41641}"
+
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -167,7 +175,8 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e TS_EXTRA_ARGS="--netfilter-mode=off" \
-    -e TS_TAILSCALED_EXTRA_ARGS="--port=${TS_PORT:-41641} --no-logs-no-support" \
+    -e TS_TAILSCALED_EXTRA_ARGS="--port=${PORT} --no-logs-no-support" \
+    -e PORT="${PORT}" \
     ${_ts} \
     ${_env} \
     ${_network} \
