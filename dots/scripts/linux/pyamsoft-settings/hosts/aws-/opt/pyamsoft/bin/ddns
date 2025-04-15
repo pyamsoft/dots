@@ -51,6 +51,18 @@ _check_user() {
 _containerize() {
   _dd=""
 
+  # Optional runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ -e "${_runconf}" ]; then
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+  else
+    printf -- 'runconfig.env required at at "%s"\n' "${_runconf}"
+    return 1
+  fi
+  unset _runconf
+
   # Executing from systemd, one or both of these are set, otherwise, we are CLI
   # INVOCATION_ID is set for shells using run0, so we don't want to track on that
   # Just expect JOURNAL_STREAM for services connected to journald
