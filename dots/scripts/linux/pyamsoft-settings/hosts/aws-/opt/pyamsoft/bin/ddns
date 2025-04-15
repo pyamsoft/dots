@@ -15,17 +15,6 @@ else
 fi
 readonly _cmd
 
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
-  exit 1
-fi
-readonly _cmd
-
 _prep_mounts() {
   _mounts=""
 
