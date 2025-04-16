@@ -1,13 +1,14 @@
 # https://0xerr0r.github.io/blocky/latest/configuration
 
-# DNS Cloudflare HTTPS
+# Upstream DNS over HTTPS
 upstreams:
   groups:
     default:
       - "https://cloudflare-dns.com/dns-query"
 
-# Bootstrap DNS using cloudflare
+# Bootstrap DNS over HTTPS
 bootstrapDns:
+  # Bootstrap Cloudflare from 1.1.1.1
   - upstream: "https://cloudflare-dns.com/dns-query"
     ips:
       - "1.1.1.1"
@@ -22,12 +23,11 @@ clientLookup:
       - "127.0.0.1"
 
 # Blocking
-#
-# Lists:
-# OISD
-# Hagezi Pro
 blocking:
+  # Return NXDomain
   blockType: nxDomain
+
+  # Block Lists
   denylists:
     default:
       # Hagezi Light
