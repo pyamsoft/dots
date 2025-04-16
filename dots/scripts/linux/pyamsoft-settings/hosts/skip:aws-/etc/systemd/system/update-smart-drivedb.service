@@ -1,0 +1,9 @@
+# Update the drive database once a month
+[Unit]
+Description=Update the smartmontools drive database
+After=network.target syslog.target local-fs.target
+
+[Service]
+# Need oneshot or timer wont restart
+Type=oneshot
+ExecStart=/usr/sbin/update-smart-drivedb

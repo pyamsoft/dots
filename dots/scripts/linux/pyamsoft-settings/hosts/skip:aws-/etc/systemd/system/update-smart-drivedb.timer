@@ -1,0 +1,11 @@
+# Update the drive database once a month
+[Unit]
+Description=Update the smartmontools drive database
+
+[Timer]
+OnCalendar=monthly
+AccuracySec=10s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

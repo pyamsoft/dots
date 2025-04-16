@@ -10,9 +10,5 @@ Wants=container-scrutiny.service container@scrutiny scrutiny.service
 Type=oneshot
 
 # Let the Scrutiny service start up
-ExecStartPre=-/bin/sh -c 'sleep 5'
-ExecStart=/bin/sh -c 'podman exec scrutiny bash -c "scrutiny-collector-metrics run"'
-
-# If it fails, restart the runner
-Restart=on-failure
-RestartSec=10
+ExecStartPre=-/usr/bin/sleep 10
+ExecStart=/usr/bin/podman exec scrutiny bash -c "scrutiny-collector-metrics run"
