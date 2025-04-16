@@ -18,7 +18,12 @@ chmod go= -R /opt/scrutiny/web/assets
 
 # Update the smart database before we get started
 # Use no-verify since we do not have GPG installed in the container
-update-smart-drivedb --no-verify
+update-smart-drivedb --no-verify && {
+  # And copy the updated one out of /var/lib/smartmontools/drivedb to /usr/share/smartmontools/ just in case
+  cp /var/lib/smartmontools/drivedb/drivedb.h /usr/share/smartmontools/ || {
+    printf -- 'Failed to copy updated drivedb.h\n'
+  }
+}
 
 # Now go!
 exec /init
