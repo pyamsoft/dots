@@ -32,7 +32,7 @@ main() {
 
   # Restart the crowdsec service
   printf -- '[Crowdsec Heartbeat]: Crowdsec LAPI is down, restart the container service...\n'
-  systemctl restart container-crowdsec.service || {
+  systemctl restart container@crowdsec.service || {
     printf -- '[Crowdsec Heartbeat] Failed to restart the Crowdsec container.\n'
   }
   return 0
