@@ -17,8 +17,16 @@ main() {
     return 1
   fi
 
-  exec sudo -u "${_target_user}" /opt/pyamsoft/bin/container-delegate "$@"
-  return 0
+  # If the first argument is "shell", we want to instead execute container-runas
+  if [ -n "$1" ] && [ "$1" = "shell" ]; then
+    # Eat the "shell" argument
+    shift
+
+    # Instead execute container-runas
+    exec "${HOME}/bin/container-runas" "${_target_user#containers-}" "$@"
+  else
+    exec sudo -u "${_target_user}" /opt/pyamsoft/bin/container-delegate "$@"
+  fi
 }
 
 main "$@" || exit 1
