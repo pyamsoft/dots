@@ -33,7 +33,7 @@ _prep_mounts() {
   _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/entrypoints"
 
   # Needs udev from host
-  _mounts="${_mounts} --mount type=bind,source=/run/udev,target=/run/udev:ro"
+  _mounts="${_mounts} --mount type=bind,source=/run/udev,target=/run/udev,ro"
 
   readonly _mounts
   return 0
