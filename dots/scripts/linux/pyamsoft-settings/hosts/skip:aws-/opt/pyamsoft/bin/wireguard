@@ -120,6 +120,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --sysctl="net.ipv4.conf.all.src_valid_mark=1" \
+    -e LOCAL_SUBNETS="${LOCAL_SUBNETS}" \
     ${_wg} \
     ${_network} \
     ${_auto} \
