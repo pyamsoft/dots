@@ -60,15 +60,13 @@ _check_user() {
     return 1
   fi
 
-  # Need this userns option that is podman specific or we have random OCI permission error
-  _userns="-e PUID=$(id -u) -e PGID=$(id -g)"
+  # Ok so what the hell is this
+  # well, we need keep-id to use bluetooth in the container
+  # but we also need s6 to run as root, so we declare the main user as root
+  _userns="-e PUID=$(id -u) -e PGID=$(id -g) --user=0:0"
   if [ "${_cmd}" = "podman" ]; then
-    # Ok so what the hell is this
-    # well, we need keep-id to use bluetooth in the container
-    # but we also need s6 to run as root, so we declare the main user as root
-    _userns="--userns keep-id --user=0:0"
-  else
-    _userns="--user=0:0"
+    # Need this userns option that is podman specific or we have random OCI permission error
+    _userns="${_userns} --userns keep-id"
   fi
   readonly _userns
 
