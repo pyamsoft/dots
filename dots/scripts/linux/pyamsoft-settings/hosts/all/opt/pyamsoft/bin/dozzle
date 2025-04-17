@@ -42,9 +42,9 @@ _prep_mounts() {
   readonly _docker_socket="/var/run/docker.sock"
 
   if [ -S "${_podman_socket}" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_podman_socket},target=/var/run/docker.sock"
+    _mounts="${_mounts} --mount type=bind,source=${_podman_socket},target=/var/run/docker.sock,ro"
   elif [ -S "${_docker_socket}" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock"
+    _mounts="${_mounts} --mount type=bind,source=${_docker_socket},target=/var/run/docker.sock,ro"
   else
     printf -- 'Missing both podman and docker socket.\n'
     return 1

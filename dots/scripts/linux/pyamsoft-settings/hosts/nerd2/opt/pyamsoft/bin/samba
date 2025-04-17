@@ -44,7 +44,7 @@ _prep_mounts() {
       ;;
     *)
       _f_name="$(basename "$f")"
-      _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name}"
+      _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name},ro"
       unset _f_name
       unset _f
       ;;
