@@ -16,7 +16,7 @@ fi
 readonly _cmd
 
 _prep_mounts() {
-  readonly _mount1="/usr/local/etc/containers/${_name}/config"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
 
   mkdir -p "${_mount1}" || return 1
 
@@ -44,8 +44,8 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -ne 0 ]; then
-    printf -- 'You must run this as a rootfull container\n'
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
     return 1
   fi
 
@@ -60,7 +60,7 @@ _containerize() {
   _ha=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="/usr/local/etc/containers/${_name}/runconfig.env"
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
@@ -143,7 +143,7 @@ main() {
   # Wait for the root /run/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "/run/containers" ]; do
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
         printf -- 'Cancelled while waiting for container runtime to stand up.\n'
         return 1
