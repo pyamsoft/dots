@@ -46,11 +46,6 @@ ports:
 log:
   level: "info"
 
-# Log to a CSV file per day per client
-queryLog:
-  type: "csv-client"
-  target: "/logs"
-
 # Do not cache responses
 #
 # We rely on systemd-resolved to do local DNS caching
