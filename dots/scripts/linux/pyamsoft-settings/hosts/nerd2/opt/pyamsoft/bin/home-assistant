@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly _name="home-assistant"
-readonly _image="ghcr.io/home-assistant/home-assistant"
+readonly _image="ghcr.io/linuxserver/home-assistant"
 readonly _tag="2025.4.2"
 
 # Use podman, don't use docker
@@ -23,6 +23,9 @@ _prep_mounts() {
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
 
+  # DBUS access for bluetooth
+  _mounts="${_mounts} --mount type=bind,source=/run/dbus,target=/run/dbus,ro"
+
   readonly _mounts
   return 0
 }
@@ -30,7 +33,15 @@ _prep_mounts() {
 _prep_caps() {
   _caps=""
 
-  # No caps
+  # Needed for s6
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
+  # For bluetooth
+  _caps="${_caps} --cap-add NET_RAW"
+  _caps="${_caps} --cap-add NET_ADMIN"
 
   readonly _caps
   return 0
@@ -50,7 +61,15 @@ _check_user() {
   fi
 
   # Need this userns option that is podman specific or we have random OCI permission error
-  _userns=""
+  _userns="-e PUID=$(id -u) -e PGID=$(id -g)"
+  if [ "${_cmd}" = "podman" ]; then
+    # Ok so what the hell is this
+    # well, we need keep-id to use bluetooth in the container
+    # but we also need s6 to run as root, so we declare the main user as root
+    _userns="--userns keep-id --user=0:0"
+  else
+    _userns="--user=0:0"
+  fi
   readonly _userns
 
   return 0
