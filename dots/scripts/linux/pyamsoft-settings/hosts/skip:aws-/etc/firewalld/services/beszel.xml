@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>beszel</short>
-  <description>Beszel Hub and Agent</description>
-  <port port="8090" protocol="tcp" />
-</service>
