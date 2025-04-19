@@ -15,7 +15,7 @@ _get_latest_tags() {
   # Sort by reverse version order (newest version on top)
   # max 10
 
-  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'test' |
+  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' |
     case "${_container}" in
     */littlelink-server)
       # Don't remove latest from littlelink, it only publishes latest
@@ -35,10 +35,10 @@ _get_latest_tags() {
           grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
           ;;
         */home-assistant)
-          grep -v '.sig' | grep -v 'stable'
+          grep -v '.sig' | grep -v 'stable' | grep -v 'ls'
           ;;
         */omada-controller)
-          grep -v 'chromium' | grep -v 'openj' | grep -v 'amd'
+          grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
           ;;
         */cloudflare-ddns)
           grep -v '.sig' | grep -v 'artifacthub'
@@ -47,7 +47,7 @@ _get_latest_tags() {
           grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine'
           ;;
         */crowdsec)
-          grep -v 'slim'
+          grep -v 'slim' | grep 'debian'
           ;;
         */scrutiny)
           grep -v 'web' | grep -v 'collector'
