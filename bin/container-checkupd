@@ -44,13 +44,13 @@ _get_latest_tags() {
           grep -v '.sig' | grep -v 'artifacthub'
           ;;
         */uptime-kuma)
-          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine'
+          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test'
           ;;
         */crowdsec)
           grep -v 'slim' | grep 'debian'
           ;;
         */scrutiny)
-          grep -v 'web' | grep -v 'collector'
+          grep 'omnibus'
           ;;
         */sonarr)
           grep -v 'ls'

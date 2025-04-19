@@ -2,7 +2,7 @@
 
 readonly _name="radarr"
 readonly _image="docker.io/hotio/radarr"
-readonly _tag="release-5.21.1"
+readonly _tag="5.21.1"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
