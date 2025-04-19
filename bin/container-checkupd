@@ -15,49 +15,58 @@ _get_latest_tags() {
   # Sort by reverse version order (newest version on top)
   # max 10
 
-  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' |
-    case "${_container}" in
-    */littlelink-server)
-      # Don't remove latest from littlelink, it only publishes latest
-      cat
-      ;;
-    *)
-      # Otherwise remove latest and let's keep going
-      grep -v 'latest' |
-        case "${_container}" in
-        */jellyseerr)
-          grep -v 'preview'
-          ;;
-        */jellyfin)
-          grep -v '202.' | grep -v 'master' | grep -v 'test'
-          ;;
-        */caddy)
-          grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
-          ;;
-        */home-assistant)
-          grep -v '.sig' | grep -v 'stable'
-          ;;
-        */omada-controller)
-          grep -v 'chromium' | grep -v 'arm' | grep -v 'openj' | grep -v 'amd' | grep -v 'test'
-          ;;
-        */cloudflare-ddns)
-          grep -v '.sig' | grep -v 'artifacthub'
-          ;;
-        */uptime-kuma)
-          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test'
-          ;;
-        */crowdsec)
-          grep -v 'slim'
-          ;;
-        */scrutiny)
-          grep -v 'web' | grep -v 'collector'
-          ;;
-        *)
-          cat
-          ;;
-        esac
-      ;;
-    esac | sort -r -V | head || {
+  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'test'
+  case "${_container}" in
+  */littlelink-server)
+    # Don't remove latest from littlelink, it only publishes latest
+    cat
+    ;;
+  *)
+    # Otherwise remove latest and let's keep going
+    grep -v 'latest' |
+      case "${_container}" in
+      */jellyseerr)
+        grep -v 'preview'
+        ;;
+      */jellyfin)
+        grep -v '202.' | grep -v 'master'
+        ;;
+      */caddy)
+        grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
+        ;;
+      */home-assistant)
+        grep -v '.sig' | grep -v 'stable'
+        ;;
+      */omada-controller)
+        grep -v 'chromium' | grep -v 'openj' | grep -v 'amd'
+        ;;
+      */cloudflare-ddns)
+        grep -v '.sig' | grep -v 'artifacthub'
+        ;;
+      */uptime-kuma)
+        grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine'
+        ;;
+      */crowdsec)
+        grep -v 'slim'
+        ;;
+      */scrutiny)
+        grep -v 'web' | grep -v 'collector'
+        ;;
+      */sonarr)
+        grep -v 'ls'
+        ;;
+      */bazarr)
+        grep -v 'ls'
+        ;;
+      */radarr)
+        grep -v 'ls'
+        ;;
+      *)
+        cat
+        ;;
+      esac
+    ;;
+  esac | sort -r -V | head || {
     printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
   }
 
