@@ -42,6 +42,18 @@ _package_install() {
     return 1
   }
 
+  # Replace the user placeholder
+  #
+  # with whatever use is running this script
+  # as that is your "main" user right?
+  if [ "$(uname)" = "Darwin" ]; then
+    # BSD sed
+    sed -i '' -e "s/%MY_USER%/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
+  else
+    # GNU sed
+    sed -i -e "s/%MY_USER%/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
+  fi
+
   unset _package_install__tag
   unset _package_install__file_chmod
   unset _package_install__dir_chmod
