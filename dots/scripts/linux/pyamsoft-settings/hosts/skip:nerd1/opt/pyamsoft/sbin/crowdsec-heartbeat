@@ -20,7 +20,7 @@ main() {
     _url="$(systemd-escape --unescape "${_url}")"
   fi
 
-  /opt/pyamsoft/sbin/cscli lapi status && {
+  /opt/pyamsoft/bin/cscli lapi status && {
     printf -- '[Crowdsec Heartbeat] Crowdsec is still alive! Report: %s\n' "${_url}"
     curl -s "${_url}" || {
       printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"\n' "${_url}"
