@@ -11,4 +11,8 @@ else
 fi
 readonly _cmd
 
-exec "${_cmd}" exec -i -t tailscale tailscale "$@"
+if [ "$(id -u)" -eq 0 ]; then
+  exec "${_cmd}" exec -i -t crowdsec cscli "$@"
+else
+  exec sudo "$0" "$@"
+fi
