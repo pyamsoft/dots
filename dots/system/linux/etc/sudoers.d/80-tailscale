@@ -1,3 +1,9 @@
-# Allow user to check tailscale status
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/tailscale status
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/tailscale version
+# tailscale
+
+# Run tailscale raw without password (to view options)
+<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale ""
+
+# Allow user to check tailscale status, version, IP
+<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale status
+<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale version
+<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale ip
