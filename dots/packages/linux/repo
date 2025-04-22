@@ -21,9 +21,11 @@ gvfs-mtp
 hplip
 htop
 inter-font
+iperf3
 iwd
 kdeconnect
 kernel-modules-hook
+ldns
 libvirt
 linux
 linux-lts
@@ -43,6 +45,7 @@ pipewire-pulse
 pkgstats
 podman
 podman-compose
+rebuild-detector
 reflector
 rng-tools
 rofi

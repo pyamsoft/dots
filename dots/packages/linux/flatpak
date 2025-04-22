@@ -5,7 +5,6 @@ com.google.AndroidStudio
 com.google.Chrome
 com.heroicgameslauncher.hgl
 com.jetbrains.WebStorm
-com.mattjakeman.ExtensionManager
 com.moonlight_stream.Moonlight
 com.obsproject.Studio
 hu.irl.cameractrls
@@ -23,6 +22,5 @@ org.localsend.localsend_app
 org.mozilla.firefox
 org.musicbrainz.Picard
 org.pulseaudio.pavucontrol
-org.qbittorrent.qBittorrent
 org.videolan.VLC
 page.tesk.Refine
