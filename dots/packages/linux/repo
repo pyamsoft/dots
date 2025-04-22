@@ -5,6 +5,7 @@ base-devel
 bash
 bash-completion
 bluez-utils
+btop
 buildah
 corectrl
 cups-pdf
@@ -19,7 +20,6 @@ gst-plugin-va
 guake
 gvfs-mtp
 hplip
-htop
 inter-font
 iperf3
 iwd

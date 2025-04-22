@@ -246,6 +246,7 @@ hdparm
 hicolor-icon-theme
 hidapi
 highway
+hsa-rocr
 hwdata
 hyphen
 i2c-tools
@@ -884,6 +885,9 @@ raptor
 rav1e
 readline
 realtime-privileges
+rocm-core
+rocm-device-libs
+rocm-smi-lib
 rtkit
 rtl-sdr
 rtmpdump
