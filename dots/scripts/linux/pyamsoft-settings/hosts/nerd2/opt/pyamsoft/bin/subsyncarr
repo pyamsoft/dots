@@ -19,12 +19,19 @@ _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/media"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/media2"
 
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
+  # Media folders are optionally symlinks to another mass storage drive
+  mkdir -p "${_mount1}"
+  mkdir -p "${_mount2}"
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/scan_dir/1"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/scan_dir/2"
+
+  # Follow the link and mount the media folder ONLY if it is valid
+  if [ -d "$(realpath "${_mount1}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/scan_dir/1"
+  fi
+  if [ -d "$(realpath "${_mount2}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/scan_dir/2"
+  fi
 
   readonly _mounts
   return 0

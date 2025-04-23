@@ -23,13 +23,21 @@ _prep_mounts() {
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
-  mkdir -p "${_mount3}" || return 1
-  mkdir -p "${_mount4}" || return 1
+
+  # Media folders are optionally symlinks to another mass storage drive
+  mkdir -p "${_mount3}"
+  mkdir -p "${_mount4}"
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba/1"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/samba/2"
+
+  # Follow the link and mount the media folder ONLY if it is valid
+  if [ -d "$(realpath "${_mount3}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba/1"
+  fi
+  if [ -d "$(realpath "${_mount4}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/samba/2"
+  fi
 
   # Mount config if possible
   if [ -f "${_mount2}/config.yml" ]; then
