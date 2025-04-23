@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly _name="radarr"
-readonly _image="docker.io/hotio/radarr"
+readonly _image="ghcr.io/linuxserver/radarr"
 readonly _tag="5.21.1"
 
 # Require a VPN unless you absolutely know what you are doing

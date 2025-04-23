@@ -1,8 +1,8 @@
 #!/bin/sh
 
 readonly _name="sonarr"
-readonly _image="docker.io/hotio/sonarr"
-readonly _tag="release-4.0.14"
+readonly _image="ghcr.io/linuxserver/sonarr"
+readonly _tag="4.0.14"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
