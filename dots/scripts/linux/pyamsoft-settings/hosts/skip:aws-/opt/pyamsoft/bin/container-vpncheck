@@ -36,7 +36,12 @@ main() {
     return 1
   fi
 
-  _check_mullvad "$1" || return 1
+  for _c in "$@"; do
+    _check_mullvad "${_c}" || return 1
+    unset _c
+  done
+
+  unset _c
   return 0
 }
 
