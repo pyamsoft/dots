@@ -67,7 +67,6 @@ _containerize() {
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'Optional runconfig supported at %s\n' "${_runconf}"
-    return 1
   else
     # Source the file into the environment
     # shellcheck disable=SC1090
