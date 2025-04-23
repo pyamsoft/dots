@@ -83,7 +83,7 @@ _check_user() {
 }
 
 _containerize() {
-  _snr=""
+  _rdr=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
@@ -102,12 +102,12 @@ _containerize() {
   # Just expect JOURNAL_STREAM for services connected to journald
   if [ "$(uname)" = "Linux" ] && [ -n "${JOURNAL_STREAM}" ]; then
     if [ "${_cmd}" = "podman" ]; then
-      _snr="${_snr} --log-driver json-file"
+      _rdr="${_rdr} --log-driver json-file"
     fi
   else
-    _snr="${_snr} -i -t"
+    _rdr="${_rdr} -i -t"
   fi
-  readonly _snr
+  readonly _rdr
 
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
     # We have optional support for a wireguard VPN container
@@ -154,7 +154,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_snr} \
+    ${_rdr} \
     ${_network} \
     ${_auto} \
     ${_mounts} \
