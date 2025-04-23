@@ -80,7 +80,9 @@ _check_user() {
     return 1
   fi
 
-  _userns="-e PUID=$(id -u) -e PGID=$(id -g)"
+  # Run as root so we can access media files
+  # One day I will figure out permissions here
+  _userns="-e PUID=0 -e PGID=0 --user=0:0"
   readonly _userns
 
   return 0
