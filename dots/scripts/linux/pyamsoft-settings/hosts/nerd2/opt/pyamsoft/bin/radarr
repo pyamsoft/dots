@@ -45,7 +45,7 @@ _prep_mounts() {
     _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/library/media2"
   fi
   if [ -d "$(realpath "${_mount5}")" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/downloads"
+    _mounts="${_mounts} --mount type=bind,source=${_mount5},target=/downloads"
   fi
 
   readonly _mounts
