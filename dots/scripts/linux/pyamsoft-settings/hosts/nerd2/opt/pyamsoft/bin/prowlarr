@@ -23,6 +23,7 @@ _prep_mounts() {
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/data"
   readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
   readonly _mount4="${HOME}/.local/etc/containers/${_name}/media2"
+  readonly _mount5="${HOME}/.local/etc/containers/${_name}/downloads"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
@@ -30,6 +31,7 @@ _prep_mounts() {
   # Media folders are optionally symlinks to another mass storage drive
   mkdir -p "${_mount3}"
   mkdir -p "${_mount4}"
+  mkdir -p "${_mount5}"
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
@@ -41,6 +43,9 @@ _prep_mounts() {
   fi
   if [ -d "$(realpath "${_mount4}")" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/library/media2"
+  fi
+  if [ -d "$(realpath "${_mount5}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/downloads"
   fi
 
   readonly _mounts
