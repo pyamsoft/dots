@@ -1,0 +1,163 @@
+#!/bin/sh
+
+readonly _name="qbittorrent"
+readonly _image="ghcr.io/linuxserver/qbittorrent"
+readonly _tag="5.0.4"
+
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
+
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/downloads"
+
+  mkdir -p "${_mount1}" || return 1
+
+  # Media folders are optionally symlinks to another mass storage drive
+  mkdir -p "${_mount2}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+
+  # Follow the link and mount the media folder ONLY if it is valid
+  if [ -d "$(realpath "${_mount2}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/downloads"
+  fi
+
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # Needed for s6
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  # Web
+  _ports="${_ports} -p 127.0.0.1:18080:8080/tcp"
+
+  # BT
+  _ports="${_ports} -p 127.0.0.1:24731:6881/tcp"
+  _ports="${_ports} -p 127.0.0.1:24731:6881/udp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns="-e PUID=$(id -u) -e PGID=$(id -g)"
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  _snr=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
+  # Executing from systemd, one or both of these are set, otherwise, we are CLI
+  # INVOCATION_ID is set for shells using run0, so we don't want to track on that
+  # Just expect JOURNAL_STREAM for services connected to journald
+  if [ "$(uname)" = "Linux" ] && [ -n "${JOURNAL_STREAM}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _snr="${_snr} --log-driver json-file"
+    fi
+  else
+    _snr="${_snr} -i -t"
+  fi
+  readonly _snr
+
+  # Always require a VPN
+  _network="--network container:wireguard"
+  readonly _network
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_snr} \
+    ${_network} \
+    ${_auto} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
