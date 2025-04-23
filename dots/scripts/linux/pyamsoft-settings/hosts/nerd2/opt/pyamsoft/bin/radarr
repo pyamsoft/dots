@@ -64,7 +64,6 @@ _prep_ports() {
   _ports=""
 
   _ports="${_ports} -p 127.0.0.1:17878:7878/tcp"
-  _ports="${_ports} -p 127.0.0.1:17878:7878/udp"
 
   readonly _ports
   return 0
