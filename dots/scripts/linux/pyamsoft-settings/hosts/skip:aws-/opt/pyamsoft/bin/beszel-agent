@@ -3,7 +3,7 @@
 readonly _basename="beszel"
 readonly _name="${_basename}-agent"
 readonly _image="docker.io/henrygd/beszel-agent"
-readonly _tag="0.10.2"
+readonly _tag="0.11.1"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -150,6 +150,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    -e DISABLE_PASSWORD_AUTH="true" \
     -e LISTEN="/beszel_socket/beszel.sock" \
     -e KEY="${BESZEL_KEY}" \
     ${_ba} \
