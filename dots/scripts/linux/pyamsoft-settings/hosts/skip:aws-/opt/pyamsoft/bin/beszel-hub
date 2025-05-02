@@ -156,7 +156,6 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --init \
-    -e DISABLE_PASSWORD_AUTH="true" \
     ${_bh} \
     ${_network} \
     ${_auto} \
