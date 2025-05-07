@@ -2,7 +2,7 @@
 
 readonly _name="caddy"
 readonly _image="ghcr.io/caddybuilds/caddy-cloudflare"
-readonly _tag="2.9.1"
+readonly _tag="2.10.0"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
