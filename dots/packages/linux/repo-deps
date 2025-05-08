@@ -845,6 +845,7 @@ qemu-hw-display-virtio-gpu-pci
 qemu-hw-display-virtio-gpu-pci-gl
 qemu-hw-display-virtio-vga
 qemu-hw-display-virtio-vga-gl
+qemu-hw-uefi-vars
 qemu-hw-usb-host
 qemu-hw-usb-redirect
 qemu-hw-usb-smartcard
@@ -864,14 +865,11 @@ qpdf
 qqc2-desktop-style
 qrencode
 qt5-base
-qt5-charts
-qt5-declarative
-qt5-quickcontrols2
 qt5-svg
 qt5-translations
-qt5-xmlpatterns
 qt6-5compat
 qt6-base
+qt6-charts
 qt6-connectivity
 qt6-declarative
 qt6-multimedia
@@ -880,7 +878,7 @@ qt6-shadertools
 qt6-svg
 qt6-translations
 qt6-wayland
-quazip-qt5
+quazip-qt6
 raptor
 rav1e
 readline
