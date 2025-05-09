@@ -52,7 +52,7 @@ _get_latest_tags() {
         */scrutiny)
           grep 'omnibus'
           ;;
-        */sonarr | */bazarr | */radarr | */homeassistant | */qbittorrent)
+        */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
           grep -v 'ls'
           ;;
         *)
