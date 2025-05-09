@@ -35,7 +35,7 @@ _get_latest_tags() {
           grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
           ;;
         */home-assistant)
-          grep -v '.sig' | grep -v 'stable' | grep -v 'ls'
+          grep -v '.sig' | grep -v 'stable'
           ;;
         */omada-controller)
           grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
@@ -44,7 +44,7 @@ _get_latest_tags() {
           grep -v '.sig' | grep -v 'artifacthub'
           ;;
         */uptime-kuma)
-          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test'
+          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test' | grep -v 'debian'
           ;;
         */crowdsec)
           grep -v 'slim' | grep 'debian'
@@ -52,13 +52,7 @@ _get_latest_tags() {
         */scrutiny)
           grep 'omnibus'
           ;;
-        */sonarr)
-          grep -v 'ls'
-          ;;
-        */bazarr)
-          grep -v 'ls'
-          ;;
-        */radarr)
+        */sonarr | */bazarr | */radarr | */homeassistant | */qbittorrent)
           grep -v 'ls'
           ;;
         *)
