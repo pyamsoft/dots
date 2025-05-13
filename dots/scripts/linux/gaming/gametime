@@ -21,8 +21,9 @@ _log() {
 _prepare_mesa_env() {
   # Use single-file shader cache
   # https://www.phoronix.com/news/Mesa-Single-File-Cache
-  export MESA_DISK_CACHE_SINGLE_FILE=1
-  __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
+  # https://www.phoronix.com/news/Mesa-Single-File-Cache-Issue
+  # export MESA_DISK_CACHE_SINGLE_FILE=1
+  # __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
 
   # Disable vertical blank for OpenGL
   export vblank_mode=0
@@ -32,12 +33,6 @@ _prepare_mesa_env() {
   # https://docs.mesa3d.org/envvars.html
   export MESA_VK_WSI_PRESENT_MODE="immediate"
   __game_environment="${__game_environment} MESA_VK_WSI_PRESENT_MODE=${MESA_VK_WSI_PRESENT_MODE}"
-
-  # Force VRS shading
-  # https://www.phoronix.com/review/radeon-radv-vrs
-  #
-  # export RADV_FORCE_VRS="2x2"
-  # __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
   # Copy over some environment fixes from gamescope-session
   # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
@@ -52,6 +47,12 @@ _prepare_mesa_env() {
   __game_environment="${__game_environment} vk_xwayland_wait_ready=${vk_xwayland_wait_ready}"
 
   ############################################
+
+  # Force VRS shading
+  # https://www.phoronix.com/review/radeon-radv-vrs
+  #
+  # export RADV_FORCE_VRS="2x2"
+  # __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
   return 0
 }
@@ -251,32 +252,32 @@ _prepare_gamescope() {
   __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
   __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
-  # Even though the description says these don't do anything in embedded mode
-  # They ... do?
-  __gamescope_options="${__gamescope_options} --immediate-flips --adaptive-sync"
-
   # Expose Wayland
   if [ -n "${GAME_WAYLAND}" ] && [ "${GAME_WAYLAND}" -ne 0 ] && [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
     _log 'Running with Wayland exposed'
     __gamescope_options="${__gamescope_options} --expose-wayland"
-  else
-    # Setup for WAYLAND for gamescope-wl
-    # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
-    #
-    # Don't use or else gamescope complains about wayland
-    #
-    # if [ -z "${WAYLAND_DISPLAY}" ]; then
-    #   export WAYLAND_DISPLAY=""
-    #   __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
-    # fi
-    unset WAYLAND_DISPLAY
-
-    # Use the SDL backend
-    #
-    # Otherwise we run with gamescope-wl on wayland, but we want normal gamescope
-    _log 'Force running with SDL backend'
-    __gamescope_options="${__gamescope_options} --backend sdl"
   fi
+
+  # Setup for WAYLAND for gamescope-wl
+  # Gamescope crashes sometimes if you are NOT using wayland and this is undefined
+  #
+  # Don't use or else gamescope complains about wayland
+  #
+  # if [ -z "${WAYLAND_DISPLAY}" ]; then
+  #   export WAYLAND_DISPLAY=""
+  #   __game_environment="${__game_environment} WAYLAND_DISPLAY=${WAYLAND_DISPLAY}"
+  # fi
+  unset WAYLAND_DISPLAY
+
+  # Use the SDL backend
+  #
+  # Otherwise we run with gamescope-wl on wayland, but we want normal gamescope
+  #
+  # The wayland backend has some bugs still with things like mouse control that seem
+  # to be fixed by SDL
+  # 05/13/2025
+  _log 'Force running with SDL backend'
+  __gamescope_options="${__gamescope_options} --backend sdl"
 
   # Copy over some environment fixes from gamescope-session
   # https://github.com/ChimeraOS/gamescope-session/blob/main/usr/share/gamescope-session-plus/gamescope-session-plus
