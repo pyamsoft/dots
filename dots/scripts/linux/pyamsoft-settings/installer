@@ -18,6 +18,7 @@ _package_install() {
   _package_install__install_dir="$3"
   _package_install__file="$4"
   _package_install__dir_chmod="$5"
+  _package_install__file_chmod="$6"
 
   printf -- "INSTALL%s %s\n" "${_package_install__tag}" "${_package_install__install_dir}/${_package_install__file}"
 
@@ -36,6 +37,14 @@ _package_install() {
     printf -- 'Failed to copy install file: %s\n' "${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
+
+  # Re-apply a new mode if provided
+  if [ -n "${_package_install__file_chmod}" ]; then
+    chmod "${_package_install__file_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
+      printf -- 'Failed to chmod install file:%s\n' "${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
+      return 1
+    }
+  fi
 
   # Replace the user placeholder
   #
@@ -222,7 +231,7 @@ main() {
 
           case "${_file_dir}" in
           */sudoers.d | */sudoers.d/*)
-            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" || return 1
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
             ;;
           *)
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
@@ -248,7 +257,7 @@ main() {
         _file_name="$(basename "${_file_or_folder}")"
         _install_dir="${_file_dir#\.\/}"
 
-        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
+        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
 
         unset _install_dir
         unset _file_dir
@@ -270,7 +279,7 @@ main() {
 
         case "${_file_dir}" in
         */scrutiny/entrypoints | */containers | */containers/*)
-          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" || return 1
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "755" || return 1
           ;;
         *)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
