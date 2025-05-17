@@ -32,7 +32,7 @@ _usage() {
   logs         Runs '${_cmd} logs', passing all arguments
   images       Runs '${_cmd} images', passing all arguments
   inspect      Runs '${_cmd} inspect', passing all arguments
-  top          Runs '${_cmd} top', passing all arguments
+  stats        Runs '${_cmd} stats', passing all arguments
 
 [service]:     Service management related operations
 
@@ -115,7 +115,7 @@ main() {
   shift
 
   case "${_action}" in
-  ps | logs | images | inspect | top)
+  ps | logs | images | inspect | stats)
     exec "${_cmd}" "${_action}" "$@"
     ;;
   checkup)
