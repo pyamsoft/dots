@@ -1035,6 +1035,7 @@ zeromq
 zimg
 zix
 zlib
+zlib-ng
 zstd
 zvbi
 zxing-cpp

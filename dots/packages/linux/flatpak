@@ -7,6 +7,7 @@ com.heroicgameslauncher.hgl
 com.jetbrains.WebStorm
 com.moonlight_stream.Moonlight
 com.obsproject.Studio
+com.saivert.pwvucontrol
 hu.irl.cameractrls
 io.github.realmazharhussain.GdmSettings
 io.openrct2.OpenRCT2
@@ -21,6 +22,5 @@ org.libreoffice.LibreOffice
 org.localsend.localsend_app
 org.mozilla.firefox
 org.musicbrainz.Picard
-org.pulseaudio.pavucontrol
 org.videolan.VLC
 page.tesk.Refine
