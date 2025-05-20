@@ -13,3 +13,6 @@ What=tmpfs
 Where=/var/log
 Type=tmpfs
 Options=strictatime,nosuid,nodev,noexec,size=50%%
+
+[Install]
+WantedBy=basic.target
