@@ -12,7 +12,7 @@ After=swap.target
 What=tmpfs
 Where=/var/log
 Type=tmpfs
-Options=strictatime,nosuid,nodev,noexec,size=50%%
+Options=strictatime,nosuid,nodev,noexec,size=25%%
 
 [Install]
 WantedBy=basic.target
