@@ -12,7 +12,7 @@ After=swap.target
 What=tmpfs
 Where=/usr/local/etc/containers/scrutiny/logs
 Type=tmpfs
-Options=strictatime,nosuid,nodev,noexec,size=10%%
+Options=mode=0700,strictatime,nosuid,nodev,noexec,size=10%%
 
 [Install]
 WantedBy=basic.target
