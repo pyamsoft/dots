@@ -3,7 +3,7 @@
 # Splits up a user:path argument provided to a systemd instance unit
 # and pass the expected format over to `tmpfs-mounter`
 #
-# Expected format is <user>:<escaped-path>:[mode]
+# Expected format is <user>:<escaped-path>[:mode]
 
 main() {
   _cmd="$1"
@@ -36,15 +36,36 @@ main() {
   unset _split
 
   # Fix the path
-  _unescaped_path="$(systemd-escape --unescape "${_path}")"
+  _unescaped_path="$(systemd-escape --unescape -- "${_path}")"
   unset _path
 
   # Pass to tmpfs-mounter
   if [ -n "${_mode}" ]; then
-    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}"
+    /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}" || {
+      unset _cmd
+      unset _unescaped_path
+      unset _user
+      unset _mode
+      return 1
+    }
   else
-    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
+    /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" || {
+      unset _cmd
+      unset _unescaped_path
+      unset _user
+      unset _mode
+      return 1
+    }
   fi
+
+  # Otherwise, now that we have run the script, keep this service alive until systemctl stop is called
+  tail -f /dev/null
+
+  unset _cmd
+  unset _unescaped_path
+  unset _user
+  unset _mode
+  return 0
 }
 
 main "$@" || exit 1

@@ -241,7 +241,7 @@ EOF
   ;;
  esac
 
- return 1
+ return 0
 }
 
 main "$@" || exit 1

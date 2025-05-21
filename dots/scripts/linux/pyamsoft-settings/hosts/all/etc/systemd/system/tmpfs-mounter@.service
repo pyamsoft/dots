@@ -1,6 +1,6 @@
 # Mount arbitrary paths as tmpfs
 #
-# instance syntax expected is user:escaped-path
+# instance syntax expected is <user>:<escaped-path>[:mode]
 # Use systemd-escape to escape a file path
 
 [Unit]
