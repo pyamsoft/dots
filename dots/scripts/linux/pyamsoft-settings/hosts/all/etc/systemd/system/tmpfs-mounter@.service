@@ -14,6 +14,9 @@ After=swap.target
 ExecStart=/opt/pyamsoft/sbin/systemd-tmpfs-mounter mount %i
 ExecStop=/opt/pyamsoft/sbin/systemd-tmpfs-mounter umount %i
 
+# For some reason, we can't kill the tail successfully?
+TimeoutStopSec=2
+
 [Install]
 WantedBy=basic.target
 

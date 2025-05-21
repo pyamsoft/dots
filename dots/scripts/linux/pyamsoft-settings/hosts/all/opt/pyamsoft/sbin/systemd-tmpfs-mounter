@@ -59,13 +59,7 @@ main() {
   fi
 
   # Otherwise, now that we have run the script, keep this service alive until systemctl stop is called
-  tail -f /dev/null
-
-  unset _cmd
-  unset _unescaped_path
-  unset _user
-  unset _mode
-  return 0
+  exec tail -f /dev/null
 }
 
 main "$@" || exit 1
