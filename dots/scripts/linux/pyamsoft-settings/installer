@@ -278,8 +278,14 @@ main() {
         _install_dir="${_file_dir#\.\/}"
 
         case "${_file_dir}" in
-        */scrutiny/entrypoints | */containers | */containers/*)
+        */dozzle-hub)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "700" || return 1
+          ;;
+        */scrutiny/entrypoints)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "755" || return 1
+          ;;
+        */containers | */containers/*)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" || return 1
           ;;
         *)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
