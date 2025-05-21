@@ -2,6 +2,8 @@
 
 # Splits up a user:path argument provided to a systemd instance unit
 # and pass the expected format over to `tmpfs-mounter`
+#
+# Expected format is <user>:<escaped-path>:[mode]
 
 main() {
   _cmd="$1"
@@ -30,6 +32,7 @@ main() {
   # Grab the user and path (path is escaped by systemd)
   _user="$(printf -- '%s' "${_split}" | awk '{ print $1 }')"
   _path="$(printf -- '%s' "${_split}" | awk '{ print $2 }')"
+  _mode="$(printf -- '%s' "${_split}" | awk '{ print $3 }')"
   unset _split
 
   # Fix the path
@@ -37,7 +40,11 @@ main() {
   unset _path
 
   # Pass to tmpfs-mounter
-  exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
+  if [ -n "${_mode}" ]; then
+    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}"
+  else
+    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
+  fi
 }
 
 main "$@" || exit 1
