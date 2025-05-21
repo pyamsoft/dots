@@ -154,7 +154,7 @@ _mount() {
 
  # Perform the mount
  if [ -n "${_mount_options}" ]; then
-  mount -t tmpfs -o "${_mount_default_options},${_mount_options}" none "${_mount_target}" || {
+  mount -t tmpfs -o "${_mount_default_options},${_mount_options}" tmpfs "${_mount_target}" || {
    printf -- 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_default_options},${_mount_options}"
 
    unset _mount_default_options
@@ -164,7 +164,7 @@ _mount() {
    return 1
   }
  else
-  mount -t tmpfs -o "${_mount_default_options}" none "${_mount_target}" || {
+  mount -t tmpfs -o "${_mount_default_options}" tmpfs "${_mount_target}" || {
    printf -- 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_default_options}"
 
    unset _mount_default_options
