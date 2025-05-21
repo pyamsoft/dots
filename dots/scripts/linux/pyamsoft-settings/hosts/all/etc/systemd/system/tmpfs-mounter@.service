@@ -1,0 +1,19 @@
+# Mount arbitrary paths as tmpfs
+#
+# instance syntax expected is user:escaped-path
+# Use systemd-escape to escape a file path
+
+[Unit]
+Description=tmpfs-mounter: %i
+DefaultDependencies=no
+Conflicts=umount.target
+Before=local-fs.target umount.target
+After=swap.target
+
+[Service]
+ExecStart=/opt/pyamsoft/sbin/systemd-tmpfs-mounter mount %i
+ExecStop=/opt/pyamsoft/sbin/systemd-tmpfs-mounter umount %i
+
+[Install]
+WantedBy=basic.target
+

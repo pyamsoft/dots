@@ -1,0 +1,248 @@
+#!/bin/sh
+
+PROG="$(basename "$0")"
+readonly PROG
+
+readonly VERSION="0.0.1"
+
+_usage_mount() {
+ printf -- '%s\n' "$(
+  cat <<EOF
+${PROG} ${VERSION}
+
+${PROG} mount <path> <user> [mount-options]
+
+Create a tmpfs mount on <path> owned by <user>
+
+<path> MUST exist and be a directory
+<path> MUST be an absolute path
+<path> MUST NOT be a symlink
+
+<user> MUST be an existing user
+
+[mount-options] are OPTIONAL and are passed DIRECTLY to mount(8)
+EOF
+ )"
+}
+
+_usage_umount() {
+ printf -- '%s\n' "$(
+  cat <<EOF
+${PROG} ${VERSION}
+
+${PROG} umount <path> [umount-options]
+
+Unmount a tmpfs mount on <path>
+
+<path> MUST be an absolute path
+<path> MUST NOT be a symlink
+
+[umount-options] are OPTIONAL and are passed DIRECTLY to umount(8)
+EOF
+ )"
+}
+
+_usage() {
+ printf -- '%s\n' "$(
+  cat <<EOF
+${PROG} ${VERSION}
+
+[Commands]
+mount - Mount a tmpfs
+umount - Unmount a tmpfs
+unmount - Unmount a tmpfs
+EOF
+ )"
+}
+
+_validate() {
+ _validate_require_user="$1"
+ _validate_target="$2"
+ _validate_user="$3"
+
+ # Path provided
+ if [ -z "${_validate_target}" ]; then
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
+ # Path must exist and be directory
+ if [ ! -d "${_validate_target}" ]; then
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
+ # Check not symlink
+ if [ -L "${_validate_target}" ]; then
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
+ # Check that path is absolute
+ if [ "$(realpath "${_validate_target}")" != "${_validate_target}" ]; then
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
+ if [ "${_validate_require_user}" -eq 1 ]; then
+  # User provided for a function that requires it
+  if [ -z "${_validate_user}" ]; then
+   unset _validate_target
+   unset _validate_user
+   unset _validate_require_user
+   return 1
+  fi
+
+  # Check user exists
+  if ! id -u "${_validate_user}" >/dev/null 2>&1; then
+   unset _validate_target
+   unset _validate_user
+   unset _validate_require_user
+   return 1
+  fi
+ fi
+
+ unset _validate_target
+ unset _validate_user
+ unset _validate_require_user
+ return 0
+}
+
+_is_help() {
+ case "$1" in
+ help | h | -h | --help)
+  return 0
+  ;;
+ *)
+  return 1
+  ;;
+ esac
+}
+
+_mount() {
+ _mount_target="$1"
+ _mount_user="$2"
+ _mount_options="$3"
+
+ if _is_help "${_mount_target}"; then
+  unset _mount_target
+  unset _mount_user
+  unset _mount_options
+  _usage_mount || return 1
+  return 0
+ fi
+
+ # Validate the user and path
+ if ! _validate 1 "${_mount_target}" "${_mount_user}"; then
+  unset _mount_target
+  unset _mount_user
+  unset _mount_options
+  _usage_mount || return 1
+  return 1
+ fi
+
+ # Collect default mount options
+ _mount_default_options="strictatime,nosuid,nodev,noexec,uid=$(id -u "${_mount_user}"),gid=$(id -g "${_mount_user}")"
+
+ # Perform the mount
+ if [ -n "${_mount_options}" ]; then
+  mount -t tmpfs -o "${_mount_default_options},${_mount_options}" none "${_mount_target}" || {
+   printf -- 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_default_options},${_mount_options}"
+
+   unset _mount_default_options
+   unset _mount_target
+   unset _mount_user
+   unset _mount_options
+   return 1
+  }
+ else
+  mount -t tmpfs -o "${_mount_default_options}" none "${_mount_target}" || {
+   printf -- 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_default_options}"
+
+   unset _mount_default_options
+   unset _mount_target
+   unset _mount_user
+   unset _mount_options
+   return 1
+  }
+ fi
+
+ unset _mount_default_options
+ unset _mount_target
+ unset _mount_user
+ unset _mount_options
+ return 0
+}
+
+_umount() {
+ _umount_target="$1"
+
+ if _is_help "${_umount_target}"; then
+  unset _umount_target
+  _usage_umount || return 1
+  return 0
+ fi
+
+ # Validate just the path
+ if ! _validate 0 "${_umount_target}" ""; then
+  unset _umount_target
+  _usage_umount || return 1
+  return 1
+ fi
+
+ # Perform the umount
+ umount -t tmpfs "${_umount_target}" || {
+  printf -- 'Failed to umount tmpfs at %s\n' "${_umount_target}"
+
+  unset _umount_target
+  return 1
+ }
+
+ unset _umount_target
+ return 0
+}
+
+main() {
+ if [ "$(id -u)" -ne 0 ]; then
+  printf -- '%s\n' "$(
+   cat <<EOF
+${PROG} ${VERSION}
+
+You MUST run this tool as root.
+EOF
+  )"
+  return 1
+ fi
+
+ case "$1" in
+ "mount")
+  # Eat the known argument
+  shift
+
+  _mount "$@" || return 1
+  ;;
+ "unmount" | "umount")
+  # Eat the known argument
+  shift
+
+  _umount "$@" || return 1
+  ;;
+ *)
+  _usage "$@" || return 1
+  return 0
+  ;;
+ esac
+
+ return 1
+}
+
+main "$@" || exit 1
+exit 0
