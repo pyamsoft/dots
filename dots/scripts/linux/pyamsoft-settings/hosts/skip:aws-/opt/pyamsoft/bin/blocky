@@ -19,6 +19,10 @@ _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/logs"
 
+  # Make directories
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+
   # Prep the config file (Blocky only runs if this is group readable)
   touch "${_mount1}/config.yml" || return 1
   chmod 640 "${_mount1}/config.yml" || return 1
