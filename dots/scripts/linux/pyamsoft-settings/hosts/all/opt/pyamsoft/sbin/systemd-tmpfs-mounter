@@ -36,7 +36,7 @@ main() {
   unset _split
 
   # Fix the path
-  _unescaped_path="$(systemd-escape --unescape -- "${_path}")"
+  _unescaped_path="$(/bin/systemd-escape --unescape -- "${_path}")"
   unset _path
 
   # Pass to tmpfs-mounter
@@ -59,7 +59,7 @@ main() {
   fi
 
   # Otherwise, now that we have run the script, keep this service alive until systemctl stop is called
-  exec tail -f /dev/null
+  exec /bin/tail -f /dev/null
 }
 
 main "$@" || exit 1

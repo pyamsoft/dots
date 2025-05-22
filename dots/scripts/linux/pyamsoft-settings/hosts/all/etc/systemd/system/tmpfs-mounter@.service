@@ -7,8 +7,10 @@
 Description=tmpfs-mounter: %i
 DefaultDependencies=no
 Conflicts=umount.target
-Before=local-fs.target umount.target
-After=swap.target
+Before=umount.target
+
+# Root FS must be mounted
+After=-.mount systemd-remount-fs.service
 
 [Service]
 ExecStart=/opt/pyamsoft/sbin/systemd-tmpfs-mounter mount %i
@@ -18,5 +20,4 @@ ExecStop=/opt/pyamsoft/sbin/systemd-tmpfs-mounter umount %i
 TimeoutStopSec=2
 
 [Install]
-WantedBy=basic.target
-
+WantedBy=local-fs.target
