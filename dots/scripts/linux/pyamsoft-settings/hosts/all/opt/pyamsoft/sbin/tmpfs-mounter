@@ -102,7 +102,7 @@ _validate() {
   fi
 
   # Check user exists
-  if ! id -u "${_validate_user}" >/dev/null 2>&1; then
+  if ! /bin/id -u "${_validate_user}" >/dev/null 2>&1; then
    unset _validate_target
    unset _validate_user
    unset _validate_require_user
@@ -150,7 +150,7 @@ _mount() {
  fi
 
  # Collect default mount options
- _mount_default_options="strictatime,nosuid,nodev,noexec,uid=$(id -u "${_mount_user}"),gid=$(id -g "${_mount_user}")"
+ _mount_default_options="strictatime,nosuid,nodev,noexec,uid=$(/bin/id -u "${_mount_user}"),gid=$(/bin/id -g "${_mount_user}")"
 
  # Perform the mount
  if [ -n "${_mount_options}" ]; then
@@ -211,7 +211,7 @@ _umount() {
 }
 
 main() {
- if [ "$(id -u)" -ne 0 ]; then
+ if [ "$(/bin/id -u)" -ne 0 ]; then
   printf -- '%s\n' "$(
    /bin/cat <<EOF
 ${PROG} ${VERSION}
