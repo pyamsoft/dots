@@ -41,25 +41,10 @@ main() {
 
   # Pass to tmpfs-mounter
   if [ -n "${_mode}" ]; then
-    /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}" || {
-      unset _cmd
-      unset _unescaped_path
-      unset _user
-      unset _mode
-      return 1
-    }
+    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}"
   else
-    /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" || {
-      unset _cmd
-      unset _unescaped_path
-      unset _user
-      unset _mode
-      return 1
-    }
+    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
   fi
-
-  # Otherwise, now that we have run the script, keep this service alive until systemctl stop is called
-  exec /bin/tail -f /dev/null
 }
 
 main "$@" || exit 1
