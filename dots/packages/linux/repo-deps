@@ -166,10 +166,12 @@ gpgme
 gpm
 graphene
 graphite
+graphviz
 grep
 groff
 gsettings-desktop-schemas
 gsettings-system-schemas
+gsfonts
 gsm
 gsound
 gssdp
@@ -187,6 +189,7 @@ gtk-vnc
 gtk3
 gtk4
 gtksourceview4
+gts
 guile
 gupnp
 gupnp-dlna
@@ -700,6 +703,7 @@ ndctl
 neon
 net-snmp
 netavark
+netpbm
 nettle
 networkmanager
 nftables
@@ -1004,7 +1008,6 @@ xcb-util-image
 xcb-util-keysyms
 xcb-util-renderutil
 xcb-util-wm
-xclip
 xdg-dbus-proxy
 xdg-desktop-portal
 xdg-desktop-portal-gnome
@@ -1024,7 +1027,6 @@ xorg-xrdb
 xorg-xset
 xorg-xwayland
 xorgproto
-xsel
 xvidcore
 xxhash
 xz
