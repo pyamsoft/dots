@@ -6,6 +6,10 @@ __game_environment=""
 __game_tools=""
 __env_tools=""
 
+# 05/23/2025
+# Enabling --steam causes no gamescope window to show up
+_ENABLE_STEAM_INTEGRATION=0
+
 _log() {
   _msg="$1"
 
@@ -433,16 +437,19 @@ _prepare() {
 
 _enable_steam_options() {
   # If we are running in steam, add --steam option, otherwise do not (causes weird window issues)
-  if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
-    __gamescope_options="${__gamescope_options} --steam"
-    _log 'Steam specific gamescope options: YES (flatpak)'
-  elif [ "$(id -u -n)" = "gaming-steam" ]; then
-    __gamescope_options="${__gamescope_options} --steam"
-    _log 'Steam specific gamescope options: YES (gaming-steam)'
-  else
-    _log 'Steam specific gamescope options: NO'
+  if [ "${_ENABLE_STEAM_INTEGRATION}" -eq 1 ]; then
+    if [ "${FLATPAK_ID}" = "com.valvesoftware.Steam" ]; then
+      __gamescope_options="${__gamescope_options} --steam"
+      _log 'Steam specific gamescope options: YES (flatpak)'
+      return 0
+    elif [ "$(id -u -n)" = "gaming-steam" ]; then
+      __gamescope_options="${__gamescope_options} --steam"
+      _log 'Steam specific gamescope options: YES (gaming-steam)'
+      return 0
+    fi
   fi
 
+  _log 'Steam specific gamescope options: NO'
   return 0
 }
 
