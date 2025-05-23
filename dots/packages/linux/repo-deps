@@ -29,6 +29,7 @@ bluez
 bluez-libs
 bolt
 botan
+bpf
 breeze-icons
 brotli
 bubblewrap
@@ -270,6 +271,7 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
+jq
 js128
 json-c
 json-glib
@@ -717,6 +719,7 @@ nspr
 nss
 numactl
 ocl-icd
+oniguruma
 openal
 opencore-amr
 openexr
@@ -868,9 +871,6 @@ qemu-vhost-user-gpu
 qpdf
 qqc2-desktop-style
 qrencode
-qt5-base
-qt5-svg
-qt5-translations
 qt6-5compat
 qt6-base
 qt6-charts
@@ -896,6 +896,7 @@ rtmpdump
 rubberband
 sane
 sbc
+scx-scheds
 sdl2-compat
 sdl2_image
 sdl3
