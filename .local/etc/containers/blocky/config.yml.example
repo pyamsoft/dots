@@ -46,6 +46,15 @@ ports:
 log:
   level: "info"
 
+# Less noisy query logging
+queryLog:
+  type: "console"
+  fields:
+    - responseReason
+    - responseAnswer
+    - question
+    - duration
+
 # Do not cache responses
 #
 # We rely on systemd-resolved to do local DNS caching
