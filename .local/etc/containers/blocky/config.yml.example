@@ -50,10 +50,10 @@ log:
 queryLog:
   type: "console"
   fields:
-    - responseReason
-    - responseAnswer
-    - question
-    - duration
+    - "responseReason"
+    - "responseAnswer"
+    - "question"
+    - "duration"
 
 # Do not cache responses
 #
