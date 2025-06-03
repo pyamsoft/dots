@@ -132,6 +132,7 @@ geoclue
 geocode-glib-2
 geocode-glib-common
 gettext
+gfxstream
 ghc-libs
 ghostscript
 giflib
@@ -140,6 +141,7 @@ gjs
 glib-networking
 glib2
 glibc
+glm
 glslang
 glu
 gmp
@@ -202,12 +204,16 @@ gzip
 harfbuzz
 harfbuzz-icu
 haskell-aeson
+haskell-ansi-terminal
+haskell-ansi-terminal-types
+haskell-ansi-wl-pprint
 haskell-assoc
 haskell-attoparsec
 haskell-base-compat
 haskell-base-compat-batteries
 haskell-base-orphans
 haskell-bifunctors
+haskell-colour
 haskell-comonad
 haskell-contravariant
 haskell-data-fix
@@ -223,6 +229,7 @@ haskell-indexed-traversable
 haskell-indexed-traversable-instances
 haskell-integer-logarithms
 haskell-onetuple
+haskell-optparse-applicative
 haskell-os-string
 haskell-primitive
 haskell-quickcheck
@@ -236,6 +243,7 @@ haskell-splitmix
 haskell-statevar
 haskell-strict
 haskell-tagged
+haskell-tasty
 haskell-text-short
 haskell-th-abstraction
 haskell-these
@@ -398,6 +406,7 @@ lib32-xz
 lib32-zlib
 lib32-zstd
 libadwaita
+libaemu
 libaio
 libarchive
 libass
@@ -850,8 +859,11 @@ qemu-hw-display-virtio-gpu
 qemu-hw-display-virtio-gpu-gl
 qemu-hw-display-virtio-gpu-pci
 qemu-hw-display-virtio-gpu-pci-gl
+qemu-hw-display-virtio-gpu-pci-rutabaga
+qemu-hw-display-virtio-gpu-rutabaga
 qemu-hw-display-virtio-vga
 qemu-hw-display-virtio-vga-gl
+qemu-hw-display-virtio-vga-rutabaga
 qemu-hw-uefi-vars
 qemu-hw-usb-host
 qemu-hw-usb-redirect
@@ -894,6 +906,7 @@ rtkit
 rtl-sdr
 rtmpdump
 rubberband
+rutabaga-ffi
 sane
 sbc
 scx-scheds
