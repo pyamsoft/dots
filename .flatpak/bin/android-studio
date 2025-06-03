@@ -1,16 +1,26 @@
 #!/bin/sh
 
 readonly pak="com.google.AndroidStudio"
-readonly def_path="/app/bin:/usr/bin"
+readonly def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
 
 readonly dev_root="${HOME}/devel"
 readonly android_root="${dev_root}/sdk/android"
 
+# Local scripts
 path="${HOME}/.local/bin"
+
+# Android SDK
 path="${path}:/app/extra/android-studio/jbr/bin"
 path="${path}:${android_root}/emulator"
 path="${path}:${android_root}/cdmline-tools/latest/bin"
 path="${path}:${android_root}/platform-tools"
+
+# Since android-studio does not use ide-flatpak-wrapper anymore
+# we must manually pull in our extensions
+# https://github.com/flathub/com.google.AndroidStudio/commit/727e7e027f6b089f5d2d8d604833f639904531ce
+path="${path}:/usr/lib/sdk/node22/bin"
+path="${path}:/usr/lib/sdk/openjdk17/bin"
+
 readonly path
 
 _args=""
