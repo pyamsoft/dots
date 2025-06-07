@@ -53,7 +53,10 @@ _get_latest_tags() {
           grep 'omnibus'
           ;;
         */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
-          grep -v 'ls'
+          grep -v 'ls' | grep -v 'libtorrent'
+          ;;
+        */byparr)
+          grep -v '.sig'
           ;;
         *)
           cat
