@@ -1,10 +1,7 @@
 com.cassidyjames.butler
 com.github.neithern.g4music
 com.github.wwmm.easyeffects
-com.google.AndroidStudio
-com.google.Chrome
 com.heroicgameslauncher.hgl
-com.jetbrains.WebStorm
 com.moonlight_stream.Moonlight
 com.saivert.pwvucontrol
 hu.irl.cameractrls
@@ -21,5 +18,4 @@ org.libreoffice.LibreOffice
 org.localsend.localsend_app
 org.mozilla.firefox
 org.musicbrainz.Picard
-org.videolan.VLC
 page.tesk.Refine

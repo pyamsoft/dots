@@ -1,4 +1,5 @@
 adjust-pci-latency-git
+android-studio
 cachyos-ananicy-rules-git
 cfs-zen-tweaks
 game-devices-udev
@@ -10,3 +11,4 @@ pyamsoft-settings
 tetrio-desktop
 ttf-ms-win11-auto
 ventoy-bin
+webstorm

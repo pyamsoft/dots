@@ -166,6 +166,7 @@ gnutls
 gobject-introspection-runtime
 gperftools
 gpgme
+gpgmepp
 gpm
 graphene
 graphite
