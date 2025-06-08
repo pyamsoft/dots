@@ -269,6 +269,8 @@ _run_jail() {
     $(_block_in_jail "/etc/systemd") \
     $(_block_in_jail "/etc/flatpak") \
     $(_block_in_jail "/etc/ssh") \
+    $(_block_in_jail "/etc/crypttab" "/etc/cryptsetup-keys.d/") \
+    $(_block_in_jail "/etc/fstab") \
     $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
     $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix) \
     $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
