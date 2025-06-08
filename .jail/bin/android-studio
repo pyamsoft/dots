@@ -1,0 +1,36 @@
+#!/bin/sh
+
+#!/bin/sh
+
+readonly dev_root="${HOME}/devel"
+readonly sdk_root="${dev_root}/sdk/android"
+readonly project_root="${dev_root}/project/pyamsoft/android"
+
+# Local scripts
+path="${HOME}/.local/bin"
+
+# Android SDK
+path="${path}:/app/extra/android-studio/jbr/bin"
+path="${path}:${sdk_root}/emulator"
+path="${path}:${sdk_root}/cdmline-tools/latest/bin"
+path="${path}:${sdk_root}/platform-tools"
+
+readonly path
+
+# Export JDK8 and JDK17 as environment variables for Gradle
+# https://docs.gradle.org/8.10.2/userguide/toolchains.html#sec:custom_loc
+#
+# May be needed to build KTOR library
+jail --name android-studio /usr/bin/android-studio \
+  --setenv PATH "${path}:${PATH}" \
+  --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
+  --bind "${sdk_root}" "${sdk_root}" \
+  --bind "${project_root}" "${project_root}" \
+  -- "$@"
+
+# Kill gradle-daemon after exiting
+if command -v kill-gradle >/dev/null; then
+  kill-gradle
+fi
+
+exit 0

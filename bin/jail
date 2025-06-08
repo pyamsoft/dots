@@ -136,7 +136,13 @@ _block_in_jail() {
   # Rest are paths
   for _path in "$@"; do
     if [ -e "${_path}" ]; then
-      printf -- '--tmpfs %s ' "${_path}"
+      if [ -d "${_path}" ]; then
+        # Block directory via tmpfs
+        printf -- '--tmpfs %s ' "${_path}"
+      else
+        # Block file by symlinking to /dev/null
+        printf -- '--symlink /dev/null %s ' "${_path}"
+      fi
     fi
   done
   unset _path
@@ -269,8 +275,7 @@ _run_jail() {
     $(_block_in_jail "/etc/systemd") \
     $(_block_in_jail "/etc/flatpak") \
     $(_block_in_jail "/etc/ssh") \
-    $(_block_in_jail "/etc/crypttab" "/etc/cryptsetup-keys.d/") \
-    $(_block_in_jail "/etc/fstab") \
+    $(_block_in_jail "/etc/cryptsetup-keys.d/") \
     $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
     $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix) \
     $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
