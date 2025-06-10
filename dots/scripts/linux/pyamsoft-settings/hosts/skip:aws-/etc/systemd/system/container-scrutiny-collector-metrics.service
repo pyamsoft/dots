@@ -6,6 +6,9 @@ After=network.target syslog.target local-fs.target docker.service podman.service
 Wants=container-scrutiny.service container@scrutiny.service scrutiny.service
 
 [Service]
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
 # Need oneshot or timer wont restart
 Type=oneshot
 

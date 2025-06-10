@@ -4,6 +4,9 @@ Description=Update the smartmontools drive database
 After=network.target syslog.target local-fs.target
 
 [Service]
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
 # Need oneshot or timer wont restart
 Type=oneshot
 ExecStart=/usr/sbin/update-smart-drivedb

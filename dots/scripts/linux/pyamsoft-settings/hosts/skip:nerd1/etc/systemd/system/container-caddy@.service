@@ -5,11 +5,16 @@
 #
 # Generally this is 1000 for "your user"
 
+## TODO: Move to the container@ instance service
+
 [Unit]
 Description=Container: Caddy for %i
 After=network.target syslog.target local-fs.target docker.service podman.service 
 
 [Service]
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
 # File must exist or fail
 ExecStartPre=/bin/test -x /opt/pyamsoft/bin/caddy
 

@@ -87,10 +87,13 @@ _containerize() {
   fi
   unset _runconf
 
-  # Executing from systemd, one or both of these are set, otherwise, we are CLI
-  # INVOCATION_ID is set for shells using run0, so we don't want to track on that
-  # Just expect JOURNAL_STREAM for services connected to journald
-  if [ "$(uname)" = "Linux" ] && [ -n "${JOURNAL_STREAM}" ]; then
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
     if [ "${_cmd}" = "podman" ]; then
       _bl="${_bl} --log-driver json-file"
     fi

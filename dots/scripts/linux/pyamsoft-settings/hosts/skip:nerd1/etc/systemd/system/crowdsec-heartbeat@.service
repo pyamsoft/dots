@@ -6,6 +6,9 @@ After=network.target syslog.target local-fs.target docker.service podman.service
 Wants=container-crowdsec.service container@crowdsec.service crowdsec.service
 
 [Service]
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
 # Need oneshot or timer does not restart
 Type=oneshot
 ExecStart=/opt/pyamsoft/sbin/crowdsec-heartbeat --unescape "%i"
