@@ -222,7 +222,11 @@ _prepare_gamescope() {
         GAME_NESTED="1920x1080"
       fi
     else
-      GAME_NESTED="1280x720"
+      # FSR1 "Quality" 1280x720 66%
+      # But FSR1 is so bad generally that even this looks rough.
+      #
+      # We instead use a non-official scaling res of 1600x900 which is 83% of 1080p
+      GAME_NESTED="1600x900"
     fi
   fi
   nested_width="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $1 }')"
