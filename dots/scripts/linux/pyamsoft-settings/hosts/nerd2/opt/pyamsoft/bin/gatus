@@ -5,11 +5,11 @@ readonly _tag="v5.18.1"
 
 # Pick name based on environment mode
 case "${GATUS_MODE}" in
-agent)
+internal)
   _name="internal"
   _port=11267
   ;;
-hub)
+external)
   _name="external"
   _port=11268
   ;;
