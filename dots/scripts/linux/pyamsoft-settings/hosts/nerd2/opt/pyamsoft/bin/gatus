@@ -1,8 +1,24 @@
 #!/bin/sh
 
-readonly _name="gatus"
 readonly _image="docker.io/twinproduction/gatus"
 readonly _tag="v5.18.1"
+
+# Pick name based on environment mode
+case "${GATUS_MODE}" in
+agent)
+  _name="internal"
+  ;;
+hub)
+  _name="external"
+  ;;
+*)
+  printf -- 'You must export the Gatus mode as "GATUS_MODE": "internal" "external"\n'
+  exit 1
+  ;;
+esac
+
+_name="gatus-${_name}"
+readonly _name
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
