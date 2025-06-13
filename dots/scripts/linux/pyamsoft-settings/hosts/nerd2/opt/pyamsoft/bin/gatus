@@ -1,0 +1,169 @@
+#!/bin/sh
+
+readonly _name="gatus"
+readonly _image="docker.io/twinproduction/gatus"
+readonly _tag="5.18.1"
+
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
+
+_prep_mounts() {
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+
+  mkdir -p "${_mount1}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+  readonly _mounts
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:1268:8080/tcp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  # Only for podman
+  if [ "${_cmd}" = "podman" ]; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    _userns="--userns keep-id"
+  else
+    _userns=""
+  fi
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  _gt=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
+  fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
+
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _gt="${_gt} --log-driver json-file"
+    fi
+  else
+    _gt="${_gt} -i -t"
+  fi
+  readonly _gt
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  # On Linux we run systemd-resolved on our host machine for DNS caching
+  _network="--add-host localhost:127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
+    # Only compare the version minors
+    _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
+    _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
+    unset _current_version
+
+    if [ 1 -eq "${_is_cmd_new_enough}" ]; then
+      _network="${_network} --add-host host.containers.internal:host-gateway"
+    fi
+
+    unset _is_cmd_new_enough
+  fi
+  readonly _network
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # We can use localhost DNS since we have host network access,
+  # so localhost is AdguardHome
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    --net=host \
+    ${_gt} \
+    ${_auto} \
+    ${_network} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
