@@ -7,9 +7,11 @@ readonly _tag="v5.18.1"
 case "${GATUS_MODE}" in
 agent)
   _name="internal"
+  _port=11267
   ;;
 hub)
   _name="external"
+  _port=11268
   ;;
 *)
   printf -- 'You must export the Gatus mode as "GATUS_MODE": "internal" "external"\n'
@@ -19,6 +21,7 @@ esac
 
 _name="gatus-${_name}"
 readonly _name
+readonly _port
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -52,7 +55,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:11268:8080/tcp"
+  _ports="${_ports} -p 127.0.0.1:${_port}:8080/tcp"
 
   readonly _ports
   return 0
