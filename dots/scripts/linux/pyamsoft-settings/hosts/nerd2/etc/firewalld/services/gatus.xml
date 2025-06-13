@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>gatus</short>
+  <description>Gatus Monitoring</description>
+  <port port="11268" protocol="tcp" />
+</service>
+
