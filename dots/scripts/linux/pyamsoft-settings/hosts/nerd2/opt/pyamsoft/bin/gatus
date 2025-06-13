@@ -118,8 +118,7 @@ _containerize() {
   # Fail on unassigned
   set -xeu
 
-  # We can use localhost DNS since we have host network access,
-  # so localhost is AdguardHome
+  # We point GATUS_CONFIG_PATH to /config folder to allow usage of multiple yaml files
 
   # Don't quote so that if user is empty it still expands
   #
@@ -127,6 +126,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    -e GATUS_CONFIG_PATH="/config" \
     ${_gt} \
     ${_auto} \
     ${_network} \
