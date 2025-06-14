@@ -1,0 +1,145 @@
+#!/bin/sh
+
+# Copy real themes over to flatpak friendly locations
+
+_do__theme() {
+  printf -- 'Copy theme into flatpak: "%s"\n' "${__theme}"
+
+  _t="/usr/share/themes/${__theme}"
+  if [ -z "$1" ] || [ ! -d "${_t}" ]; then
+    printf -- 'Sorry, theme %s does not exist on host!\n' "${_t}"
+    unset _t
+    return 1
+  fi
+
+  # Copy theme
+  mkdir -p "${HOME}/.themes"
+  cp -r "${_t}" "${HOME}/.themes"
+  if [ "${__dark}" -eq 1 ]; then
+    _t="/usr/share/themes/${__theme}-Dark"
+    if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}-Dark"
+      cp -r "${_t}" "${HOME}/.themes"
+    fi
+
+    _t="/usr/share/themes/${__theme}-dark"
+    if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}-dark"
+      cp -r "${_t}" "${HOME}/.themes"
+    fi
+
+    _t="/usr/share/themes/${__theme}_Dark"
+    if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}_Dark"
+      cp -r "${_t}" "${HOME}/.themes"
+    fi
+
+    _t="/usr/share/themes/${__theme}_dark"
+    if [ -d "${_t}" ]; then
+      printf -- 'Copy dark theme into flatpak: "%s"\n' "${__theme}_dark"
+      cp -r "${_t}" "${HOME}/.themes"
+    fi
+  fi
+
+  unset _t
+  return 0
+}
+
+_do__icon() {
+  printf -- 'Copy icons into flatpak: "%s"\n' "${__icon}"
+
+  _i="/usr/share/icons/${__icon}"
+  if [ -z "$1" ] || [ ! -d "${_i}" ]; then
+    printf -- 'Sorry, icon %s does not exist on host!\n' "${_i}"
+    unset _i
+    return 1
+  fi
+
+  # Copy theme
+  mkdir -p "${HOME}/.icons"
+  cp -r "${_i}" "${HOME}/.icons"
+  if [ "${__dark}" -eq 1 ]; then
+    _i="/usr/share/icons/${__icon}-Dark"
+    if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}-Dark"
+      cp -r "${_i}" "${HOME}/.icons"
+    fi
+
+    _i="/usr/share/icons/${__icon}-dark"
+    if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}-dark"
+      cp -r "${_i}" "${HOME}/.icons"
+    fi
+
+    _i="/usr/share/icons/${__icon}_Dark"
+    if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}_Dark"
+      cp -r "${_i}" "${HOME}/.icons"
+    fi
+
+    _i="/usr/share/icons/${__theme}_dark"
+    if [ -d "${_i}" ]; then
+      printf -- 'Copy dark icons into flatpak: "%s"\n' "${__icon}_dark"
+      cp -r "${_i}" "${HOME}/.icons"
+    fi
+  fi
+
+  unset _i
+  return 0
+}
+
+main() {
+  __theme=""
+  __icon=""
+  __dark=0
+
+  if [ -z "$1" ]; then
+    printf -- 'No options. Must be one of ["-d|--dark"] <"-t|--theme" "-i|--icon">\n'
+    return 1
+  fi
+
+  while [ -n "$1" ]; do
+    case "$1" in
+    -d | --dark)
+      __dark=1
+      shift
+      ;;
+    -t | --theme)
+      shift
+      __theme="$1"
+      shift
+      ;;
+    -i | --icon)
+      shift
+      __icon="$1"
+      shift
+      ;;
+    *)
+      printf -- 'Invalid option: "%s\". Must be one of ["-d|--dark"] <"-t|--theme" "-i|--icon">\n' "$1"
+      return 1
+      ;;
+    esac
+  done
+
+  if [ -z "${__theme}" ] && [ -z "${__icon}" ]; then
+    printf -- 'No options. Must be one of ["-d|--dark"] <"-t|--theme" "-i|--icon">\n'
+    return 1
+  fi
+
+  readonly __theme
+  readonly __icon
+  readonly __dark
+
+  if [ -n "${__theme}" ]; then
+    _do__theme "${__theme}" || return 1
+  fi
+
+  if [ -n "${__icon}" ]; then
+    _do__icon "${__icon}" || return 1
+  fi
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

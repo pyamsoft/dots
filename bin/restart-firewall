@@ -1,0 +1,4 @@
+#!/bin/sh
+
+killall firewall-applet
+exec firewall-applet >/dev/null 2>&1 &

@@ -1,0 +1,62 @@
+#!/bin/sh
+
+readonly DDC_BRIGHTNESS_CODE=10
+
+main() {
+  if ! command -v ddcutil >/dev/null; then
+    printf -- 'Must install "ddcutil"\n'
+    return 1
+  fi
+
+  cmd="$1"
+  if [ -z "${cmd}" ]; then
+    cmd="get"
+  else
+    # Eat argument
+    shift
+  fi
+
+  case "${cmd}" in
+  h | help | -h | --help)
+    printf -- 'Empty command assumes "get" current brightness\n'
+    printf -- 'Pass a number value to "set" new brightness\n'
+    return 1
+    ;;
+  esac
+
+  # If we are in the i2c group attempt a brightness change without root
+  needs_sudo=1
+  if id -G -n | grep -q i2c; then
+    needs_sudo=0
+  fi
+
+  if [ "${cmd}" = "get" ]; then
+    if [ "${needs_sudo}" -ne 0 ]; then
+      sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    else
+      ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    fi
+  else
+    amount="${cmd}"
+
+    # If its a number, evaluate as "set" command
+    if [ "${amount}" -eq "${amount}" ] >/dev/null 2>&1; then
+      if [ "${needs_sudo}" -ne 0 ]; then
+        sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
+      else
+        ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
+      fi
+    else
+      printf -- 'Empty command assumes "get" current brightness\n'
+      printf -- 'Pass a number value to "set" new brightness\n'
+      return 1
+    fi
+  fi
+
+  unset cmd
+  unset amount
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
