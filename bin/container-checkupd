@@ -25,6 +25,9 @@ _get_latest_tags() {
       # Otherwise remove latest and let's keep going
       grep -v 'latest' |
         case "${_container}" in
+        */httpie)
+          grep -v '3.5-0.9.9'
+          ;;
         */jellyseerr)
           grep -v 'preview'
           ;;
