@@ -27,6 +27,7 @@ binutils
 bison
 bluez
 bluez-libs
+bluez-obex
 bolt
 botan
 bpf
