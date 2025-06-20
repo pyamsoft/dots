@@ -1,5 +1,9 @@
 #!/bin/sh
 
+_post() {
+  exec curl -s -X POST -H "Authorization: Bearer ${BEARER_TOKEN}" "$1?success=$2"
+}
+
 main() {
   _unescape=0
   if [ "$1" = "--unescape" ]; then
@@ -22,12 +26,16 @@ main() {
 
   /opt/pyamsoft/bin/cscli lapi status && {
     printf -- '[Crowdsec Heartbeat] Crowdsec is still alive! Report: %s\n' "${_url}"
-    curl -s "${_url}" || {
+    _post "${_url}" "true" || {
       printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"\n' "${_url}"
       return 1
     }
 
     return 0
+  }
+
+  _post "${_url}" "false" || {
+    printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, and Crowdsec is dead: "%s"\n' "${_url}"
   }
 
   # Restart the crowdsec service
