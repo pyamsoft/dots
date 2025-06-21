@@ -13,6 +13,9 @@ Environment=PYAM_CONTAINER=/opt/pyamsoft/bin/%i
 
 ## Generally you should NOT need to change these
 
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
 # Check the file exists, do not attempt to start otherwise
 ExecStartPre=/bin/test -x $PYAM_CONTAINER
 
