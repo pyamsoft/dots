@@ -59,7 +59,7 @@ _get_latest_tags() {
           grep -v 'ls' | grep -v 'libtorrent'
           ;;
         */byparr)
-          grep -v '.sig'
+          grep -v '.sig' | grep -v 'main'
           ;;
         *)
           cat
