@@ -30,6 +30,9 @@ kernel-modules-hook
 ldns
 libvirt
 linux
+linux-firmware-amdgpu
+linux-firmware-intel
+linux-firmware-realtek
 linux-lts
 lm_sensors
 malcontent
@@ -60,7 +63,7 @@ socat
 sshpass
 starship
 steam
-sunshine
+sunshine-git
 system-config-printer
 tmux
 ttf-gentium-plus

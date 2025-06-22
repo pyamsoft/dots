@@ -676,7 +676,6 @@ libyuv
 licenses
 lilv
 linux-api-headers
-linux-firmware
 linux-firmware-whence
 lksctp-tools
 llvm-libs
