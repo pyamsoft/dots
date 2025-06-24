@@ -29,9 +29,7 @@ kernel-modules-hook
 ldns
 libvirt
 linux
-linux-firmware-amdgpu
-linux-firmware-intel
-linux-firmware-realtek
+linux-firmware
 linux-lts
 lm_sensors
 malcontent
