@@ -1,0 +1,12 @@
+#
+# /etc/fstab: static file system information
+#
+# <file system>	<dir>	<type>	<options>	<dump>	<pass>
+#
+
+# Swap
+/swapfile                                 none                      swap        defaults,noatime,discard  0 0
+
+# Mount efivars as RO for security
+# https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#Disable_UEFI_variable_access
+efivarfs                                  /sys/firmware/efi/efivars efivarfs    ro,nosuid,nodev,noexec    0 0
