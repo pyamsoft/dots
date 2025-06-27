@@ -53,8 +53,7 @@ for example reports problems on my machine and prevents fwupd from running.
   - Can be automatically handled by a pacman hook
 - Gamescope may need cap_sys_nice `sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/sunshine`
   - Can be automatically handled by a pacman hook
-- KDE Connect prompts Screen Sharing every time start remote mouse
-  - No real way around this? Not sure if it's Portal or KDEConnect's job to solve.
+- See Arch wiki for enabling Wayland for Android Studio / Webstorm
 
 ### Docker
 
@@ -96,6 +95,28 @@ to `/etc/pacman.conf`
 Don't enable the user level systemd service - it's weird. Use our customer autostart-sunshine user service
 which calls through to the `restart-sunshine` script, which it expects to live in `${HOME}/.local/bin`
 The `restart-sunshine` script is unixy platform agnostic and will handle known quirks of sunshine
+
+### Secure Boot
+
+You should install `sbctl` to easily manage secure boot, and reference the Arch wiki for usage.
+On specific machines, the secure boot BIOS process is a little janky. On my minisforum UM780XTX it is as follows
+
+At any point if you are asked to "restore factory keys" or "reboot without saving", DO NOT DO IT.
+
+- Boot into Admin BIOS -> Security -> Secure Boot
+- You should see you are in "User" or "Standard" mode at the top
+- Disable Secure Boot
+- Set to Custom Mode
+- Manually restore the factory keys
+- Enable setup mode
+- Reboot the machine, go into BIOS again
+- Boot into Admin BIOS -> Security -> Secure Boot
+- You should see you are in "User" or "Standard" mode at the top
+- Enable setup mode (it should be allowed and the machine still in Custom mode with Disabled SB)
+- Now at the top you should see you are in "Setup" mode instead of "User"
+- DO NOT REBOOT - IF YOU REBOOT YOU WILL LEAVE SETUP MODE
+- Go to the boot override and select your main boot device.
+- Verify you are in setup mode via `sbctl status` and enroll your keys
 
 ## Tweaks
 
