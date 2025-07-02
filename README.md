@@ -29,17 +29,24 @@ I code with a monospace Comic Sans like font. Yes, I am serious.
 Currently I'm using a fork of "Comic Shanns", found here on github:  
 [you have been warned](https://github.com/jesusmgg/comic-shanns-mono)
 
-### Sound on Linux
-
-You may need `alsa-firmware` and `sof-firmware` for sound cards. You also would generally
-want to install `alsa-utils` and `alsa-plugins` for higher quality sound resampling.
-
 ### USBGuard
 
 [Make sure you setup USBGuard](https://wiki.archlinux.org/title/USBGuard)
 `usbguard generate-policy > /etc/usbguard/rules.conf`
 
 Otherwise, if another service starts usbguard somehow, you will be locked out!
+
+### Overclocking / Undervolting
+
+#### GPU
+
+I use LACT for AMD GPU overclocking and undervolting
+Be sure to setup the daemon for usage by creating the `lact` group and
+specifying the group in `/etc/lact/config.yaml`
+
+#### CPU
+
+For CPU clocking, I use my own developed utility called `pstate-frequency`
 
 ### Firmware Update
 
