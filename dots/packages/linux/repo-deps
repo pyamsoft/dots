@@ -29,7 +29,6 @@ bluez
 bluez-libs
 bluez-obex
 bolt
-botan
 bpf
 breeze-icons
 brotli
@@ -805,11 +804,11 @@ procps-ng
 protobuf
 protobuf-c
 psmisc
-pugixml
 pulseaudio-qt
 python
 python-argcomplete
 python-autocommand
+python-cachecontrol
 python-cairo
 python-capng
 python-certifi
@@ -817,17 +816,23 @@ python-chardet
 python-charset-normalizer
 python-click
 python-configobj
+python-dateutil
 python-dbus
 python-distro
+python-docopt
 python-dotenv
+python-feedparser
+python-filelock
 python-gobject
 python-greenlet
+python-html2text
 python-idna
 python-jaraco.collections
 python-jaraco.context
 python-jaraco.functools
 python-jaraco.text
 python-linux-procfs
+python-lockfile
 python-more-itertools
 python-msgpack
 python-packaging
@@ -835,6 +840,7 @@ python-pbr
 python-pillow
 python-platformdirs
 python-protobuf
+python-psutil
 python-pycryptodomex
 python-pycups
 python-pyinotify
@@ -845,6 +851,8 @@ python-pyudev
 python-reportlab
 python-requests
 python-setuptools
+python-sgmllib3k
+python-six
 python-urllib3
 python-wheel
 python-yaml
@@ -896,7 +904,6 @@ qqc2-desktop-style
 qrencode
 qt6-5compat
 qt6-base
-qt6-charts
 qt6-connectivity
 qt6-declarative
 qt6-multimedia
@@ -905,7 +912,6 @@ qt6-shadertools
 qt6-svg
 qt6-translations
 qt6-wayland
-quazip-qt6
 raptor
 rav1e
 readline

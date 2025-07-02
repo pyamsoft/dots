@@ -8,7 +8,6 @@ bash-completion
 bluez-utils
 btop
 buildah
-corectrl
 cups-pdf
 dante
 dbus-broker
@@ -26,6 +25,7 @@ iperf3
 iwd
 kdeconnect
 kernel-modules-hook
+lact
 ldns
 libvirt
 linux
