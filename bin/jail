@@ -403,6 +403,11 @@ main() {
     return 1
   fi
 
+  if [ -z "${_name}" ]; then
+    # Assume the jailname is the command name
+    _name="${_cmd}"
+  fi
+
   _jail_dir="${JAIL_DIR}/${_name}"
   _create_home "${_jail_dir}" || return 1
   _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "${_real_home}" "$@" || return 1
