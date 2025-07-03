@@ -45,8 +45,8 @@ _usage() {
 [system]:      System management related operations
 
   checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
-  enter        Runs '${_cmd} exec -it <name> /bin/sh'
   exec         Runs '${_cmd} exec -it <name>'
+  pid          Returns the PID of the containerized process on the host system
   prune        Runs '${_cmd} system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
@@ -126,15 +126,14 @@ main() {
 
     exec "${_cmd}" auto-update --dry-run "$@"
     ;;
-  enter)
-    # Use /bin/bash if it is available, otherwise use /bin/sh if times are tough.
-    exec "${_cmd}" exec -i -t "$1" /bin/sh -c 'if [ -x /bin/bash ]; then exec /bin/bash; else exec /bin/sh; fi'
-    ;;
   exec)
     _container="$1"
     shift
 
     exec "${_cmd}" exec -i -t "${_container}" "$@"
+    ;;
+  pid)
+    exec "${_cmd}" inspect "$1" -f '{{ .State.Pid }}'
     ;;
   prune)
     exec "${_cmd}" system prune -a "$@"

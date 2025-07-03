@@ -6,7 +6,7 @@ if ! declare -f __containers >/dev/null 2>&1; then
     COMPREPLY=()
     local prev="${COMP_WORDS[COMP_CWORD - 1]}"
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local commands="ps logs images inspect reload disable restart status stop checkup enter prune pull teardown exec shell stats"
+    local commands="ps logs images inspect reload disable restart status stop checkup pid prune pull teardown exec shell stats"
 
     _reply() {
       # shellcheck disable=SC2207
@@ -21,7 +21,7 @@ if ! declare -f __containers >/dev/null 2>&1; then
         # No further arguments
         COMPREPLY=()
         ;;
-      logs | images | inspect | enter | exec | teardown | disable | restart | status | stop | stats)
+      logs | images | inspect | pid | exec | teardown | disable | restart | status | stop | stats)
         # Offer contains
         _reply "$("${cmd}" ps --noheading --format '{{ .Names }}')" "$4"
         ;;
