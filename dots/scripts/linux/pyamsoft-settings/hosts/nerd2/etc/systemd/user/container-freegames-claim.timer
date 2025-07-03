@@ -1,0 +1,10 @@
+[Unit]
+Description=Claim freegames using vogler/free-games-claimer
+
+[Timer]
+OnCalendar=0/4:00:00
+Persistent=true
+Unit=container@freegames.service
+
+[Install]
+WantedBy=timers.target
