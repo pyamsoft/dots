@@ -2,7 +2,7 @@
 
 # A simple jail which isolated user files from the greater HOME directory
 
-readonly _VERSION="0.0.1"
+readonly _VERSION="0.0.2"
 
 # Can be overridden by the environment
 readonly JAIL_DIR="${JAIL_DIR:-${HOME}/.local/etc/jails}"
@@ -82,14 +82,15 @@ directory.
 Jails are located in: ${JAIL_DIR} by default
 
 
-\$ jail [--shell] [--x11] [--real-home] [--name <name>] <command> [bwrap-options] -- [command-options]
+\$ jail [options] -- <command> [bwrap-options] -- [command-options]
 
+You must pass "--" before the command, EVEN IF you do not use any options.
 Any arguments passed after the <command> will be interpreted as options for bwrap.
 Any arguments passed after the command and "--" will be passed to the command
 
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
---real-home      Do not jail directories in \$HOME
+--real-home      Do not use a jailed home directory, use the real user \$HOME
 --shell          Open a shell in the jail instead of executing the command
 --x11            Bind paths for running with X11/XWayland
 -h | --help      Prints this help
@@ -386,6 +387,11 @@ main() {
       shift
 
       break
+      ;;
+    *)
+      # Show help
+      _usage
+      return 0
       ;;
     esac
   done
