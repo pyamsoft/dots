@@ -82,7 +82,7 @@ directory.
 Jails are located in: ${JAIL_DIR} by default
 
 
-\$ jail [--shell] [--real-home] [--name <name>] <command> [bwrap-options] -- [command-options]
+\$ jail [--shell] [--x11] [--real-home] [--name <name>] <command> [bwrap-options] -- [command-options]
 
 Any arguments passed after the <command> will be interpreted as options for bwrap.
 Any arguments passed after the command and "--" will be passed to the command
@@ -91,6 +91,7 @@ Any arguments passed after the command and "--" will be passed to the command
 --name <name>    Name the jail (otherwise uses the command name)
 --real-home      Do not jail directories in \$HOME
 --shell          Open a shell in the jail instead of executing the command
+--x11            Bind paths for running with X11/XWayland
 -h | --help      Prints this help
 
 EOF
@@ -162,9 +163,11 @@ _run_jail() {
   _j_jail="$2"
   _j_name="$3"
   _j_open_shell="$4"
-  _j_real_home="$5"
+  _j_x11="$5"
+  _j_real_home="$6"
 
   # The rest of the arguments are commands
+  shift
   shift
   shift
   shift
@@ -221,6 +224,14 @@ _run_jail() {
   # If resolv conf is a symlink, bind the real file too
   _j_sys_binds="${_j_sys_binds} $(_bind_symlink "ro-bind" "/etc/resolv.conf")"
 
+  # If X11 usage is enabled, bind X11 files
+  if [ -n "${_j_x11}" ] && [ "${_j_x11}" -eq 1 ]; then
+    # Mount back the user runtime dir and add extra binds for .X11 in /tmp
+    _j_sys_binds="${_j_sys_binds} $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix)"
+  else
+    _j_sys_binds="${_j_sys_binds} $(_block_in_jail "/etc/X11" "/usr/share/X11" "/usr/lib/X11")"
+  fi
+
   readonly _j_home_binds
   readonly _j_sys_binds
 
@@ -239,7 +250,6 @@ _run_jail() {
   #
   # Overwrite /tmp /run /var and /proc
   # /sys is overwritten but the char and pci devices are mounted back in for 3d accel
-  # Mount back the user runtime dir and add extra binds for .X11 in /tmp
   # Mount dbus system socket
   # Mount cups socket
   #
@@ -278,7 +288,6 @@ _run_jail() {
     $(_block_in_jail "/etc/ssh") \
     $(_block_in_jail "/etc/cryptsetup-keys.d/") \
     $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
-    $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix) \
     $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
     $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}") \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
@@ -316,6 +325,7 @@ main() {
   _name=""
   _open_shell=0
   _real_home=0
+  _use_x11=0
 
   # Assume the first argument is the command to run
   _cmd="$1"
@@ -326,46 +336,59 @@ main() {
   fi
   shift
 
-  # Show help
-  if [ "${_cmd}" = "--help" ] || [ "${_cmd}" = "-h" ]; then
-    _usage
-    return 1
-  fi
+  while [ -n "${_cmd}" ]; do
+    case "${_cmd}" in
+    -h | --help)
+      # Show help
+      _usage
+      return 0
+      ;;
+    --shell)
+      # We want to open a shell
+      _open_shell=1
 
-  # If we want to open a shell, then the next thing is the command
-  if [ "${_cmd}" = "--shell" ]; then
-    # We want to open a shell
-    _open_shell=1
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+      ;;
+    --real-home)
+      # Do not jail home
+      _real_home=1
 
-    # The next argument is the new command
-    _cmd="$1"
-    shift
-  else
-    _open_shell=0
-  fi
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+      ;;
+    --name)
+      # We want a custom name
+      _name="$1"
 
-  # We want to use the real home
-  if [ "${_cmd}" = "--real-home" ]; then
-    # Do not jail home
-    _real_home=1
+      # Shift because we consume the name
+      shift
 
-    # The next argument is the new command
-    _cmd="$1"
-    shift
-  fi
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+      ;;
+    --x11)
+      # We need X11 compat
+      _use_x11=1
 
-  # If we provide a name, use it instead of the command name
-  if [ "${_cmd}" = "--name" ]; then
-    # We've shifted, the current argument is the name
-    _name="$1"
-    shift
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+      ;;
+    --)
+      # Stop processing
 
-    # The next argument is the new command
-    _cmd="$1"
-    shift
-  else
-    _name="${_cmd}"
-  fi
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+
+      break
+      ;;
+    esac
+  done
 
   # Double check the command here after all this proccessing
   if [ -z "${_cmd}" ]; then
@@ -376,8 +399,9 @@ main() {
 
   _jail_dir="${JAIL_DIR}/${_name}"
   _create_home "${_jail_dir}" || return 1
-  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_real_home}" "$@" || return 1
+  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "${_real_home}" "$@" || return 1
 
+  unset _use_x11
   unset _real_home
   unset _open_shell
   unset _cmd
