@@ -28,6 +28,7 @@ _usage() {
 
 [container]:   Exectue ${_cmd} operations on containers
 
+  pid          Returns the PID of the containerized process on the host system
   ps           Runs '${_cmd} ps', passing all arguments
   logs         Runs '${_cmd} logs', passing all arguments
   images       Runs '${_cmd} images', passing all arguments
@@ -46,7 +47,6 @@ _usage() {
 
   checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
   exec         Runs '${_cmd} exec -it <name>'
-  pid          Returns the PID of the containerized process on the host system
   prune        Runs '${_cmd} system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
