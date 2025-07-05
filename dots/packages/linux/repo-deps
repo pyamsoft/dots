@@ -85,10 +85,8 @@ e2fsprogs
 edk2-ovmf
 egl-wayland
 eglexternalplatform
-elfutils
 ell
 enchant
-ethtool
 exempi
 exiv2
 expat
@@ -255,7 +253,6 @@ haskell-uuid-types
 haskell-vector
 haskell-vector-stream
 haskell-witherable
-hdparm
 hicolor-icon-theme
 hidapi
 highway
@@ -566,7 +563,6 @@ libp11-kit
 libpaper
 libpcap
 libpciaccess
-libpfm
 libpgm
 libpipeline
 libpipewire
@@ -764,7 +760,6 @@ pciutils
 pcre
 pcre2
 pcsclite
-perf
 perl
 perl-alien-build
 perl-alien-libxml2
@@ -814,7 +809,6 @@ python-certifi
 python-chardet
 python-charset-normalizer
 python-click
-python-configobj
 python-dateutil
 python-dbus
 python-distro
@@ -830,7 +824,6 @@ python-jaraco.collections
 python-jaraco.context
 python-jaraco.functools
 python-jaraco.text
-python-linux-procfs
 python-lockfile
 python-more-itertools
 python-msgpack
@@ -842,11 +835,9 @@ python-protobuf
 python-psutil
 python-pycryptodomex
 python-pycups
-python-pyinotify
 python-pynvim
 python-pyqt6
 python-pyqt6-sip
-python-pyudev
 python-reportlab
 python-requests
 python-setuptools
@@ -990,7 +981,6 @@ tslib
 ttf-dejavu
 ttf-nerd-fonts-symbols-common
 ttf-nerd-fonts-symbols-mono
-tuned
 twolame
 tzdata
 uchardet

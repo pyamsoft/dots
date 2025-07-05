@@ -48,6 +48,7 @@ pipewire-pulse
 pkgstats
 podman
 podman-compose
+power-profiles-daemon
 rebuild-detector
 reflector
 rng-tools
@@ -66,7 +67,6 @@ system-config-printer
 tmux
 ttf-gentium-plus
 ttf-liberation
-tuned-ppd
 util-linux
 virt-manager
 vulkan-radeon
