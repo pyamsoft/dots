@@ -26,10 +26,10 @@ _prep_mounts() {
   _mounts=""
 
   # Follow the link and mount the media folder ONLY if it is valid
-  if [ -d "$(realpath "${_mount1}")" ]; then
+  if [ -d "$(realpath "${_mount1}")" ] && [ -e "$(realpath "${_mount1}/mounted")" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/scan_dir/1"
   fi
-  if [ -d "$(realpath "${_mount2}")" ]; then
+  if [ -d "$(realpath "${_mount2}")" ] && [ -e "$(realpath "${_mount2}/mounted")" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/scan_dir/2"
   fi
 
@@ -39,6 +39,10 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
+
+  # Allow writing SRT files to output location
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add FOWNER"
 
   readonly _caps
   return 0
@@ -60,7 +64,7 @@ _check_user() {
   # Only for podman
   if [ "${_cmd}" = "podman" ]; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _userns="--userns keep-id --user=0:0"
+    _userns="--user=0:0"
   else
     _userns=""
   fi
