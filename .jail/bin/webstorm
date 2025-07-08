@@ -8,7 +8,7 @@ path="${HOME}/.local/bin"
 
 readonly path
 
-jail --name webstorm -- /usr/bin/webstorm \
+jail --name webstorm --x11 -- /usr/bin/webstorm \
   --setenv PATH "${path}:${PATH}" \
   --setenv JAVA_HOME "/opt/webstorm/jbr/" \
   --bind "${project_root}" "${project_root}" \

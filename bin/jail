@@ -1,6 +1,8 @@
 #!/bin/sh
 
 # A simple jail which isolated user files from the greater HOME directory
+#
+# See _usage for details
 
 readonly _VERSION="0.0.2"
 
@@ -76,11 +78,19 @@ _usage() {
 jail [${_VERSION}]
 
 Runs a command in a jail.
-A jail separates the program's \${HOME} from the real user's \$HOME
-directory.
+
+What is a jail?
+---------------
+
+A jail separates the program's \${HOME} from the real user's \${HOME}
+directory. The main goal of the jail is user \${HOME} separation.
+The fact that the jail also isolates by default sensitive system
+directories and restricts unsafe X11 access is a bonus feature,
+which can be changed or removed at any time in favor of cleaner
+\${HOME} isolation.
 
 Jails are located in: ${JAIL_DIR} by default
-
+---------------
 
 \$ jail [options] -- <command> [bwrap-options] -- [command-options]
 
@@ -90,7 +100,6 @@ Any arguments passed after the command and "--" will be passed to the command
 
 [Options]
 --name <name>    Name the jail (otherwise uses the command name)
---real-home      Do not use a jailed home directory, use the real user \$HOME
 --shell          Open a shell in the jail instead of executing the command
 --x11            Bind paths for running with X11/XWayland
 -h | --help      Prints this help
@@ -165,10 +174,8 @@ _run_jail() {
   _j_name="$3"
   _j_open_shell="$4"
   _j_x11="$5"
-  _j_real_home="$6"
 
   # The rest of the arguments are commands
-  shift
   shift
   shift
   shift
@@ -206,24 +213,32 @@ _run_jail() {
   done
   readonly _args
 
-  if [ -n "${_j_real_home}" ] && [ "${_j_real_home}" -eq 1 ]; then
-    printf -- 'Not jailing %s directory!\n' "\$HOME"
-    _j_home_binds=""
-  else
-    _j_home_binds="--bind ${_j_jail}/home ${HOME} \
-      $(_bind_in_jail "ro-bind" "${HOME}/.gnupg" "${GNUPGHOME}") \
+  # Isolate user $HOME
+  _j_home_binds="--bind ${_j_jail}/home ${HOME}"
+
+  # Add in extra nice-to-have directories
+  # For things like icons, theme, and fonts
+  #
+  # Explicitly restrict access to SSH
+  # Explicitly restrict access to GNUPG
+  # Explicitly restrict access to some pre-defined password file locations
+  _j_home_binds="${_j_home_binds} \
       $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/QtProject.conf) \
-      $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/ssh" "${HOME}/.ssh") \
       $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/fontconfig) \
       $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/gtk-*) \
-      $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/icon-cache.kcache)"
-  fi
+      $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/icon-cache.kcache) \
+      $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/gnupg" "${GNUPGHOME}") \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.keepass" "${HOME}/.keepass") \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/keepass" "${HOME}/keepass") \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.passwords" "${HOME}/.passwords") \
+      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/passwords" "${HOME}/passwords")"
 
   _j_sys_binds=""
+  _j_env=""
 
   # If resolv conf is a symlink, bind the real file too
   _j_sys_binds="${_j_sys_binds} $(_bind_symlink "ro-bind" "/etc/resolv.conf")"
@@ -232,12 +247,29 @@ _run_jail() {
   if [ -n "${_j_x11}" ] && [ "${_j_x11}" -eq 1 ]; then
     # Mount back the user runtime dir and add extra binds for .X11 in /tmp
     _j_sys_binds="${_j_sys_binds} $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix)"
+
+    # Add back XAUTHORITY
+    if [ -n "${XAUTHORITY}" ]; then
+      _j_env="${_j_env} --setenv XAUTHORITY ${XAUTHORITY}"
+    fi
+
+    # Add back DISPLAY
+    if [ -n "${DISPLAY}" ]; then
+      _j_env="${_j_env} --setenv DISPLAY ${DISPLAY}"
+    fi
   else
     _j_sys_binds="${_j_sys_binds} $(_block_in_jail "/etc/X11" "/usr/share/X11" "/usr/lib/X11")"
+
+    # Remove XAUTHORITY
+    _j_env="${_j_env} --unsetenv XAUTHORITY"
+
+    # Remove DISPLAY
+    _j_env="${_j_env} --unsetenv DISPLAY"
   fi
 
   readonly _j_home_binds
   readonly _j_sys_binds
+  readonly _j_env
 
   # Fail on subshell or pipe failure
   set -eu
@@ -260,6 +292,7 @@ _run_jail() {
   # shellcheck disable=SC2086,SC2046
   _wrap \
     ${_j_session} \
+    --die-with-parent \
     --cap-drop ALL \
     --unshare-user \
     --unshare-ipc \
@@ -270,6 +303,11 @@ _run_jail() {
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
     --unsetenv SESSION_MANAGER \
+    --unsetenv SSH_AUTH_SOCK \
+    --unsetenv MANAGERPID \
+    --unsetenv SYSTEMD_EXEC_PID \
+    --unsetenv JOURNAL_STREAM \
+    ${_j_env} \
     $(_bind_in_jail "dev-bind" "/") \
     --proc /proc \
     --mqueue /dev/mqueue \
@@ -328,7 +366,6 @@ main() {
   _check_prereq || return 1
   _name=""
   _open_shell=0
-  _real_home=0
   _use_x11=0
 
   # Assume the first argument is the command to run
@@ -350,14 +387,6 @@ main() {
     --shell)
       # We want to open a shell
       _open_shell=1
-
-      # The next argument is the new command
-      _cmd="$1"
-      shift
-      ;;
-    --real-home)
-      # Do not jail home
-      _real_home=1
 
       # The next argument is the new command
       _cmd="$1"
@@ -413,10 +442,9 @@ main() {
 
   _jail_dir="${JAIL_DIR}/${_name}"
   _create_home "${_jail_dir}" || return 1
-  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "${_real_home}" "$@" || return 1
+  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "$@" || return 1
 
   unset _use_x11
-  unset _real_home
   unset _open_shell
   unset _cmd
   unset _jail_dir
