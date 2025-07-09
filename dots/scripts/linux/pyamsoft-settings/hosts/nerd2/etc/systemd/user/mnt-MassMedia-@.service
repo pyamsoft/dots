@@ -19,8 +19,8 @@
 
 [Unit]
 Description=Dependency unit alive while /mnt/MassMedia/%i is mounted
-After=mnt-MassMedia@%i.path
-Requires=mnt-MassMedia@%i.path
+After=mnt-MassMedia-@%i.path
+Requires=mnt-MassMedia-@%i.path
 RequiresMountsFor=/mnt/MassMedia/%i
 
 [Service]
