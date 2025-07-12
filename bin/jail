@@ -307,6 +307,7 @@ _run_jail() {
     --unsetenv MANAGERPID \
     --unsetenv SYSTEMD_EXEC_PID \
     --unsetenv JOURNAL_STREAM \
+    --unsetenv INVOCATION_ID \
     ${_j_env} \
     $(_bind_in_jail "dev-bind" "/") \
     --proc /proc \
