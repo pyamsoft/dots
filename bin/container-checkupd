@@ -58,6 +58,9 @@ _get_latest_tags() {
         */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
           grep -v 'ls' | grep -v 'libtorrent'
           ;;
+        */readarr)
+          grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
+          ;;
         */byparr)
           grep -v '.sig' | grep -v 'main'
           ;;
