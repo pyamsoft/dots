@@ -110,6 +110,7 @@ foomatic-db
 foomatic-db-engine
 foomatic-db-ppds
 freeglut
+freerdp
 freetype2
 fribidi
 fuse-common
@@ -130,6 +131,7 @@ geoclue
 geocode-glib-2
 geocode-glib-common
 gettext
+gflags
 gfxstream
 ghc-libs
 ghostscript
@@ -162,6 +164,7 @@ gnulib-l10n
 gnupg
 gnutls
 gobject-introspection-runtime
+google-glog
 gperftools
 gpgme
 gpgmepp
@@ -623,6 +626,7 @@ libvdpau-va-gl
 libverto
 libvirt-glib
 libvirt-python
+libvncserver
 libvorbis
 libvpl
 libvpx
@@ -904,11 +908,13 @@ qt6-translations
 qt6-wayland
 raptor
 rav1e
+rdma-core
 readline
 realtime-privileges
 rocm-core
 rocm-device-libs
 rocm-smi-lib
+rocprofiler-register
 rtkit
 rtl-sdr
 rtmpdump
@@ -919,6 +925,7 @@ sbc
 scx-scheds
 sdl2-compat
 sdl2_image
+sdl2_ttf
 sdl3
 seabios
 seatd
