@@ -7,8 +7,10 @@ readonly project_root="${dev_root}/project/pyamsoft/android"
 # Local scripts
 path="${HOME}/.local/bin"
 
+# Android Studio JDK
+path="${path}:/opt/android-studio/jbr/bin"
+
 # Android SDK
-path="${path}:/app/extra/android-studio/jbr/bin"
 path="${path}:${sdk_root}/emulator"
 path="${path}:${sdk_root}/cdmline-tools/latest/bin"
 path="${path}:${sdk_root}/platform-tools"
