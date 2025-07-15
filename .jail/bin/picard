@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec jail --name picard --x11 -- /usr/bin/picard \
+  --bind "${HOME}/music" "${HOME}/music" \
+  -- "$@"
