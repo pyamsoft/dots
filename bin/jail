@@ -226,7 +226,6 @@ _run_jail() {
       $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
       $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
-      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/QtProject.conf) \
       $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/fontconfig) \
       $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/gtk-*) \
       $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/icon-cache.kcache) \
