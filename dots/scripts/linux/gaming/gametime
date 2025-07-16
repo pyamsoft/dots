@@ -258,6 +258,8 @@ _prepare_gamescope() {
   #
   # Do NOT set this, and it will instead default to your monitor's refresh rate.
   # Otherwise, set it ridiculously high, like 2x your refresh rate
+  # https://github.com/PancakeTAS/lsfg-vk/wiki/Gamescope-Compatibility#what-about-the-sdl-backend
+  #
   # __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
   # __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
