@@ -181,13 +181,6 @@ _prepare_gamescope() {
   fi
   window_type="${GAME_WINDOW}"
 
-  # If we have a custom GAME_FPS amount passed in, use it
-  # otherwise default to 120fps max
-  if [ -z "${GAME_FPS}" ]; then
-    GAME_FPS="120"
-  fi
-  fps_max="${GAME_FPS}"
-
   # If an output resolution is defined as GAME_OUTPUT=WxH, then use it here
   # Otherwise default the output to 1080p
   # Unless we have an eGPU plugged in, then use 1440p
@@ -257,8 +250,16 @@ _prepare_gamescope() {
   # https://github.com/ValveSoftware/gamescope/issues/995
   #
   # Just set something that's so high it won't bother us - limit FPS via in-game options
-  __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
-  __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
+  #
+  # Do NOT set the refresh rate
+  # The refresh rate, in this case, is how many times gamescope ITSELF refreshes the compositor window
+  # NOT the frame rate of your game. Thus, if you set it to 60, for example, but get 120 FPS in game
+  # you will only visually see EVERY OTHER FRAME.
+  #
+  # Do NOT set this, and it will instead default to your monitor's refresh rate.
+  # Otherwise, set it ridiculously high, like 2x your refresh rate
+  # __gamescope_options="${__gamescope_options} --nested-refresh ${fps_max}"
+  # __gamescope_options="${__gamescope_options} --nested-unfocused-refresh 15"
 
   # Expose Wayland
   if [ -n "${GAME_WAYLAND}" ] && [ "${GAME_WAYLAND}" -ne 0 ] && [ -n "${XDG_SESSION_TYPE}" ] && [ "${XDG_SESSION_TYPE}" = "wayland" ]; then
@@ -301,18 +302,16 @@ _prepare_gamescope() {
 
   ############################################
 
-  _log 'gamescope renderer: YES (GAME_WINDOW=%s, GAME_OUTPUT=%s, GAME_NESTED=%s, GAME_FPS=%s)' "${GAME_WINDOW}" "${GAME_OUTPUT}" "${GAME_NESTED}" "${GAME_FPS}"
+  _log 'gamescope renderer: YES (GAME_WINDOW=%s, GAME_OUTPUT=%s, GAME_NESTED=%s)' "${GAME_WINDOW}" "${GAME_OUTPUT}" "${GAME_NESTED}"
 
   unset output_width
   unset output_height
   unset nested_width
   unset nested_height
   unset window_type
-  unset fps_max
   unset GAME_OUTPUT
   unset GAME_NESTED
   unset GAME_WINDOW
-  unset GAME_FPS
   return 0
 }
 
