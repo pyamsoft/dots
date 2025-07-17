@@ -64,6 +64,12 @@ _get_latest_tags() {
         */byparr)
           grep -v '.sig' | grep -v 'main'
           ;;
+        */mosquitto)
+          grep -v 'openssl'
+          ;;
+        */zigbee2mqtt)
+          grep -v 'v1.35'
+          ;;
         *)
           cat
           ;;
