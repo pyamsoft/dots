@@ -68,7 +68,7 @@ _get_latest_tags() {
           grep -v 'openssl'
           ;;
         */zigbee2mqtt)
-          grep -v 'v1.35'
+          grep -v 'v1.35' | grep -v 'v1.31'
           ;;
         *)
           cat
