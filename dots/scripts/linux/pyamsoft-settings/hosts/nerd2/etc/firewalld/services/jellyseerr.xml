@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>jellyseerr</short>
-  <description>Jellyseerr Media Requests</description>
-  <port port="5055" protocol="tcp" />
-</service>

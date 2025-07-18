@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>wake-on-lan</short>
-  <description>Wake On LAN support</description>
-  <port port="9" protocol="udp" />
-</service>

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>bar-assistant</short>
-  <description>Bar Assistant</description>
-  <port port="3000" protocol="tcp" />
-</service>
