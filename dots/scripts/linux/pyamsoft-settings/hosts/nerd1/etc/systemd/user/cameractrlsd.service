@@ -1,0 +1,9 @@
+[Unit]
+Description=CameraCtrls daemon - restore control values
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/flatpak --user run --command='cameractrlsd.py' hu.irl.cameractrls
+
+[Install]
+WantedBy=graphical-session.target
