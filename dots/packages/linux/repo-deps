@@ -12,7 +12,6 @@ alsa-lib
 alsa-plugins
 alsa-topology-conf
 alsa-ucm-conf
-ananicy-cpp
 aom
 appstream
 argyllcms
