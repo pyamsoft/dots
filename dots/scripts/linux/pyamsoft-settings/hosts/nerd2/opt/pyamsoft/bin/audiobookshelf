@@ -2,7 +2,7 @@
 
 readonly _name="audiobookshelf"
 readonly _image="ghcr.io/advplyr/audiobookshelf"
-readonly _tag="2.25.1"
+readonly _tag="2.26.3"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
