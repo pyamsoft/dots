@@ -1,0 +1,12 @@
+#!/bin/sh
+
+main() {
+  # Run mullvad-vpn using Wayland
+  #
+  # (We copy flags used to launch Ferdium)
+  # https://github.com/ferdium/ferdium-app/issues/1539
+  exec "/opt/Mullvad VPN/mullvad-vpn" --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto "$@"
+}
+
+main "$@" || exit 1
+exit0

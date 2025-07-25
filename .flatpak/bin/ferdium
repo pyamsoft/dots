@@ -2,10 +2,9 @@
 
 readonly pak="org.ferdium.Ferdium"
 
-# shellcheck disable=SC2086
-exec flatpak-env "${pak}" \
-  -- \
+# Run ferdium with Wayland
+# https://github.com/ferdium/ferdium-app/issues/1539
+exec flatpak run -- "${pak}" \
   --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
   "$@" || exit 1
 exit 0
-

@@ -17,6 +17,14 @@ path="${path}:${sdk_root}/platform-tools"
 
 readonly path
 
+# Even if you run with Wayland
+# https://wiki.archlinux.org/title/Android#Android_Studio
+#
+# The launcher splash still uses XKB and X11, so you NEED this
+# X11 flag here, even though after the launcher the actual program
+# does NOT run in X11
+#
+# You can check xlsclients to be sure
 jail --name android-studio --x11 -- /usr/bin/android-studio \
   --setenv PATH "${path}:${PATH}" \
   --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
