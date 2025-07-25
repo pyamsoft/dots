@@ -10,11 +10,11 @@ io.openrct2.OpenRCT2
 net.shadps4.shadPS4
 org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
-org.gnome.Connections
 org.gnome.Firmware
 org.gnome.SimpleScan
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.localsend.localsend_app
 org.mozilla.firefox
+org.remmina.Remmina
 page.tesk.Refine
