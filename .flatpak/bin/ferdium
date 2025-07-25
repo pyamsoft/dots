@@ -1,0 +1,11 @@
+#!/bin/sh
+
+readonly pak="org.ferdium.Ferdium"
+
+# shellcheck disable=SC2086
+exec flatpak-env "${pak}" \
+  -- \
+  --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+  "$@" || exit 1
+exit 0
+
