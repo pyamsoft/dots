@@ -3,7 +3,6 @@
 [Unit]
 Description=Crowdsec Heartbeat Report to %i
 After=network.target syslog.target local-fs.target docker.service podman.service container-crowdsec.service container@crowdsec.service crowdsec.service
-Wants=container-crowdsec.service container@crowdsec.service crowdsec.service
 
 [Service]
 # We are in a pyamsoft service

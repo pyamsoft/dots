@@ -3,7 +3,6 @@
 [Unit]
 Description=Container: Scrutiny Collector Metrics Runner
 After=network.target syslog.target local-fs.target docker.service podman.service container-scrutiny.service container@scrutiny.service scrutiny.service
-Wants=container-scrutiny.service container@scrutiny.service scrutiny.service
 
 [Service]
 # We are in a pyamsoft service
