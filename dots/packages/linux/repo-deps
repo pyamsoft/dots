@@ -179,7 +179,6 @@ gsfonts
 gsm
 gsound
 gssdp
-gst-plugin-libcamera
 gst-plugin-pipewire
 gst-plugins-bad
 gst-plugins-bad-libs
@@ -435,8 +434,6 @@ libburn
 libbytesize
 libcaca
 libcacard
-libcamera
-libcamera-ipa
 libcanberra
 libcap
 libcap-ng
@@ -686,7 +683,6 @@ linux-firmware-other
 linux-firmware-radeon
 linux-firmware-realtek
 linux-firmware-whence
-lksctp-tools
 llvm-libs
 lmdb
 localsearch
