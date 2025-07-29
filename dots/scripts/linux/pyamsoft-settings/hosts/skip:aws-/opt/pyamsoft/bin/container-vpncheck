@@ -30,14 +30,49 @@ _check_mullvad() {
   return 1
 }
 
+_check_airvpn() {
+  _vpn_output="$(_check "$1" "https://ipleak.net/json/")" || {
+    printf -- '[%s] Failed to check container (%s) VPN status for AirVPN\n' "${_PROG_NAME}" "$1"
+    return 1
+  }
+
+  if printf -- '%s' "${_vpn_output}" | grep -q '"type": "AirVPN Server (Exit '; then
+    unset _vpn_output
+    return 0
+  fi
+
+  printf -- '[%s] Container (%s) IS NOT CONNECTED to AirVPN.\n' "${_PROG_NAME}" "$1"
+  unset _vpn_output
+
+  return 1
+}
+
 main() {
+  _vpn="$1"
+  case "${_vpn}" in
+  --mullvad | --airvpn)
+    shift
+    ;;
+  *)
+    printf -- 'You must specify either "--mullvad" or "--airvpn"\n'
+    return 1
+    ;;
+  esac
+
   if [ -z "$1" ]; then
     printf -- '[%s] You must specify a container\n' "${_PROG_NAME}"
     return 1
   fi
 
   for _c in "$@"; do
-    _check_mullvad "${_c}" || return 1
+    if [ "${_vpn}" = "--mullvad" ]; then
+      _check_mullvad "${_c}" || return 1
+    elif [ "${_vpn}" = "--airvpn" ]; then
+      _check_airvpn "${_c}" || return 1
+    else
+      printf -- 'Unsupported VPN checker backend. %s\n' "${_vpn}"
+      return 1
+    fi
     unset _c
   done
 
