@@ -16,7 +16,7 @@ fi
 readonly _cmd
 
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/wg"
 
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
