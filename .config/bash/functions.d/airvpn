@@ -1,0 +1,13 @@
+# shellcheck shell=bash
+
+amiairvpn() {
+  _arg="json/"
+  if [ -n "$1" ]; then
+    _arg="$1"
+    shift
+  fi
+
+  curl "https://ipleak.net/${_arg}" "$@" || return 1
+  return 0
+}
+
