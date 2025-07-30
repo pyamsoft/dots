@@ -4,9 +4,22 @@
 # <file system>	<dir>	<type>	<options>	<dump>	<pass>
 #
 
+# /dev/mapper/root
+#
+# Allow discard on SSD
+UUID=c3c385a0-e555-4c17-b8ae-64f8f3e83b10 /         	            ext4      	  rw,noatime,discard	                                                                                        0 1
+
+# /dev/nvme0n1p1
+#
+# Allow discard on SSD
+#
+# Use 0077 instead of default 0022, or systemd complains about security
+# https://bbs.archlinux.org/viewtopic.php?id=287695
+UUID=8FF6-4F36      	                    /boot     	            vfat      	  rw,noatime,discard,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro	0 2
+
 # Swap
-/swapfile                                 none                      swap        defaults,noatime,discard  0 0
+/swapfile                                 none                    swap          defaults,noatime,discard                                                                                    0 0
 
 # Mount efivars as RO for security
 # https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#Disable_UEFI_variable_access
-efivarfs                                  /sys/firmware/efi/efivars efivarfs    ro,nosuid,nodev,noexec    0 0
+efivarfs                                  /sys/firmware/efi/efivars efivarfs    ro,nosuid,nodev,noexec                                                                                      0 0
