@@ -206,7 +206,6 @@ harfbuzz-icu
 haskell-aeson
 haskell-ansi-terminal
 haskell-ansi-terminal-types
-haskell-ansi-wl-pprint
 haskell-assoc
 haskell-attoparsec
 haskell-base-compat
@@ -231,6 +230,8 @@ haskell-integer-logarithms
 haskell-onetuple
 haskell-optparse-applicative
 haskell-os-string
+haskell-prettyprinter
+haskell-prettyprinter-ansi-terminal
 haskell-primitive
 haskell-quickcheck
 haskell-random
