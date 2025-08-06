@@ -170,12 +170,10 @@ gpgmepp
 gpm
 graphene
 graphite
-graphviz
 grep
 groff
 gsettings-desktop-schemas
 gsettings-system-schemas
-gsfonts
 gsm
 gsound
 gssdp
@@ -192,7 +190,6 @@ gtk-vnc
 gtk3
 gtk4
 gtksourceview4
-gts
 guile
 gupnp
 gupnp-dlna
