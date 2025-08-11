@@ -4,7 +4,7 @@
 upstreams:
   groups:
     default:
-      - "https://cloudflare-dns.com/dns-query"
+      - "https://cloudflare-dns.com/dns-query#cloudflare-dns.com"
 
 # Bootstrap DNS over HTTPS
 bootstrapDns:
@@ -30,10 +30,10 @@ blocking:
   # Block Lists
   denylists:
     default:
-      # Hagezi Light
-      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/light.txt"
+      # Hagezi Normal
+      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt"
       # Hagezi Thread Intelligence Feeds
-      - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/tif.txt"
+      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt"
   clientGroupsBlock:
     default:
       - "default"
