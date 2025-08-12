@@ -3,3 +3,11 @@
 # Quick ping aliases
 alias p8="ping 8.8.8.8"
 alias pingg="ping google.com"
+
+# Ping forced over IPv4
+alias p84="if command -v ping4 >/dev/null; then ping4 8.8.8.8; else ping -4 8.8.8.8; fi;"
+alias pingg4="if command -v ping4 >/dev/null; then ping4 google.com; else ping -4 google.com; fi;"
+
+# Ping forced over IPv6
+alias p86="if command -v ping6 >/dev/null; then ping6 2001:4860:4860:0:0:0:0:8888; else ping -6 2001:4860:4860:0:0:0:0:8888; fi;"
+alias pingg6="if command -v ping6 >/dev/null; then ping6 google.com; else ping -6 google.com; fi;"
