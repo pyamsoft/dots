@@ -30,11 +30,11 @@ blocking:
   # Block Lists
   denylists:
     default:
-      # Hagezi Light
-      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light.txt"
+      # Hagezi Normal
+      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi.txt"
 
-      # Hagezi Thread Intelligence Feeds Medium
-      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.medium.txt"
+      # Hagezi Thread Intelligence Feeds
+      - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/tif.txt"
   clientGroupsBlock:
     default:
       - "default"
