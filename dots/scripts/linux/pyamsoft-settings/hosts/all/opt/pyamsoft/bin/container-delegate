@@ -81,11 +81,11 @@ _collect_containers() {
       case "$1" in
       -*)
         # In order
-        _containers_and_args="$1 ${_containers_and_args}"
+        _containers_and_args="${_containers_and_args} $1"
         ;;
       *)
         # In order
-        _containers_and_args="container@$1 ${_containers_and_args}"
+        _containers_and_args="${_containers_and_args} container@$1"
         ;;
       esac
     fi
@@ -156,8 +156,25 @@ main() {
     ;;
   restart | status | stop)
     _prep_container || return 1
-    _collect_containers "$@" || return 1
 
+    # If we are just asking for "status" or "status --failed", allow it
+    if [ "${_action}" = "status" ]; then
+      if [ "$#" -le 0 ]; then
+        # Run as the user
+        # shellcheck disable=SC2086
+        exec systemctl --user status
+      else
+        case "$1" in
+        --failed)
+          exec systemctl --user status --failed
+          ;;
+        *) ;;
+        esac
+      fi
+    fi
+
+    # Otherwise we expect at least one container name
+    _collect_containers "$@" || return 1
     if [ -z "${_containers_and_args}" ]; then
       printf -- '[%s] Must call %s with at least one container name\n' "${_PROG_NAME}" "${_action}"
       return 1
@@ -172,10 +189,10 @@ main() {
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user "daemon-reload"
+    exec systemctl --user daemon-reload
     ;;
   teardown)
-    exec container-teardown "$@"
+    exec /opt/pyamsoft/bin/container-teardown "$@"
     ;;
   *)
     printf -- '[%s] Invalid action: "%s"\n' "${_PROG_NAME}" "${_action}"
