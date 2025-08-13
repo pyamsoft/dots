@@ -9,13 +9,14 @@
 # Device                Mountpoint      FStype  Options         Dump    Pass#
 
 # Mount RRD to RAM
-tmpfs                   /var/db/rrd             tmpfs   rw,mode=0755,size=1G    0       0
+tmpfs                   /var/db/rrd               tmpfs         rw,mode=0755,size=1G    0       0
 
 # Mount NetFlow to RAM
-tmpfs                   /var/netflow            tmpfs   rw,mode=0755,size=1G    0       0
+tmpfs                   /var/netflow              tmpfs         rw,mode=0755,size=1G    0       0
 
 # Mount /var/run to RAM
-tmpfs                   /var/run                tmpfs   rw,mode=0755,size=1G    0       0
+tmpfs                   /var/run                  tmpfs         rw,mode=0755,size=1G    0       0
 
 # Mount Unbound statistics to RAM (see logger in /usr/local/opnsense/scripts/unbound/logger.py)
-tmpfs                   /var/unbound/data       tmpfs   rw,mode=0755,size=1G    0       0
+tmpfs                   /var/unbound/data         tmpfs         rw,mode=0755,size=1G    0       0
+tmpfs                   /var/cache/unbound.duckdb tmpfs         rw,mode=0755,size=1G    0       0
