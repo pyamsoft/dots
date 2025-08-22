@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = usr/share/edk2-shell/x64/Shell_Full.efi
+
+[Action]
+Description = Signing shellx64 EFI binary for Secure Boot...
+When = PostTransaction
+Exec = /usr/bin/sbctl sign -s -o usr/share/edk2-shell/x64/Shell_Full.efi /boot/shellx64.efi
+Depends = sbctl
