@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly _image="docker.io/twinproduction/gatus"
-readonly _tag="v5.19.0"
+readonly _tag="v5.23.2"
 
 # Pick name based on environment mode
 case "${GATUS_MODE}" in
