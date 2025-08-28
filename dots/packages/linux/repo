@@ -11,6 +11,7 @@ buildah
 cups-pdf
 dante
 dbus-broker
+edk2-shell
 gamescope
 gdm
 gnome-remote-desktop
@@ -68,6 +69,7 @@ system-config-printer
 tmux
 ttf-gentium-plus
 ttf-liberation
+unbound
 util-linux
 virt-manager
 vulkan-radeon

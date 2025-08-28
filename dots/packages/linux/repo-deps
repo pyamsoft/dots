@@ -112,6 +112,7 @@ freeglut
 freerdp
 freetype2
 fribidi
+fstrm
 fuse-common
 fuse2
 fuse3
@@ -255,6 +256,7 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
+hiredis
 hsa-rocr
 hwdata
 hyphen
@@ -284,12 +286,10 @@ karchive
 kauth
 kbd
 kbookmarks
-kcmutils
 kcodecs
 kcolorscheme
 kcompletion
 kconfig
-kconfigwidgets
 kcontacts
 kcoreaddons
 kcrash
@@ -316,7 +316,6 @@ ksvg
 kwallet
 kwidgetsaddons
 kwindowsystem
-kxmlgui
 l-smash
 lame
 lcms2
