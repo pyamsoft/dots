@@ -897,10 +897,7 @@ qpdf
 qqc2-desktop-style
 qrencode
 qt5-base
-qt5-declarative
-qt5-svg
 qt5-translations
-qt5-wayland
 qt6-5compat
 qt6-base
 qt6-connectivity
