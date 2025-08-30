@@ -1,3 +1,4 @@
 [Context]
 filesystems=xdg-download;
 sockets=cups;
+devices=all;
