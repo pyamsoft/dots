@@ -270,6 +270,9 @@ _run_jail() {
   readonly _j_sys_binds
   readonly _j_env
 
+  _runtimedir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  readonly _runtimedir
+
   # Fail on subshell or pipe failure
   set -eu
 
@@ -331,7 +334,12 @@ _run_jail() {
     $(_block_in_jail "/etc/cryptsetup-keys.d/") \
     $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
     $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
-    $(_bind_in_jail "bind" "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}") \
+    --symlink /run /var/run \
+    $(_bind_in_jail "bind" "${_runtimedir}") \
+    $(_block_in_jail "${_runtimedir}/app" "${_runtimedir}/doc") \
+    $(_block_in_jail "${_runtimedir}/crun" "${_runtimedir}/containers" "${_runtimedir}/libpod") \
+    $(_block_in_jail "${_runtimedir}/gnome-shell" "${_runtimedir}/gnupg" "${_runtimedir}"/gvfs*) \
+    $(_block_in_jail "${_runtimedir}/keyring" "${_runtimedir}/p11-kit" "${_runtimedir}/systemd") \
     --bind "${_j_jail}/var/tmp" "/var/tmp" \
     ${_j_home_binds} \
     ${_j_sys_binds} \
