@@ -451,7 +451,6 @@ libdca
 libde265
 libdecor
 libdeflate
-libdiscid
 libdisplay-info
 libdovi
 libdrm
@@ -808,11 +807,9 @@ python-charset-normalizer
 python-click
 python-dateutil
 python-dbus
-python-discid
 python-distro
 python-docopt
 python-dotenv
-python-fasteners
 python-feedparser
 python-filelock
 python-gobject
@@ -824,10 +821,8 @@ python-jaraco.context
 python-jaraco.functools
 python-jaraco.text
 python-lockfile
-python-markdown
 python-more-itertools
 python-msgpack
-python-mutagen
 python-packaging
 python-pbr
 python-pillow
@@ -836,10 +831,7 @@ python-protobuf
 python-psutil
 python-pycryptodomex
 python-pycups
-python-pyjwt
 python-pynvim
-python-pyqt5
-python-pyqt5-sip
 python-pyqt6
 python-pyqt6-sip
 python-reportlab
@@ -896,8 +888,6 @@ qemu-vhost-user-gpu
 qpdf
 qqc2-desktop-style
 qrencode
-qt5-base
-qt5-translations
 qt6-5compat
 qt6-base
 qt6-connectivity
