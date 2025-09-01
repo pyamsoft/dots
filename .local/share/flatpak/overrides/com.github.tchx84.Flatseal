@@ -1,6 +1,0 @@
-[Context]
-filesystems=xdg-data/flatpak;xdg-data/flatpak/app:ro;xdg-data/flatpak/overrides;/var/lib/flatpak;/var/lib/flatpak/app:ro;/var/lib/flatpak/overrides:ro;
-
-[Session Bus Policy]
-org.gnome.Software=talk
-org.freedesktop.impl.portal.PermissionStore=talk
