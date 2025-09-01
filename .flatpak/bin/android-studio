@@ -19,7 +19,7 @@ path="${path}:${android_root}/platform-tools"
 # we must manually pull in our extensions
 # https://github.com/flathub/com.google.AndroidStudio/commit/727e7e027f6b089f5d2d8d604833f639904531ce
 path="${path}:/usr/lib/sdk/node22/bin"
-path="${path}:/usr/lib/sdk/openjdk17/bin"
+path="${path}:/usr/lib/sdk/openjdk21/bin"
 
 readonly path
 
@@ -41,7 +41,7 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-# Export JDK8 and JDK17 as environment variables for Gradle
+# Export JDK as environment variables for Gradle
 # https://docs.gradle.org/8.10.2/userguide/toolchains.html#sec:custom_loc
 #
 # Needed to build KTOR library
@@ -52,8 +52,8 @@ flatpak-env "${pak}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-  --env="JDK17=/usr/lib/sdk/openjdk17/jvm/openjdk-17" \
-  --env="FLATPAK_ENABLE_SDK_EXT=node22,openjdk17" \
+  --env="JDK21=/usr/lib/sdk/openjdk21/jvm/openjdk-21" \
+  --env="FLATPAK_ENABLE_SDK_EXT=node22,openjdk21" \
   ${_args} \
   -- "$@"
 
