@@ -22,11 +22,15 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
+# Sometimes we will use the test branch to run flatpaks that have not been merged to flathub yet
+# For example, see builds like https://github.com/flathub/com.jetbrains.WebStorm/pull/133
+#
 # shellcheck disable=SC2086
 exec flatpak-env "${pak}" \
   --filesystem="${dev_root}/project/pyamsoft/js" \
   --filesystem="${dev_root}/project/pyamsoft/shell" \
   --env="FLATPAK_ENABLE_SDK_EXT=node22" \
+  --branch="test" \
   ${_args} \
   -- "$@" || exit 1
 exit 0
