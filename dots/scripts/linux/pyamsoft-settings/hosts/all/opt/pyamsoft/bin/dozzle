@@ -1,7 +1,7 @@
 #!/bin/sh
 
 readonly _image="docker.io/amir20/dozzle"
-readonly _tag="v8.13.9"
+readonly _tag="v8.13.11"
 
 # Pick name based on environment mode
 case "${DOZZLE_MODE}" in
