@@ -15,11 +15,13 @@ path="${path}:${android_root}/emulator"
 path="${path}:${android_root}/cdmline-tools/latest/bin"
 path="${path}:${android_root}/platform-tools"
 
+# Extensions
+readonly _nodejs="node24"
+
 # Since android-studio does not use ide-flatpak-wrapper anymore
 # we must manually pull in our extensions
 # https://github.com/flathub/com.google.AndroidStudio/commit/727e7e027f6b089f5d2d8d604833f639904531ce
-path="${path}:/usr/lib/sdk/node22/bin"
-path="${path}:/usr/lib/sdk/openjdk21/bin"
+path="${path}:/usr/lib/sdk/${_nodejs}/bin"
 
 readonly path
 
@@ -52,8 +54,7 @@ flatpak-env "${pak}" \
   --filesystem="${android_root}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-  --env="JDK21=/usr/lib/sdk/openjdk21/jvm/openjdk-21" \
-  --env="FLATPAK_ENABLE_SDK_EXT=node22,openjdk21" \
+  --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
   ${_args} \
   -- "$@"
 
