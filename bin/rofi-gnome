@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# rofi 2.X
+#
+# For some reason, new version of rofi 2 which bring Native wayland support break specifically
+# on GNOME Wayland, because GNOME does not support the layer-shell protocol (that everyone else does -_-)
+#
+# To avoid breaking behavior since I like rofi, we use this alias script to force rofi to run
+# using X11 backend, instead of Wayland
+#
+# This script can be dropped-in to places like GNOME keyboard shortcuts
+
+unset WAYLAND_DISPLAY=
+WAYLAND_DISPLAY='' exec rofi "$@"
