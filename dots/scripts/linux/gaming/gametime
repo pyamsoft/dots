@@ -23,12 +23,6 @@ _log() {
 }
 
 _prepare_mesa_env() {
-  # Use single-file shader cache
-  # https://www.phoronix.com/news/Mesa-Single-File-Cache
-  # https://www.phoronix.com/news/Mesa-Single-File-Cache-Issue
-  # export MESA_DISK_CACHE_SINGLE_FILE=1
-  # __game_environment="${__game_environment} MESA_DISK_CACHE_SINGLE_FILE=${MESA_DISK_CACHE_SINGLE_FILE}"
-
   # Disable vertical blank for OpenGL
   export vblank_mode=0
   __game_environment="${__game_environment} vblank_mode=${vblank_mode}"
@@ -49,14 +43,6 @@ _prepare_mesa_env() {
   # Don't wait for buffers to idle on the client side before sending them to gamescope
   export vk_xwayland_wait_ready=false
   __game_environment="${__game_environment} vk_xwayland_wait_ready=${vk_xwayland_wait_ready}"
-
-  ############################################
-
-  # Force VRS shading
-  # https://www.phoronix.com/review/radeon-radv-vrs
-  #
-  # export RADV_FORCE_VRS="2x2"
-  # __game_environment="${__game_environment} RADV_FORCE_VRS=${RADV_FORCE_VRS}"
 
   return 0
 }
@@ -93,8 +79,6 @@ _prepare_proton_env() {
   # To expose vram info from radv
   export WINEDLLOVERRIDES="dxgi=n"
   __game_environment="${__game_environment} WINEDLLOVERRIDES=${WINEDLLOVERRIDES}"
-
-  ############################################
 
   return 0
 }
@@ -135,7 +119,7 @@ _prepare_sdl_env() {
   export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
   __game_environment="${__game_environment} SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=${SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS}"
 
-  # Wayland caling mode none (default stretch)
+  # Wayland scaling mode none (default stretch)
   export SDL_VIDEO_WAYLAND_MODE_SCALING="none"
   __game_environment="${__game_environment} SDL_VIDEO_WAYLAND_MODE_SCALING=${SDL_VIDEO_WAYLAND_MODE_SCALING}"
 
@@ -202,7 +186,7 @@ _prepare_gamescope() {
   output_height="$(printf -- '%s' "${GAME_OUTPUT}" | tr 'x' ' ' | awk '{ print $2 }')"
 
   # If a nested resolution is defined as GAME_NESTED=WxH, then use it here
-  # Otherwise default the nested resolution to 720p
+  # Otherwise default the nested resolution to 900p
   # Unless we have an eGPU plugged in, then use 1080p
   if [ -z "${GAME_NESTED}" ]; then
     if _has_egpu; then
