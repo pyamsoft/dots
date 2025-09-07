@@ -1,6 +1,103 @@
 #!/bin/sh
 
+# The special DDC code for Brightness
 readonly DDC_BRIGHTNESS_CODE=10
+
+# Do we need sudo
+__needs_sudo=1
+
+# If the display is not set, just yolo assume it
+if [ -z "${DISPLAY}" ]; then
+  export DISPLAY=:0
+fi
+
+_usage() {
+  printf -- '%s\n' "$(
+    cat <<EOF
+usage: brightness <get|set|up|down|help> [amount]
+
+[commands]
+get|-G|--get         - Get current brightness amount
+set|-S|--set         - Set new brightness <amount>
+up|-U|--up           - If possible, increase current brightness by 5
+down|-D|--down       - If possible, decrease current brightness by 5
+help|-h|-H|--help    - Display this help
+EOF
+  )"
+
+  return 0
+}
+
+_check_sudo() {
+  # If we are in the i2c group attempt a brightness change without root
+  if id -G -n | grep -q i2c; then
+    __needs_sudo=0
+  else
+    printf -- 'Add user %s to the "i2c" group to avoid requiring root\n' "$(id -un)"
+  fi
+  readonly __needs_sudo
+}
+
+_brightness_get() {
+  if [ "${__needs_sudo}" -ne 0 ]; then
+    sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+  else
+    ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+  fi
+
+  return 0
+}
+
+_brightness_set() {
+  _brightness_set__amount="$1"
+
+  # If its a number, evaluate as "set" command
+  if [ "${_brightness_set__amount}" -eq "${_brightness_set__amount}" ] >/dev/null 2>&1; then
+    if [ "${__needs_sudo}" -ne 0 ]; then
+      sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+    else
+      ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+    fi
+  else
+    _usage || return 1
+    return 1
+  fi
+
+  unset _brightness_set__amount
+  return 0
+}
+
+_get_current_brightness() {
+  _get_current_brightness__value="$(_brightness_get | grep -o 'current value = .*,' | tr ',' ' ' | awk '{ print $4 }')"
+  if [ "${_get_current_brightness__value}" -eq "${_get_current_brightness__value}" ] >/dev/null 2>&1; then
+    printf -- '%s' "${_get_current_brightness__value}"
+  fi
+
+  unset _get_current_brightness__value
+  return 0
+}
+
+_brightness_up() {
+  _brightness_up__cur="$(_get_current_brightness)"
+
+  if [ -n "${_brightness_up__cur}" ]; then
+    _brightness_set "$((_brightness_up__cur + 5))" || return 1
+  fi
+
+  unset _brightness_up__cur
+  return 0
+}
+
+_brightness_down() {
+  _brightness_down__cur="$(_get_current_brightness)"
+
+  if [ -n "${_brightness_down__cur}" ]; then
+    _brightness_set "$((_brightness_down__cur - 5))" || return 1
+  fi
+
+  unset _brightness_down__cur
+  return 0
+}
 
 main() {
   if ! command -v ddcutil >/dev/null; then
@@ -10,51 +107,38 @@ main() {
 
   cmd="$1"
   if [ -z "${cmd}" ]; then
-    cmd="get"
-  else
-    # Eat argument
-    shift
+    _usage || return 1
+    return 0
   fi
 
   case "${cmd}" in
-  h | help | -h | --help)
-    printf -- 'Empty command assumes "get" current brightness\n'
-    printf -- 'Pass a number value to "set" new brightness\n'
+  H | h | help | -h | -H | --help)
+    _usage || return 1
+    return 1
+    ;;
+  G | g | get | -G | -g | --get)
+    _check_sudo || return 1
+    _brightness_get || return 1
+    return 1
+    ;;
+  S | s | set | -S | -s | --set)
+    _check_sudo || return 1
+    _brightness_set "$@" || return 1
+    return 1
+    ;;
+  U | u | up | -U | -u | --up)
+    _check_sudo || return 1
+    _brightness_up "$@" || return 1
+    return 1
+    ;;
+  D | d | down | -D | -d | --down)
+    _check_sudo || return 1
+    _brightness_down "$@" || return 1
     return 1
     ;;
   esac
 
-  # If we are in the i2c group attempt a brightness change without root
-  needs_sudo=1
-  if id -G -n | grep -q i2c; then
-    needs_sudo=0
-  fi
-
-  if [ "${cmd}" = "get" ]; then
-    if [ "${needs_sudo}" -ne 0 ]; then
-      sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
-    else
-      ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
-    fi
-  else
-    amount="${cmd}"
-
-    # If its a number, evaluate as "set" command
-    if [ "${amount}" -eq "${amount}" ] >/dev/null 2>&1; then
-      if [ "${needs_sudo}" -ne 0 ]; then
-        sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
-      else
-        ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${amount}" || return 1
-      fi
-    else
-      printf -- 'Empty command assumes "get" current brightness\n'
-      printf -- 'Pass a number value to "set" new brightness\n'
-      return 1
-    fi
-  fi
-
   unset cmd
-  unset amount
   return 0
 }
 
