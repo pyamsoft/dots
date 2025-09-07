@@ -10,5 +10,11 @@
 #
 # This script can be dropped-in to places like GNOME keyboard shortcuts
 
+_rofi_wayland_display="${WAYLAND_DISPLAY}"
 unset WAYLAND_DISPLAY=
-WAYLAND_DISPLAY='' exec rofi "$@"
+
+# Unset the WAYLAND_DISPLAY so that rofi can run, but re-set it for the executed program
+# because we may want to use Wayland
+#
+# We must do it this way since rofi passes it's environment to the cmd
+WAYLAND_DISPLAY='' exec rofi -run-command "env WAYLAND_DISPLAY=${_rofi_wayland_display} {cmd}" "$@"
