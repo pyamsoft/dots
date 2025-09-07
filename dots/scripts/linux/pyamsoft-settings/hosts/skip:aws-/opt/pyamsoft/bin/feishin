@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="navidrome"
-readonly _image="docker.io/deluan/navidrome"
-readonly _tag="0.58.0"
+readonly _name="feishin"
+readonly _image="ghcr.io/jeffvli/feishin"
+readonly _tag="0.20.0"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -16,15 +16,7 @@ fi
 readonly _cmd
 
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/music"
-
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
-
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/music"
 
   readonly _mounts
   return 0
@@ -33,7 +25,12 @@ _prep_mounts() {
 _prep_env() {
   _env=""
 
-  _env="${_env} -e ND_LOGLEVEL=info"
+  _env="${_env} -e SERVER_NAME=navidrome"
+  _env="${_env} -e SERVER_TYPE=navidrome"
+  _env="${_env} -e SERVER_LOCK=true"
+
+  _env="${_env} -e PUID=$(id -u)"
+  _env="${_env} -e PGID=$(id -g)"
 
   readonly _env
   return 0
@@ -42,6 +39,11 @@ _prep_env() {
 _prep_caps() {
   _caps=""
 
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add CHOWN"
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+
   readonly _caps
   return 0
 }
@@ -49,7 +51,7 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:4533:4533/tcp"
+  _ports="${_ports} -p 127.0.0.1:9180:9180/tcp"
 
   readonly _ports
   return 0
@@ -61,17 +63,15 @@ _check_user() {
     return 1
   fi
 
-  _userns="--user $(id -u):$(id -g)"
-  if [ "${_cmd}" = "podman" ]; then
-    _userns="${_userns} --userns keep-id"
-  fi
+  # Container runs as root and drops to PUID
+  _userns=""
   readonly _userns
 
   return 0
 }
 
 _containerize() {
-  _nvd=""
+  _fs=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
@@ -93,29 +93,15 @@ _containerize() {
   # As such our services set a special PYAM_SYSTEMD variable and we sniff that
   if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
     if [ "${_cmd}" = "podman" ]; then
-      _nvd="${_nvd} --log-driver json-file"
+      _fs="${_fs} --log-driver json-file"
     fi
   else
-    _nvd="${_nvd} -i -t"
+    _fs="${_fs} -i -t"
   fi
   readonly _oc
 
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  # On Linux we run systemd-resolved on our host machine for DNS caching
-  _network="--add-host localhost:127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    # Only compare the version minors
-    _current_version="$("${_cmd}" --version | awk '{ print $3 }' | tr '.' ' ' | awk '{ print $1 "." $2}')"
-    _is_cmd_new_enough="$(printf -- '%s' "${_current_version}" | awk '{ if ($1 >= 4.7) print 1; else print 0 }')"
-    unset _current_version
-
-    if [ 1 -eq "${_is_cmd_new_enough}" ]; then
-      _network="${_network} --add-host host.containers.internal:host-gateway"
-    fi
-
-    unset _is_cmd_new_enough
-  fi
+  # Piggyback onto the navidrome network
+  _network="--network container:navidrome"
   readonly _network
 
   # Auto Update Checking support
@@ -134,7 +120,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_nvd} \
+    ${_fs} \
     ${_network} \
     ${_auto} \
     ${_env} \
