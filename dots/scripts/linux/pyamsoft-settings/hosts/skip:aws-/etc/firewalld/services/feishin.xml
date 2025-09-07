@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>feishin</short>
+  <description>Feishin Subsonic Frontend</description>
+  <port port="9180" protocol="tcp" />
+</service>

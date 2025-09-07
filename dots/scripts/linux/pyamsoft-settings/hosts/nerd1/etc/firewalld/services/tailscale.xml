@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>tailscale</short>
+  <description>TailScale</description>
+  <port port="41642" protocol="udp"/>
+</service>
