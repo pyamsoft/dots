@@ -2,7 +2,7 @@
 
 readonly _name="omada-controller"
 readonly _image="docker.io/mbentley/omada-controller"
-readonly _tag="5.15.24.18"
+readonly _tag="5.15.24.19"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -35,9 +35,6 @@ _prep_env() {
 
   # ULimit increase
   _env="${_env} --ulimit nofile=4096:8192"
-
-  # Timezone
-  _env="${_env} -e TZ=US/Pacific"
 
   # Environment to Port binding
   _env="${_env} -e MANAGE_HTTP_PORT=8088"

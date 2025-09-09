@@ -12,7 +12,7 @@
 
 readonly _name="postgres"
 readonly _image="docker.io/postgres"
-readonly _tag="17.4"
+readonly _tag="17.6"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
