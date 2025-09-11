@@ -2,7 +2,7 @@
 
 readonly _name="feishin"
 readonly _image="ghcr.io/jeffvli/feishin"
-readonly _tag="0.20.0"
+readonly _tag="0.20.1"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
