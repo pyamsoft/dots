@@ -138,7 +138,7 @@ _prepare_env() {
 ##
 # Sometimes our eGPU is connected, sometimes it's not
 _has_egpu() {
-  if command -v lspci >/dev/null && lspci | grep -q "RX6800"; then
+  if command -v lspci >/dev/null && lspci | grep -q "RX 6800"; then
     return 0
   else
     return 1
@@ -157,6 +157,12 @@ _prepare_gamescope() {
   #
   # Run games in Fullscreen at the nested resolution (which should be shown as the only FS res)
   # FSR is between 0 (max) and 20 (min) instead of 0-5. Default is 2 => 8
+
+  if _has_egpu; then
+    printf -- '[gametime] Running on E-GPU (RX 6800)\n'
+  else
+    printf -- '[gametime] Running on iGPU (RDNA 780M)\n'
+  fi
 
   # Use a custom game window OR default to --borderless
   # borderless window should fix "clickthrough" issues in some games
