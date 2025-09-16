@@ -160,6 +160,7 @@ _prepare_gamescope() {
 
   if _has_egpu; then
     printf -- '[gametime] Running on E-GPU (RX 6800)\n'
+    __game_environment="${__game_environment} DRI_PRIME=1"
   else
     printf -- '[gametime] Running on iGPU (RDNA 780M)\n'
   fi
@@ -182,7 +183,7 @@ _prepare_gamescope() {
         GAME_OUTPUT="${GAME_OUTPUT_EGPU}"
         unset GAME_OUTPUT_EGPU
       else
-        GAME_OUTPUT="2560x1440"
+        GAME_OUTPUT="2304x1296"
       fi
     else
       GAME_OUTPUT="1920x1080"
@@ -194,16 +195,19 @@ _prepare_gamescope() {
   # If a nested resolution is defined as GAME_NESTED=WxH, then use it here
   # Otherwise default the nested resolution to 900p
   # Unless we have an eGPU plugged in, then use 1080p
+  # You can also provide GAME_NESTED_EGPU=WxH to override nested resolution ONLY
+  # when an eGPU is detected
+  if [ -n "${GAME_NESTED_EGPU}" ]; then
+    if _has_egpu; then
+      GAME_NESTED="${GAME_NESTED_EGPU}"
+      unset GAME_NESTED_EGPU
+    fi
+  fi
   if [ -z "${GAME_NESTED}" ]; then
     if _has_egpu; then
-      # You can also provide GAME_NESTED_EGPU=WxH to override nested resolution ONLY
-      # when an eGPU is detected
-      if [ -n "${GAME_NESTED_EGPU}" ]; then
-        GAME_NESTED="${GAME_NESTED_EGPU}"
-        unset GAME_NESTED_EGPU
-      else
-        GAME_NESTED="1920x1080"
-      fi
+      # FSR1 "Quality" 1920x1080 66%
+      # But FSR1 is so bad generally that even this looks rough.
+      GAME_NESTED="1920x1080"
     else
       # FSR1 "Quality" 1280x720 66%
       # But FSR1 is so bad generally that even this looks rough.
@@ -212,6 +216,7 @@ _prepare_gamescope() {
       GAME_NESTED="1600x900"
     fi
   fi
+
   nested_width="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $1 }')"
   nested_height="$(printf -- '%s' "${GAME_NESTED}" | tr 'x' ' ' | awk '{ print $2 }')"
 
