@@ -5,6 +5,8 @@ Description=CameraCtrls daemon - restore control values
 Type=simple
 ExecStartPre=/bin/sleep 5
 ExecStart=/usr/bin/flatpak --user run --command='cameractrlsd.py' hu.irl.cameractrls
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=graphical-session.target
