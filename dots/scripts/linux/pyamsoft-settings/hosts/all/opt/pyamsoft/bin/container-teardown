@@ -122,10 +122,12 @@ _teardown_compose() {
 
 main() {
   # Podman expects us to be in a accessible CWD
-  cd "${HOME}" || {
-    printf -- '[teardown] Unable to cd to user HOME for %s usage\n' "${_cmd}"
-    return 1
-  }
+  if [ "$(id -u)" -ne 0 ]; then
+    cd "${HOME}" || {
+      printf -- '[teardown] Unable to cd to user HOME for %s usage\n' "${_cmd}"
+      return 1
+    }
+  fi
 
   _time=5
   _containers=""
