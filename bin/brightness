@@ -48,6 +48,16 @@ _brightness_get() {
   return 0
 }
 
+_get_current_brightness() {
+  _get_current_brightness__value="$(_brightness_get | grep -o 'current value = .*,' | tr ',' ' ' | awk '{ print $4 }')"
+  if [ "${_get_current_brightness__value}" -eq "${_get_current_brightness__value}" ] >/dev/null 2>&1; then
+    printf -- '%s' "${_get_current_brightness__value}"
+  fi
+
+  unset _get_current_brightness__value
+  return 0
+}
+
 _brightness_set() {
   _brightness_set__amount="$1"
 
@@ -64,16 +74,9 @@ _brightness_set() {
   fi
 
   unset _brightness_set__amount
-  return 0
-}
 
-_get_current_brightness() {
-  _get_current_brightness__value="$(_brightness_get | grep -o 'current value = .*,' | tr ',' ' ' | awk '{ print $4 }')"
-  if [ "${_get_current_brightness__value}" -eq "${_get_current_brightness__value}" ] >/dev/null 2>&1; then
-    printf -- '%s' "${_get_current_brightness__value}"
-  fi
-
-  unset _get_current_brightness__value
+  _get_current_brightness || return 1
+  printf -- '\n'
   return 0
 }
 
@@ -119,7 +122,8 @@ main() {
     ;;
   G | g | get | -G | -g | --get)
     _check_sudo || return 1
-    _brightness_get || return 1
+    _get_current_brightness || return 1
+    printf -- '\n'
     return 1
     ;;
   S | s | set | -S | -s | --set)
