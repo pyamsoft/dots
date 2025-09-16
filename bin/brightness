@@ -110,6 +110,7 @@ main() {
     _usage || return 1
     return 0
   fi
+  shift
 
   case "${cmd}" in
   H | h | help | -h | -H | --help)
