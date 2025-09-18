@@ -160,7 +160,12 @@ _prepare_gamescope() {
 
   if _has_egpu; then
     printf -- '[gametime] Running on E-GPU (RX 6800)\n'
-    __game_environment="${__game_environment} DRI_PRIME=1"
+    # Set DRI_PRIME in the gamescope environment
+    # but do NOT run gamescope itself with DRI_PRIME because it crashes
+    # with X11 related errors.
+    #
+    # Use the 1! syntax to say "only expose card 1 as the single GPU on the system"
+    __game_environment="${__game_environment} DRI_PRIME=1!"
   else
     printf -- '[gametime] Running on iGPU (RDNA 780M)\n'
   fi
