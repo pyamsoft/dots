@@ -471,6 +471,7 @@ libffi
 libfontenc
 libfreeaptx
 libftdi
+libfyaml
 libgcrypt
 libgdm
 libgexiv2
