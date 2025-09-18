@@ -188,7 +188,7 @@ _prepare_gamescope() {
         GAME_OUTPUT="${GAME_OUTPUT_EGPU}"
         unset GAME_OUTPUT_EGPU
       else
-        GAME_OUTPUT="2304x1296"
+        GAME_OUTPUT="2048x1152"
       fi
     else
       GAME_OUTPUT="1920x1080"
