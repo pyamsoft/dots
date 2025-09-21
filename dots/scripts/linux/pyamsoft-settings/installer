@@ -33,8 +33,8 @@ _package_install() {
   }
 
   # Install file
-  # File mode is set by umask
-  cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
+  # Most files can be 644 permission, but some will be individually chmodded
+  install -m=644 "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
     printf -- 'Failed to copy install file: %s\n' "${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
