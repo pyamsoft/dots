@@ -1,16 +1,12 @@
 #!/bin/sh
 
 main() {
-  pacman -Qneq >./repo
-  pacman -Qndq >./repo-deps
-
-  pacman -Qmeq >./aur
-  pacman -Qmdq >./aur-deps
+  apt-mark showmanual >./repo
+  apt-mark showauto >./repo-deps
 
   if command -v flatpak >/dev/null; then
     flatpak list -u --app --columns=application >./flatpak
   fi
-
   return 0
 }
 
