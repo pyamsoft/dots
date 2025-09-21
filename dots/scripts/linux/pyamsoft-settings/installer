@@ -71,6 +71,12 @@ main() {
   _my_pkgdir="$1"
   _target_uid="$2"
 
+  # Open umask
+  umask 0022 || {
+    printf -- 'Failed to open umask to permissive (0022)\n'
+    return 1
+  }
+
   if [ -z "${_my_pkgdir}" ]; then
     printf -- 'You MUST provide a packaging directory as the first argument.\n'
     printf -- 'It must be a writeable location.\n'
