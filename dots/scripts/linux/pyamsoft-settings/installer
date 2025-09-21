@@ -241,6 +241,9 @@ main() {
           */sudoers.d | */sudoers.d/*)
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
             ;;
+          */polkit-1/rules.d/*)
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
+            ;;
           *)
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
             ;;
