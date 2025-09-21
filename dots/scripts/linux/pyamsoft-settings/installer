@@ -32,8 +32,9 @@ _package_install() {
     return 1
   }
 
-  # Install file (preserve mode)
-  cp --preserve=mode "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
+  # Install file
+  # File mode is set by umask
+  cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
     printf -- 'Failed to copy install file: %s\n' "${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
