@@ -1,0 +1,21 @@
+# shellcheck shell=bash
+
+# Docker socket
+if command -v docker >/dev/null; then
+  if [ -d "${HOME}/.docker/run" ] && [ -S "${HOME}/.docker/run/docker.sock" ]; then
+    if [ -z "${DOCKER_HOST}" ]; then
+      DOCKER_HOST="unix://${HOME}/.docker/run/docker.sock"
+
+      # Set up vars
+      if [ -z "${PYAMSOFT_VARS}" ]; then
+        PYAMSOFT_VARS="docker-socket"
+      else
+        PYAMSOFT_VARS="docker-socket:${PYAMSOFT_VARS}"
+      fi
+    fi
+  fi
+fi
+
+export DOCKER_HOST
+
+return 0

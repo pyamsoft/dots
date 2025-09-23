@@ -1,0 +1,21 @@
+# shellcheck shell=bash
+
+# Docker scrips
+if command -v docker >/dev/null; then
+  if [ -d "${HOME}/.docker/bin" ]; then
+    PATH="${HOME}/.docker/bin:${PATH}"
+
+    # Set up path
+    if [ -z "${PYAMSOFT_PATH}" ]; then
+      PYAMSOFT_PATH="docker-bin"
+    else
+      PYAMSOFT_PATH="docker-bin:${PYAMSOFT_PATH}"
+    fi
+  fi
+fi
+
+# Export the PATH
+export PATH
+
+return 0
+
