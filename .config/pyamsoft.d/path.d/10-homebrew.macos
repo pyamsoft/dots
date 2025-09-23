@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # Add homebrew scripts (generally MacOS)
 if [ -x "/opt/homebrew/bin/brew" ]; then

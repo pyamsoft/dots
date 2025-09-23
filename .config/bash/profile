@@ -1,46 +1,58 @@
 # shellcheck shell=bash
 
+# Arguments always provided as:
+#
+# $1 - CONFIG_DIR
+# $2 - OS
+
+if [ -z "$1" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/profile without providing CONFIG_DIR as $1: %s\n' "$*"
+  return 1
+fi
+
+if [ -z "$2" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/profile without providing OS as $2: %s\n' "$*"
+  return 1
+fi
+
+_cfg="$1"
+_os="$2"
+
 # Source if the environment is not setup
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   # shellcheck disable=SC1091
-  [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft
+  [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
 fi
 
-os="$(uname)"
-
-for script in "${HOME}"/.bash_profile.d/* "${XDG_CONFIG_HOME}"/bash/profile.d/*; do
-  # Sometimes os can get unset. Reset it here
-  if [ -z "${os}" ]; then
-    os="$(uname)"
-  fi
-
+for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/*; do
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && {
-    case "${script}" in
+  [ -r "${_profile}" ] && {
+    case "${_profile}" in
     *.linux)
-      if [ "${os}" = "Linux" ]; then
-        . "${script}" || {
-          printf -- 'Linux bash_profile setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Linux" ]; then
+        . "${_profile}" || {
+          printf -- 'Linux bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
         }
       fi
       ;;
     *.macos)
-      if [ "${os}" = "Darwin" ]; then
-        . "${script}" || {
-          printf -- 'MacOS bash_profile setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_profile}" || {
+          printf -- 'MacOS bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
         }
       fi
       ;;
     *)
-      . "${script}" || {
-        printf -- 'bash_profile setup script failed: %s\n' "${script}"
+      . "${_profile}" || {
+        printf -- 'bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
       }
       ;;
     esac
   }
-  unset script
+  unset _profile
 done
-unset script
+unset _profile
 
-unset os
 return 0

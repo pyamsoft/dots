@@ -1,4 +1,11 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
+
+# Base file for pyamsoft configuration
+#
+# Arguments always provided as:
+#
+# $1 - CONFIG_DIR
+# $2 - OS
 
 # We allow scripts to call this file again and again
 # But since pieces of the configuration are controlled by their own variables
@@ -9,9 +16,20 @@
 #   return 0
 # fi
 
-_cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
+if [ -z "$1" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source .pyamsoft without providing CONFIG_DIR as $1: %s\n' "$*"
+  return 1
+fi
 
-env_os="$(uname)"
+if [ -z "$2" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source .pyamsoft without providing OS as $2: %s\n' "$*"
+  return 1
+fi
+
+_cfg="$1"
+_os="$2"
 
 # Create the environment flag
 if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
@@ -19,31 +37,26 @@ if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
 fi
 
 for _env_conf in "${_cfg}"/pyamsoft.d/*.conf; do
-  # Sometimes os can get unset. Reset it here
-  if [ -z "${env_os}" ]; then
-    env_os="$(uname)"
-  fi
-
   # shellcheck disable=SC1090
   [ -r "${_env_conf}" ] && {
     case "${_env_conf}" in
     *.linux)
-      if [ "${env_os}" = "Linux" ]; then
-        . "${_env_conf}" || {
-          printf -- 'Linux ENV setup script failed: %s\n' "${_env_conf}"
+      if [ "${_os}" = "Linux" ]; then
+        . "${_env_conf}" "$@" || {
+          printf -- 'Linux ENV setup script failed: %s args=%s\n' "${_env_conf}" "$*"
         }
       fi
       ;;
     *.macos)
-      if [ "${env_os}" = "Darwin" ]; then
-        . "${_env_conf}" || {
-          printf -- 'MacOS ENV setup script failed: %s\n' "${_env_conf}"
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_env_conf}" "$@" || {
+          printf -- 'MacOS ENV setup script failed: %s args=%s\n' "${_env_conf}" "$*"
         }
       fi
       ;;
     *)
-      . "${_env_conf}" || {
-        printf -- 'ENV setup script failed: %s\n' "${_env_conf}"
+      . "${_env_conf}" "$@" || {
+        printf -- 'ENV setup script failed: %s args=%s\n' "${_env_conf}" "$*"
       }
       ;;
     esac
@@ -51,9 +64,6 @@ for _env_conf in "${_cfg}"/pyamsoft.d/*.conf; do
   unset _env_conf
 done
 unset _env_conf
-
-unset env_os
-unset _cfg
 
 # Mark environment as set up
 export PYAMSOFT_ENVIRONMENT

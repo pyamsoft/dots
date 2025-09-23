@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # MacOS doesn't have /usr/local/sbin by default.
 # If we made it, add it

@@ -1,39 +1,52 @@
 # shellcheck shell=bash
 
-os="$(uname)"
+# Arguments always provided as:
+#
+# $1 - CONFIG_DIR
+# $2 - OS
 
-for script in "${HOME}"/.bash_functions.d/* "${XDG_CONFIG_HOME}"/bash/functions.d/*; do
-  # Sometimes os can get unset. Reset it here
-  if [ -z "${os}" ]; then
-    os="$(uname)"
-  fi
+if [ -z "$1" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/functions without providing CONFIG_DIR as $1: %s\n' "$*"
+  return 1
+fi
 
+if [ -z "$2" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/functions without providing OS as $2: %s\n' "$*"
+  return 1
+fi
+
+_cfg="$1"
+_os="$2"
+
+for _func in "${HOME}"/.bash_functions.d/* "${_cfg}"/bash/functions.d/*; do
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && {
-    case "${script}" in
+  [ -r "${_func}" ] && {
+    case "${_func}" in
     *.linux)
-      if [ "${os}" = "Linux" ]; then
-        . "${script}" || {
-          printf -- 'Linux bash_function setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Linux" ]; then
+        . "${_func}" || {
+          printf -- 'Linux bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
         }
       fi
       ;;
     *.macos)
-      if [ "${os}" = "Darwin" ]; then
-        . "${script}" || {
-          printf -- 'MacOS bash_function setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_func}" || {
+          printf -- 'MacOS bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
         }
       fi
       ;;
     *)
-      . "${script}" || {
-        printf -- 'bash_function setup script failed: %s\n' "${script}"
+      . "${_func}" || {
+        printf -- 'bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
       }
       ;;
     esac
   }
-  unset script
+  unset _func
 done
-unset script
+unset _func
 
-unset os
+return 0

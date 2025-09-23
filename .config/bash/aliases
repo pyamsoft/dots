@@ -1,39 +1,52 @@
 # shellcheck shell=bash
 
-os="$(uname)"
+# Arguments always provided as:
+#
+# $1 - CONFIG_DIR
+# $2 - OS
 
-for script in "${HOME}"/.bash_aliases.d/* "${XDG_CONFIG_HOME}"/bash/aliases.d/*; do
-  # Sometimes os can get unset. Reset it here
-  if [ -z "${os}" ]; then
-    os="$(uname)"
-  fi
+if [ -z "$1" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/aliases without providing CONFIG_DIR as $1: %s\n' "$*"
+  return 1
+fi
 
+if [ -z "$2" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/aliases without providing OS as $2: %s\n' "$*"
+  return 1
+fi
+
+_cfg="$1"
+_os="$2"
+
+for _alias in "${HOME}"/.bash_aliases.d/* "${_cfg}"/bash/aliases.d/*; do
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && {
-    case "${script}" in
+  [ -r "${_alias}" ] && {
+    case "${_alias}" in
     *.linux)
-      if [ "${os}" = "Linux" ]; then
-        . "${script}" || {
-          printf -- 'Linux bash_alias setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Linux" ]; then
+        . "${_alias}" || {
+          printf -- 'Linux bash/aliases setup script failed: %s args=%s\n' "${_alias}" "$*"
         }
       fi
       ;;
     *.macos)
-      if [ "${os}" = "Darwin" ]; then
-        . "${script}" || {
-          printf -- 'MacOS bash_alias setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_alias}" || {
+          printf -- 'MacOS bash/aliases setup script failed: %s args=%s\n' "${_alias}" "$*"
         }
       fi
       ;;
     *)
-      . "${script}" || {
-        printf -- 'bash_alias setup script failed: %s\n' "${script}"
+      . "${_alias}" || {
+        printf -- 'bash/aliases setup script failed: %s args=%s\n' "${_alias}" "$*"
       }
       ;;
     esac
   }
-  unset script
+  unset _alias
 done
-unset script
+unset _alias
 
-unset os
+return 0

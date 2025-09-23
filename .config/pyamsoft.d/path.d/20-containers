@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # Docker scrips
 if command -v docker >/dev/null || command -v podman >/dev/null; then

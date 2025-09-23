@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # User editor can be from a local script
 # Use absolute path to editor

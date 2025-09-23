@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # SSH socket defined, do nothing
 if [ -n "${SSH_AUTH_SOCK}" ]; then

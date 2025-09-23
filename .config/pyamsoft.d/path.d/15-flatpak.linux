@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # Flatpak scrips
 if command -v flatpak >/dev/null; then

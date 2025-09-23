@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # Add local npm repository: used for things like bash-language-server
 # Set the local npm global path with "npm config set prefix ~/.npm/global"

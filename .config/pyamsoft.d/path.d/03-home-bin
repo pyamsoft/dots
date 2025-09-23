@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=bash
 
 # Source these onto the path first in case other script
 # directories rely on a command we created

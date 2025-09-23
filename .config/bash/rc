@@ -1,42 +1,55 @@
 # shellcheck shell=bash
 
+# Arguments always provided as:
+#
+# $1 - CONFIG_DIR
+# $2 - OS
+
 # If not running interactively, don't do anything
 [[ "$-" != *i* ]] && return
 
-os="$(uname)"
+if [ -z "$1" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/rc without providing CONFIG_DIR as $1: %s\n' "$*"
+  return 1
+fi
 
-for script in "${HOME}"/.bashrc.d/* "${XDG_CONFIG_HOME}"/bash/rc.d/*; do
-  # Sometimes os can get unset. Reset it here
-  if [ -z "${os}" ]; then
-    os="$(uname)"
-  fi
+if [ -z "$2" ]; then
+  # shellcheck disable=SC2016
+  printf -- 'Cannot source bash/rc without providing OS as $2: %s\n' "$*"
+  return 1
+fi
 
+_cfg="$1"
+_os="$2"
+
+for _rc in "${HOME}"/.bashrc.d/* "${_cfg}"/bash/rc.d/*; do
   # shellcheck disable=SC1090
-  [ -r "${script}" ] && {
-    case "${script}" in
+  [ -r "${_rc}" ] && {
+    case "${_rc}" in
     *.linux)
-      if [ "${os}" = "Linux" ]; then
-        . "${script}" || {
-          printf -- 'Linux bashrc setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Linux" ]; then
+        . "${_rc}" || {
+          printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
         }
       fi
       ;;
     *.macos)
-      if [ "${os}" = "Darwin" ]; then
-        . "${script}" || {
-          printf -- 'MacOS bashrc setup script failed: %s\n' "${script}"
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_rc}" || {
+          printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
         }
       fi
       ;;
     *)
-      . "${script}" || {
-        printf -- 'bashrc setup script failed: %s\n' "${script}"
+      . "${_rc}" || {
+        printf -- 'bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
       }
       ;;
     esac
   }
-  unset script
+  unset _rc
 done
-unset script
+unset _rc
 
-unset os
+return 0
