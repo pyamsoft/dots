@@ -453,8 +453,19 @@ _enable_steam_options() {
       return 0
     fi
   fi
-
   _log 'Steam specific gamescope options: NO'
+
+  # Fix the Steam Overlay
+  # https://github.com/HikariKnight/ScopeBuddy/blob/main/bin/scopebuddy#L310
+  if [ -n "${_gamescope}" ]; then
+    __game_environment="${__game_environment} LD_PRELOAD=${LD_PRELOAD}"
+    __env_tools="${__env_tools} env -u LD_PRELOAD"
+    unset LD_PRELOAD
+    _log 'LD_PRELOAD fix for Steam Overlay: YES'
+  else
+    _log 'LD_PRELOAD fix for Steam Overlay: NO'
+  fi
+
   return 0
 }
 
