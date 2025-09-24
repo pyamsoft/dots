@@ -3,7 +3,7 @@
 readonly _basename="beszel"
 readonly _name="${_basename}-agent"
 readonly _image="docker.io/henrygd/beszel-agent"
-readonly _tag="0.12.9"
+readonly _tag="0.12.10"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
