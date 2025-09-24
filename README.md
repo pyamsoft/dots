@@ -23,6 +23,32 @@ For proxy usage
   first, and then restart any services that need to use the proxy.
 - For git, update your git-ssh config to use the socat proxy line
 
+### Remmina RDP
+
+- You can use RDP over the proxy by creating an SSH tunnel on the machine and then forwarding Remmina to that
+  - Do not use the SSH tunnel settings in Remmina
+  - Make sure UDP is OFF
+
+### Setup the SSH tunnel outside of the flatpak
+
+- Make sure you have `socat` installed, or `proxytunnel`
+- Make sure you have an SSH config entry for myhost that includes either of these lines
+  - This example is assuming you are using `TetherFi`
+
+```bash
+ProxyCommand /usr/bin/proxytunnel -q -p 192.168.49.1:8228 -d %h:%p
+ProxyCommand /usr/bin/socat STDIO PROXY:192.168.49.1:%h:%p,proxyport=8228
+```
+
+Then open the SSH tunnel
+
+```bash
+$ ssh -L 11569:myhost:3389 myuser@myhost
+```
+
+And then setup a connection in Remmina that targets `127.0.0.1:11569` for the server
+instead of whatever the remote RDP server at `myhost` would usually be.
+
 ### Fonts
 
 I code with a monospace Comic Sans like font. Yes, I am serious.  
