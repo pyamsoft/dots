@@ -21,6 +21,8 @@ optdepends=(
   'ddcutil: For use with brightness script'
   'docker: Possible container backend'
   'podman: Preferred container backend'
+  'socat: Preferred SSH proxy command'
+  'proxytunnel: Possible SSH proxy command'
 )
 # shellcheck disable=SC2034
 provides=('pyamsoft-settings')
