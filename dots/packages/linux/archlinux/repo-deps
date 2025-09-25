@@ -144,18 +144,17 @@ glibc
 glm
 glslang
 glu
+glycin
 gmp
 gnome-autoar
 gnome-bluetooth-3.0
 gnome-color-manager
 gnome-control-center
-gnome-desktop
 gnome-desktop-4
 gnome-desktop-common
 gnome-disk-utility
 gnome-keybindings
 gnome-keyring
-gnome-mimeapps
 gnome-online-accounts
 gnome-session
 gnome-settings-daemon
@@ -262,6 +261,7 @@ hwdata
 hyphen
 i2c-tools
 iana-etc
+ibus
 icu
 iio-sensor-proxy
 ijs
@@ -279,7 +279,7 @@ jbig2dec
 jbigkit
 jitterentropy
 jq
-js128
+js140
 json-c
 json-glib
 karchive
@@ -795,6 +795,7 @@ ppp
 procps-ng
 protobuf
 protobuf-c
+proxytunnel
 psmisc
 pulseaudio-qt
 python
@@ -936,6 +937,7 @@ slirp4netns
 smbclient
 snappy
 sndio
+socat
 solid
 sonnet
 sord
