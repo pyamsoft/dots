@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>beszel-hub</short>
+  <description>Beszel Hub</description>
+  <port port="8090" protocol="tcp" />
+</service>
