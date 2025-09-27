@@ -168,7 +168,7 @@ _containerize() {
   fi
   readonly _network
 
-  if [ "${BESZEL_MODE}" != "remote" ]; then
+  if [ "${BESZEL_MODE}" != "hub" ]; then
     if [ -z "${BESZEL_KEY}" ]; then
       printf -- 'You must export the Beszel Agent SSH Key as "BESZEL_KEY"\n'
       return 1
