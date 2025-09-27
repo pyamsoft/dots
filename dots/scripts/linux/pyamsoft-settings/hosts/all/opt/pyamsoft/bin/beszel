@@ -40,7 +40,7 @@ _prep_ssh_key() {
 
   if [ "${BESZEL_MODE}" = "agent" ]; then
     # Read the SSH pubkey
-    if [ -e "${_data_dir}/id_ed25519.pub" ]; then
+    if [ -d "${_data_dir}" ] && [ -e "${_data_dir}/id_ed25519.pub" ]; then
       BESZEL_KEY="$(awk '{ print $1 " " $2 }' <"${_data_dir}/id_ed25519.pub")"
       export BESZEL_KEY
     fi
@@ -67,20 +67,19 @@ _prep_ssh_key() {
 }
 
 _prep_mounts() {
-  # Hub and Agent share a socket
-  _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
-
   mkdir -p "${HOME}/.local/etc/containers/${_basename}-agent" || return 1
-  mkdir -p "${_hub_data}" || return 1
-
-  if [ "${BESZEL_MODE}" != "remote" ]; then
-    # Make SSH keys
-    _prep_ssh_key "${_hub_data}" || return 1
-  fi
 
   _mounts=""
-  if [ "${BESZEL_MODE}" = "hub" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_hub_data},target=/beszel_data"
+
+  if [ "${BESZEL_MODE}" != "remote" ]; then
+
+    if [ "${BESZEL_MODE}" = "hub" ]; then
+      _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
+      mkdir -p "${_hub_data}" || return 1
+      _prep_ssh_key "${_hub_data}" || return 1
+
+      _mounts="${_mounts} --mount type=bind,source=${_hub_data},target=/beszel_data"
+    fi
   fi
 
   unset _hub_data
