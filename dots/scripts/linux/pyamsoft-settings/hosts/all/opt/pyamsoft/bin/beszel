@@ -73,11 +73,11 @@ _prep_mounts() {
 
   if [ "${BESZEL_MODE}" != "remote" ]; then
 
-    if [ "${BESZEL_MODE}" = "hub" ]; then
-      _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
-      mkdir -p "${_hub_data}" || return 1
-      _prep_ssh_key "${_hub_data}" || return 1
+    _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
+    _prep_ssh_key "${_hub_data}" || return 1
 
+    if [ "${BESZEL_MODE}" = "hub" ]; then
+      mkdir -p "${_hub_data}" || return 1
       _mounts="${_mounts} --mount type=bind,source=${_hub_data},target=/beszel_data"
     fi
   fi
