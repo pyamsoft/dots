@@ -1,24 +1,25 @@
 #!/bin/sh
 
-if [ -z "${BESZEL_MODE}" ]; then
-  printf -- 'Must run with BESZEL_MODE set to "agent" or "hub"\n'
+##
+# hub - the Beszel hub
+# agent - Agent instance running on the same machine as the hub
+#   - Requires runconfig.env to contain [TOKEN and HUB_URL] or [LISTEN]
+# remote - Agent instance running on a different machine than the hub
+#   - Requires runconfig.env to contain [TOKEN and HUB_URL] and export [BESZEL_KEY]
+case "${BESZEL_MODE}" in
+hub | agent | remote) ;;
+*)
+  printf -- 'Must run with BESZEL_MODE set to one of "agent" "hub" "remote"\n'
   exit 1
-else
-  case "${BESZEL_MODE}" in
-  hub | agent) ;;
-  *)
-    printf -- 'Must run with BESZEL_MODE set to "agent" or "hub"\n'
-    exit 1
-    ;;
-  esac
-fi
+  ;;
+esac
 
-readonly _bzsename="beszel"
-readonly _name="${_bzsename}-${BESZEL_MODE}"
-if [ "${BESZEL_MODE}" = "agent" ]; then
-  _image="docker.io/henrygd/beszel-${BESZEL_MODE}"
-else
+readonly _basename="beszel"
+readonly _name="${_basename}-${BESZEL_MODE}"
+if [ "${BESZEL_MODE}" = "hub" ]; then
   _image="docker.io/henrygd/beszel"
+else
+  _image="docker.io/henrygd/beszel-agent"
 fi
 readonly _image
 readonly _tag="0.12.12"
@@ -67,26 +68,21 @@ _prep_ssh_key() {
 
 _prep_mounts() {
   # Hub and Agent share a socket
-  _socket="${HOME}/.local/etc/containers/${_bzsename}/socket"
-  _hub_data="${HOME}/.local/etc/containers/${_bzsename}-hub/data"
+  _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
 
-  # Ensure socket
-  mkdir -p "${_socket}" || return 1
-
-  mkdir -p "${HOME}/.local/etc/containers/${_bzsename}-agent" || return 1
-  mkdir -p "${HOME}/.local/etc/containers/${_bzsename}-hub" || return 1
+  mkdir -p "${HOME}/.local/etc/containers/${_basename}-agent" || return 1
   mkdir -p "${_hub_data}" || return 1
 
-  # Make the SSH keys
-  _prep_ssh_key "${_hub_data}" || return 1
+  if [ "${BESZEL_MODE}" != "remote" ]; then
+    # Make SSH keys
+    _prep_ssh_key "${_hub_data}" || return 1
+  fi
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_socket},target=/beszel_socket"
   if [ "${BESZEL_MODE}" = "hub" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_hub_data},target=/beszel_data"
   fi
 
-  unset _socket
   unset _hub_data
   readonly _mounts
   return 0
@@ -134,13 +130,14 @@ _containerize() {
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'Optional runconf file supported at %s\n' "${_runconf}"
-  else
-    # Source the file into the environment
-    # shellcheck disable=SC1090
-    . "${_runconf}" || return 1
-    unset _runconf
+    printf -- 'You must provide %s\n' "${_runconf}"
+    return 1
   fi
+
+  # Source the file into the environment
+  # shellcheck disable=SC1090
+  . "${_runconf}" || return 1
+  unset _runconf
 
   # On Linux, our user session executes from systemd and thus sets the systemd vars
   # like JOURNAL_STREAM and INVOCATION_ID
@@ -165,17 +162,20 @@ _containerize() {
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
 
-  if [ "${BESZEL_MODE}" = "agent" ]; then
+  if [ "${BESZEL_MODE}" != "remote" ]; then
     # Agent must run with host networking
     _network="${_network} --net=host"
   fi
   readonly _network
 
-  if [ "${BESZEL_MODE}" = "agent" ]; then
+  if [ "${BESZEL_MODE}" != "remote" ]; then
     if [ -z "${BESZEL_KEY}" ]; then
       printf -- 'You must export the Beszel Agent SSH Key as "BESZEL_KEY"\n'
       return 1
     fi
+  else
+    # Can continue with blank key, it's ignored in hub mode
+    BESZEL_KEY=""
   fi
 
   # Auto Update Checking support
@@ -183,50 +183,26 @@ _containerize() {
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
   readonly _auto
 
-  if [ "${BESZEL_MODE}" = "agent" ]; then
-    # Log the commands we use next
-    # Fail on errors
-    # Fail on unassigned
-    set -xeu
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
 
-    # Don't quote so that if user is empty it still expands
-    #
-    # shellcheck disable=SC2086
-    exec ${_cmd} run --rm \
-      --name "${_name}" --hostname "${_name}" \
-      --security-opt no-new-privileges:true --cap-drop ALL \
-      -e LISTEN="/beszel_socket/beszel.sock" \
-      -e KEY="${BESZEL_KEY}" \
-      ${_bz} \
-      ${_network} \
-      ${_auto} \
-      ${_mounts} \
-      ${_ports} \
-      ${_caps} \
-      ${_userns} \
-      "${_image}:${_tag}" "$@"
-  else
-    # Log the commands we use next
-    # Fail on errors
-    # Fail on unassigned
-    set -xeu
-
-    # Don't quote so that if user is empty it still expands
-    #
-    # shellcheck disable=SC2086
-    exec ${_cmd} run --rm \
-      --name "${_name}" --hostname "${_name}" \
-      --security-opt no-new-privileges:true --cap-drop ALL \
-      ${_bz} \
-      ${_network} \
-      ${_auto} \
-      ${_mounts} \
-      ${_ports} \
-      ${_caps} \
-      ${_userns} \
-      "${_image}:${_tag}" "$@"
-  fi
-
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    -e "KEY=${BESZEL_KEY}" \
+    ${_bz} \
+    ${_network} \
+    ${_auto} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
 }
 
 main() {
