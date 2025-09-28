@@ -9,4 +9,4 @@ else
   dlp="youtube-dl"
 fi
 
-exec "${dlp}" --youtube-skip-dash-manifest --no-call-home --yes-playlist -x --audio-format mp3 --audio-quality 0 -i "$@"
+exec "${dlp}" --yes-playlist -x --audio-format mp3 --audio-quality 0 -i "$@"
