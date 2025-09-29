@@ -106,6 +106,7 @@ _containerize() {
   _wp_cmd="${_wp_cmd} --uri tcp://0.0.0.0:10300"
   _wp_cmd="${_wp_cmd} --model ${MODEL}"
   _wp_cmd="${_wp_cmd} --beam-size 1"
+  _wp_cmd="${_wp_cmd} --compute-type int8"
   _wp_cmd="${_wp_cmd} --language en"
   _wp_cmd="${_wp_cmd} --data-dir /data"
   _wp_cmd="${_wp_cmd} --download-dir /download"
