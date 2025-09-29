@@ -98,6 +98,9 @@ _containerize() {
   _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
   readonly _auto
 
+  # Allow model customization via variable or fallback to "Lessac Medium"
+  MODEL="${MODEL:-en_US-lessac-medium}"
+
   # Wake word command
   _pp_cmd="-m wyoming_piper"
   _pp_cmd="${_pp_cmd} --uri tcp://0.0.0.0:10200"
@@ -105,7 +108,7 @@ _containerize() {
   _pp_cmd="${_pp_cmd} --length-scale 1"
   _pp_cmd="${_pp_cmd} --noise-scale 0.667"
   _pp_cmd="${_pp_cmd} --speaker 0"
-  _pp_cmd="${_pp_cmd} --voice en_US-lessac-medium"
+  _pp_cmd="${_pp_cmd} --voice ${MODEL}"
   _pp_cmd="${_pp_cmd} --max-piper-procs 1"
   _pp_cmd="${_pp_cmd} --data-dir /data"
   _pp_cmd="${_pp_cmd} --download-dir /download"
