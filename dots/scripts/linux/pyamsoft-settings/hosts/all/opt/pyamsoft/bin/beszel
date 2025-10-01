@@ -67,9 +67,12 @@ _prep_ssh_key() {
 }
 
 _prep_mounts() {
-  mkdir -p "${HOME}/.local/etc/containers/${_name}" || return 1
+  _mount1="${HOME}/.local/etc/containers/${_name}/data"
+
+  mkdir -p "${_mount1}" || return 1
 
   _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/beszel_data"
 
   if [ "${BESZEL_MODE}" != "remote" ]; then
     _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
@@ -79,10 +82,6 @@ _prep_mounts() {
     fi
 
     _prep_ssh_key "${_hub_data}" || return 1
-
-    if [ "${BESZEL_MODE}" = "hub" ]; then
-      _mounts="${_mounts} --mount type=bind,source=${_hub_data},target=/beszel_data"
-    fi
   fi
 
   unset _hub_data
@@ -197,6 +196,7 @@ _containerize() {
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e "KEY=${BESZEL_KEY}" \
+    -e "DATA_DIR=/beszel_data" \
     ${_bz} \
     ${_network} \
     ${_auto} \
