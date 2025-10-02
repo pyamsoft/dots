@@ -17,11 +17,14 @@ readonly _cmd
 
 _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount2="${HOME}/.local/etc/containers/${_name}/data"
 
   mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/data"
 
   # DBUS access for bluetooth
   _mounts="${_mounts} --mount type=bind,source=/run/dbus,target=/run/dbus,ro"
