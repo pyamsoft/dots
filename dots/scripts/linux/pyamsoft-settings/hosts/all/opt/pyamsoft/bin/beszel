@@ -22,7 +22,7 @@ else
   _image="docker.io/henrygd/beszel-agent"
 fi
 readonly _image
-readonly _tag="0.12.12"
+readonly _tag="0.13.0"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
