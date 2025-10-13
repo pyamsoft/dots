@@ -76,9 +76,19 @@ For CPU clocking, I use my own developed utility called `pstate-frequency`
 
 ### Firmware Update
 
+#### Linux
+
 I prefer `fwupd` and using the `org.gnome.Firmware` flatpak for the frontend.
 To enable `fwupd.service`, you may wish to mask `passim.service`, which
 for example reports problems on my machine and prevents fwupd from running.
+
+#### OPNsense
+
+See the following:
+https://forum.opnsense.org/index.php?PHPSESSID=6t495rgeffabnr335eigncfkco&topic=48695.30
+https://github.com/nightcomdev/opnsense/tree/main/i226-firmware-upgrade
+
+The current device used requires the 2MB version
 
 ### Wayland
 
