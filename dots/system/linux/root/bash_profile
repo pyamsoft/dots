@@ -68,15 +68,25 @@ _editor() {
   return 0
 }
 
+_lang() {
+  if [ -z "${LC_COLLATE}" ]; then
+    LC_COLLATE="C.UTF-8"
+    export LC_COLLATE
+  fi
+  return 0
+}
+
 _aliases
 _homebrew_path
 _pyamsoft_path
 _editor
+_lang
 
 unset _aliases
 unset _pyamsoft_path
 unset _homebrew_path
 unset _editor
+unset _lang
 
 # Source bashrc
 [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
