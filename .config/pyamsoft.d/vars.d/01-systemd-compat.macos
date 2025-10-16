@@ -1,0 +1,56 @@
+# shellcheck shell=bash
+
+# We've got some configs in ~/.config/environment.d/*.conf
+# that is only read on a Linux system by systemd
+#
+# They look like config files with export variables, but they are
+# missing the export command. So we have to read them and then
+# eval them on the fly with the export into our current shell
+#
+# Yay :)
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+if [ -d "${XDG_CONFIG_HOME}" ]; then
+  if [ -d "${XDG_CONFIG_HOME}/environment.d" ]; then
+    for _systemd_conf in "${XDG_CONFIG_HOME}/environment.d"/*.conf; do
+      while read -r _line; do
+        # Need a valid line
+        if [ -n "${_line}" ]; then
+          case "${_line}" in
+          # Skip hopefully comments and whitespace lines
+          [!A-Za-z0-9]*) ;;
+          *)
+            # Split up based on ONLY the first equals
+            _split_up="$(printf -- '%s' "${_line}" | sed 's/=/ /')"
+            # Grab the first thing as the name
+            _var_name="$(printf -- '%s' "${_split_up}" | awk '{ print $1 }')"
+
+            # And "everything else" as the value
+            _var_value="$(printf -- '%s' "${_split_up}" | awk '{ for (i=2; i<=NF; i++) printf "%s%s", $i, (i<NF ? OFS : ORS) }')"
+
+            # Re-export the variable in a MacOS sh environment :)
+            eval "export ${_var_name}=${_var_value}"
+
+            unset _split_up
+            unset _var_name
+            unset _var_value
+            ;;
+          esac
+        fi
+        unset _line
+      done <"${_systemd_conf}"
+      unset _line
+      unset _systemd_conf
+    done
+    unset _systemd_conf
+
+    # Set up vars
+    if [ -z "${PYAMSOFT_VARS}" ]; then
+      PYAMSOFT_VARS="systemd-compat"
+    else
+      PYAMSOFT_VARS="systemd-compat:${PYAMSOFT_VARS}"
+    fi
+  fi
+fi
+
+return 0
