@@ -7,7 +7,7 @@ fi
 
 # Otherwise figure out an SSH agent home
 if [ -z "${XDG_RUNTIME_DIR}" ]; then
-  _ssh_home="/tmp"
+  _ssh_home="${TMPDIR:-/tmp}"
 else
   _ssh_home="${XDG_RUNTIME_DIR}"
 fi
