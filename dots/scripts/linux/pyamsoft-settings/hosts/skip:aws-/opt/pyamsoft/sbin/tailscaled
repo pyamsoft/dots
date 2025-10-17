@@ -69,6 +69,8 @@ _prep_env() {
   _env="${_env} --net=host --device /dev/net/tun:/dev/net/tun"
 
   # Force firewall to nftables (the container picks iptables-legacy by default)
+  # Buggy currently, breaks Direct mode connections (always uses relay for some reason)
+  # https://github.com/tailscale/tailscale/issues/14900
   #
   # Do not set this if you want to use --netfilter-mode=off via TS_EXTRA_ARGS
   #_env="${_env} -e TS_DEBUG_FIREWALL_MODE=nftables"
@@ -153,10 +155,15 @@ _containerize() {
   # via TS_PORT and fallback to the Tailscale default of 41641
   PORT="${TS_PORT:-41641}"
 
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
+  # TS_EXTRA_ARGS
+  #
+  # We disable netfilter firewall management since we don't want the container touching
+  # the host firewall. For hosts which need an exit node, they should override
+  # the extra args in the runconfig.env
+  #
+  # Buggy currently, breaks Direct mode connections (always uses relay for some reason)
+  # https://github.com/tailscale/tailscale/issues/14900
+  TS_EXTRA_ARGS="${TS_EXTRA_ARGS:---netfilter-mode=off}"
 
   # TS_TAILSCALED_EXTRA_ARGS
   #
@@ -168,7 +175,13 @@ _containerize() {
   # so it makes it difficult to setup SNAT rules in a firewall like Opnsense, as the
   # port would need to be a wildcard. Instead, we allow the runconfig to specify a port
   # via TS_PORT and fallback to the Tailscale default of 41641
-  #
+  TS_TAILSCALED_EXTRA_ARGS="${TS_TAILSCALED_EXTRA_ARGS:---port=${PORT} --no-logs-no-support}"
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
   ###
   #
   # Don't quote so that if user is empty it still expands
@@ -177,8 +190,8 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    -e TS_EXTRA_ARGS="--netfilter-mode=off" \
-    -e TS_TAILSCALED_EXTRA_ARGS="--port=${PORT} --no-logs-no-support" \
+    -e TS_EXTRA_ARGS="${TS_EXTRA_ARGS}" \
+    -e TS_TAILSCALED_EXTRA_ARGS="${TS_TAILSCALED_EXTRA_ARGS}" \
     -e PORT="${PORT}" \
     ${_ts} \
     ${_env} \
