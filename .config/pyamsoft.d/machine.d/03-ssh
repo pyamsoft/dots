@@ -12,12 +12,24 @@ else
   _ssh_home="${XDG_RUNTIME_DIR}"
 fi
 
-_agent_path="${_ssh_home}/ssh-agent-$(id -u).env"
+# And now mark the SSH directory per user
+_ssh_home="${_ssh_home}/pyamsoft-$(id -u)/ssh"
+_agent_path="${_ssh_home}/ssh-agent.env"
 
 # Check if an SSH agent is already running
 if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
-  # Launch a new agent and save the details in this runtime file
-  ssh-agent -s >"${_agent_path}"
+  # Clear the old directory
+  if rm -rf "${_ssh_home}" >/dev/null 2>&1; then
+    # Make a new directory
+    if mkdir -p "${_ssh_home}"; then
+      # Launch a new agent and save the details in this runtime file
+      ssh-agent -s >"${_agent_path}"
+    else
+      printf -- 'Failed to create new SSH environment directory: %s\n' "${_ssh_home}"
+    fi
+  else
+    printf -- 'Failed to clear old SSH environment directory: %s\n' "${_ssh_home}"
+  fi
 fi
 
 if [ -f "${_agent_path}" ]; then
