@@ -21,9 +21,15 @@ if ! pgrep -u "$(id -un)" ssh-agent >/dev/null; then
   # Clear the old directory
   if rm -rf "${_ssh_home}" >/dev/null 2>&1; then
     # Make a new directory
-    if mkdir -p "${_ssh_home}"; then
-      # Launch a new agent and save the details in this runtime file
-      ssh-agent -s >"${_agent_path}"
+    if mkdir -p "${_ssh_home}" >/dev/null 2>&1; then
+      # Remove old agents from the default location
+      if rm -rf "${HOME}/.ssh/agent" >/dev/null 2>&1; then
+        # Launch a new agent and save the details
+        # in this runtime file
+        ssh-agent -s >"${_agent_path}"
+      else
+        printf -- 'Failed to remove old SSH agent directory: %s\n' "${HOME}/.ssh/agent"
+      fi
     else
       printf -- 'Failed to create new SSH environment directory: %s\n' "${_ssh_home}"
     fi
