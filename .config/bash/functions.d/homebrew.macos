@@ -30,5 +30,5 @@ __upall_macos_macports() {
 
 # Update everything
 upall() {
-  __upall_macos_homebrew && __upall_macos_macports "$@"
+  umask 0022 && __upall_macos_homebrew && __upall_macos_macports && umask 0077
 }
