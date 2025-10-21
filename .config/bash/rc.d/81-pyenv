@@ -1,0 +1,9 @@
+# shellcheck shell=bash
+
+export PYENV_ROOT="${HOME}/.pyenv"
+
+# If pyenv is installed, add it to path
+[ -d "${PYENV_ROOT}/bin" ] && {
+  export PATH="${PYENV_ROOT}/bin:$PATH"
+  eval "$(pyenv init -)"
+}
