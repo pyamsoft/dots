@@ -5,10 +5,10 @@ if command -v umask >/dev/null; then
   umask 077 || return 1
 
   # Set up vars
-  if [ -z "${PYAMSOFT_VARS}" ]; then
-    PYAMSOFT_VARS="umask"
+  if [ -z "${PYAMSOFT_MACHINE}" ]; then
+    PYAMSOFT_MACHINE="umask"
   else
-    PYAMSOFT_VARS="umask:${PYAMSOFT_VARS}"
+    PYAMSOFT_MACHINE="umask:${PYAMSOFT_MACHINE}"
   fi
 fi
 

@@ -20,9 +20,9 @@ if [ -n "${XDG_RUNTIME_DIR}" ]; then
 
   # Set up machine
   if [ -z "${PYAMSOFT_MACHINE}" ]; then
-    PYAMSOFT_MACHINE="ssh-linux"
+    PYAMSOFT_MACHINE="ssh-agent-linux"
   else
-    PYAMSOFT_MACHINE="ssh-linux:${PYAMSOFT_MACHINE}"
+    PYAMSOFT_MACHINE="ssh-agent-linux:${PYAMSOFT_MACHINE}"
   fi
 fi
 

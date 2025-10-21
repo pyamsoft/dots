@@ -1,0 +1,40 @@
+# shellcheck shell=bash
+
+# Runtime directory defined, do nothing
+if [ -n "${PYAMSOFT_RUNTIME_DIR}" ]; then
+  return 0
+fi
+
+# Otherwise figure out an SSH agent home
+if [ -z "${XDG_RUNTIME_DIR}" ]; then
+  _runtime_home="${TMPDIR:-/tmp}"
+else
+  _runtime_home="${XDG_RUNTIME_DIR}"
+fi
+
+# Remove trailing slash if one exists
+_runtime_home="${_runtime_home%/}"
+
+# Mark runtime directory per user
+PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft-$(id -u)"
+
+# Export out
+export PYAMSOFT_RUNTIME_DIR
+
+# Clean up directory
+rm -rf "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1
+mkdir -p "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1 || {
+  printf -- 'Failed to setup pyamsoft runtime directory: %s\n' "${PYAMSOFT_RUNTIME_DIR}"
+  return 1
+}
+
+# Set up machine
+if [ -z "${PYAMSOFT_MACHINE}" ]; then
+  PYAMSOFT_MACHINE="runtime"
+else
+  PYAMSOFT_MACHINE="runtime:${PYAMSOFT_MACHINE}"
+fi
+
+unset _runtime_home
+
+return 0

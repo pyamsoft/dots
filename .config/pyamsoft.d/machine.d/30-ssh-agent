@@ -1,0 +1,54 @@
+# shellcheck shell=bash
+
+# SSH socket defined, do nothing
+if [ -n "${SSH_AUTH_SOCK}" ]; then
+  return 0
+fi
+
+# No runtime directory, do nothing
+if [ -z "${PYAMSOFT_RUNTIME_DIR}" ]; then
+  return 0
+fi
+
+# And now mark the SSH directory per user
+_ssh_home="${PYAMSOFT_RUNTIME_DIR}/ssh"
+
+# Expected paths
+_agent_env_path="${_ssh_home}/ssh-agent.env"
+_agent_pid_path="${_ssh_home}/ssh-agent.pid"
+
+# If old agent does not exist
+if [ ! -f "${_agent_env_path}" ]; then
+  # Clear the old directory
+  rm -rf "${_ssh_home}" >/dev/null 2>&1
+
+  # Make a new directory
+  if mkdir -p "${_ssh_home}" >/dev/null 2>&1; then
+    # Launch a new agent and save the details
+    # in this runtime file
+    ssh-agent -s -a "${_agent_pid_path}" >"${_agent_env_path}"
+  else
+    printf -- 'Failed to create new SSH environment directory: %s\n' "${_ssh_home}"
+  fi
+fi
+
+# Either we have a new agent at this point, or we re-use existing one
+if [ -n "${_agent_env_path}" ] && [ -f "${_agent_env_path}" ]; then
+  # Source the SSH agent configuration
+
+  # shellcheck disable=SC1090
+  . "${_agent_env_path}" >/dev/null 2>&1
+
+  # Set up machine
+  if [ -z "${PYAMSOFT_MACHINE}" ]; then
+    PYAMSOFT_MACHINE="ssh-agent"
+  else
+    PYAMSOFT_MACHINE="ssh-agent:${PYAMSOFT_MACHINE}"
+  fi
+fi
+
+unset _agent_pid_path
+unset _agent_env_path
+unset _ssh_home
+
+return 0
