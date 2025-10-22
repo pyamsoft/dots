@@ -3,7 +3,7 @@
 export PYENV_ROOT="${HOME}/.pyenv"
 
 # If pyenv is installed, add it to path
-[ -d "${PYENV_ROOT}/bin" ] && {
+if [ -d "${PYENV_ROOT}/bin" ]; then
   export PATH="${PYENV_ROOT}/bin:$PATH"
   eval "$(pyenv init -)"
-}
+fi
