@@ -2,7 +2,7 @@
 
 readonly _name="wireguard"
 readonly _image="docker.io/jordanpotter/wireguard"
-readonly _tag="2025-10-14"
+readonly _tag="2025-11-04"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
