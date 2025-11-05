@@ -16,13 +16,18 @@ esac
 
 readonly _basename="beszel"
 readonly _name="${_basename}-${BESZEL_MODE}"
+_version="0.15.4"
 if [ "${BESZEL_MODE}" = "hub" ]; then
   _image="docker.io/henrygd/beszel"
+  _tag="${_version}"
 else
   _image="docker.io/henrygd/beszel-agent"
+  # -alpine supports SMART data
+  _tag="${_version}-alpine"
 fi
+unset _version
 readonly _image
-readonly _tag="0.15.4"
+readonly _tag
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
