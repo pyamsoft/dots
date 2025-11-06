@@ -8,17 +8,24 @@ fi
 # Otherwise figure out an SSH agent home
 if [ -z "${XDG_RUNTIME_DIR}" ]; then
   _runtime_home="${TMPDIR:-/tmp}"
+
+  # Remove trailing slash if one exists
+  _runtime_home="${_runtime_home%/}"
+
+  # Mark runtime directory per user since TMPDIR may be a shared global directory
+  PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft-$(id -u)"
 else
   _runtime_home="${XDG_RUNTIME_DIR}"
+
+  # Remove trailing slash if one exists
+  _runtime_home="${_runtime_home%/}"
+
+  # Mark runtime directory (do not need per user since XDG_RUNTIME_DIR is already per user)
+  PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft"
 fi
 
-# Remove trailing slash if one exists
-_runtime_home="${_runtime_home%/}"
-
-# Mark runtime directory per user
-PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft-$(id -u)"
-
 # Export out
+unset _runtime_home
 export PYAMSOFT_RUNTIME_DIR
 
 # Clean up directory
@@ -34,7 +41,5 @@ if [ -z "${PYAMSOFT_MACHINE}" ]; then
 else
   PYAMSOFT_MACHINE="runtime:${PYAMSOFT_MACHINE}"
 fi
-
-unset _runtime_home
 
 return 0
