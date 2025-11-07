@@ -83,8 +83,8 @@ _prep_ports() {
   _ports=""
 
   # Bind to DNS port (but we will use host networking so this will be ignored)
-  _ports="${_ports} -p 127.0.0.1:53:53/tcp"
-  _ports="${_ports} -p 127.0.0.1:53:53/udp"
+  _ports="${_ports} -p 127.0.0.1:5053:53/tcp"
+  _ports="${_ports} -p 127.0.0.1:5053:53/udp"
 
   readonly _ports
   return 0
