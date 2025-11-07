@@ -214,7 +214,7 @@ _run_jail() {
   readonly _args
 
   # Isolate user $HOME
-  _j_home_binds="--bind ${_j_jail}/home ${HOME}"
+  _j_home_binds="$(_block_in_jail "/home") --bind ${_j_jail}/home ${HOME}"
 
   # Add in extra nice-to-have directories
   # For things like icons, theme, and fonts
