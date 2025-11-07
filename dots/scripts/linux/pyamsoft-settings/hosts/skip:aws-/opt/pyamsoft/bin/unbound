@@ -1,8 +1,8 @@
 #!/bin/sh
 
-readonly _name="caddy"
-readonly _image="ghcr.io/caddybuilds/caddy-cloudflare"
-readonly _tag="2.10.2"
+readonly _name="unbound"
+readonly _image="docker.io/crazymax/unbound"
+readonly _tag="1.24.0"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -33,8 +33,10 @@ _priv_port_drop() {
     # After a few seconds, close them back up.
     #
     # Since we run this overall script as root, we are "trusted" to open this
-    sysctl -q net.ipv4.ip_unprivileged_port_start=80 || return 1
-    (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    #
+    # Wait for 10 seconds since unbound takes a while to start up
+    sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
+    (sleep 10 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
     return 0
   fi
 
@@ -45,33 +47,21 @@ _prep_mounts() {
   _root_path="$(_get_env "HOME")/.local"
   readonly _root_path
 
-  readonly _mount1="${_root_path}/etc/containers/${_name}/data"
-  readonly _mount2="${_root_path}/etc/containers/${_name}/config"
-  readonly _mount3="${_root_path}/etc/containers/${_name}/serve"
-  readonly _mount4="${_root_path}/etc/containers/${_name}/logs"
+  readonly _mount1="${_root_path}/etc/containers/${_name}/config"
 
   _runas mkdir -p "${_mount1}" || return 1
-  _runas mkdir -p "${_mount2}" || return 1
-  _runas mkdir -p "${_mount3}" || return 1
-  _runas mkdir -p "${_mount4}" || return 1
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/config"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/serve"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/var/log/caddy"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/etc/unbound"
 
-  _caddyfile="/etc/caddy"
-  if [ -d "${_caddyfile}" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_caddyfile},target=/etc/caddy"
-  fi
-  unset _caddyfile
+  # Make the rpz.d directory
+  _runas mkdir -p "${_mount1}/rpz.d" || return 1
 
-  _binary="/opt/caddy/bin/caddy"
-  if [ -f "${_binary}" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_binary},target=/usr/bin/caddy"
+  # Update the root hints if needed
+  if [ ! -e "${_mount1}/root.hints" ]; then
+    printf -- 'Initializing Unbound root.hints file...\n'
+    _runas systemctl --user start unbound-root-hints-updater.service
   fi
-  unset _binary
 
   readonly _mounts
   return 0
@@ -79,12 +69,11 @@ _prep_mounts() {
 
 _prep_caps() {
   _caps=""
-  _caps="${_caps} --cap-add NET_BIND_SERVICE"
-  _caps="${_caps} --cap-add NET_ADMIN"
 
-  if [ "$(uname)" = "Darwin" ]; then
-    _caps="${_caps} --cap-add DAC_OVERRIDE"
-  fi
+  # Unbound container runs as a random user 1500
+  # we use this so that the user in the container can read our config files
+  # owned by the container user outside
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
 
   readonly _caps
   return 0
@@ -93,7 +82,9 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  # No ports
+  # Bind to DNS port (but we will use host networking so this will be ignored)
+  _ports="${_ports} -p 127.0.0.1:53:53/tcp"
+  _ports="${_ports} -p 127.0.0.1:53:53/udp"
 
   readonly _ports
   return 0
@@ -114,25 +105,25 @@ _check_user() {
   fi
 
   # Expects to be root (since the cert file is owned by root)
-  _userns="--user 0:0"
+  _userns=""
 
   readonly _userns
 }
 
 _containerize() {
   # Runtime configuration
-  _cd=""
+  _ub=""
 
   # Source the runtime config (so we don't have to hardcode keys)
   _runconf="$(_get_env "HOME")/.local/etc/containers/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
-    return 1
+    printf -- 'Optional runconfig is supported at %s\n' "${_runconf}"
+  else
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
   fi
 
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
   unset _runconf
 
   # On Linux, our user session executes from systemd and thus sets the systemd vars
@@ -143,12 +134,12 @@ _containerize() {
   # As such our services set a special PYAM_SYSTEMD variable and we sniff that
   if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
     if [ "${_cmd}" = "podman" ]; then
-      _cd="${_cd} --log-driver json-file"
+      _ub="${_ub} --log-driver json-file"
     fi
   else
-    _cd="${_cd} -i -t"
+    _ub="${_ub} -i -t"
   fi
-  readonly _cd
+  readonly _ub
 
   # We use our container DNS resolver
   # MacOS can't launch with host-gateway
@@ -157,6 +148,12 @@ _containerize() {
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
+
+  # Use host networking for performance
+  # using the network namespace adds a 2x to 3x overhead for DNS resolution
+  # we use host networking instead and restrict unbound to listening on only our localhost address
+  _network="${_network} --net=host"
+
   readonly _network
 
   # Auto Update Checking support
@@ -178,7 +175,7 @@ _containerize() {
   _runas ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_cd} \
+    ${_ub} \
     ${_network} \
     ${_auto} \
     ${_mounts} \

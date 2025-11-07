@@ -1,12 +1,11 @@
 [Unit]
 Description=Update root.hints for Unbound
-After=network.target
 
 [Service]
 # Need oneshot or timer wont restart
 Type=oneshot
 
-ExecStart=/usr/bin/curl -o /etc/unbound/root.hints https://www.internic.net/domain/named.cache
+ExecStart=/usr/bin/curl -fsS -o %s/.local/etc/containers/unbound/config/root.hints https://www.internic.net/domain/named.cache
 
 MemoryDenyWriteExecute=true
 NoNewPrivileges=true
