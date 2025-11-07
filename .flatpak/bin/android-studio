@@ -43,16 +43,14 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-# Export JDK as environment variables for Gradle
-# https://docs.gradle.org/8.10.2/userguide/toolchains.html#sec:custom_loc
-#
-# Needed to build KTOR library
+##
+# KTOR 3.3.2 does NOT build in Android Studio in Flatpak?
 #
 # shellcheck disable=SC2086
 flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="${android_root}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
+  --filesystem="${android_root}" \
   --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
   --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
   ${_args} \
