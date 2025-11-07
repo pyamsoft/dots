@@ -175,7 +175,7 @@ _containerize() {
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
 
-  if [ "${BESZEL_MODE}" != "remote" ]; then
+  if [ "${BESZEL_MODE}" != "hub" ]; then
     # Agent must run with host networking
     _network="${_network} --net=host"
   fi
