@@ -38,7 +38,6 @@ ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
 cairo
-cantarell-fonts
 capstone
 catatonit
 cdparanoia
@@ -112,7 +111,6 @@ freeglut
 freerdp
 freetype2
 fribidi
-fstrm
 fuse-common
 fuse2
 fuse3
@@ -131,6 +129,7 @@ geoclue
 geocode-glib-2
 geocode-glib-common
 gettext
+gexiv2
 gflags
 gfxstream
 ghc-libs
@@ -255,7 +254,6 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
-hiredis
 hsa-rocr
 hwdata
 hyphen
@@ -596,6 +594,7 @@ libssh2
 libstemmer
 libsysprof-capture
 libtasn1
+libtatsu
 libteam
 libthai
 libtheora

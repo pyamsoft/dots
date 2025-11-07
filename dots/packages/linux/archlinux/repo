@@ -17,7 +17,6 @@ gdm
 gnome-remote-desktop
 gnome-shell-extension-appindicator
 gnome-shell-extension-caffeine
-gnome-themes-extra
 gst-libav
 gst-plugin-va
 guake
@@ -67,7 +66,6 @@ system-config-printer
 tmux
 ttf-gentium-plus
 ttf-liberation
-unbound
 util-linux
 virt-manager
 vulkan-radeon
