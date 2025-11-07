@@ -1,0 +1,34 @@
+# Runs the unbound container when the target user logs in
+#
+# Should be enabled as `systemctl enable container-unbound@UID.service`
+# where UID is the UID of the target user you want to run the container
+#
+# Generally this is 1000 for "your user"
+
+## TODO: Move to the container@ instance service
+
+[Unit]
+Description=Container: Unbound for %i
+After=network.target syslog.target local-fs.target docker.service podman.service 
+
+[Service]
+# We are in a pyamsoft service
+Environment=PYAM_SYSTEMD=1
+
+# File must exist or fail
+ExecStartPre=/bin/test -x /opt/pyamsoft/bin/unbound
+
+# Check the network is online before starting (wait up to 30 seconds)
+# Don't check for DNS, we ARE the DNS
+ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin/im-online'
+
+# Teardown before starting, if this 'fails' because nothing else is running, we don't mind
+ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
+
+ExecStart=/opt/pyamsoft/bin/unbound "%i"
+ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=user@%i.service
