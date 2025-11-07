@@ -36,7 +36,6 @@ readonly _args
 exec flatpak-env "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --filesystem="${HOME}/games/heroic" \
   ${_args} \
   -- \
   --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
