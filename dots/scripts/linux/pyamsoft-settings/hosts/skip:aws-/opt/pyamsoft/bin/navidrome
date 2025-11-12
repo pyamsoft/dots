@@ -2,7 +2,7 @@
 
 readonly _name="navidrome"
 readonly _image="docker.io/deluan/navidrome"
-readonly _tag="0.58.0"
+readonly _tag="0.58.5"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
