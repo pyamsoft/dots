@@ -16,7 +16,7 @@ After=network.target syslog.target local-fs.target docker.service podman.service
 Environment=PYAM_SYSTEMD=1
 
 # File must exist or fail
-ExecStartPre=/bin/test -x /opt/pyamsoft/bin/unbound
+ExecStartPre=/bin/test -x /opt/pyamsoft/sbin/unbound
 
 # Check the network is online before starting (wait up to 30 seconds)
 # Don't check for DNS, we ARE the DNS
@@ -25,7 +25,7 @@ ExecStartPre=/bin/sh -c '[ -x /opt/pyamsoft/bin/im-online ] && /opt/pyamsoft/bin
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
 
-ExecStart=/opt/pyamsoft/bin/unbound "%i"
+ExecStart=/opt/pyamsoft/sbin/unbound "%i"
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
 Restart=on-failure
 RestartSec=10
