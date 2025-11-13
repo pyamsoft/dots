@@ -6,7 +6,7 @@
 _runas() {
   if command -v run0 >/dev/null 2>&1; then
     # Use run0 if we have it
-    exec sudo run0 -u "$1" --setenv=SHELL=/bin/bash
+    exec sudo run0 -u "$1" --setenv=SHELL=/bin/bash -i
   else
     # Otherwise fake the environment with sudo
     exec sudo -u "$1" env SHELL=/bin/bash XDG_RUNTIME_DIR="/run/user/$(id -u "$1")" /bin/bash -l
