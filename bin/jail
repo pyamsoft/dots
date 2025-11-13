@@ -314,7 +314,7 @@ _run_jail() {
     $(_bind_in_jail "dev-bind" "/") \
     --proc /proc \
     --mqueue /dev/mqueue \
-    $(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys") \
+    $(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys" "/opt") \
     $(_block_in_jail "/usr/lib/modules" "/usr/lib/modprobe.d" "/usr/lib/modules-load.d") \
     $(_block_in_jail "/usr/share/iptables" "/usr/share/nftables" "/usr/share/firewalld") \
     $(_block_in_jail "/usr/share/polkit-1") \
