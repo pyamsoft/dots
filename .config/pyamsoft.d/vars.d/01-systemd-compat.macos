@@ -13,6 +13,11 @@ XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
 if [ -d "${XDG_CONFIG_HOME}" ]; then
   if [ -d "${XDG_CONFIG_HOME}/environment.d" ]; then
     for _systemd_conf in "${XDG_CONFIG_HOME}/environment.d"/*.conf; do
+      # No configs, stop looping
+      if [ "${_systemd_conf}" = "${XDG_CONFIG_HOME}/environment.d/*.conf" ]; then
+        break
+      fi
+
       while read -r _line; do
         # Need a valid line
         if [ -n "${_line}" ]; then
