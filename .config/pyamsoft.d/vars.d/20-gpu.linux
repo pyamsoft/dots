@@ -1,7 +1,7 @@
 # Hardware Accel
 #
 # For AMD
-LIBVA_DRIVER_NAME=radeonsi
+export LIBVA_DRIVER_NAME=radeonsi
 
 # Use single-file shader cache
 # https://www.phoronix.com/news/Mesa-Single-File-Cache
@@ -12,6 +12,7 @@ LIBVA_DRIVER_NAME=radeonsi
 # https://wiki.cachyos.org/configuration/gaming/#increase-maximum-shader-cache-size
 
 # Enforces RADV Vulkan implementation
-AMD_VULKAN_ICD=RADV
+export AMD_VULKAN_ICD=RADV
+
 # Increase AMD's shader cache size to 12GB
-MESA_SHADER_CACHE_MAX_SIZE=12G
+export MESA_SHADER_CACHE_MAX_SIZE=12G

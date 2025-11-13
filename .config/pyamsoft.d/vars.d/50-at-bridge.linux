@@ -1,2 +1,2 @@
 # No AT accessibility bus
-NO_AT_BRIDGE=1
+export NO_AT_BRIDGE=1

@@ -3,4 +3,4 @@
 # >>>> Executing external compose provider "/usr/bin/podman-compose".
 # Please see podman-compose(1) for how to disable this message. <<<<
 #
-PODMAN_COMPOSE_WARNING_LOGS=false
+export PODMAN_COMPOSE_WARNING_LOGS=false
