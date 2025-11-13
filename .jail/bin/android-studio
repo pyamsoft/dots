@@ -29,6 +29,8 @@ jail --name android-studio --x11 -- /usr/bin/android-studio \
   --setenv PATH "${path}:${PATH}" \
   --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
   --setenv JAVA_HOME "/opt/android-studio/jbr/" \
+  --setenv ANDROID_HOME "${sdk_root}" \
+  --bind "/opt/android-studio/" "/opt/android-studio/" \
   --bind "${sdk_root}" "${sdk_root}" \
   --bind "${project_root}" "${project_root}" \
   -- "$@"
