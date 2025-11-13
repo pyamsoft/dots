@@ -16,7 +16,7 @@ esac
 
 readonly _basename="beszel"
 readonly _name="${_basename}-${BESZEL_MODE}"
-_version="0.15.4"
+_version="0.16.0"
 if [ "${BESZEL_MODE}" = "hub" ]; then
   _image="docker.io/henrygd/beszel"
   _tag="${_version}"
