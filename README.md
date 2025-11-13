@@ -161,6 +161,15 @@ At any point if you are asked to "restore factory keys" or "reboot without savin
 - Go to the boot override and select your main boot device.
 - Verify you are in setup mode via `sbctl status` and enroll your keys
 
+### Picard
+
+Music is held by the `containers-media` user which runs containers for things like navidrome
+In order to run picard, you must either use a docker container or shell into the user.
+From your main user shell with X11 access, run `xhost +SI:localuser:containers-media`
+and then run picard with `DISPLAY=:0 picard` where picard may be the jailed script.
+
+After running, be sure to revoke xhost access with `xhost -SI:localuser:containers-media`
+
 ## Tweaks
 
 ### FS performance
