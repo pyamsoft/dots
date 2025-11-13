@@ -69,6 +69,7 @@ ddcutil
 debugedit
 debuginfod
 default-cursors
+deno
 desktop-file-utils
 device-mapper
 diffutils
@@ -1051,6 +1052,7 @@ xvidcore
 xxhash
 xz
 yajl
+yt-dlp-ejs
 zbar
 zenity
 zeromq
