@@ -12,6 +12,7 @@ corepack
 cups-pdf
 dante
 dbus-broker
+dconf-editor
 edk2-shell
 gamescope
 gdm
