@@ -8,6 +8,7 @@ bash-completion
 bluez-utils
 btop
 buildah
+corepack
 cups-pdf
 dante
 dbus-broker
