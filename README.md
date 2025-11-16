@@ -170,6 +170,17 @@ and then run picard with `DISPLAY=:0 picard` where picard may be the jailed scri
 
 After running, be sure to revoke xhost access with `xhost -SI:localuser:containers-media`
 
+### iBus on GNOME
+
+Currently we are suffering from this weird [ibus issue](https://wiki.archlinux.org/title/IBus#Keys_%22stick%22_after_being_held_down)
+Setting the env var does not seem to work, but we can disable, stop, and mask the service. It stops the ibus, and
+GNOME stuff appears to continue working.
+
+```sh
+$ systemctl --user disable --now org.freedesktop.IBus.session.GNOME.service
+$ systemctl --user mask org.freedesktop.IBus.session.GNOME.service
+```
+
 ## Tweaks
 
 ### FS performance
