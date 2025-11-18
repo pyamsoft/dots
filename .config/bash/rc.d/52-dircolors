@@ -1,0 +1,15 @@
+# shellcheck shell=bash
+
+# This MUST be evaluated during the rc step
+#
+# For some reason, when evaluated as part of bash_profile
+# the dircolors command returns LS_COLORS=''
+#
+# and thus is incorrect
+if [ -z "${LS_COLORS}" ]; then
+  if command -v dircolors >/dev/null; then
+    eval "$(dircolors -b)" || return 1
+  fi
+fi
+
+return 0
