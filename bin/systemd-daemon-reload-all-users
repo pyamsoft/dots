@@ -3,4 +3,43 @@
 # Reload systemctl for system
 # And our current user
 # And all other container users
-exec sudo systemctl daemon-reload && systemctl --user daemon-reload && container-all reload
+
+_system() {
+  printf -- 'Reload systemd at SYSTEM level...\n'
+  sudo systemctl daemon-reload || {
+    printf -- 'Failed to reload at SYSTEM level\n'
+    return 1
+  }
+
+  return 0
+}
+
+_user() {
+  printf -- 'Reload systemd at USER level...\n'
+  systemctl --user daemon-reload || {
+    printf -- 'Failed to reload at USER level\n'
+    return 1
+  }
+
+  return 0
+}
+
+_containers() {
+  printf -- 'Reload systemd at CONTAINER level...\n'
+  container-all reload || {
+    printf -- 'Failed to reload at CONTAINER level\n'
+    return 1
+  }
+
+  return 0
+}
+
+main() {
+  _system || return 1
+  _user || return 1
+  _containers || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
