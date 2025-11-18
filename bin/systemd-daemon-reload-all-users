@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Reload systemctl for system
+# And our current user
+# And all other container users
+exec sudo systemctl daemon-reload && systemctl --user daemon-reload && container-all reload
