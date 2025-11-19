@@ -56,12 +56,11 @@ _restarthook() {
         fi
         break
       fi
-      unset _dep
+      unset _running
     done
-    unset _dep
     unset _running
+    unset _dep
   done
-  unset _running
   unset _dep
 
   if [ -n "${_active_dependants}" ]; then
@@ -72,15 +71,15 @@ _restarthook() {
     unset _dep
 
     _stop "${__network_owner}" || return 1
-
-    _restart "${__network_owner}" || return 1
-
-    for _dep in ${_active_dependants}; do
-      _restart "${_dep}" || return 1
-      unset _dep
-    done
-    unset _dep
   fi
+
+  _restart "${__network_owner}" || return 1
+
+  for _dep in "$@"; do
+    _restart "${_dep}" || return 1
+    unset _dep
+  done
+  unset _dep
 
   unset _dependants
   unset _active_dependants
@@ -110,6 +109,9 @@ main() {
     printf -- 'Must specify a container group network-owner.\n'
     return 1
   fi
+
+  # Eat network owner
+  shift
 
   _collect_running || return 1
   _restarthook "$@" || return 1
