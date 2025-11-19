@@ -104,12 +104,10 @@ _containerize() {
   # Wake word command
   _pp_cmd="-m wyoming_piper"
   _pp_cmd="${_pp_cmd} --uri tcp://0.0.0.0:10200"
-  _pp_cmd="${_pp_cmd} --piper /usr/share/piper/piper"
   _pp_cmd="${_pp_cmd} --length-scale 1"
   _pp_cmd="${_pp_cmd} --noise-scale 0.667"
   _pp_cmd="${_pp_cmd} --speaker 0"
   _pp_cmd="${_pp_cmd} --voice ${MODEL}"
-  _pp_cmd="${_pp_cmd} --max-piper-procs 1"
   _pp_cmd="${_pp_cmd} --data-dir /data"
   _pp_cmd="${_pp_cmd} --download-dir /download"
 
