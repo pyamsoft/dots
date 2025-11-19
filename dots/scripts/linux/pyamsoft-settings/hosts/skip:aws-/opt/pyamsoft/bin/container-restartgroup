@@ -65,18 +65,18 @@ _restarthook() {
 
   if [ -n "${_active_dependants}" ]; then
     for _dep in ${_active_dependants}; do
-      _stop "${_dep}" || return 1
+      _stop "${_dep}"
       unset _dep
     done
     unset _dep
 
-    _stop "${__network_owner}" || return 1
+    _stop "${__network_owner}"
   fi
 
-  _restart "${__network_owner}" || return 1
+  _restart "${__network_owner}"
 
   for _dep in "$@"; do
-    _restart "${_dep}" || return 1
+    _restart "${_dep}"
     unset _dep
   done
   unset _dep
