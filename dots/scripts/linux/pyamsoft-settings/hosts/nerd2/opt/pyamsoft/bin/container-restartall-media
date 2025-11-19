@@ -1,0 +1,103 @@
+#!/bin/sh
+
+readonly _containers_user="containers-media"
+__running_containers=""
+
+_stop() {
+  printf -- 'Stop container %s\n' "$1"
+  "${_containers_user}" stop "$1" || {
+    printf -- 'Failed to stop container %s\n' "$1"
+    return 1
+  }
+
+  return 0
+}
+
+_restart() {
+  printf -- 'Restarting container %s\n' "$1"
+  "${_containers_user}" restart "$1" || {
+    printf -- 'Failed to restart container %s\n' "$1"
+    return 1
+  }
+
+  return 0
+}
+
+_collect_running() {
+  for _container in $("${_containers_user}" ps --format '{{ .Names }}'); do
+    if [ "${_container}" = "${_network_owner}" ]; then
+      unset _container
+      continue
+    fi
+
+    if [ -z "${__running_containers}" ]; then
+      __running_containers="${_container}"
+    else
+      __running_containers="${_container} ${__running_containers}"
+    fi
+    unset _container
+  done
+  unset _container
+
+  return 0
+}
+
+_restarthook() {
+  _network_owner="$1"
+  _dependants="$2"
+
+  _active_dependants=""
+
+  for _running in ${__running_containers}; do
+    for _dep in ${_dependants}; do
+      if [ "${_running}" = "${_dep}" ]; then
+        if [ -z "${_active_dependants}" ]; then
+          _active_dependants="${_dep}"
+        else
+          _active_dependants="${_dep} ${_active_dependants}"
+        fi
+        break
+      fi
+      unset _dep
+    done
+    unset _dep
+    unset _running
+  done
+  unset _running
+  unset _dep
+
+  if [ -n "${_active_dependants}" ]; then
+    for _dep in ${_active_dependants}; do
+      _stop "${_dep}" || return 1
+      unset _dep
+    done
+    unset _dep
+
+    _stop "${_network_owner}" || return 1
+
+    _restart "${_network_owner}" || return 1
+
+    for _dep in ${_active_dependants}; do
+      _restart "${_dep}" || return 1
+      unset _dep
+    done
+    unset _dep
+  fi
+
+  unset _network_owner
+  unset _dependants
+  unset _active_dependants
+
+  return 0
+}
+
+main() {
+  _collect_running || return 1
+
+  _restarthook "navidrome" "feishin" || return 1
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
