@@ -1,11 +1,12 @@
 #!/bin/sh
 
-readonly _containers_user="containers-hass"
+__containers_user=""
+__network_owner=""
 __running_containers=""
 
 _stop() {
   printf -- 'Stop container %s\n' "$1"
-  "${_containers_user}" stop "$1" || {
+  "${__containers_user}" stop "$1" || {
     printf -- 'Failed to stop container %s\n' "$1"
     return 1
   }
@@ -15,7 +16,7 @@ _stop() {
 
 _restart() {
   printf -- 'Restarting container %s\n' "$1"
-  "${_containers_user}" restart "$1" || {
+  "${__containers_user}" restart "$1" || {
     printf -- 'Failed to restart container %s\n' "$1"
     return 1
   }
@@ -24,8 +25,8 @@ _restart() {
 }
 
 _collect_running() {
-  for _container in $("${_containers_user}" ps --format '{{ .Names }}'); do
-    if [ "${_container}" = "${_network_owner}" ]; then
+  for _container in $("${__containers_user}" ps --format '{{ .Names }}'); do
+    if [ "${_container}" = "${__network_owner}" ]; then
       unset _container
       continue
     fi
@@ -43,13 +44,10 @@ _collect_running() {
 }
 
 _restarthook() {
-  _network_owner="$1"
-  _dependants="$2"
-
   _active_dependants=""
 
-  for _running in ${__running_containers}; do
-    for _dep in ${_dependants}; do
+  for _dep in "$@"; do
+    for _running in ${__running_containers}; do
       if [ "${_running}" = "${_dep}" ]; then
         if [ -z "${_active_dependants}" ]; then
           _active_dependants="${_dep}"
@@ -73,9 +71,9 @@ _restarthook() {
     done
     unset _dep
 
-    _stop "${_network_owner}" || return 1
+    _stop "${__network_owner}" || return 1
 
-    _restart "${_network_owner}" || return 1
+    _restart "${__network_owner}" || return 1
 
     for _dep in ${_active_dependants}; do
       _restart "${_dep}" || return 1
@@ -84,7 +82,6 @@ _restarthook() {
     unset _dep
   fi
 
-  unset _network_owner
   unset _dependants
   unset _active_dependants
 
@@ -92,9 +89,33 @@ _restarthook() {
 }
 
 main() {
-  _collect_running || return 1
+  # Resolve the user
+  __containers_user="$1"
+  if [ -z "${__containers_user}" ]; then
+    printf -- 'Must specify a user to run script.\n'
+    return 1
+  fi
 
-  _restarthook "home-assistant" "esphome zigbee2mqtt mosquitto piper openwakeword whisper" || return 1
+  if ! id -u "${__containers_user}" >/dev/null 2>&1; then
+    printf -- 'Must specify a valid user. Cannot continue with "%s"\n' "${__containers_user}"
+    return 1
+  fi
+
+  # Eat the user argument
+  shift
+
+  # Resolve the network owner container
+  __network_owner="$1"
+  if [ -z "${__network_owner}" ]; then
+    printf -- 'Must specify a container group network-owner.\n'
+    return 1
+  fi
+
+  _collect_running || return 1
+  _restarthook "$@" || return 1
+
+  unset __containers_user
+  unset __network_owner
 
   return 0
 }
