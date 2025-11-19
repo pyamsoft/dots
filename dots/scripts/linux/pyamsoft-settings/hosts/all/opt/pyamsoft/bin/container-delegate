@@ -3,7 +3,8 @@
 _PROG_NAME="$(basename "$0")"
 readonly _PROG_NAME
 
-__containers=
+__scripts=""
+__containers=""
 __args=""
 
 # Use podman, don't use docker
@@ -81,8 +82,10 @@ _collect_containers() {
         ;;
       *)
         if [ -z "${__containers}" ]; then
+          __scripts="$1"
           __containers="container@$1"
         else
+          __scripts="${__scripts} $1"
           __containers="${__containers} container@$1"
         fi
         ;;
@@ -99,8 +102,10 @@ _collect_containers() {
       *)
         # In order
         if [ -z "${__containers}" ]; then
+          __scripts="$1"
           __containers="container@$1"
         else
+          __scripts="${__scripts} $1"
           __containers="${__containers} container@$1"
         fi
         ;;
@@ -204,14 +209,14 @@ main() {
       exec systemctl --user "${_action}" ${__args} ${__containers}
     else
       _valid_containers=""
-      for _cont in ${__containers}; do
+      for _cont in ${__scripts}; do
         # Run as the user
         # shellcheck disable=SC2086
-        if systemctl --user status ${_cont} >/dev/null 2>&1; then
+        if command -v "${_cont}" >/dev/null 2>&1; then
           if [ -z "${_valid_containers}" ]; then
-            _valid_containers="${_cont}"
+            _valid_containers="container@${_cont}"
           else
-            _valid_containers="${_valid_containers} ${_cont}"
+            _valid_containers="${_valid_containers} container@${_cont}"
           fi
         fi
         unset _cont
@@ -219,7 +224,7 @@ main() {
       unset _cont
 
       if [ -z "${_valid_containers}" ]; then
-        printf -- '[%s] Must call %s with at least one VALID container name (invalid: %s)\n' "${_PROG_NAME}" "${_action}" "${__containers}"
+        printf -- '[%s] Must call %s with at least one VALID container name (invalid: %s)\n' "${_PROG_NAME}" "${_action}" "${__scripts}"
         return 1
       fi
 
