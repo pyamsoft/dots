@@ -35,9 +35,14 @@ _containers() {
 }
 
 main() {
-  _system || return 1
-  _user || return 1
-  _containers || return 1
+  if command -v systemctl >/dev/null; then
+    _system || return 1
+    _user || return 1
+
+    if command -v container-all >/dev/null; then
+      _containers || return 1
+    fi
+  fi
   return 0
 }
 
