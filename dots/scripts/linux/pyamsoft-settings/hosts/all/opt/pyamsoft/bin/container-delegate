@@ -3,6 +3,9 @@
 _PROG_NAME="$(basename "$0")"
 readonly _PROG_NAME
 
+__containers=
+__args=""
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
@@ -65,27 +68,41 @@ _prep_container() {
 }
 
 _collect_containers() {
-  _containers_and_args=""
 
   for _c in "$@"; do
-    if [ -z "${_containers_and_args}" ]; then
+    if [ -z "${__containers}" ]; then
       case "$1" in
       -*)
-        _containers_and_args="$1"
+        if [ -z "${__args}" ]; then
+          __args="$1"
+        else
+          __args="${__args} $1"
+        fi
         ;;
       *)
-        _containers_and_args="container@$1"
+        if [ -z "${__containers}" ]; then
+          __containers="container@$1"
+        else
+          __containers="${__containers} container@$1"
+        fi
         ;;
       esac
     else
       case "$1" in
       -*)
-        # In order
-        _containers_and_args="${_containers_and_args} $1"
+        if [ -z "${__args}" ]; then
+          __args="$1"
+        else
+          __args="${__args} $1"
+        fi
         ;;
       *)
         # In order
-        _containers_and_args="${_containers_and_args} container@$1"
+        if [ -z "${__containers}" ]; then
+          __containers="container@$1"
+        else
+          __containers="${__containers} container@$1"
+        fi
         ;;
       esac
     fi
@@ -145,14 +162,14 @@ main() {
     _prep_container || return 1
     _collect_containers "$@" || return 1
 
-    if [ -z "${_containers_and_args}" ]; then
+    if [ -z "${__containers}" ]; then
       printf -- '[%s] Must call %s with at least one container name\n' "${_PROG_NAME}" "${_action}"
       return 1
     fi
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user "${_action}" --now ${_containers_and_args}
+    exec systemctl --user "${_action}" --now ${__args} ${__containers}
     ;;
   restart | status | stop)
     _prep_container || return 1
@@ -175,14 +192,41 @@ main() {
 
     # Otherwise we expect at least one container name
     _collect_containers "$@" || return 1
-    if [ -z "${_containers_and_args}" ]; then
+    if [ -z "${__containers}" ]; then
       printf -- '[%s] Must call %s with at least one container name\n' "${_PROG_NAME}" "${_action}"
       return 1
     fi
 
-    # Run as the user
-    # shellcheck disable=SC2086
-    exec systemctl --user "${_action}" ${_containers_and_args}
+    # If this is the NOT the "stop" action, make sure the container exists first
+    if [ "${_action}" = "stop" ]; then
+      # Run as the user
+      # shellcheck disable=SC2086
+      exec systemctl --user "${_action}" ${__args} ${__containers}
+    else
+      _valid_containers=""
+      for _cont in ${__containers}; do
+        # Run as the user
+        # shellcheck disable=SC2086
+        if systemctl --user status ${_cont} >/dev/null 2>&1; then
+          if [ -z "${_valid_containers}" ]; then
+            _valid_containers="${_cont}"
+          else
+            _valid_containers="${_valid_containers} ${_cont}"
+          fi
+        fi
+        unset _cont
+      done
+      unset _cont
+
+      if [ -z "${_valid_containers}" ]; then
+        printf -- '[%s] Must call %s with at least one VALID container name (invalid: %s)\n' "${_PROG_NAME}" "${_action}" "${__containers}"
+        return 1
+      fi
+
+      # Run as the user
+      # shellcheck disable=SC2086
+      exec systemctl --user "${_action}" ${__args} ${_valid_containers}
+    fi
     ;;
   reload)
     _prep_container || return 1
