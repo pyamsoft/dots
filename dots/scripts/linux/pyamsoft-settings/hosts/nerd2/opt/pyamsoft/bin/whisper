@@ -2,7 +2,7 @@
 
 readonly _name="whisper"
 readonly _image="docker.io/homeassistant/amd64-addon-whisper"
-readonly _tag="2.6.0"
+readonly _tag="3.0.1"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then

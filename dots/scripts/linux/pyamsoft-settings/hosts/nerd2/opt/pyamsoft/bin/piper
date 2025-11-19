@@ -2,7 +2,7 @@
 
 readonly _name="piper"
 readonly _image="docker.io/homeassistant/amd64-addon-piper"
-readonly _tag="1.6.4"
+readonly _tag="2.1.1"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then

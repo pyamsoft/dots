@@ -2,7 +2,7 @@
 
 readonly _name="openwakeword"
 readonly _image="docker.io/homeassistant/amd64-addon-openwakeword"
-readonly _tag="1.10.0"
+readonly _tag="2.1.0"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
