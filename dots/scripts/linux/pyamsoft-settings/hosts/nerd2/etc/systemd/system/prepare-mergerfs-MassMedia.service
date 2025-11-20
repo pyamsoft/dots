@@ -1,0 +1,10 @@
+[Unit]
+Description=Prepare mergerfs for /mnt/MassMedia/
+
+[Service]
+Type=notify
+RemainAfterExit=yes
+ExecStart=/opt/pyamsoft/sbin/prepare-mergerfs-MassMedia
+
+[Install]
+WantedBy=default.target

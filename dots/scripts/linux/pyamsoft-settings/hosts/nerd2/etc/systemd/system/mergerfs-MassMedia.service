@@ -1,0 +1,15 @@
+[Unit]
+Description=mergerfs /mnt/MassMedia service
+Requires=prepare-mergerfs-MassMedia.service
+After=local-fs.target network.target prepare-mergerfs-MassMedia.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/mergerfs -f -o config=/etc/mergerfs/MassMedia.ini /mnt/MassMedia/1 /mnt/MassMedia/2 /mnt/MassMedia/merged
+ExecStop=/usr/bin/umount /mnt/MassMedia/merged
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

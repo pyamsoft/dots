@@ -1,0 +1,19 @@
+#!/bin/sh
+
+main() {
+  if [ "$(id -u)" -ne 0 ]; then
+    printf -- 'You must setup mergerfs /mnt/MassMedia as root.\n'
+    return 1
+  fi
+
+  # TODO Perform setup
+  sleep 10 || return 1
+
+  # Report back to systemd that things are ready
+  exec systemd-notify --ready || return 1
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
