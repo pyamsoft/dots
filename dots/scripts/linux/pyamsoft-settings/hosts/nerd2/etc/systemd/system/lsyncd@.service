@@ -1,0 +1,27 @@
+[Unit]
+Description=lsyncd synchronization daemon for %i
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+Restart=always
+ExecStart=/usr/bin/lsyncd -nodaemon /etc/lsyncd/lsyncd.%i.conf.lua
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Hardening
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+NoNewPrivileges=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+PrivateDevices=true
+RestrictNamespaces=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+
+# Probably the wrong target, we need to wait for the external disk to be mounted, not just multi-user
+[Install]
+WantedBy=multi-user.target
