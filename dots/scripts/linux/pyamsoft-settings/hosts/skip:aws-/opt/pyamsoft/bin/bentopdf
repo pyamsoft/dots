@@ -2,7 +2,7 @@
 
 readonly _name="bentopdf"
 readonly _image="docker.io/bentopdf/bentopdf"
-readonly _tag="1.7.4"
+readonly _tag="1.7.9"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
