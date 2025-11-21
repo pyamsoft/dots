@@ -1,4 +1,0 @@
-# shellcheck shell=bash
-
-# Nicely formatted mountpoints
-alias mounts="mount | column -t"
