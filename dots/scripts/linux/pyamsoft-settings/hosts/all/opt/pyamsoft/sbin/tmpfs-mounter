@@ -62,6 +62,7 @@ _validate() {
 
  # Path provided
  if [ -z "${_validate_target}" ]; then
+  printf -- 'Missing target directory path.\n'
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -70,6 +71,7 @@ _validate() {
 
  # Path must exist and be directory
  if [ ! -d "${_validate_target}" ]; then
+  printf -- 'Missing target directory path %s\n' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -78,6 +80,7 @@ _validate() {
 
  # Check not symlink
  if [ -L "${_validate_target}" ]; then
+  printf -- 'Target directory can NOT be a symlink %s.\n' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -86,6 +89,7 @@ _validate() {
 
  # Check that path is absolute
  if [ "$(/bin/realpath "${_validate_target}")" != "${_validate_target}" ]; then
+  printf -- 'Target directory MUST be absolute path %s\n' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -95,6 +99,7 @@ _validate() {
  if [ "${_validate_require_user}" -eq 1 ]; then
   # User provided for a function that requires it
   if [ -z "${_validate_user}" ]; then
+   printf -- 'Target USER is required.\n'
    unset _validate_target
    unset _validate_user
    unset _validate_require_user
@@ -103,6 +108,7 @@ _validate() {
 
   # Check user exists
   if ! /bin/id -u "${_validate_user}" >/dev/null 2>&1; then
+   printf -- 'Target USER must exist: %s\n' "${_validate_user}"
    unset _validate_target
    unset _validate_user
    unset _validate_require_user
