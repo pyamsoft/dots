@@ -13,13 +13,9 @@ sync({
 	target = "/path/to/target",
 
 	rsync = {
-		dry_run = false,
+		-- dry_run = true,
 		archive = true,
 		compress = false,
 		verbose = true,
-		_extra = {
-			-- delete removed files from target
-			"--delete",
-		},
 	},
 })
