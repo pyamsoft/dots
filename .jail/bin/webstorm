@@ -8,6 +8,14 @@ path="${HOME}/.local/bin"
 
 readonly path
 
+# Open a shell
+_shell=""
+if [ "$1" = "--shell" ]; then
+  _shell="--shell"
+  shift
+fi
+readonly _shell
+
 # Even if you run with Wayland
 # https://wiki.archlinux.org/title/Android#Android_Studio
 #
@@ -16,7 +24,7 @@ readonly path
 # does NOT run in X11
 #
 # You can check xlsclients to be sure
-jail --name webstorm --x11 -- /usr/bin/webstorm \
+jail --name webstorm --x11 ${_shell} -- /usr/bin/webstorm \
   --setenv PATH "${path}:${PATH}" \
   --setenv JAVA_HOME "/opt/webstorm/jbr/" \
   --bind "/opt/webstorm/" "/opt/webstorm" \

@@ -17,6 +17,14 @@ path="${path}:${sdk_root}/platform-tools"
 
 readonly path
 
+# Open a shell
+_shell=""
+if [ "$1" = "--shell" ]; then
+  _shell="--shell"
+  shift
+fi
+readonly _shell
+
 # Even if you run with Wayland
 # https://wiki.archlinux.org/title/Android#Android_Studio
 #
@@ -25,7 +33,7 @@ readonly path
 # does NOT run in X11
 #
 # You can check xlsclients to be sure
-jail --name android-studio --x11 -- /usr/bin/android-studio \
+jail --name android-studio --x11 "${_shell}" -- /usr/bin/android-studio \
   --setenv PATH "${path}:${PATH}" \
   --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
   --setenv JAVA_HOME "/opt/android-studio/jbr/" \

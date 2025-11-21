@@ -1,5 +1,13 @@
 #!/bin/sh
 
-exec jail --name picard --x11 -- /usr/bin/picard \
+# Open a shell
+_shell=""
+if [ "$1" = "--shell" ]; then
+  _shell="--shell"
+  shift
+fi
+readonly _shell
+
+exec jail --name picard --x11 ${_shell} -- /usr/bin/picard \
   --bind "${HOME}/music" "${HOME}/music" \
   -- "$@"
