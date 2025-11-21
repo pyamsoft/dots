@@ -202,36 +202,12 @@ main() {
       return 1
     fi
 
-    # If this is the NOT the "stop" action, make sure the container exists first
-    if [ "${_action}" = "stop" ]; then
-      # Run as the user
-      # shellcheck disable=SC2086
-      exec systemctl --user "${_action}" ${__args} ${__containers}
-    else
-      _valid_containers=""
-      for _cont in ${__scripts}; do
-        # Run as the user
-        # shellcheck disable=SC2086
-        if command -v "${_cont}" >/dev/null 2>&1; then
-          if [ -z "${_valid_containers}" ]; then
-            _valid_containers="container@${_cont}"
-          else
-            _valid_containers="${_valid_containers} container@${_cont}"
-          fi
-        fi
-        unset _cont
-      done
-      unset _cont
-
-      if [ -z "${_valid_containers}" ]; then
-        printf -- '[%s] Must call %s with at least one VALID container name (invalid: %s)\n' "${_PROG_NAME}" "${_action}" "${__scripts}"
-        return 1
-      fi
-
-      # Run as the user
-      # shellcheck disable=SC2086
-      exec systemctl --user "${_action}" ${__args} ${_valid_containers}
-    fi
+    # NOTE: (Peter) If the name passed here as a container does NOT actually exist, the script will
+    #              just attempt to restart over and over again, which is bad mkay
+    #
+    # Run as the user
+    # shellcheck disable=SC2086
+    exec systemctl --user "${_action}" ${__args} ${__containers}
     ;;
   reload)
     _prep_container || return 1
