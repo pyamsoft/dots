@@ -156,7 +156,9 @@ _mount() {
  fi
 
  # Collect default mount options
- _mount_default_options="strictatime,nosuid,nodev,noexec,uid=$(/bin/id -u "${_mount_user}"),gid=$(/bin/id -g "${_mount_user}")"
+ #
+ # Use relatime
+ _mount_default_options="relatime,uid=$(/bin/id -u "${_mount_user}"),gid=$(/bin/id -g "${_mount_user}"),nosuid,nodev"
 
  # Perform the mount
  if [ -n "${_mount_options}" ]; then

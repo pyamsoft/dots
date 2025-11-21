@@ -3,7 +3,7 @@
 # Splits up a user:path argument provided to a systemd instance unit
 # and pass the expected format over to `tmpfs-mounter`
 #
-# Expected format is <user>:<escaped-path>[:mode]
+# Expected format is <user>:<escaped-path>[:options]
 
 main() {
   _cmd="$1"
@@ -11,6 +11,7 @@ main() {
 
   if [ -z "${_cmd}" ]; then
     printf -- 'Missing command, not forwarding to tmpfs-mounter.\n'
+    printf -- 'Expected format: "<user>:<escaped-path>[:escaped-options]\n'
 
     unset _cmd
     unset _instance
@@ -19,6 +20,7 @@ main() {
 
   if [ -z "${_instance}" ]; then
     printf -- 'Missing instance, not forwarding to tmpfs-mounter.\n'
+    printf -- 'Expected format: "<user>:<escaped-path>[:escaped-options]\n'
 
     unset _cmd
     unset _instance
@@ -32,7 +34,7 @@ main() {
   # Grab the user and path (path is escaped by systemd)
   _user="$(printf -- '%s' "${_split}" | /bin/awk '{ print $1 }')"
   _path="$(printf -- '%s' "${_split}" | /bin/awk '{ print $2 }')"
-  _mode="$(printf -- '%s' "${_split}" | /bin/awk '{ print $3 }')"
+  _options="$(printf -- '%s' "${_split}" | /bin/awk '{ print $3 }')"
   unset _split
 
   # Fix the path
@@ -40,8 +42,12 @@ main() {
   unset _path
 
   # Pass to tmpfs-mounter
-  if [ -n "${_mode}" ]; then
-    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "mode=${_mode}"
+  if [ -n "${_options}" ]; then
+    # Fix the options
+    _unescaped_options="$(/bin/systemd-escape --unescape -- "${_options}")"
+    unset _options
+
+    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "${_unescaped_options}"
   else
     exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
   fi
