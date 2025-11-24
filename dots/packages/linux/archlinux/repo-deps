@@ -422,6 +422,7 @@ libblockdev-loop
 libblockdev-mdraid
 libblockdev-nvme
 libblockdev-part
+libblockdev-smart
 libblockdev-swap
 libbluray
 libbpf
@@ -510,6 +511,8 @@ libjcat
 libjpeg-turbo
 libjxl
 libkeybinder3
+libkrun
+libkrunfw
 libksba
 liblc3
 libldac
@@ -928,8 +931,8 @@ sbc
 scx-scheds
 sdl2-compat
 sdl2_image
-sdl2_ttf
 sdl3
+sdl3_ttf
 seabios
 seatd
 sed
