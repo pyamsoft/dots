@@ -23,7 +23,7 @@ fi
 _cfg="$1"
 _os="$2"
 
-for _rc in "${HOME}"/.bashrc.d/* "${_cfg}"/bash/rc.d/*; do
+for _rc in "${HOME}"/.bashrc.d/* "${_cfg}"/bash/rc.d/* "${_cfg}"/bash/rc.local.d/*; do
   # shellcheck disable=SC1090
   [ -r "${_rc}" ] && {
     case "${_rc}" in

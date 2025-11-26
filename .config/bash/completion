@@ -1,0 +1,40 @@
+# shellcheck shell=bash
+
+# No arguments, called by bash_completion main script
+
+# Look for additional files in $<current-directory>/completions.d
+_self_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+
+for _bcomp in "${_self_directory}"/completions.d/* "${_self_directory}"/completions.local.d/*; do
+  # shellcheck disable=SC1090
+  [ -r "${_bcomp}" ] && {
+    case "${_bcomp}" in
+    *.linux)
+      if [ "${_os}" = "Linux" ]; then
+        . "${_bcomp}" || {
+          printf -- 'Linux bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+        }
+      fi
+      ;;
+    *.macos)
+      if [ "${_os}" = "Darwin" ]; then
+        . "${_bcomp}" || {
+          printf -- 'MacOS bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+        }
+      fi
+      ;;
+    *)
+      . "${_bcomp}" || {
+        printf -- 'bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+      }
+      ;;
+    esac
+  }
+  unset _bcomp
+done
+unset _bcomp
+
+unset _self_directory
+
+return 0
+

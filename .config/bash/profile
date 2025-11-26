@@ -26,7 +26,7 @@ if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
 fi
 
-for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/*; do
+for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/* "${_cfg}"/bash/profile.local.d/*; do
   # shellcheck disable=SC1090
   [ -r "${_profile}" ] && {
     case "${_profile}" in

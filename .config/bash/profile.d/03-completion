@@ -10,8 +10,14 @@ if [ -n "${XDG_CONFIG_HOME}" ]; then
   # Bash completion internals look at the subdirectory /completions for files
   # that it will lazy load to offer completions
   export BASH_COMPLETION_USER_DIR="${XDG_CONFIG_HOME}/bash"
+
+  # Load the completion file too
+  export BASH_COMPLETION_USER_FILE="${XDG_CONFIG_HOME}/bash/completion"
 else
   export BASH_COMPLETION_USER_DIR="${HOME}/.config/bash"
+
+  # Load the completion file too
+  export BASH_COMPLETION_USER_FILE="${HOME}/.config/bash/completion"
 fi
 
 return 0
