@@ -1,9 +1,5 @@
 # shellcheck shell=bash
 
-# Do not set this file, use the completions subdirectory instead
-export BASH_COMPLETION_USER_FILE=""
-unset BASH_COMPLETION_USER_FILE
-
 if [ -n "${XDG_CONFIG_HOME}" ]; then
   # Mark the bash config folder as the completion directory
   #
