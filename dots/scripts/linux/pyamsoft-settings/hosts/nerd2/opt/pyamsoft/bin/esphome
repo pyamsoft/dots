@@ -2,7 +2,7 @@
 
 readonly _name="esphome"
 readonly _image="ghcr.io/esphome/esphome"
-readonly _tag="2025.11.0"
+readonly _tag="2025.11.2"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
