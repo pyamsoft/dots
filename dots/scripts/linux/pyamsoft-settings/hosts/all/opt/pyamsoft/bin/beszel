@@ -1,5 +1,7 @@
 #!/bin/sh
 
+_version="0.17.0"
+
 ##
 # hub - the Beszel hub
 # agent - Agent instance running on the same machine as the hub
@@ -16,7 +18,6 @@ esac
 
 readonly _basename="beszel"
 readonly _name="${_basename}-${BESZEL_MODE}"
-_version="0.16.1"
 if [ "${BESZEL_MODE}" = "hub" ]; then
   _image="docker.io/henrygd/beszel"
   _tag="${_version}"
