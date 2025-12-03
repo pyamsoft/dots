@@ -1,2 +1,6 @@
+# Ignore history
 history
+history-*
+
+# Don't track locals
 *.local.d
