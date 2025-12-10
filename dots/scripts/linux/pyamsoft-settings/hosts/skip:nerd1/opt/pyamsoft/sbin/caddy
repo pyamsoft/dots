@@ -34,7 +34,7 @@ _priv_port_drop() {
     #
     # Since we run this overall script as root, we are "trusted" to open this
     sysctl -q net.ipv4.ip_unprivileged_port_start=80 || return 1
-    (sleep 3 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    (sleep 20 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
     return 0
   fi
 
