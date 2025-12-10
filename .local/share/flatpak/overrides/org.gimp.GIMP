@@ -1,2 +1,2 @@
 [Context]
-filesystems=xdg-pictures;
+filesystems=!xdg-config/GIMP;xdg-pictures;

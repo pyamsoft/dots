@@ -16,20 +16,3 @@ if [ -d "${HOME}/bin" ]; then
     PYAMSOFT_PATH="home-bin:${PYAMSOFT_PATH}"
   fi
 fi
-
-# Local scripts that are not git tracked
-if [ -d "${HOME}/.local/bin" ]; then
-  PATH="${HOME}/.local/bin:${PATH}"
-
-  # Set up path
-  if [ -z "${PYAMSOFT_PATH}" ]; then
-    PYAMSOFT_PATH="home-local-bin"
-  else
-    PYAMSOFT_PATH="home-local-bin:${PYAMSOFT_PATH}"
-  fi
-fi
-
-# Export the PATH
-export PATH
-
-return 0
