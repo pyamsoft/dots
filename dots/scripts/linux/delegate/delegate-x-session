@@ -1,0 +1,39 @@
+#!/bin/sh
+
+readonly _user="<<TARGET_USER>>"
+readonly _program="<<PROGRAM_ABSOLUTE_PATH>>"
+
+_pre() {
+  # Add media user to xhost
+  xhost "+SI:localuser:${_user}" || {
+    printf -- 'Failed to add %s user to xhost\n' "${_user}"
+    return 1
+  }
+
+  return 0
+}
+
+_run() {
+  sudo /usr/sbin/run0 -u "${_user}" -i --setenv="DISPLAY=${DISPLAY}" "${_program}" "$@" || return 1
+  return 0
+}
+
+_post() {
+  # Remove media user from xhost
+  xhost "-SI:localuser:${_user}" || {
+    printf -- 'Failed to remove %s user to xhost\n' "${_user}"
+    return 1
+  }
+
+  return 0
+}
+
+main() {
+  _pre || return 1
+  _run "$@"
+  _post || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
