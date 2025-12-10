@@ -1,8 +1,15 @@
 #!/bin/sh
 
 readonly _name="unbound"
-readonly _image="docker.io/crazymax/unbound"
-readonly _tag="1.24.0"
+if [ -n "${USE_UPSTREAM}" ] && [ "${USE_UPSTREAM}" -eq 1 ]; then
+  _image="docker.io/crazymax/unbound"
+  _tag="1.24.0"
+else
+  _image="localhost/pyamsoft/unbound"
+  _tag="latest"
+fi
+readonly _image
+readonly _tag
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -36,7 +43,7 @@ _priv_port_drop() {
     #
     # Wait for 10 seconds since unbound takes a while to start up
     sysctl -q net.ipv4.ip_unprivileged_port_start=53 || return 1
-    (sleep 10 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    (sleep 20 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
     return 0
   fi
 
