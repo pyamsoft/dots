@@ -1,0 +1,3 @@
+# Safe access to launching the Picard program as a different user
+# The MEDIA_USER should exist at /home/<<MEDIA_USER>>
+<<MY_USER>> ALL=(root) NOPASSWD:/usr/sbin/run0 -u <<MEDIA_USER>> -i /home/<<MEDIA_USER>>/.jail/bin/picard

@@ -5,3 +5,4 @@
 #
 # Then future files declare things like NOPASSWD needed when entering certain approved commands.
 <<MY_USER>> ALL=(root) ALL
+
