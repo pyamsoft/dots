@@ -19,14 +19,12 @@ _prep_mounts() {
   readonly _mount1="${HOME}/.local/etc/containers/${_name}/cache"
   readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
   readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
-  readonly _mount4="${HOME}/.local/etc/containers/${_name}/media2"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
 
   # Media folders are optionally symlinks to another mass storage drive
   mkdir -p "${_mount3}"
-  mkdir -p "${_mount4}"
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/tmp/unmanic"
@@ -35,9 +33,6 @@ _prep_mounts() {
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_mount3}")" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/library"
-  fi
-  if [ -d "$(realpath "${_mount4}")" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/library2"
   fi
 
   readonly _mounts
