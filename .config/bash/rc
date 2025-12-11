@@ -23,33 +23,56 @@ fi
 _cfg="$1"
 _os="$2"
 
+_all_rc=""
 for _rc in "${HOME}"/.bashrc.d/* "${_cfg}"/bash/rc.d/* "${_cfg}"/bash/rc.local.d/*; do
-  # shellcheck disable=SC1090
-  [ -r "${_rc}" ] && {
-    case "${_rc}" in
-    *.linux)
-      if [ "${_os}" = "Linux" ]; then
-        . "${_rc}" || {
-          printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
-        }
-      fi
-      ;;
-    *.macos)
-      if [ "${_os}" = "Darwin" ]; then
-        . "${_rc}" || {
-          printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
-        }
-      fi
-      ;;
-    *)
-      . "${_rc}" || {
-        printf -- 'bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
-      }
-      ;;
-    esac
-  }
+  if [ -r "${_rc}" ]; then
+    if [ -z "${_all_rc}" ]; then
+      _all_rc="${_rc}"
+    else
+      _all_rc="${_rc}
+${_all_rc}"
+    fi
+  fi
   unset _rc
 done
 unset _rc
+
+_old_ifs="${IFS}"
+_new_ifs='
+'
+
+IFS="${_new_ifs}"
+for _rc in $(printf -- '%s' "${_all_rc}" | awk '{ base=$0; sub(".*/", "", base); printf "%s\t%s\n", base, $0; }' | LC_COLLATE=C sort -t $'\t' -k 1,1 -k 2,2 | cut -f2-); do
+  IFS="${_old_ifs}"
+  case "${_rc}" in
+  *.linux)
+    if [ "${_os}" = "Linux" ]; then
+      # shellcheck disable=SC1090
+      . "${_rc}" || {
+        printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+      }
+    fi
+    ;;
+  *.macos)
+    if [ "${_os}" = "Darwin" ]; then
+      # shellcheck disable=SC1090
+      . "${_rc}" || {
+        printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+      }
+    fi
+    ;;
+  *)
+    # shellcheck disable=SC1090
+    . "${_rc}" || {
+      printf -- 'bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+    }
+    ;;
+  esac
+  IFS="${_new_ifs}"
+  unset _rc
+done
+unset _rc
+unset _all_rc
+IFS="${_old_ifs}"
 
 return 0

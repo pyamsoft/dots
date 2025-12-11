@@ -5,36 +5,62 @@
 # Look for additional files in $<current-directory>/completions.d
 _self_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
+if [ -z "${_os}" ]; then
+  _os="$(uname)"
+fi
+
+_all_bcomp=""
 for _bcomp in "${_self_directory}"/completions.d/* "${_self_directory}"/completions.local.d/*; do
-  # shellcheck disable=SC1090
-  [ -r "${_bcomp}" ] && {
-    case "${_bcomp}" in
-    *.linux)
-      if [ "${_os}" = "Linux" ]; then
-        . "${_bcomp}" || {
-          printf -- 'Linux bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
-        }
-      fi
-      ;;
-    *.macos)
-      if [ "${_os}" = "Darwin" ]; then
-        . "${_bcomp}" || {
-          printf -- 'MacOS bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
-        }
-      fi
-      ;;
-    *)
-      . "${_bcomp}" || {
-        printf -- 'bash/completion setup script failed: %s args=%s\n' "${_bcomp}" "$*"
-      }
-      ;;
-    esac
-  }
+  if [ -r "${_bcomp}" ]; then
+    if [ -z "${_all_bcomp}" ]; then
+      _all_bcomp="${_bcomp}"
+    else
+      _all_bcomp="${_bcomp}
+${_all_bcomp}"
+    fi
+  fi
   unset _bcomp
 done
 unset _bcomp
 
+_old_ifs="${IFS}"
+_new_ifs='
+'
+
+IFS="${_new_ifs}"
+for _bcomp in $(printf -- '%s' "${_all_bcomp}" | awk '{ base=$0; sub(".*/", "", base); printf "%s\t%s\n", base, $0; }' | LC_COLLATE=C sort -t $'\t' -k 1,1 -k 2,2 | cut -f2-); do
+  IFS="${_old_ifs}"
+  case "${_bcomp}" in
+  *.linux)
+    if [ "${_os}" = "Linux" ]; then
+      # shellcheck disable=SC1090
+      . "${_bcomp}" || {
+        printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+      }
+    fi
+    ;;
+  *.macos)
+    if [ "${_os}" = "Darwin" ]; then
+      # shellcheck disable=SC1090
+      . "${_bcomp}" || {
+        printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+      }
+    fi
+    ;;
+  *)
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || {
+      printf -- 'bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+    }
+    ;;
+  esac
+  IFS="${_new_ifs}"
+  unset _bcomp
+done
+unset _bcomp
+unset _all_bcomp
+IFS="${_old_ifs}"
+
 unset _self_directory
 
 return 0
-

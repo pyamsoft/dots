@@ -20,33 +20,56 @@ fi
 _cfg="$1"
 _os="$2"
 
+_all_func=""
 for _func in "${HOME}"/.bash_functions.d/* "${_cfg}"/bash/functions.d/* "${_cfg}"/bash/functions.local.d/*; do
-  # shellcheck disable=SC1090
-  [ -r "${_func}" ] && {
-    case "${_func}" in
-    *.linux)
-      if [ "${_os}" = "Linux" ]; then
-        . "${_func}" || {
-          printf -- 'Linux bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
-        }
-      fi
-      ;;
-    *.macos)
-      if [ "${_os}" = "Darwin" ]; then
-        . "${_func}" || {
-          printf -- 'MacOS bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
-        }
-      fi
-      ;;
-    *)
-      . "${_func}" || {
-        printf -- 'bash/functions setup script failed: %s args=%s\n' "${_func}" "$*"
-      }
-      ;;
-    esac
-  }
+  if [ -r "${_func}" ]; then
+    if [ -z "${_all_func}" ]; then
+      _all_func="${_func}"
+    else
+      _all_func="${_func}
+${_all_func}"
+    fi
+  fi
   unset _func
 done
 unset _func
+
+_old_ifs="${IFS}"
+_new_ifs='
+'
+
+IFS="${_new_ifs}"
+for _func in $(printf -- '%s' "${_all_func}" | awk '{ base=$0; sub(".*/", "", base); printf "%s\t%s\n", base, $0; }' | LC_COLLATE=C sort -t $'\t' -k 1,1 -k 2,2 | cut -f2-); do
+  IFS="${_old_ifs}"
+  case "${_func}" in
+  *.linux)
+    if [ "${_os}" = "Linux" ]; then
+      # shellcheck disable=SC1090
+      . "${_func}" || {
+        printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+      }
+    fi
+    ;;
+  *.macos)
+    if [ "${_os}" = "Darwin" ]; then
+      # shellcheck disable=SC1090
+      . "${_func}" || {
+        printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+      }
+    fi
+    ;;
+  *)
+    # shellcheck disable=SC1090
+    . "${_func}" || {
+      printf -- 'bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+    }
+    ;;
+  esac
+  IFS="${_new_ifs}"
+  unset _func
+done
+unset _func
+unset _all_func
+IFS="${_old_ifs}"
 
 return 0

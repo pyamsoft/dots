@@ -26,33 +26,56 @@ if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
   [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
 fi
 
+_all_profile=""
 for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/* "${_cfg}"/bash/profile.local.d/*; do
-  # shellcheck disable=SC1090
-  [ -r "${_profile}" ] && {
-    case "${_profile}" in
-    *.linux)
-      if [ "${_os}" = "Linux" ]; then
-        . "${_profile}" || {
-          printf -- 'Linux bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
-        }
-      fi
-      ;;
-    *.macos)
-      if [ "${_os}" = "Darwin" ]; then
-        . "${_profile}" || {
-          printf -- 'MacOS bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
-        }
-      fi
-      ;;
-    *)
-      . "${_profile}" || {
-        printf -- 'bash/profile setup script failed: %s args=%s\n' "${_profile}" "$*"
-      }
-      ;;
-    esac
-  }
+  if [ -r "${_profile}" ]; then
+    if [ -z "${_all_profile}" ]; then
+      _all_profile="${_profile}"
+    else
+      _all_profile="${_profile}
+${_all_profile}"
+    fi
+  fi
   unset _profile
 done
 unset _profile
+
+_old_ifs="${IFS}"
+_new_ifs='
+'
+
+IFS="${_new_ifs}"
+for _profile in $(printf -- '%s' "${_all_profile}" | awk '{ base=$0; sub(".*/", "", base); printf "%s\t%s\n", base, $0; }' | LC_COLLATE=C sort -t $'\t' -k 1,1 -k 2,2 | cut -f2-); do
+  IFS="${_old_ifs}"
+  case "${_profile}" in
+  *.linux)
+    if [ "${_os}" = "Linux" ]; then
+      # shellcheck disable=SC1090
+      . "${_profile}" || {
+        printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+      }
+    fi
+    ;;
+  *.macos)
+    if [ "${_os}" = "Darwin" ]; then
+      # shellcheck disable=SC1090
+      . "${_profile}" || {
+        printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+      }
+    fi
+    ;;
+  *)
+    # shellcheck disable=SC1090
+    . "${_profile}" || {
+      printf -- 'bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+    }
+    ;;
+  esac
+  IFS="${_new_ifs}"
+  unset _profile
+done
+unset _profile
+unset _all_profile
+IFS="${_old_ifs}"
 
 return 0
