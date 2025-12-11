@@ -1,0 +1,36 @@
+# shellcheck shell=bash
+
+# Add local npm repository: used for things like bash-language-server
+# Set the local npm global path with "npm config set prefix ~/.npm/global"
+if command -v npm >/dev/null; then
+  _npm_root="${XDG_CONFIG_HOME}/npm"
+  _npm_path="${_npm_root}/global"
+
+  # Set the global path
+  npm config set prefix "${_npm_path}"
+
+  # Export it
+  PATH="${_npm_path}/bin:${PATH}"
+
+  # Export environment suggestions from xdg-ninja
+  export NPM_CONFIG_INIT_MODULE="${_npm_root}/config/npm-init.js"
+  export NPM_CONFIG_USERCONFIG="${_npm_root}/npmrc"
+  export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
+  export NPM_CONFIG_TMP="${XDG_RUNTIME_DIR}/npm"
+
+  # Clean up
+  unset _npm_path
+  unset _npm_root
+
+  # Export the PATH
+  export PATH
+fi
+
+if command -v node >/dev/null; then
+  # Export environment suggestions from xdg-ninja
+  export NODE_REPL_HISTORY="${XDG_CACHE_HOME}/node_repl_history"
+fi
+
+return 0
+
+# vim: set filetype=sh:
