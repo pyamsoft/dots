@@ -1,0 +1,8 @@
+# shellcheck shell=bash
+
+# shellcheck disable=SC1091
+[ -f "${HOME}"/.bashrc ] && . "${HOME}"/.bashrc
+
+return 0
+
+# vim: set filetype=sh:

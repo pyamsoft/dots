@@ -1,0 +1,21 @@
+# shellcheck shell=bash
+
+for _qol in "aliases" "functions"; do
+  _qol_script="${XDG_CONFIG_HOME}/bash/${_qol}"
+  [ -r "${_qol_script}" ] && {
+    # shellcheck disable=SC1090
+    . "${_qol_script}" || {
+      printf -- 'Failed to source shell QOL script: %s\n' "${_qol}"
+      unset _qol_script
+      unset _qol
+      return 1
+    }
+  }
+  unset _qol_script
+  unset _qol
+done
+unset _qol
+
+return 0
+
+# vim: set filetype=sh:

@@ -21,10 +21,10 @@ _cfg="$1"
 _os="$2"
 
 # Source if the environment is not setup
-if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-  # shellcheck disable=SC1091
-  [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
-fi
+# if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
+#   # shellcheck disable=SC1091
+#   [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
+# fi
 
 _all_profile=""
 for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/* "${_cfg}"/bash/profile.local.d/*; do

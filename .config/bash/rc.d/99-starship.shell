@@ -1,0 +1,17 @@
+# shellcheck shell=bash
+
+if command -v starship >/dev/null && [ -x "$(command -v starship)" ]; then
+  # Execute starship if we have it, and it is valid
+  #
+  # If it fails for any reason, fallback to preset PS1
+  eval "$(starship init bash)" || {
+    printf -- 'Failed to load starship. Fallback to preset PS1\n'
+    export PS1='\u in \h in \w
+\$ '
+    return 0
+  }
+fi
+
+return 0
+
+# vim: set filetype=sh:

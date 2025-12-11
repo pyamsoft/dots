@@ -1,0 +1,24 @@
+# shellcheck shell=bash
+
+# SSH socket defined, do nothing
+if [ -n "${SSH_AUTH_SOCK}" ]; then
+  return 0
+fi
+
+# Systemd has set us a runtime dir
+if [ -n "${XDG_RUNTIME_DIR}" ]; then
+  # Pick the GCR first, and then the old keyring
+  for _sock in "gcr/ssh" "keyring/ssh"; do
+    _sock="${XDG_RUNTIME_DIR}/${_sock}"
+    if [ -S "${_sock}" ]; then
+      export SSH_AUTH_SOCK="${_sock}"
+      return 0
+    fi
+    unset _sock
+  done
+  unset _sock
+fi
+
+return 0
+
+# vim: set filetype=sh:

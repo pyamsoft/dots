@@ -1,3 +1,0 @@
-# Run Guake under wayland
-# https://github.com/Guake/guake/pull/1975
-export GUAKE_ENABLE_WAYLAND=1

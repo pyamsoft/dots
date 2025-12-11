@@ -1,0 +1,18 @@
+# shellcheck shell=bash
+
+# Enable bash completion
+for _bcomp in "/usr/share/bash-completion/bash_completion" "/etc/bash_completion" "/opt/homebrew/share/bash-completion/bash_completion" "/usr/local/share/bash-completion/bash_completion"; do
+  [ -r "${_bcomp}" ] && {
+    # shellcheck disable=SC1090
+    . "${_bcomp}" || {
+      unset _bcomp
+      return 1
+    }
+  }
+  unset _bcomp
+done
+unset _bcomp
+
+return 0
+
+# vim: set filetype=sh:

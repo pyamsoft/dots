@@ -1,3 +1,0 @@
-# Set LC_COLLATE to C
-# https://wiki.archlinux.org/title/Locale#LC_COLLATE:_collation
-export LC_COLLATE="C.UTF-8"
