@@ -18,7 +18,6 @@ Nice defaults:
 [commit]
 	verbose = true
 [core]
-	pager = delta
 	compression = 4
 [rebase]
 	autoSquash = true
@@ -28,10 +27,6 @@ Nice defaults:
 	algorithm = histogram
 [push]
 	autoSetupRemote = true
-[interactive]
-	diffFilter = delta --color-only
-[delta]
-	line-numbers = true
 ```
 
 Signing setup (don't need KeepassXC specifically)
