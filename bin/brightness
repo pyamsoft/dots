@@ -1,10 +1,14 @@
 #!/bin/sh
 
+# /dev/i2c-10
+readonly MY_MONITOR_DEFAULT_BUS=10
+
 # The special DDC code for Brightness
 readonly DDC_BRIGHTNESS_CODE=10
 
 # Do we need sudo
 __needs_sudo=1
+__assume_my_monitor_bus=1
 
 # If the display is not set, just yolo assume it
 if [ -z "${DISPLAY}" ]; then
@@ -14,7 +18,11 @@ fi
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
-usage: brightness <get|set|up|down|help> [amount]
+usage: brightness [--no-bus] <get|set|up|down|help> [amount]
+
+[options]
+--not-my-monitor     - Autodetect bus to run on instead of assuming my specific monitor bus
+                       (The default bus is configuration specific to MY monitor how I usually use it)
 
 [commands]
 get|-G|--get         - Get current brightness amount
@@ -40,9 +48,17 @@ _check_sudo() {
 
 _brightness_get() {
   if [ "${__needs_sudo}" -ne 0 ]; then
-    sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    if [ "${__assume_my_monitor_bus}" -eq 1 ]; then
+      sudo ddcutil --skip-ddc-checks --bus "${MY_MONITOR_DEFAULT_BUS}" getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    else
+      sudo ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    fi
   else
-    ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    if [ "${__assume_my_monitor_bus}" -eq 1 ]; then
+      ddcutil --skip-ddc-checks --bus "${MY_MONITOR_DEFAULT_BUS}" getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    else
+      ddcutil getvcp "${DDC_BRIGHTNESS_CODE}" || return 1
+    fi
   fi
 
   return 0
@@ -64,9 +80,17 @@ _brightness_set() {
   # If its a number, evaluate as "set" command
   if [ "${_brightness_set__amount}" -eq "${_brightness_set__amount}" ] >/dev/null 2>&1; then
     if [ "${__needs_sudo}" -ne 0 ]; then
-      sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      if [ "${__assume_my_monitor_bus}" -eq 1 ]; then
+        sudo ddcutil --skip-ddc-checks --bus "${MY_MONITOR_DEFAULT_BUS}" setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      else
+        sudo ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      fi
     else
-      ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      if [ "${__assume_my_monitor_bus}" -eq 1 ]; then
+        ddcutil --skip-ddc-checks --bus "${MY_MONITOR_DEFAULT_BUS}" setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      else
+        ddcutil setvcp "${DDC_BRIGHTNESS_CODE}" "${_brightness_set__amount}" || return 1
+      fi
     fi
   else
     _usage || return 1
@@ -115,33 +139,41 @@ main() {
   fi
   shift
 
-  case "${cmd}" in
-  H | h | help | -h | -H | --help)
-    _usage || return 1
-    return 1
-    ;;
-  G | g | get | -G | -g | --get)
-    _check_sudo || return 1
-    _get_current_brightness || return 1
-    printf -- '\n'
-    return 1
-    ;;
-  S | s | set | -S | -s | --set)
-    _check_sudo || return 1
-    _brightness_set "$@" || return 1
-    return 1
-    ;;
-  U | u | up | -U | -u | --up)
-    _check_sudo || return 1
-    _brightness_up "$@" || return 1
-    return 1
-    ;;
-  D | d | down | -D | -d | --down)
-    _check_sudo || return 1
-    _brightness_down "$@" || return 1
-    return 1
-    ;;
-  esac
+  while [ -n "${cmd}" ]; do
+    case "${cmd}" in
+    --not-my-monitor)
+      __assume_my_monitor_bus=0
+      ;;
+    H | h | help | -h | -H | --help)
+      _usage || return 1
+      ;;
+    G | g | get | -G | -g | --get)
+      _check_sudo || return 1
+      _get_current_brightness || return 1
+      printf -- '\n'
+      ;;
+    S | s | set | -S | -s | --set)
+      _check_sudo || return 1
+      _brightness_set "$@" || return 1
+      ;;
+    U | u | up | -U | -u | --up)
+      _check_sudo || return 1
+      _brightness_up "$@" || return 1
+      ;;
+    D | d | down | -D | -d | --down)
+      _check_sudo || return 1
+      _brightness_down "$@" || return 1
+      ;;
+    esac
+    unset cmd
+
+    if [ "$#" -le 0 ]; then
+      break
+    fi
+
+    cmd="$1"
+    shift
+  done
 
   unset cmd
   return 0
