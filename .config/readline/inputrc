@@ -24,7 +24,7 @@ set page-completions off
 "\er": re-read-init-file
 
 # Terminal Management
-"\C-l": "clear-screen"
+"\C-l": clear-screen
 "\C-d": end-of-file
 
 # Autocomplete binds
