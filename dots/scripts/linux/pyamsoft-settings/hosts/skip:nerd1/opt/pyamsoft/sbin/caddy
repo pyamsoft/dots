@@ -35,8 +35,12 @@ _priv_port_drop() {
     # After a few seconds, close them back up.
     #
     # Since we run this overall script as root, we are "trusted" to open this
+    printf -- 'Drop unprivileged port down to 80 for HTTP/HTTPS binding...\n'
     sysctl -q net.ipv4.ip_unprivileged_port_start=80 || return 1
-    (sleep 20 && sysctl -q net.ipv4.ip_unprivileged_port_start=1024) &
+    (sleep 20 && {
+      printf -- 'Restore unprivileged port to 1024 for normal operation...\n'
+      sysctl -q net.ipv4.ip_unprivileged_port_start=1024
+    }) &
     return 0
   fi
 
