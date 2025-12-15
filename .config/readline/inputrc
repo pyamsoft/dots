@@ -23,10 +23,8 @@ set page-completions off
 # Re-source inputrc (ALT + r)
 "\er": re-read-init-file
 
-# Clear (space prefixed won't be saved by bash history)
-"\C-l": "\C-k\C-u clear"
-
-# Send EOF
+# Terminal Management
+"\C-l": "clear-screen"
 "\C-d": end-of-file
 
 # Autocomplete binds
