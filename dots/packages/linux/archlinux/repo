@@ -39,6 +39,7 @@ malcontent
 man-db
 man-pages
 neovim
+nmap
 noto-fonts-emoji
 npm
 openbsd-netcat
@@ -67,7 +68,7 @@ steam
 sunshine-git
 system-config-printer
 tmux
-ttf-gentium-plus
+ttf-gentium
 ttf-liberation
 util-linux
 virt-manager

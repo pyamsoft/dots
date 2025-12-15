@@ -282,7 +282,6 @@ js140
 json-c
 json-glib
 karchive
-kauth
 kbd
 kbookmarks
 kcodecs
@@ -341,6 +340,7 @@ lib32-json-c
 lib32-keyutils
 lib32-krb5
 lib32-libcap
+lib32-libdisplay-info
 lib32-libdrm
 lib32-libelf
 lib32-libffi
@@ -393,7 +393,7 @@ lib32-sqlite
 lib32-systemd
 lib32-util-linux
 lib32-vulkan-icd-loader
-lib32-vulkan-mesa-device-select
+lib32-vulkan-mesa-implicit-layers
 lib32-vulkan-mesa-layers
 lib32-vulkan-radeon
 lib32-wayland
@@ -521,6 +521,7 @@ liblqr
 liblrdf
 libltc
 libluv
+libmakepkg-dropins
 libmalcontent
 libmanette
 libmbim
@@ -788,7 +789,6 @@ pipewire-v4l2
 pixman
 pkgconf
 polkit
-polkit-qt6
 poppler
 poppler-data
 poppler-glib
@@ -841,6 +841,7 @@ python-protobuf
 python-psutil
 python-pycryptodomex
 python-pycups
+python-pyelftools
 python-pyjwt
 python-pynvim
 python-pyqt5
@@ -1016,7 +1017,7 @@ volume_key
 vte-common
 vte3
 vulkan-icd-loader
-vulkan-mesa-device-select
+vulkan-mesa-implicit-layers
 vulkan-mesa-layers
 vulkan-tools
 wavpack
