@@ -1,8 +1,8 @@
 #!/bin/sh
 
 readonly _name="samba"
-readonly _image="docker.io/crazymax/samba"
-readonly _tag="4.21.4"
+readonly _image="docker.io/dockurr/samba"
+readonly _tag="4.22.6"
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -16,45 +16,19 @@ fi
 readonly _cmd
 
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/shares1"
-
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
+  readonly _mount1="${HOME}/.local/etc/containers/${_name}/share"
 
   # Media folders are optionally symlinks to another mass storage drive
-  mkdir -p "${_mount3}"
+  mkdir -p "${_mount1}"
 
   _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/storage"
 
-  # Follow the link and mount the media folder ONLY if it is valid
-  if [ -d "$(realpath "${_mount3}")" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/samba/1"
+  # Custom samba config override
+  readonly _override="${HOME}/.local/etc/containers/${_name}/smb.conf"
+  if [ -f "$(realpath "${_override}")" ]; then
+    _mounts="${_mounts} --mount type=bind,source=${_override},target=/etc/samba/smb.conf"
   fi
-
-  # Mount config if possible
-  if [ -f "${_mount2}/config.yml" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount2}/config.yml,target=/data/config.yml"
-  fi
-
-  # Mount password files if possible
-  for f in "${_mount2}/passwd".*; do
-    case "$f" in
-    *\**)
-      # No password files
-      ;;
-    *)
-      _f_name="$(basename "$f")"
-      _mounts="${_mounts} --mount type=bind,source=${f},target=/run/secrets/${_f_name},ro"
-      unset _f_name
-      unset _f
-      ;;
-    esac
-  done
-  unset _f_name
-  unset _f
 
   readonly _mounts
   return 0
@@ -70,6 +44,7 @@ _prep_caps() {
 
   # Needed right after startup to open samba /cron/lock
   _caps="${_caps} --cap-add DAC_OVERRIDE"
+  _caps="${_caps} --cap-add FOWNER"
 
   # Server runs on port 137-139 and 445
   _caps="${_caps} --cap-add NET_BIND_SERVICE"
@@ -94,12 +69,7 @@ _check_user() {
     return 1
   fi
 
-  # Run with root for samba binding but also keep-id for /var/cache/samba/msg.lock
-  if [ "${_cmd}" = "podman" ]; then
-    _userns="--userns keep-id --user=0:0"
-  else
-    _userns="--user=0:0"
-  fi
+  _userns=""
   readonly _userns
 
   return 0
@@ -161,7 +131,6 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --init \
     ${_smb} \
     ${_network} \
     ${_auto} \
