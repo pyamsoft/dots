@@ -16,7 +16,6 @@ if command -v npm >/dev/null; then
   export NPM_CONFIG_INIT_MODULE="${_npm_root}/config/npm-init.js"
   export NPM_CONFIG_USERCONFIG="${_npm_root}/npmrc"
   export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
-  export NPM_CONFIG_TMP="${XDG_RUNTIME_DIR}/npm"
 
   # Clean up
   unset _npm_path
