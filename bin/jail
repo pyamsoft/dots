@@ -4,7 +4,7 @@
 #
 # See _usage for details
 
-readonly VERSION="0.0.3"
+readonly VERSION="0.0.4"
 readonly MY_PID="$$"
 
 # Can be overridden by the environment
@@ -96,7 +96,7 @@ What is a jail?
 A jail separates the program's \${HOME} from the real user's \${HOME}
 directory. The main goal of the jail is user \${HOME} separation.
 The fact that the jail also isolates by default sensitive system
-directories and restricts unsafe X11 access is a bonus feature,
+directories and restricts unsafe X11/Wayland access is a bonus feature,
 which can be changed or removed at any time in favor of cleaner
 \${HOME} isolation.
 
@@ -114,6 +114,7 @@ Any arguments passed after the command and "--" will be passed to the command
 --name <name>    Name the jail (otherwise uses the command name)
 --shell          Open a shell in the jail instead of executing the command
 --x11            Bind paths for running with X11/XWayland
+--wayland        Bind paths for running with Wayland
 -h | --help      Prints this help
 
 EOF
@@ -194,10 +195,13 @@ _run_jail() {
   _j_cmd="$1"
   _j_jail="$2"
   _j_name="$3"
+
   _j_open_shell="$4"
   _j_x11="$5"
+  _j_wayland="$6"
 
   # The rest of the arguments are commands
+  shift
   shift
   shift
   shift
@@ -329,6 +333,22 @@ XAUTHORITY"
     _j_env="${_j_env}
 --unsetenv
 DISPLAY"
+  fi
+
+  # If Wayland is enabled, bind Wayland
+  if [ -n "${_j_wayland}" ] && [ "${_j_wayland}" -eq 1 ]; then
+    # Add back WAYLAND_DISPLAY
+    if [ -n "${WAYLAND_DISPLAY}" ]; then
+      _j_env="${_j_env}
+--setenv
+WAYLAND_DISPLAY
+${WAYLAND_DISPLAY}"
+    fi
+  else
+    # Remove WAYLAND_DISPLAY
+    _j_env="${_j_env}
+--unsetenv
+WAYLAND_DISPLAY"
   fi
 
   readonly _j_home_binds
@@ -472,6 +492,7 @@ main() {
   _name=""
   _open_shell=0
   _use_x11=0
+  _use_wayland=0
 
   # Assume the first argument is the command to run
   _cmd="$1"
@@ -516,6 +537,14 @@ main() {
       _cmd="$1"
       shift
       ;;
+    --wayland)
+      # We need Wayland compat
+      _use_wayland=1
+
+      # The next argument is the new command
+      _cmd="$1"
+      shift
+      ;;
     --)
       # Stop processing
 
@@ -547,8 +576,9 @@ main() {
 
   _jail_dir="${JAIL_DIR}/${_name}"
   _create_home "${_jail_dir}" || return 1
-  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "$@" || return 1
+  _run_jail "${_cmd}" "${_jail_dir}" "${_name}" "${_open_shell}" "${_use_x11}" "${_use_wayland}" "$@" || return 1
 
+  unset _use_wayland
   unset _use_x11
   unset _open_shell
   unset _cmd

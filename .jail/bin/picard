@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# This MAY be ran as a delegated user via a local wrapper script
+# for example, on main machine, the user that owns media files is container-media (995) not (1000)
+
 # Open a shell
 _shell=""
 if [ "$1" = "--shell" ]; then
@@ -8,6 +11,6 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly _shell
 
-exec jail --name picard --x11 ${_shell} -- /usr/bin/picard \
+exec jail --name picard --wayland --x11 ${_shell} -- /usr/bin/picard \
   --bind "${HOME}/music" "${HOME}/music" \
   -- "$@"
