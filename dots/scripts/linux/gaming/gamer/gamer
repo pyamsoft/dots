@@ -18,50 +18,6 @@ _check_user() {
   return 0
 }
 
-_prepare() {
-  _prepare_user="$1"
-
-  xhost +SI:localuser:"${_prepare_user}" || {
-    printf -- '[gamer] Failed to grant xhost access to %s\n' "${_prepare_user}"
-
-    unset _prepare_user
-    return 1
-  }
-
-  # Load pulseaudio over localhost TCP
-  _pa_mod="module-native-protocol-tcp"
-  if ! pactl list modules | grep -q "${_pa_mod}"; then
-    pactl load-module "${_pa_mod}" "listen=127.0.0.1" "port=4712" || {
-      printf -- '[gamer] Failed to load pactl TCP protocol\n'
-
-      unset _prepare_user
-      unset _pa_mod
-      return 1
-    }
-  fi
-
-  unset _prepare_user
-  unset _pa_mod
-  return 0
-}
-
-_after() {
-  _after_user="$1"
-
-  # Then when it finishes, we make sure to clean up
-  xhost -SI:localuser:"${_after_user}" || {
-    printf -- '[gamer] Failed to revoke xhost access to %s\n' "${_after_user}"
-  }
-
-  # Do not "clean up" the pactl module for TCP, since we
-  # may not be the final one dropping off the pactl connection.
-  #
-  # Cleaning up the TCP module would kill all other sound
-
-  unset _after_user
-  return 0
-}
-
 main() {
   _cmd="$1"
 
@@ -89,22 +45,13 @@ main() {
     return 1
   fi
 
-  # Run
-  _prepare "${_target_user}" || return 1
-
   # Do all the setup and teardown as a "normal" user.
   # The only thing gamelaunch should do as a sudo script
   # is call machinectl to open a systemd connected user session as
   # the _target_user
   #
   # See gamelaunch script in /opt/pyamsoft/sbin
-  sudo /opt/pyamsoft/sbin/gamelaunch "${_cmd}" "$@"
-
-  # Clean up after
-  _after "${_target_user}" || return 1
-
-  unset _target_user
-  return 0
+  exec sudo /opt/pyamsoft/sbin/gamelaunch "$(id -un)" "${_target_user}" "${_cmd}" "$@"
 }
 
 main "$@" || exit 1

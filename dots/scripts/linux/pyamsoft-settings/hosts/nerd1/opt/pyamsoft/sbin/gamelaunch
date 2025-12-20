@@ -2,12 +2,12 @@
 
 # Privileged script, to be used with gamer script and sudoers set up
 
-__all_granted_candidates=""
+__grant_candidates=""
 
 _check_user() {
   _check_me="$1"
   if ! id -u "${_check_me}" >/dev/null 2>&1; then
-    printf -- '[gamelaunch] Target user %s does not exist!\n' "${_check_me}"
+    printf -- '[gamelaunch] User %s does not exist!\n' "${_check_me}"
 
     unset _check_me
     return 1
@@ -18,92 +18,26 @@ _check_user() {
 }
 
 _grant_joystick() {
-  _grant_target_user="$1"
-  _grant_real_user="$2"
-
-  if [ -z "${_grant_target_user}" ] || [ -z "${_grant_real_user}" ]; then
-    printf -- 'Unable to grant joystick facl to %s -> %s\n' "${_grant_target_user}" "${_grant_real_user}"
-
-    unset _grant_target_user
-    unset _grant_real_user
-    return 1
-  fi
-
-  # Find all candidate js devices
-  _grant_candidates=""
+  # Find all candidate input devices
   for _dev in /dev/input/js* /dev/input/event*; do
     # Device must exist and it must identify as a joystick
     if [ -e "${_dev}" ] && udevadm info "${_dev}" | grep -q '^E: ID_INPUT_JOYSTICK=1$' >/dev/null 2>&1; then
-      if [ -z "${_grant_candidates}" ]; then
-        _grant_candidates="${_dev}"
+      if [ -z "${__grant_candidates}" ]; then
+        __grant_candidates="--facl=${_dev}"
       else
-        _grant_candidates="${_dev} ${_grant_candidates}"
+        __grant_candidates="--facl=${_dev} ${__grant_candidates}"
       fi
     fi
     unset _dev
   done
   unset _dev
 
-  if [ -n "${_grant_candidates}" ]; then
-    for _dev in ${_grant_candidates}; do
-      printf -- 'Grant facl access to %s for user %s (%s)\n' "${_dev}" "${_grant_target_user}" "${_grant_real_user}"
-      setfacl -m "u:${_grant_real_user}:rw" "${_dev}" || {
-        printf -- 'Failed to grant facl access to %s for user %s (%s)\n' "${_dev}" "${_grant_target_user}" "${_grant_real_user}"
-
-        unset _dev
-        unset _grant_candidates
-        unset _grant_target_user
-        unset _grant_real_user
-        return 1
-      }
-
-      if [ -z "${__all_granted_candidates}" ]; then
-        __all_granted_candidates="${_dev}"
-      else
-        __all_granted_candidates="${_dev} ${__all_granted_candidates}"
-      fi
-
-      unset _dev
-    done
-  fi
-  unset _dev
-
-  unset _grant_candidates
-  unset _grant_target_user
-  unset _grant_real_user
   return 0
 }
 
-_revoke_joystick() {
-  _revoke_target_user="$1"
-  _revoke_real_user="$2"
-
-  if [ -n "${__all_granted_candidates}" ]; then
-    for _dev in ${__all_granted_candidates}; do
-      printf -- 'Revoke facl access to %s for user %s (%s)\n' "${_dev}" "${_revoke_target_user}" "${_revoke_real_user}"
-      setfacl -x "u:${_revoke_real_user}" "${_dev}" || {
-        printf -- 'Failed to revoke facl access to %s for user %s (%s)\n' "${_dev}" "${_revoke_target_user}" "${_revoke_real_user}"
-      }
-      unset _dev
-    done
-  fi
-  unset _dev
-
-  unset __all_granted_candidates
-
-  unset _revoke_target_user
-  unset _revoke_real_user
-  return 0
-}
-
-_run0() {
-  _run0_target_user="$1"
-  _run0_real_user="$2"
-
-  if [ -z "${_run0_target_user}" ] || [ -z "${_run0_real_user}" ]; then
-    printf -- 'Unable to run0 %s -> %s\n' "${_run0_target_user}" "${_run0_real_user}"
-    return 1
-  fi
+_execute() {
+  _exec_from_user="$1"
+  _exec_to_user="$2"
 
   # Eat arguments, leave rest
   shift
@@ -117,13 +51,10 @@ _run0() {
   #           Instead of giving entire group (and this would allow keyboard input sniffing, use facl to grant joysticks)
   readonly _extra_groups="pipewire"
 
-  printf -- '[gamelaunch] Running command: [%s] "~/bin/launcher %s"\n' "${_run0_target_user}" "$*"
-  printf -- '[gamelaunch] Running command as target user: %s\n' "${_run0_real_user}"
+  printf -- '[gamelaunch] Running command: "~/bin/launcher %s"\n' "$*"
+  printf -- '[gamelaunch] Running command from user: %s\n' "${_exec_from_user}"
+  printf -- '[gamelaunch] Running command as user: %s\n' "${_exec_to_user}"
   printf -- '[gamelaunch] Running command with extra groups: %s\n' "${_extra_groups}"
-  printf -- '[gamelaunch] DISPLAY=%s\n' "${DISPLAY}"
-  printf -- '[gamelaunch] XAUTHORITY=%s\n' "${XAUTHORITY}"
-  printf -- '[gamelaunch] GAMER_GAMESCOPE=%s\n' "${GAMER_GAMESCOPE:-0}"
-  printf -- '[gamelaunch] GAMER=1\n'
 
   # Running machinectl shell gives us a "clean session to work with" that attaches to it's own systemctl --user session
   # and loginctl session
@@ -134,15 +65,14 @@ _run0() {
   # DO NOT FORWARD "$WAYLAND_DISPLAY" yet as multi-user on the same display isn't fully figured out yet (things crash).
   #
   # We want this 'raw ~' to not expand so that it is evaluated as the target_user home, not main_user home
-  # shellcheck disable=SC2088
-  /usr/sbin/run0 \
+  # shellcheck disable=SC2086,SC2088
+  exec /usr/bin/usergrant --from "${_exec_from_user}" --to "${_exec_to_user}" \
+    ${__grant_candidates} \
+    --x11 --audio -- \
     --property="SupplementaryGroups=${_extra_groups}" \
-    --user="${_run0_real_user}" \
-    --setenv="DISPLAY=${DISPLAY}" --setenv="XAUTHORITY=${XAUTHORITY}" \
     --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
     --setenv="GAMER=1" \
     /bin/bash -l -c '~/bin/launcher' "$@" || return 1
-  return 0
 }
 
 main() {
@@ -171,12 +101,18 @@ main() {
     return 1
   fi
 
-  _target_user="$1"
-  if [ -z "${_target_user}" ]; then
-    printf -- '[gamelaunch] Requires a target user as the first argument\n'
+  _from_user="$1"
+  if [ -z "${_from_user}" ]; then
+    printf -- '[gamelaunch] Requires a FROM user as the first argument\n'
     return 1
   fi
+  shift
 
+  _to_user="$1"
+  if [ -z "${_to_user}" ]; then
+    printf -- '[gamelaunch] Requires a TO user as the second argument\n'
+    return 1
+  fi
   shift
 
   # Consume gamescope
@@ -211,23 +147,20 @@ main() {
   *) ;;
   esac
 
-  _real_user="gaming-${_target_user}"
-  if ! _check_user "${_real_user}"; then
+  if ! _check_user "${_to_user}"; then
+    return 1
+  fi
+
+  if ! _check_user "${_from_user}"; then
     return 1
   fi
 
   # Grant facl for controller/joystick
-  _grant_joystick "${_target_user}" "${_real_user}" || {
-    _revoke_joystick "${_target_user}" "${_real_user}"
+  _grant_joystick || {
     return 1
   }
 
-  _run0 "${_target_user}" "${_real_user}" "$@" || {
-    _revoke_joystick "${_target_user}" "${_real_user}"
-    return 1
-  }
-
-  _revoke_joystick "${_target_user}" "${_real_user}"
+  _execute "${_from_user}" "${_to_user}" "$@" || return 1
   return 0
 }
 
