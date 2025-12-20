@@ -33,7 +33,7 @@ readonly _shell
 # does NOT run in X11
 #
 # You can check xlsclients to be sure
-jail --name android-studio --wayland --x11 ${_shell} -- /usr/bin/android-studio \
+"${HOME}/bin/jail" --name android-studio --wayland --x11 ${_shell} -- /usr/bin/android-studio \
   --setenv PATH "${path}:${PATH}" \
   --setenv ANDROID_EMULATOR_USE_SYSTEM_LIBS 1 \
   --setenv JAVA_HOME "/opt/android-studio/jbr/" \

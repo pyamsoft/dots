@@ -24,7 +24,7 @@ readonly _shell
 # does NOT run in X11
 #
 # You can check xlsclients to be sure
-jail --name webstorm --wayland --x11 ${_shell} -- /usr/bin/webstorm \
+"${HOME}/bin/jail" --name webstorm --wayland --x11 ${_shell} -- /usr/bin/webstorm \
   --setenv PATH "${path}:${PATH}" \
   --setenv JAVA_HOME "/opt/webstorm/jbr/" \
   --bind "/opt/webstorm/" "/opt/webstorm" \
