@@ -11,7 +11,7 @@ readonly MY_PID="$$"
 readonly JAIL_DIR="${JAIL_DIR:-${HOME}/.local/etc/jails}"
 
 # IFS of only newline
-readonly _NEWLINE_IFS="
+readonly __NEWLINE_IFS="
 "
 
 _clean_path() {
@@ -304,14 +304,16 @@ $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix)"
     # Add back XAUTHORITY
     if [ -n "${XAUTHORITY}" ]; then
       _j_env="${_j_env}
---setenv XAUTHORITY
+--setenv
+XAUTHORITY
 ${XAUTHORITY}"
     fi
 
     # Add back DISPLAY
     if [ -n "${DISPLAY}" ]; then
       _j_env="${_j_env}
---setenv DISPLAY
+--setenv
+DISPLAY
 ${DISPLAY}"
     fi
   else
@@ -426,7 +428,7 @@ ${_j_sys_binds}
 
   # Set the IFS to newline only
   _old_ifs="${IFS}"
-  IFS="${_NEWLINE_IFS}"
+  IFS="${__NEWLINE_IFS}"
 
   # Assign the arguments to the "$@" array
   #
@@ -434,6 +436,7 @@ ${_j_sys_binds}
   #
   # shellcheck disable=SC2086
   set -- ${_j_all} ${_bwrap_args} '--' ${_j_cmd} ${_cmd_args}
+
   IFS="${_old_ifs}"
   unset _old_ifs
 

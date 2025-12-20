@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # A list of jail PIDs we have already printed out
-_ALREADY_SEEN_PIDS=""
+__ALREADY_SEEN_PIDS=""
 
 # IFS of only newline
-readonly _NEWLINE_IFS="
+readonly __NEWLINE_IFS="
 "
 
 _extract_jail() {
@@ -16,7 +16,7 @@ _extract_jail() {
   _jail_pid="$(printf -- '%s' "${_jail_line}" | grep -o 'JAIL_PID [0-9]* ' | awk '{ print $2 }')"
 
   if [ -n "${_jail_pid}" ]; then
-    for _pid in ${_ALREADY_SEEN_PIDS}; do
+    for _pid in ${__ALREADY_SEEN_PIDS}; do
       if [ "${_pid}" = "${_jail_pid}" ]; then
         unset _jail_owner
         unset _jail_pid
@@ -28,7 +28,11 @@ _extract_jail() {
     done
   fi
 
-  _ALREADY_SEEN_PIDS="${_ALREADY_SEEN_PIDS} ${_jail_pid}"
+  if [ -z "${__ALREADY_SEEN_PIDS}" ]; then
+    __ALREADY_SEEN_PIDS="${_jail_pid}"
+  else
+    __ALREADY_SEEN_PIDS="${__ALREADY_SEEN_PIDS} ${_jail_pid}"
+  fi
   printf -- '[%s] %s %s (%s)\n' "${_jail_owner}" "${_jail_pid}" "${_jail_program}" "${_jail_name}"
 
   unset _jail_owner
@@ -63,15 +67,21 @@ _check_prereq() {
 main() {
   _check_prereq || return 1
 
-  readonly _old_ifs="${IFS}"
-  IFS="${_NEWLINE_IFS}"
   _all_jails="$(_list_jails)"
+
+  _old_ifs="${IFS}"
+  IFS="${__NEWLINE_IFS}"
+
   for _j in ${_all_jails}; do
     IFS="${_old_ifs}"
     _extract_jail "${_j}" || return 1
-    IFS="${_NEWLINE_IFS}"
+    IFS="${__NEWLINE_IFS}"
+    unset _j
   done
+  unset _j
+
   IFS="${_old_ifs}"
+  unset _old_ifs
 }
 
 main "$@" || exit 1
