@@ -17,21 +17,29 @@ readonly __NEWLINE_IFS="
 _clean_path() {
   _current_path="${PATH}"
 
-  # The .jail/bin dir holds alias scripts, we want to ignore
-  # it when running this
   #
   # Reverse the path so we add back the paths in FIFO order
   _split_path="$(printf -- '%s' "${_current_path}" | tr ':' '\n' | tac)"
   _cleaned_path=""
   for _path in ${_split_path}; do
-    if [ "${_path}" != "${HOME}/.jail/bin" ]; then
+    # Remove any ${HOME} entries from the path
+    case "${_path}" in
+    "${HOME}"/*)
+      unset _path
+      continue
+      ;;
+    *)
       if [ -z "${_cleaned_path}" ]; then
         _cleaned_path="${_path}"
       else
         _cleaned_path="${_path}:${_cleaned_path}"
       fi
-    fi
+      unset _path
+      ;;
+    esac
+    unset _path
   done
+  unset _path
 
   PATH="${_cleaned_path}"
   export PATH

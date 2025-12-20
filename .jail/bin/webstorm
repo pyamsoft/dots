@@ -16,6 +16,12 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly _shell
 
+# Find jail script
+_jail="/usr/bin/jail"
+if [ -e "${HOME}/bin/jail" ] && [ -x "${HOME}/bin/jail" ]; then
+  _jail="${HOME}/bin/jail"
+fi
+
 # Even if you run with Wayland
 # https://wiki.archlinux.org/title/Android#Android_Studio
 #
@@ -24,7 +30,7 @@ readonly _shell
 # does NOT run in X11
 #
 # You can check xlsclients to be sure
-"${HOME}/bin/jail" --name webstorm --wayland --x11 ${_shell} -- /usr/bin/webstorm \
+"${_jail}" --name webstorm --wayland --x11 ${_shell} -- /usr/bin/webstorm \
   --setenv PATH "${path}:${PATH}" \
   --setenv JAVA_HOME "/opt/webstorm/jbr/" \
   --bind "/opt/webstorm/" "/opt/webstorm" \
