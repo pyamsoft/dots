@@ -238,13 +238,20 @@ main() {
           _install_dir="${_file_dir#\.\/}"
 
           case "${_file_dir}" in
+          */NetworkManager/dispatcher.d)
+            # dispatcher.d scripts must be executable
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+            ;;
           */sudoers.d)
+            # sudoers requires readonly for everyone
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
             ;;
           */polkit-1/rules.d)
+            # Only allow access to owner
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "600" || return 1
             ;;
           *)
+            # Copy file permissions but allow read access to all
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
             ;;
           esac
@@ -268,6 +275,7 @@ main() {
         _file_name="$(basename "${_file_or_folder}")"
         _install_dir="${_file_dir#\.\/}"
 
+        # Everything in opt is executable
         _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
 
         unset _install_dir
@@ -290,12 +298,15 @@ main() {
 
         case "${_file_dir}" in
         */scrutiny/entrypoints)
+          # Entrypoints must be executable
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "755" || return 1
           ;;
         */containers | */containers/*)
+          # Otherwise container configuration is owner only
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" || return 1
           ;;
         *)
+          # Otherwise readonly everyone
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
           ;;
         esac
