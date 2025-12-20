@@ -31,25 +31,26 @@ _grant_joystick() {
 
   # Find all candidate js devices
   _grant_candidates=""
-  for _js in /dev/input/js*; do
-    if [ -e "${_js}" ] && [ "${_js}" != "/dev/input/js*" ]; then
+  for _dev in /dev/input/js* /dev/input/event*; do
+    # Device must exist and it must identify as a joystick
+    if [ -e "${_dev}" ] && udevadm info "${_dev}" | grep -q '^E: ID_INPUT_JOYSTICK=1$' >/dev/null 2>&1; then
       if [ -z "${_grant_candidates}" ]; then
-        _grant_candidates="${_js}"
+        _grant_candidates="${_dev}"
       else
-        _grant_candidates="${_js} ${_grant_candidates}"
+        _grant_candidates="${_dev} ${_grant_candidates}"
       fi
     fi
-    unset _js
+    unset _dev
   done
-  unset _js
+  unset _dev
 
   if [ -n "${_grant_candidates}" ]; then
-    for _js in ${_grant_candidates}; do
-      printf -- 'Grant facl access to %s for user %s (%s)\n' "${_js}" "${_grant_target_user}" "${_grant_real_user}"
-      setfacl -m "u:${_grant_real_user}:rw" "${_js}" || {
-        printf -- 'Failed to grant facl access to %s for user %s (%s)\n' "${_js}" "${_grant_target_user}" "${_grant_real_user}"
+    for _dev in ${_grant_candidates}; do
+      printf -- 'Grant facl access to %s for user %s (%s)\n' "${_dev}" "${_grant_target_user}" "${_grant_real_user}"
+      setfacl -m "u:${_grant_real_user}:rw" "${_dev}" || {
+        printf -- 'Failed to grant facl access to %s for user %s (%s)\n' "${_dev}" "${_grant_target_user}" "${_grant_real_user}"
 
-        unset _js
+        unset _dev
         unset _grant_candidates
         unset _grant_target_user
         unset _grant_real_user
@@ -57,15 +58,15 @@ _grant_joystick() {
       }
 
       if [ -z "${__all_granted_candidates}" ]; then
-        __all_granted_candidates="${_js}"
+        __all_granted_candidates="${_dev}"
       else
-        __all_granted_candidates="${_js} ${__all_granted_candidates}"
+        __all_granted_candidates="${_dev} ${__all_granted_candidates}"
       fi
 
-      unset _js
+      unset _dev
     done
   fi
-  unset _js
+  unset _dev
 
   unset _grant_candidates
   unset _grant_target_user
@@ -78,15 +79,15 @@ _revoke_joystick() {
   _revoke_real_user="$2"
 
   if [ -n "${__all_granted_candidates}" ]; then
-    for _js in ${__all_granted_candidates}; do
-      printf -- 'Revoke facl access to %s for user %s (%s)\n' "${_js}" "${_revoke_target_user}" "${_revoke_real_user}"
-      setfacl -x "u:${_revoke_real_user}" "${_js}" || {
-        printf -- 'Failed to revoke facl access to %s for user %s (%s)\n' "${_js}" "${_revoke_target_user}" "${_revoke_real_user}"
+    for _dev in ${__all_granted_candidates}; do
+      printf -- 'Revoke facl access to %s for user %s (%s)\n' "${_dev}" "${_revoke_target_user}" "${_revoke_real_user}"
+      setfacl -x "u:${_revoke_real_user}" "${_dev}" || {
+        printf -- 'Failed to revoke facl access to %s for user %s (%s)\n' "${_dev}" "${_revoke_target_user}" "${_revoke_real_user}"
       }
-      unset _js
+      unset _dev
     done
   fi
-  unset _js
+  unset _dev
 
   unset __all_granted_candidates
 
