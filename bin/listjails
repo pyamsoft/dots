@@ -3,6 +3,10 @@
 # A list of jail PIDs we have already printed out
 _ALREADY_SEEN_PIDS=""
 
+# IFS of only newline
+readonly _NEWLINE_IFS="
+"
+
 _extract_jail() {
   _jail_line="$1"
 
@@ -60,14 +64,12 @@ main() {
   _check_prereq || return 1
 
   readonly _old_ifs="${IFS}"
-  readonly _new_ifs="
-"
-  IFS="${_new_ifs}"
+  IFS="${_NEWLINE_IFS}"
   _all_jails="$(_list_jails)"
   for _j in ${_all_jails}; do
     IFS="${_old_ifs}"
     _extract_jail "${_j}" || return 1
-    IFS="${_new_ifs}"
+    IFS="${_NEWLINE_IFS}"
   done
   IFS="${_old_ifs}"
 }

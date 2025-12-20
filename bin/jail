@@ -4,7 +4,8 @@
 #
 # See _usage for details
 
-readonly _VERSION="0.0.2"
+readonly VERSION="0.0.3"
+readonly MY_PID="$$"
 
 # Can be overridden by the environment
 readonly JAIL_DIR="${JAIL_DIR:-${HOME}/.local/etc/jails}"
@@ -75,7 +76,7 @@ _bind_symlink() {
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
-jail [${_VERSION}]
+jail [${VERSION}]
 
 Runs a command in a jail.
 
@@ -95,6 +96,7 @@ Jails are located in: ${JAIL_DIR} by default
 \$ jail [options] -- <command> [bwrap-options] -- [command-options]
 
 You must pass "--" before the command, EVEN IF you do not use any options.
+
 Any arguments passed after the <command> will be interpreted as options for bwrap.
 Any arguments passed after the command and "--" will be passed to the command
 
@@ -301,7 +303,7 @@ _run_jail() {
     --unshare-pid \
     --unshare-uts \
     --unshare-cgroup \
-    --setenv JAIL_PID "$$" \
+    --setenv JAIL_PID "${MY_PID}" \
     --setenv JAIL_NAME "${_j_name}" \
     --setenv JAIL_PROGRAM "${_j_cmd}" \
     --unsetenv SESSION_MANAGER \
