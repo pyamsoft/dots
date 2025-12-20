@@ -10,6 +10,10 @@ readonly MY_PID="$$"
 # Can be overridden by the environment
 readonly JAIL_DIR="${JAIL_DIR:-${HOME}/.local/etc/jails}"
 
+# IFS of only newline
+readonly _NEWLINE_IFS="
+"
+
 _clean_path() {
   _current_path="${PATH}"
 
@@ -18,18 +22,18 @@ _clean_path() {
   #
   # Reverse the path so we add back the paths in FIFO order
   _split_path="$(printf -- '%s' "${_current_path}" | tr ':' '\n' | tac)"
-  _clean_path=""
+  _cleaned_path=""
   for _path in ${_split_path}; do
     if [ "${_path}" != "${HOME}/.jail/bin" ]; then
-      if [ -z "${_clean_path}" ]; then
-        _clean_path="${_path}"
+      if [ -z "${_cleaned_path}" ]; then
+        _cleaned_path="${_path}"
       else
-        _clean_path="${_path}:${_clean_path}"
+        _cleaned_path="${_path}:${_cleaned_path}"
       fi
     fi
   done
 
-  PATH="${_clean_path}"
+  PATH="${_cleaned_path}"
   export PATH
   return 0
 }
@@ -58,10 +62,16 @@ _bind_symlink() {
     _resolv_link="$(readlink "${_bind_symlink_path}")"
     _resolv_real_link="$(readlink -f "${_bind_symlink_path}")"
 
-    printf -- '--%s %s %s ' "${_bind_symlink_bind}" "${_bind_symlink_path}" "${_resolv_link}"
+    printf -- '--%s
+%s
+%s
+' "${_bind_symlink_bind}" "${_bind_symlink_path}" "${_resolv_link}"
 
     if [ "${_resolv_link}" != "${_resolv_real_link}" ]; then
-      printf -- '--%s %s %s ' "${_bind_symlink_bind}" "${_resolv_link}" "${_resolv_real_link}"
+      printf -- '--%s
+%s
+%s
+' "${_bind_symlink_bind}" "${_resolv_link}" "${_resolv_real_link}"
     fi
 
     unset _resolv_link
@@ -127,8 +137,12 @@ _bind_in_jail() {
   # Rest are paths
   for _path in "$@"; do
     if [ -e "${_path}" ]; then
-      printf -- '--%s %s %s ' "${_bind_type}" "${_path}" "${_path}"
+      printf -- '--%s
+%s
+%s
+' "${_bind_type}" "${_path}" "${_path}"
     fi
+    unset _path
   done
   unset _path
 
@@ -151,12 +165,18 @@ _block_in_jail() {
     if [ -e "${_path}" ]; then
       if [ -d "${_path}" ]; then
         # Block directory via tmpfs
-        printf -- '--tmpfs %s ' "${_path}"
+        printf -- '--tmpfs
+%s
+' "${_path}"
       else
         # Block file by symlinking to /dev/null
-        printf -- '--symlink /dev/null %s ' "${_path}"
+        printf -- '--symlink
+/dev/null
+%s
+' "${_path}"
       fi
     fi
+    unset _path
   done
   unset _path
 
@@ -199,24 +219,54 @@ _run_jail() {
 
   _clean_path || return 1
 
-  _args=""
+  _bwrap_args=""
   for _a in "$@"; do
     if [ "${_a}" = "--" ]; then
       shift
+      unset _a
+
       break
     fi
 
-    if [ -z "${_args}" ]; then
-      _args="$1"
+    if [ -z "${_bwrap_args}" ]; then
+      _bwrap_args="$1"
     else
-      _args="${_args} $1"
+      _bwrap_args="${_bwrap_args}
+$1"
     fi
     shift
+    unset _a
   done
-  readonly _args
+  unset _a
+  readonly _bwrap_args
+
+  _cmd_args=""
+  for _a in "$@"; do
+    if [ "${_a}" = "--" ]; then
+      shift
+      unset _a
+
+      break
+    fi
+
+    if [ -z "${_cmd_args}" ]; then
+      _cmd_args="$1"
+    else
+      _cmd_args="${_cmd_args}
+$1"
+    fi
+
+    shift
+    unset _a
+  done
+  unset _a
+  readonly _cmd_args
 
   # Isolate user $HOME
-  _j_home_binds="$(_block_in_jail "/home") --bind ${_j_jail}/home ${HOME}"
+  _j_home_binds="$(_block_in_jail "/home")
+--bind
+${_j_jail}/home
+${HOME}"
 
   # Add in extra nice-to-have directories
   # For things like icons, theme, and fonts
@@ -224,48 +274,59 @@ _run_jail() {
   # Explicitly restrict access to SSH
   # Explicitly restrict access to GNUPG
   # Explicitly restrict access to some pre-defined password file locations
-  _j_home_binds="${_j_home_binds} \
-      $(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts") \
-      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig) \
-      $(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*) \
-      $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/fontconfig) \
-      $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/gtk-*) \
-      $(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/icon-cache.kcache) \
-      $(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf) \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/gnupg" "${GNUPGHOME}") \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.keepass" "${HOME}/.keepass") \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/keepass" "${HOME}/keepass") \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.passwords" "${HOME}/.passwords") \
-      $(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/passwords" "${HOME}/passwords")"
+  _j_home_binds="${_j_home_binds}
+$(_bind_in_jail "ro-bind" "${HOME}/.themes" "${HOME}/.icons" "${HOME}/.fonts")
+$(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/fontconfig)
+$(_bind_in_jail "ro-bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/gtk-*)
+$(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/fontconfig)
+$(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/gtk-*)
+$(_bind_in_jail "ro-bind" "${XDG_CACHE_HOME:-${HOME}/.cache}"/icon-cache.kcache)
+$(_bind_in_jail "bind" "${XDG_CONFIG_HOME:-${HOME}/.config}"/dconf)
+$(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/gnupg" "${GNUPGHOME}")
+$(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.keepass" "${HOME}/.keepass")
+$(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/keepass" "${HOME}/keepass")
+$(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/.passwords" "${HOME}/.passwords")
+$(_block_in_jail "${XDG_CONFIG_HOME:-${HOME}/.config}/passwords" "${HOME}/passwords")"
 
   _j_sys_binds=""
   _j_env=""
 
   # If resolv conf is a symlink, bind the real file too
-  _j_sys_binds="${_j_sys_binds} $(_bind_symlink "ro-bind" "/etc/resolv.conf")"
+  _j_sys_binds="${_j_sys_binds}
+$(_bind_symlink "ro-bind" "/etc/resolv.conf")"
 
   # If X11 usage is enabled, bind X11 files
   if [ -n "${_j_x11}" ] && [ "${_j_x11}" -eq 1 ]; then
     # Mount back the user runtime dir and add extra binds for .X11 in /tmp
-    _j_sys_binds="${_j_sys_binds} $(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix)"
+    _j_sys_binds="${_j_sys_binds}
+$(_bind_in_jail "bind" /tmp/.X*-lock /tmp/.*-unix)"
 
     # Add back XAUTHORITY
     if [ -n "${XAUTHORITY}" ]; then
-      _j_env="${_j_env} --setenv XAUTHORITY ${XAUTHORITY}"
+      _j_env="${_j_env}
+--setenv XAUTHORITY
+${XAUTHORITY}"
     fi
 
     # Add back DISPLAY
     if [ -n "${DISPLAY}" ]; then
-      _j_env="${_j_env} --setenv DISPLAY ${DISPLAY}"
+      _j_env="${_j_env}
+--setenv DISPLAY
+${DISPLAY}"
     fi
   else
-    _j_sys_binds="${_j_sys_binds} $(_block_in_jail "/etc/X11" "/usr/share/X11" "/usr/lib/X11")"
+    _j_sys_binds="${_j_sys_binds}
+$(_block_in_jail "/etc/X11" "/usr/share/X11" "/usr/lib/X11")"
 
     # Remove XAUTHORITY
-    _j_env="${_j_env} --unsetenv XAUTHORITY"
+    _j_env="${_j_env}
+--unsetenv
+XAUTHORITY"
 
     # Remove DISPLAY
-    _j_env="${_j_env} --unsetenv DISPLAY"
+    _j_env="${_j_env}
+--unsetenv
+DISPLAY"
   fi
 
   readonly _j_home_binds
@@ -275,9 +336,8 @@ _run_jail() {
   _runtimedir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
   readonly _runtimedir
 
-  # Fail on subshell or pipe failure
-  set -eu
-
+  # Weird newline delimited format :)
+  #
   # unshare namespaces [don't unshare net (internet) and don't unshare IPC (x11)]
   # dev-bind root so everything works the same as it would outside
   # tmpfs bind /tmp for security
@@ -293,59 +353,91 @@ _run_jail() {
   # Mount dbus system socket
   # Mount cups socket
   #
-  # shellcheck disable=SC2086,SC2046
-  _wrap \
-    ${_j_session} \
-    --die-with-parent \
-    --cap-drop ALL \
-    --unshare-user \
-    --unshare-ipc \
-    --unshare-pid \
-    --unshare-uts \
-    --unshare-cgroup \
-    --setenv JAIL_PID "${MY_PID}" \
-    --setenv JAIL_NAME "${_j_name}" \
-    --setenv JAIL_PROGRAM "${_j_cmd}" \
-    --unsetenv SESSION_MANAGER \
-    --unsetenv SSH_AUTH_SOCK \
-    --unsetenv MANAGERPID \
-    --unsetenv SYSTEMD_EXEC_PID \
-    --unsetenv JOURNAL_STREAM \
-    --unsetenv INVOCATION_ID \
-    ${_j_env} \
-    $(_bind_in_jail "dev-bind" "/") \
-    --proc /proc \
-    --mqueue /dev/mqueue \
-    $(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys" "/opt") \
-    $(_block_in_jail "/usr/lib/modules" "/usr/lib/modprobe.d" "/usr/lib/modules-load.d") \
-    $(_block_in_jail "/usr/share/iptables" "/usr/share/nftables" "/usr/share/firewalld") \
-    $(_block_in_jail "/usr/share/polkit-1") \
-    $(_block_in_jail "/usr/share/flatpak") \
-    $(_block_in_jail "/usr/lib/udev" "/usr/lib/sudo" "/usr/lib/sysctl.d") \
-    $(_block_in_jail "/usr/lib/sunshine") \
-    $(_block_in_jail "/usr/lib/systemd") \
-    $(_block_in_jail "/etc/kernel" "/etc/keyutils") \
-    $(_block_in_jail "/etc/modprobe.d" "/etc/modules-load.d") \
-    $(_block_in_jail "/etc/credstore" "/etc/credstore.encrypted") \
-    $(_block_in_jail "/etc/iptables" "/etc/firewalld" "/etc/firewall") \
-    $(_block_in_jail "/etc/polkit-1" "/etc/udev") \
-    $(_block_in_jail "/etc/sudoers.d" "/etc/sysctl.d") \
-    $(_block_in_jail "/etc/systemd") \
-    $(_block_in_jail "/etc/flatpak") \
-    $(_block_in_jail "/etc/ssh") \
-    $(_block_in_jail "/etc/cryptsetup-keys.d/") \
-    $(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*) \
-    $(_bind_in_jail "ro-bind" /run/dbus /run/cups) \
-    --symlink /run /var/run \
-    $(_bind_in_jail "bind" "${_runtimedir}") \
-    $(_block_in_jail "${_runtimedir}/app" "${_runtimedir}/doc") \
-    $(_block_in_jail "${_runtimedir}/crun" "${_runtimedir}/containers" "${_runtimedir}/libpod") \
-    $(_block_in_jail "${_runtimedir}/gnome-shell" "${_runtimedir}/gnupg" "${_runtimedir}"/gvfs*) \
-    $(_block_in_jail "${_runtimedir}/keyring" "${_runtimedir}/p11-kit" "${_runtimedir}/systemd") \
-    --bind "${_j_jail}/var/tmp" "/var/tmp" \
-    ${_j_home_binds} \
-    ${_j_sys_binds} \
-    ${_args} -- "${_j_cmd}" "$@"
+  _j_all="${_j_session}
+--die-with-parent
+--cap-drop
+ALL
+--unshare-user
+--unshare-ipc
+--unshare-pid
+--unshare-uts
+--unshare-cgroup
+--setenv
+JAIL_PID
+${MY_PID}
+--setenv
+JAIL_NAME
+${_j_name}
+--setenv
+JAIL_PROGRAM
+${_j_cmd}
+--unsetenv
+SESSION_MANAGER
+--unsetenv
+SSH_AUTH_SOCK
+--unsetenv
+MANAGERPID
+--unsetenv
+SYSTEMD_EXEC_PID
+--unsetenv
+JOURNAL_STREAM
+--unsetenv
+INVOCATION_ID
+${_j_env}
+$(_bind_in_jail "dev-bind" "/")
+--proc
+/proc
+--mqueue
+/dev/mqueue
+$(_block_in_jail "/boot" "/run" "/tmp" "/var" "/sys" "/opt")
+$(_block_in_jail "/usr/lib/modules" "/usr/lib/modprobe.d" "/usr/lib/modules-load.d")
+$(_block_in_jail "/usr/share/iptables" "/usr/share/nftables" "/usr/share/firewalld")
+$(_block_in_jail "/usr/share/polkit-1")
+$(_block_in_jail "/usr/share/flatpak")
+$(_block_in_jail "/usr/lib/udev" "/usr/lib/sudo" "/usr/lib/sysctl.d")
+$(_block_in_jail "/usr/lib/sunshine")
+$(_block_in_jail "/usr/lib/systemd")
+$(_block_in_jail "/etc/kernel" "/etc/keyutils")
+$(_block_in_jail "/etc/modprobe.d" "/etc/modules-load.d")
+$(_block_in_jail "/etc/credstore" "/etc/credstore.encrypted")
+$(_block_in_jail "/etc/iptables" "/etc/firewalld" "/etc/firewall")
+$(_block_in_jail "/etc/polkit-1" "/etc/udev")
+$(_block_in_jail "/etc/sudoers.d" "/etc/sysctl.d")
+$(_block_in_jail "/etc/systemd")
+$(_block_in_jail "/etc/flatpak")
+$(_block_in_jail "/etc/ssh")
+$(_block_in_jail "/etc/cryptsetup-keys.d/")
+$(_bind_in_jail "dev-bind" /sys/dev/char /sys/devices/pci*)
+$(_bind_in_jail "ro-bind" /run/dbus /run/cups)
+--symlink
+/run
+/var/run
+$(_bind_in_jail "bind" "${_runtimedir}")
+$(_block_in_jail "${_runtimedir}/app" "${_runtimedir}/doc")
+$(_block_in_jail "${_runtimedir}/crun" "${_runtimedir}/containers" "${_runtimedir}/libpod")
+$(_block_in_jail "${_runtimedir}/gnome-shell" "${_runtimedir}/gnupg" "${_runtimedir}"/gvfs*)
+$(_block_in_jail "${_runtimedir}/keyring" "${_runtimedir}/p11-kit" "${_runtimedir}/systemd")
+--bind
+${_j_jail}/var/tmp
+/var/tmp
+${_j_home_binds}
+${_j_sys_binds}
+"
+
+  # Set the IFS to newline only
+  _old_ifs="${IFS}"
+  IFS="${_NEWLINE_IFS}"
+
+  # Assign the arguments to the "$@" array
+  #
+  # this will safely evaluate arguments with nested spaces without requiring eval
+  #
+  # shellcheck disable=SC2086
+  set -- ${_j_all} ${_bwrap_args} '--' ${_j_cmd} ${_cmd_args}
+  IFS="${_old_ifs}"
+  unset _old_ifs
+
+  _wrap "$@"
 }
 
 _check_prereq() {
