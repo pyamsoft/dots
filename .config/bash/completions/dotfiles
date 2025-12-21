@@ -1,6 +1,9 @@
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
 
 # Complete main dotfiles (this completes -|-- options too)
 complete -o bashdefault -o default -o nospace -F __dotfiles_comp dotfiles
+
+# vim: set filetype=sh:

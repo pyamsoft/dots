@@ -69,3 +69,5 @@ if ! declare -f __containers >/dev/null 2>&1; then
     _reply "${commands}" "${cur}"
   }
 fi
+
+# vim: set filetype=sh:

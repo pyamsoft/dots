@@ -1,5 +1,6 @@
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
 
 __git_alias_diff() {
@@ -7,3 +8,5 @@ __git_alias_diff() {
 }
 
 complete -o bashdefault -o default -o nospace -F __git_alias_diff gitd
+
+# vim: set filetype=sh:

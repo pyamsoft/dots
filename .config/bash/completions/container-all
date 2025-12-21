@@ -1,0 +1,20 @@
+# shellcheck shell=bash
+
+# bash completion support for containers script
+__container-all() {
+  COMPREPLY=()
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  local commands="prune reload pull"
+
+  _reply() {
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "$1" -- "$2"))
+  }
+
+  # Nothing at all, fill with suggestions
+  _reply "${commands}" "${cur}"
+}
+
+complete -o bashdefault -o default -o nospace -F __container-all container-all
+
+# vim: set filetype=sh:

@@ -35,3 +35,5 @@ if ! declare -f __runas_container >/dev/null 2>&1; then
 fi
 
 complete -o bashdefault -o default -F __runas_container container-runas
+
+# vim: set filetype=sh:

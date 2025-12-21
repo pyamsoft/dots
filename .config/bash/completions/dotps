@@ -1,5 +1,6 @@
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
 
 __dotfiles_push() {
@@ -7,3 +8,5 @@ __dotfiles_push() {
 }
 
 complete -o bashdefault -o default -o nospace -F __dotfiles_push dotps
+
+# vim: set filetype=sh:

@@ -2,6 +2,7 @@
 
 # This file is meant to be sourced by the other git alias completions
 
+# shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_completion.wrapper"
 
 if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
@@ -70,3 +71,5 @@ if ! declare -f __git_alias_wrap >/dev/null 2>&1; then
 fi
 
 unset _load_completion_from
+
+# vim: set filetype=sh:
