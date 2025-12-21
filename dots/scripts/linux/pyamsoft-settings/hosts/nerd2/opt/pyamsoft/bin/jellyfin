@@ -2,7 +2,7 @@
 
 readonly _name="jellyfin"
 readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.11.4"
+readonly _tag="10.11.5"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
