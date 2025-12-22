@@ -1,0 +1,6 @@
+[Unit]
+Description=Update trusted-keys for unbound
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/cp /etc/trusted-key.key /etc/unbound/trusted-key.key
