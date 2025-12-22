@@ -1,0 +1,19 @@
+# Set the port to listen on for incoming VPN packets.
+# Remote nodes will automatically be informed about the new port number,
+# but you might want to configure this in order to set external firewall
+# settings.
+#
+###
+# We generally want a client device like
+# an Android phone that can't configure the port
+# to SNAT with 41641
+# PORT="41641"
+PORT="31642"
+
+# Extra flags you might want to pass to tailscaled.
+#
+###
+# We want to disable telemetry, which also turns off our ability
+# for support - but that's ok because we don't need support right?
+# Things just work right?
+FLAGS="--no-logs-no-support"
