@@ -25,9 +25,11 @@ else
 fi
 readonly _cmd
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/data"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/dumps"
+  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
+  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/dumps"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1

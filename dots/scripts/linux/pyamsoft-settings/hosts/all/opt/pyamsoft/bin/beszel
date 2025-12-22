@@ -30,6 +30,8 @@ unset _version
 readonly _image
 readonly _tag
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
@@ -73,7 +75,7 @@ _prep_ssh_key() {
 }
 
 _prep_mounts() {
-  _mount1="${HOME}/.local/etc/containers/${_name}/data"
+  _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
 
   mkdir -p "${_mount1}" || return 1
 
@@ -81,7 +83,7 @@ _prep_mounts() {
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/beszel_data"
 
   if [ "${BESZEL_MODE}" != "remote" ]; then
-    _hub_data="${HOME}/.local/etc/containers/${_basename}-hub/data"
+    _hub_data="${CONTAINER_RUNTIME_DIR}/${_basename}-hub/data"
 
     if [ "${BESZEL_MODE}" = "hub" ]; then
       mkdir -p "${_hub_data}" || return 1
@@ -142,7 +144,7 @@ _containerize() {
   _bz=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1

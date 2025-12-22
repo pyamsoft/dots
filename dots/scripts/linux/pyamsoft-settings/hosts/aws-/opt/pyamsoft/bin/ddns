@@ -15,6 +15,8 @@ else
 fi
 readonly _cmd
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 _prep_mounts() {
   _mounts=""
 
@@ -52,7 +54,7 @@ _containerize() {
   _dd=""
 
   # Optional runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ -e "${_runconf}" ]; then
     # Source the file into the environment
     # shellcheck disable=SC1090

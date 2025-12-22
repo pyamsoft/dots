@@ -18,10 +18,12 @@ else
 fi
 readonly _cmd
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/metadata"
-  readonly _mount2="${HOME}/.local/etc/containers/${_name}/config"
-  readonly _mount3="${HOME}/.local/etc/containers/${_name}/media"
+  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/metadata"
+  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/config"
+  readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/media"
 
   mkdir -p "${_mount1}" || return 1
   mkdir -p "${_mount2}" || return 1
@@ -82,7 +84,7 @@ _containerize() {
   _abs=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1

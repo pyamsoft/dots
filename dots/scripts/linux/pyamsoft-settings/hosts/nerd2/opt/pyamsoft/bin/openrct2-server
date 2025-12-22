@@ -15,9 +15,11 @@ else
 fi
 readonly _cmd
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 _prep_mounts() {
   # Park/saves must be in ${_mount1}/save/
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/config"
+  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/config"
 
   # Prep the directories
   mkdir -p "${_mount1}" || return 1
@@ -70,7 +72,7 @@ _containerize() {
   _password=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1

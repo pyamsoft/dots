@@ -15,8 +15,10 @@ else
 fi
 readonly _cmd
 
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
 _prep_mounts() {
-  readonly _mount1="${HOME}/.local/etc/containers/${_name}/share"
+  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/share"
 
   # Media folders are optionally symlinks to another mass storage drive
   mkdir -p "${_mount1}"
@@ -25,7 +27,7 @@ _prep_mounts() {
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/storage"
 
   # Custom samba config override
-  readonly _override="${HOME}/.local/etc/containers/${_name}/smb.conf"
+  readonly _override="${CONTAINER_RUNTIME_DIR}/${_name}/smb.conf"
   if [ -f "$(realpath "${_override}")" ]; then
     _mounts="${_mounts} --mount type=bind,source=${_override},target=/etc/samba/smb.conf"
   fi
@@ -80,7 +82,7 @@ _containerize() {
   _smb=""
 
   # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${HOME}/.local/etc/containers/${_name}/runconfig.env"
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
     printf -- 'You must provide %s\n' "${_runconf}"
     return 1
