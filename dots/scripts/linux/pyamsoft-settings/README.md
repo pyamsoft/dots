@@ -35,7 +35,14 @@ the files will be installed
 
 ## After Install
 
-Create a system group called `ssh-users` and add your user to it
+- Create a system group called `ssh-users` and add your user to it
+- Create a user called `tailscaled` to run tailscaled
+
+```sh
+# useradd tailscaled --user-group --no-create-home
+```
+
+- Create a user called `unbound` to run unbound
 
 ### License
 
