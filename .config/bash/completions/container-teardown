@@ -1,0 +1,19 @@
+# shellcheck shell=bash
+
+# bash completion support for containers script
+__container-teardown() {
+  COMPREPLY=()
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  _reply() {
+    echo rep 1="$1"
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "$1" -- "$2"))
+  }
+
+  _reply "$(podman ps --noheading --format '{{ .Names }}')" "${cur}"
+}
+
+complete -o bashdefault -o default -o nospace -F __container-teardown container-teardown
+
+# vim: set filetype=sh:
