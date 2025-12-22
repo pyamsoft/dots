@@ -6,7 +6,6 @@ __container-teardown() {
   local cur="${COMP_WORDS[COMP_CWORD]}"
 
   _reply() {
-    echo rep 1="$1"
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "$1" -- "$2"))
   }
