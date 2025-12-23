@@ -60,8 +60,8 @@ _prep_caps() {
 _prep_ports() {
   _ports=""
 
-  _ports="${_ports} -p 127.0.0.1:53:53/tcp"
-  _ports="${_ports} -p 127.0.0.1:53:53/udp"
+  _ports="${_ports} -p 127.0.0.1:5335:5335/tcp"
+  _ports="${_ports} -p 127.0.0.1:5335:5335/udp"
 
   readonly _ports
   return 0
@@ -123,7 +123,7 @@ _containerize() {
 
   # We MUST use host networking, otherwise once the unprivileged port closes
   # we are unable to use the DNS
-  _network="${_network} --net=host"
+  # _network="${_network} --net=host"
 
   readonly _network
 
