@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<direct>
+  <rule ipv="ipv6" table="nat" chain="OUTPUT" priority="0">-p udp -d ::1 --dport 53 -j REDIRECT --to-port 5335</rule>
+  <rule ipv="ipv6" table="nat" chain="OUTPUT" priority="0">-p tcp -d ::1 --dport 53 -j REDIRECT --to-port 5335</rule>
+  <rule ipv="ipv4" table="nat" chain="OUTPUT" priority="0">-p tcp -d 127.0.0.1 --dport 53 -j REDIRECT --to-port 5335</rule>
+  <rule ipv="ipv4" table="nat" chain="OUTPUT" priority="0">-p udp -d 127.0.0.1 --dport 53 -j REDIRECT --to-port 5335</rule>
+</direct>
