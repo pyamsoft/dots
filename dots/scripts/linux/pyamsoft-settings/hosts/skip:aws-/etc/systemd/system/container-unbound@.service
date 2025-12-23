@@ -26,7 +26,7 @@ ExecStartPre=/bin/sh -c '/opt/pyamsoft/bin/im-online'
 ExecStartPre=-/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
 
 # Make sure all unbound files are owned by our user
-ExecStartPre=-/usr/bin/chown "%i:%i" -R /etc/unbound/conf.d /etc/unbound/iana.d /etc/unbound/zones.d
+ExecStartPre=/bin/sh -c '_u="$$(id -un "%i")"; chown "$${_u}:$${_u}" /etc/unbound/conf.d /etc/unbound/iana.d /etc/unbound/zones.d'
 
 ExecStart=/usr/bin/portdropper --user "%i" --port 53 --on-countdown 20 -- /opt/pyamsoft/bin/unbound
 ExecStop=/bin/sh -c '_u="$$(id -un "%i")"; sudo -u "$${_u}" container-teardown unbound'
