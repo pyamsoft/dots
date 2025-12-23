@@ -73,8 +73,8 @@ _prep_ports() {
   _ports=""
 
   # Bind to a non-priv port and force redirect via firewall DNAT
-  _ports="${_ports} -p 127.0.0.1:3080:3080/tcp"
-  _ports="${_ports} -p 127.0.0.1:3443:3443/tcp"
+  _ports="${_ports} -p 127.0.0.1:3080:80/tcp"
+  _ports="${_ports} -p 127.0.0.1:3443:443/tcp"
 
   readonly _ports
   return 0
