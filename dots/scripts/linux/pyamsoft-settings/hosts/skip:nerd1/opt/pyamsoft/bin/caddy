@@ -15,7 +15,7 @@ else
 fi
 readonly _cmd
 
-readonly CONTAINER_RUNTIME_DIR="/.local/etc/containers"
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
 
 _prep_mounts() {
   readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
