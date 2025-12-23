@@ -1,2 +1,0 @@
-# Include our own custom configs
-include-toplevel: /etc/unbound/conf.d/*.conf

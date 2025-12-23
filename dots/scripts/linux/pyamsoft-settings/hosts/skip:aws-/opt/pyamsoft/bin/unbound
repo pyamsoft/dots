@@ -1,0 +1,185 @@
+#!/bin/sh
+
+readonly _name="unbound"
+readonly _image="docker.io/madnuttah/unbound"
+readonly _tag="1.24.2-0"
+
+# Use podman, don't use docker
+if command -v podman >/dev/null; then
+  _cmd="podman"
+elif command -v docker >/dev/null; then
+  _cmd="docker"
+else
+  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  exit 1
+fi
+readonly _cmd
+
+readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
+_prep_mounts() {
+  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/conf.d"
+  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/zones.d"
+  readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/iana.d"
+
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
+
+  _mounts=""
+  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/usr/local/unbound/conf.d"
+  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/usr/local/unbound/zones.d"
+  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/usr/local/unbound/iana.d"
+
+  readonly _mounts
+  return 0
+}
+
+_prep_env() {
+  _env=""
+
+  # _env="${_env} -e DISABLE_SET_PERMS=true"
+
+  readonly _env
+  return 0
+}
+
+_prep_caps() {
+  _caps=""
+
+  # Needed to setup permissions in the container
+  _caps="${_caps} --cap-add SETGID"
+  _caps="${_caps} --cap-add SETUID"
+  _caps="${_caps} --cap-add DAC_OVERRIDE"
+
+  readonly _caps
+  return 0
+}
+
+_prep_ports() {
+  _ports=""
+
+  _ports="${_ports} -p 127.0.0.1:53:53/tcp"
+  _ports="${_ports} -p 127.0.0.1:53:53/udp"
+
+  readonly _ports
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    printf -- 'You must run this as a rootless container\n'
+    return 1
+  fi
+
+  _userns=""
+  if [ "${_cmd}" = "podman" ]; then
+    _userns="${_userns} --userns keep-id"
+  fi
+  readonly _userns
+
+  return 0
+}
+
+_containerize() {
+  # Runtime configuration
+  _ub=""
+
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    printf -- 'Optional runconfig is supported at %s\n' "${_runconf}"
+  else
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || return 1
+  fi
+
+  unset _runconf
+
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _ub="${_ub} --log-driver json-file"
+    fi
+  else
+    _ub="${_ub} -i -t"
+  fi
+  readonly _ub
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  # On Linux we run systemd-resolved on our host machine for DNS caching
+  _network="--add-host localhost:127.0.0.1 --dns-search=."
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
+    _network="${_network} --add-host host.containers.internal:host-gateway"
+  fi
+
+  # We MUST use host networking, otherwise once the unprivileged port closes
+  # we are unable to use the DNS
+  _network="${_network} --net=host"
+
+  readonly _network
+
+  # Auto Update Checking support
+  _auto="--label=io.containers.autoupdate=registry"
+  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
+  readonly _auto
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${_cmd} run --rm \
+    --name "${_name}" --hostname "${_name}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    ${_ub} \
+    ${_env} \
+    ${_network} \
+    ${_auto} \
+    ${_mounts} \
+    ${_ports} \
+    ${_caps} \
+    ${_userns} \
+    "${_image}:${_tag}" "$@"
+}
+
+main() {
+  _check_user || return 1
+  _prep_mounts || return 1
+  _prep_ports || return 1
+  _prep_caps || return 1
+  _prep_env || return 1
+
+  "${_cmd}" --version >/dev/null 2>&1 || {
+    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    return 1
+  }
+
+  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
+  # This folder is created "at some point" in response to podman commands being run
+  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
+    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
+      sleep 1 || {
+        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        return 1
+      }
+    done
+    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+  fi
+
+  _containerize "$@" || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
