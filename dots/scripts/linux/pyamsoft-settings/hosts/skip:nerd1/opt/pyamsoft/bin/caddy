@@ -23,10 +23,10 @@ _prep_mounts() {
   readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/serve"
   readonly _mount4="${CONTAINER_RUNTIME_DIR}/${_name}/logs"
 
-  _runas mkdir -p "${_mount1}" || return 1
-  _runas mkdir -p "${_mount2}" || return 1
-  _runas mkdir -p "${_mount3}" || return 1
-  _runas mkdir -p "${_mount4}" || return 1
+  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount3}" || return 1
+  mkdir -p "${_mount4}" || return 1
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
