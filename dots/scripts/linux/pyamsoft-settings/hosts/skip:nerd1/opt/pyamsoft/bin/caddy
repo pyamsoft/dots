@@ -50,6 +50,12 @@ _prep_mounts() {
   return 0
 }
 
+_prep_env() {
+  _env=""
+  readonly _env
+  return 0
+}
+
 _prep_caps() {
   _caps=""
   _caps="${_caps} --cap-add NET_BIND_SERVICE"
@@ -152,6 +158,7 @@ _containerize() {
     ${_cd} \
     ${_network} \
     ${_auto} \
+    ${_env} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
