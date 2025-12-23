@@ -134,9 +134,6 @@ _containerize() {
     _network="${_network} --add-host host.containers.internal:host-gateway"
   fi
 
-  # Host networking for now until we figure out how to NAT route everyone in
-  _network="${_network} --net=host"
-
   readonly _network
 
   # Auto Update Checking support
