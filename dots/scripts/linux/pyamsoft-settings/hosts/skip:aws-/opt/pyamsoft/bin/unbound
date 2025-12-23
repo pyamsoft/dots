@@ -38,7 +38,8 @@ _prep_mounts() {
 _prep_env() {
   _env=""
 
-  # _env="${_env} -e DISABLE_SET_PERMS=true"
+  _env="${_env} -e UNBOUND_UID=$(id -u)"
+  _env="${_env} -e UNBOUND_GID=$(id -g)"
 
   readonly _env
   return 0
