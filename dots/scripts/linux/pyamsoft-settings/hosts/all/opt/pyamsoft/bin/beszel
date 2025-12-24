@@ -186,7 +186,9 @@ _containerize() {
 
   if [ "${BESZEL_MODE}" != "hub" ]; then
     if [ -z "${BESZEL_KEY}" ]; then
-      printf -- 'You must export the Beszel Agent SSH Key as "BESZEL_KEY"\n'
+      printf -- 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"\n'
+      printf -- 'This ssh public key MUST be the same as the one in the beszel-hub data directory.\n'
+
       return 1
     fi
   else
