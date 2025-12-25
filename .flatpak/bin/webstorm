@@ -25,15 +25,11 @@ readonly _args
 # Extensions
 readonly _nodejs="node24"
 
-# Sometimes we will use the test branch to run flatpaks that have not been merged to flathub yet
-# For example, see builds like https://github.com/flathub/com.jetbrains.WebStorm/pull/133
-#
 # shellcheck disable=SC2086
 exec flatpak-env "${pak}" \
   --filesystem="${dev_root}/project/pyamsoft/js" \
   --filesystem="${dev_root}/project/pyamsoft/shell" \
   --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
-  --branch="test" \
   ${_args} \
   -- "$@" || exit 1
 exit 0

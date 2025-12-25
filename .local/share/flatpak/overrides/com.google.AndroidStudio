@@ -2,3 +2,4 @@
 features=devel;multiarch;
 filesystems=!xdg-run/keyring;
 devices=all;
+sockets=x11;wayland;
