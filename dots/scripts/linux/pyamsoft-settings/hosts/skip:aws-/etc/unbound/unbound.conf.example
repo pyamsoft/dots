@@ -1,0 +1,8 @@
+server:
+  directory: "/etc/unbound"
+  chroot: "/etc/unbound"
+  username: "unbound"
+  do-daemonize: no
+
+  include-toplevel: "/etc/unbound/conf.d/*.conf"
+  include-toplevel: "/etc/unbound/zones.d/*.conf"

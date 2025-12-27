@@ -1,0 +1,10 @@
+# Prepare the /etc/unbound directory
+[Unit]
+Description=Prepare unbound
+Before=network.target unbound.service
+After=unbound-root-hints.service unbound-trusted-keys.service
+Requires=unbound-root-hints.service unbound-trusted-keys.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/chown -R unbound:unbound /etc/unbound/
