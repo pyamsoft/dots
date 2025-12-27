@@ -16,12 +16,12 @@ fi
 readonly _cmd
 
 readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
-readonly UNBOUND_DIR="/etc/unbound"
+readonly UNBOUND_DIR="/etc/${_name}"
 
 _prep_mounts() {
-  readonly _mount1="${UNBOUND_DIR}/${_name}/conf.d"
-  readonly _mount2="${UNBOUND_DIR}/${_name}/zones.d"
-  readonly _conf="${UNBOUND_DIR}/${_name}/unbound.conf"
+  readonly _mount1="${UNBOUND_DIR}/conf.d"
+  readonly _mount2="${UNBOUND_DIR}/zones.d"
+  readonly _conf="${UNBOUND_DIR}/unbound.conf"
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/usr/local/unbound/conf.d"
