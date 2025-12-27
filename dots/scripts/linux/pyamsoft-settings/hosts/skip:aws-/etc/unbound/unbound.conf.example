@@ -6,3 +6,4 @@ server:
 
   include-toplevel: "/etc/unbound/conf.d/*.conf"
   include-toplevel: "/etc/unbound/zones.d/*.conf"
+  include-toplevel: "/etc/unbound/rpz.d/*.conf"
