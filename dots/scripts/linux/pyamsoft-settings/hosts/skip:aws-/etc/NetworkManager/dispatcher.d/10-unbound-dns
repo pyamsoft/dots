@@ -1,6 +1,11 @@
 #!/bin/sh
 
 _restart_unbound_container() {
+  if [ -z "${CONNECTIVITY_STATE}" ] || [ "${CONNECTIVITY_STATE}" != "FULL" ]; then
+    printf -- 'Invalid connectivity state for Unbound DNS container. Try again later. %s\n' "${CONNECTIVITY_STATE}"
+    return 0
+  fi
+
   printf -- 'Network connection changed, restart Unbound DNS container.\n'
   run0 -u containers-network -i -- systemctl --user restart container@unbound.service || {
     printf -- 'Failed to restart Unbound container.\n'

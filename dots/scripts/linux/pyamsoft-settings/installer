@@ -238,7 +238,7 @@ main() {
           _install_dir="${_file_dir#\.\/}"
 
           case "${_file_dir}" in
-          */NetworkManager/dispatcher.d)
+          */NetworkManager/dispatcher.d | */NetworkManager/dispatcher.d/*)
             # dispatcher.d scripts must be executable
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
             ;;
