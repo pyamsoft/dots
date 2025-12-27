@@ -36,7 +36,7 @@ _check_airvpn() {
     return 1
   }
 
-  if printf -- '%s' "${_vpn_output}" | grep -q '"type": "AirVPN Server (Exit '; then
+  if printf -- '%s' "${_vpn_output}" | grep -q '"airvpn": true,'; then
     unset _vpn_output
     return 0
   fi
