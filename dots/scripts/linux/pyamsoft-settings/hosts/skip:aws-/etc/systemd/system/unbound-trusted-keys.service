@@ -3,4 +3,6 @@ Description=Update trusted-keys for unbound
 After=network.target
 
 [Service]
+# oneshot so this does not fork and finishes before unbound launches
+Type=oneshot
 ExecStart=/usr/bin/cp /etc/trusted-key.key /etc/unbound/iana.d/root.key

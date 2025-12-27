@@ -6,6 +6,7 @@ After=unbound-root-hints.service unbound-trusted-keys.service
 Requires=unbound-root-hints.service unbound-trusted-keys.service
 
 [Service]
+# oneshot so this does not fork and finishes before unbound launches
 Type=oneshot
 ExecStart=/usr/sbin/chown -R unbound:unbound /etc/unbound/
 

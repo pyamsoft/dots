@@ -3,4 +3,6 @@ Description=Update root hints for unbound
 After=network.target
 
 [Service]
+# oneshot so this does not fork and finishes before unbound launches
+Type=oneshot
 ExecStart=/usr/bin/curl -o /etc/unbound/iana.d/root.hints https://www.internic.net/domain/named.cache
