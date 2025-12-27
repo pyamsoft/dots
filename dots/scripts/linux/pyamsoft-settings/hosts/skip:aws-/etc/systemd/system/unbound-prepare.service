@@ -8,3 +8,6 @@ Requires=unbound-root-hints.service unbound-trusted-keys.service
 [Service]
 Type=oneshot
 ExecStart=/usr/sbin/chown -R unbound:unbound /etc/unbound/
+
+[Install]
+WantedBy=multi-user.target
