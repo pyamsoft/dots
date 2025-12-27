@@ -16,23 +16,17 @@ fi
 readonly _cmd
 
 readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+readonly UNBOUND_DIR="/etc/unbound"
 
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/conf.d"
-  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/zones.d"
-  readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/certs.d"
-  readonly _mount4="${CONTAINER_RUNTIME_DIR}/${_name}/log.d"
-
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
-  mkdir -p "${_mount3}" || return 1
-  mkdir -p "${_mount4}" || return 1
+  readonly _mount1="${UNBOUND_DIR}/${_name}/conf.d"
+  readonly _mount2="${UNBOUND_DIR}/${_name}/zones.d"
+  readonly _conf="${UNBOUND_DIR}/${_name}/unbound.conf"
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/usr/local/unbound/conf.d"
   _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/usr/local/unbound/zones.d"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/usr/local/unbound/certs.d"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/usr/local/unbound/log.d"
+  _mounts="${_mounts} --mount type=bind,source=${_conf},target=/usr/local/unbound/unbound.conf"
 
   readonly _mounts
   return 0
