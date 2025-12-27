@@ -31,7 +31,7 @@ _check_mullvad() {
 }
 
 _check_airvpn() {
-  _vpn_output="$(_check "$1" "https://ipleak.net/json/")" || {
+  _vpn_output="$(_check "$1" "https://airvpn.org/api/whatismyip/")" || {
     printf -- '[%s] Failed to check container (%s) VPN status for AirVPN\n' "${_PROG_NAME}" "$1"
     return 1
   }
