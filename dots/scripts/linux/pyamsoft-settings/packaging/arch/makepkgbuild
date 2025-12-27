@@ -19,6 +19,7 @@ main() {
 
   _makepkg "$1" || return 1
 
+  # Unpack test build
   if [ "$1" = "test" ]; then
     mkdir "./testing"
     cd "./testing" || {
@@ -26,11 +27,18 @@ main() {
       return 1
     }
 
-    mv ../pyamsoft-settings*.tar.zst .
+    mv ../pyamsoft-settings-*.tar.zst .
     tar xvf ./*.tar.zst
     cd .. || {
       printf -- 'Failed to cd out of testing\n'
       return 1
+    }
+  fi
+
+  # Remove installed package
+  if [ "$1" = "install" ]; then
+    rm -rf ./pyamsoft-settings-*.tar.zst || {
+      printf -- 'Failed to remove installed pyamsoft-settings packages'
     }
   fi
 
