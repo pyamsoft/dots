@@ -4,13 +4,23 @@ readonly _name="httpie"
 readonly _image="docker.io/alpine/httpie"
 readonly _tag="3.2.4"
 
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  _log 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
@@ -40,9 +50,66 @@ _prep_ports() {
   return 0
 }
 
+_prep_env() {
+  _env=""
+
+  if [ "${BESZEL_MODE}" = "hub" ]; then
+    _log 'Beszel Hub creates its own SSH key that agents must use.'
+
+    # Can continue with blank key, it's ignored in hub mode
+  else
+    if [ -z "${BESZEL_KEY}" ]; then
+      _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
+      _log 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
+
+      return 1
+    fi
+  fi
+
+  _env="${_env} -e DATA_DIR=/beszel_data"
+
+  readonly _env
+  return 0
+}
+
+_prep_network() {
+  _network=""
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
+  _network="${_network} --add-host host.containers.internal:host-gateway"
+
+  # We use host networking since we may want to test services running on our local machine
+  _network="${_network} --net=host"
+
+  readonly _network
+  return 0
+}
+
+_prep_log() {
+  _logs=""
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _logs="${_logs} --log-driver json-file"
+    fi
+  else
+    _logs="${_logs} -i -t"
+  fi
+
+  readonly _logs
+  return 0
+}
+
 _check_user() {
   if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'You must run this as a rootless container\n'
+    _log 'You must run this as a rootless container'
     return 1
   fi
 
@@ -53,32 +120,6 @@ _check_user() {
 }
 
 _containerize() {
-  _http=""
-
-  # Since we may want to test HTTP local devices like localhost, we use the host network
-  _network="--net=host"
-  readonly _network
-
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _http="${_http} --log-driver json-file"
-    fi
-  else
-    _http="${_http} -i -t"
-  fi
-  readonly _http
-
-  # Auto Update Checking support
-  _auto="--label=io.containers.autoupdate=registry"
-  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
-  readonly _auto
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -89,8 +130,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_http} \
-    ${_auto} \
+    ${_logs} \
+    ${_env} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
@@ -104,9 +145,12 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
+  _prep_log || return 1
+  _prep_network || return 1
+  _prep_env || return 1
 
   "${_cmd}" --version >/dev/null 2>&1 || {
-    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    _log 'Unable to check %s version.' "${_cmd}"
     return 1
   }
 
@@ -115,11 +159,11 @@ main() {
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
-        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        _log 'Cancelled while waiting for container runtime to stand up.'
         return 1
       }
     done
-    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+    _log 'Container runtime is ready, start %s' "${_name}"
   fi
 
   _containerize "$@" || return 1

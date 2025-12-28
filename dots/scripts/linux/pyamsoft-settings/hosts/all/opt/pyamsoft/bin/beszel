@@ -3,6 +3,9 @@
 readonly _basename="beszel"
 _version="0.17.0"
 
+# The SSH key used by hub and agents to auth each other
+BESZEL_KEY=""
+
 _log() {
   _msg="$1"
   shift
@@ -128,7 +131,6 @@ _prep_env() {
     _log 'Beszel Hub creates its own SSH key that agents must use.'
 
     # Can continue with blank key, it's ignored in hub mode
-    BESZEL_KEY=""
   else
     if [ -z "${BESZEL_KEY}" ]; then
       _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
