@@ -58,9 +58,8 @@ _usage() {
 ${VERSION}
 
 [Commands]
-mount - Mount a tmpfs
-umount - Unmount a tmpfs
-unmount - Unmount a tmpfs
+mount              - Mount a tmpfs
+umount | unmount   - Unmount a tmpfs
 EOF
  )"
 }
