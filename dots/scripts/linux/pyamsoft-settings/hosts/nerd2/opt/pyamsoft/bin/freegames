@@ -180,7 +180,7 @@ main() {
   _prep_ports || return 1
   _prep_caps || return 1
   _prep_env || return 1
-  _prep_logs || return 1
+  _prep_log || return 1
   _prep_network || return 1
 
   "${_cmd}" --version >/dev/null 2>&1 || {
