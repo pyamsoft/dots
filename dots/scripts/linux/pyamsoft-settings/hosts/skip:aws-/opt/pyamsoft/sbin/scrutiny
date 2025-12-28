@@ -64,6 +64,13 @@ _prep_caps() {
   return 0
 }
 
+_prep_env() {
+  _env=""
+
+  readonly _env
+  return 0
+}
+
 _prep_network() {
   _network=""
 
@@ -170,6 +177,7 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --entrypoint=/entrypoints/init \
     ${_sc} \
+    ${_env} \
     ${_network} \
     ${_logs} \
     ${_mounts} \
@@ -190,6 +198,7 @@ main() {
   _prep_ports || return 1
   _prep_caps || return 1
   _prep_network || return 1
+  _prep_env || return 1
   _prep_log || return 1
 
   # Launch the containers runtime
