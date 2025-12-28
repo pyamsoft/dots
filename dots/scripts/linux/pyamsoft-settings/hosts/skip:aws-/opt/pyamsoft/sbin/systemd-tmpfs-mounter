@@ -5,13 +5,25 @@
 #
 # Expected format is <user>:<escaped-path>[:options]
 
+readonly _name="systemd-tmpfs-mounter"
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 main() {
   _cmd="$1"
   _instance="$2"
 
   if [ -z "${_cmd}" ]; then
-    printf -- 'Missing command, not forwarding to tmpfs-mounter.\n'
-    printf -- 'Expected format: "<user>:<escaped-path>[:escaped-options]\n'
+    _log 'Missing command, not forwarding to tmpfs-mounter.'
+    _log 'Expected format: "<user>:<escaped-path>[:escaped-options]'
 
     unset _cmd
     unset _instance
@@ -19,8 +31,8 @@ main() {
   fi
 
   if [ -z "${_instance}" ]; then
-    printf -- 'Missing instance, not forwarding to tmpfs-mounter.\n'
-    printf -- 'Expected format: "<user>:<escaped-path>[:escaped-options]\n'
+    _log 'Missing instance, not forwarding to tmpfs-mounter.'
+    _log 'Expected format: "<user>:<escaped-path>[:escaped-options]'
 
     unset _cmd
     unset _instance
