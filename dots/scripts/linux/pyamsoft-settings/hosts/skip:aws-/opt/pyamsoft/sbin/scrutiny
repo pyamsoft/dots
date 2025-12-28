@@ -33,10 +33,22 @@ _prep_mounts() {
   readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/logs"
   readonly _mount4="${CONTAINER_RUNTIME_DIR}/${_name}/entrypoints"
 
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
-  mkdir -p "${_mount3}" || return 1
-  mkdir -p "${_mount4}" || return 1
+  mkdir -p "${_mount1}" || {
+    _log "Failed to create mount source %s" "${_mount1}"
+    return 1
+  }
+  mkdir -p "${_mount2}" || {
+    _log "Failed to create mount source %s" "${_mount2}"
+    return 1
+  }
+  mkdir -p "${_mount3}" || {
+    _log "Failed to create mount source %s" "${_mount3}"
+    return 1
+  }
+  mkdir -p "${_mount4}" || {
+    _log "Failed to create mount source %s" "${_mount4}"
+    return 1
+  }
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/opt/scrutiny/config"
@@ -160,7 +172,10 @@ _containerize() {
 
   # Source the file into the environment
   # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
+  . "${_runconf}" || {
+    _log 'Unable to source runconfig %s' "${_runconf}"
+    return 1
+  }
   unset _runconf
   readonly _sc
 

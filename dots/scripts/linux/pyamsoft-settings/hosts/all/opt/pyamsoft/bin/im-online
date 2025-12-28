@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 
 # Checks that NetworkManager is alive
 # Checks that NetworkManager is online
@@ -23,9 +23,9 @@ _nm_online() {
 
     # Ping failed, wait for backoff time and try again
     sleep "${_backoff}"
-    _backoff="$(( _backoff * 2 ))"
+    _backoff="$((_backoff * 2))"
   done
-  
+
   return 0
 }
 
@@ -53,9 +53,9 @@ _ping() {
 
     # Ping failed, wait for backoff time and try again
     sleep "${_backoff}"
-    _backoff="$(( _backoff * 2 ))"
+    _backoff="$((_backoff * 2))"
   done
-  
+
   return 0
 }
 
@@ -87,11 +87,11 @@ main() {
 
   # Optionally check that we have DNS
   case "$1" in
-    d|dns|-d|--dns)
-      _ping_google_dns || {
-        printf -- 'Could not ping Google DNS. NOT ONLINE\n'
-        return 4
-      }
+  d | dns | -d | --dns)
+    _ping_google_dns || {
+      printf -- 'Could not ping Google DNS. NOT ONLINE\n'
+      return 4
+    }
     ;;
   esac
 

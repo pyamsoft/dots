@@ -90,7 +90,10 @@ _prep_ssh_key() {
 _prep_mounts() {
   _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
 
-  mkdir -p "${_mount1}" || return 1
+  mkdir -p "${_mount1}" || {
+    _log "Failed to create mount source %s" "${_mount1}"
+    return 1
+  }
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/beszel_data"
@@ -99,7 +102,10 @@ _prep_mounts() {
     _hub_data="${CONTAINER_RUNTIME_DIR}/${_basename}-hub/data"
 
     if [ "${BESZEL_MODE}" = "hub" ]; then
-      mkdir -p "${_hub_data}" || return 1
+      mkdir -p "${_hub_data}" || {
+        _log 'Failed to create hub data directory: %s' "${_hub_data}"
+        return 1
+      }
     fi
 
     _prep_ssh_key "${_hub_data}" || return 1
@@ -244,7 +250,10 @@ _containerize() {
 
   # Source the file into the environment
   # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
+  . "${_runconf}" || {
+    _log 'Unable to source runconfig %s' "${_runconf}"
+    return 1
+  }
   unset _runconf
   readonly _bz
 

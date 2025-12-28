@@ -27,6 +27,7 @@ readonly _cmd
 
 _prep_mounts() {
   _mounts=""
+
   # No mounts
   readonly _mounts
   return 0

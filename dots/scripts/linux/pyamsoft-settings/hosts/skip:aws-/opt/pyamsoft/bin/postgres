@@ -14,13 +14,23 @@ readonly _name="postgres"
 readonly _image="docker.io/postgres"
 readonly _tag="17.6"
 
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  _log 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
@@ -31,8 +41,14 @@ _prep_mounts() {
   readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
   readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/dumps"
 
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount1}" || {
+    _log "Failed to create mount source %s" "${_mount1}"
+    return 1
+  }
+  mkdir -p "${_mount2}" || {
+    _log "Failed to create mount source %s" "${_mount2}"
+    return 1
+  }
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/var/lib/postgresql/data"
@@ -57,6 +73,65 @@ _prep_caps() {
   return 0
 }
 
+_prep_env() {
+  _env=""
+
+  readonly _env
+  return 0
+}
+
+_prep_network() {
+  _network=""
+
+  # We use our container DNS resolver
+  # MacOS can't launch with host-gateway
+  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
+  _network="${_network} --add-host host.containers.internal:host-gateway"
+
+  # Create our own network
+  if [ "${_cmd}" = "podman" ]; then
+    # Podman can "ignore" networks with the same name
+    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null 2>&1 || {
+      _log "Failed to create isolated network using %s" "${_cmd}"
+      return 1
+    }
+  else
+    # Docker must make sure the network doesn't already exist
+    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
+      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null 2>&1 || {
+        _log "Failed to create isolated network using %s" "${_cmd}"
+        return 1
+      }
+    fi
+  fi
+
+  # Attach our isolated network
+  _network="${_network} --net=${_name}"
+
+  readonly _network
+  return 0
+}
+
+_prep_log() {
+  _logs=""
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _logs="${_logs} --log-driver json-file"
+    fi
+  else
+    _logs="${_logs} -i -t"
+  fi
+
+  readonly _logs
+  return 0
+}
+
 _prep_ports() {
   _ports=""
 
@@ -68,7 +143,7 @@ _prep_ports() {
 
 _check_user() {
   if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'You must run this as a rootless container\n'
+    _log 'You must run this as a rootless container'
     return 1
   fi
 
@@ -93,34 +168,19 @@ _check_user() {
 _containerize() {
   _pg=""
 
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _pg="${_pg} --log-driver json-file"
-    fi
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
+  if [ ! -e "${_runconf}" ]; then
+    _log 'Optional runconf supported at %s' "${_runconf}"
   else
-    _pg="${_pg} -i -t"
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || {
+      _log 'Unable to source runconfig %s' "${_runconf}"
+      return 1
+    }
   fi
   readonly _pg
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  # On Linux we run systemd-resolved on our host machine for DNS caching
-  _network="--add-host localhost:127.0.0.1 --dns-search=."
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    _network="${_network} --add-host host.containers.internal:host-gateway"
-  fi
-  readonly _network
-
-  # Auto Update Checking support
-  _auto="--label=io.containers.autoupdate=registry"
-  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
-  readonly _auto
 
   # Log the commands we use next
   # Fail on errors
@@ -135,7 +195,8 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
     ${_pg} \
-    ${_auto} \
+    ${_env} \
+    ${_logs} \
     ${_network} \
     ${_mounts} \
     ${_ports} \
@@ -149,22 +210,25 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
+  _prep_env || return 1
+  _prep_network || return 1
+  _prep_log || return 1
 
   # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
   # This folder is created "at some point" in response to podman commands being run
   "${_cmd}" --version >/dev/null 2>&1 || {
-    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    _log 'Unable to check %s version.' "${_cmd}"
     return 1
   }
 
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
-        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        _log 'Cancelled while waiting for container runtime to stand up.'
         return 1
       }
     done
-    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+    _log 'Container runtime is ready, start %s' "${_name}"
   fi
 
   _containerize "$@" || return 1
