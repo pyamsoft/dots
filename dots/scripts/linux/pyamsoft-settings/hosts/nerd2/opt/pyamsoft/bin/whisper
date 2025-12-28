@@ -4,13 +4,23 @@ readonly _name="whisper"
 readonly _image="docker.io/homeassistant/amd64-addon-whisper"
 readonly _tag="3.0.1"
 
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  _log 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
@@ -21,14 +31,57 @@ _prep_mounts() {
   readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
   readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/download"
 
-  mkdir -p "${_mount1}" || return 1
-  mkdir -p "${_mount2}" || return 1
+  mkdir -p "${_mount1}" || {
+    _log "Failed to create mount source %s" "${_mount1}"
+    return 1
+  }
+  mkdir -p "${_mount2}" || {
+    _log "Failed to create mount source %s" "${_mount2}"
+    return 1
+  }
 
   _mounts=""
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/data"
   _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/download"
 
   readonly _mounts
+  return 0
+}
+
+_prep_env() {
+  _env=""
+
+  readonly _env
+  return 0
+}
+
+_prep_network() {
+  _network=""
+
+  # Piggyback onto the home-assistant network
+  _network="${_network} --net=container:home-assistant"
+
+  readonly _network
+  return 0
+}
+
+_prep_log() {
+  _logs=""
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if [ "${_cmd}" = "podman" ]; then
+      _logs="${_logs} --log-driver json-file"
+    fi
+  else
+    _logs="${_logs} -i -t"
+  fi
+
+  readonly _logs
   return 0
 }
 
@@ -50,7 +103,7 @@ _prep_ports() {
 
 _check_user() {
   if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'You must run this as a rootless container\n'
+    _log 'You must run this as a rootless container'
     return 1
   fi
 
@@ -65,40 +118,21 @@ _containerize() {
   _wp=""
 
   # Source the runtime config (so we don't have to hardcode keys)
+  # Source the runtime config (so we don't have to hardcode keys)
   _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
   if [ ! -e "${_runconf}" ]; then
-    printf -- 'You must provide %s\n' "${_runconf}"
+    _log 'You must provide %s' "${_runconf}"
     return 1
   fi
 
   # Source the file into the environment
   # shellcheck disable=SC1090
-  . "${_runconf}" || return 1
+  . "${_runconf}" || {
+    _log 'Unable to source runconfig %s' "${_runconf}"
+    return 1
+  }
   unset _runconf
-
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _wp="${_wp} --log-driver json-file"
-    fi
-  else
-    _wp="${_wp} -i -t"
-  fi
   readonly _wp
-
-  # Piggyback onto the home-assistant network
-  _network="--network container:home-assistant"
-  readonly _network
-
-  # Auto Update Checking support
-  _auto="--label=io.containers.autoupdate=registry"
-  _auto="${_auto} --label=PODMAN_SYSTEMD_UNIT=not-a-real.service"
-  readonly _auto
 
   # Allow model customization via variable or fallback to medium-int8
   MODEL="${MODEL:-medium-int8}"
@@ -130,7 +164,8 @@ _containerize() {
     --entrypoint python3 \
     ${_wp} \
     ${_network} \
-    ${_auto} \
+    ${_logs} \
+    ${_env} \
     ${_mounts} \
     ${_ports} \
     ${_caps} \
@@ -143,10 +178,13 @@ main() {
   _prep_mounts || return 1
   _prep_ports || return 1
   _prep_caps || return 1
+  _prep_env || return 1
+  _prep_network || return 1
+  _prep_log || return 1
 
   # Launch the containers runtime
   "${_cmd}" --version >/dev/null 2>&1 || {
-    printf -- 'Unable to check %s version.\n' "${_cmd}"
+    _log 'Unable to check %s version.' "${_cmd}"
     return 1
   }
 
@@ -155,11 +193,11 @@ main() {
   if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
     while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
       sleep 1 || {
-        printf -- 'Cancelled while waiting for container runtime to stand up.\n'
+        _log 'Cancelled while waiting for container runtime to stand up.'
         return 1
       }
     done
-    printf -- 'Container runtime is ready, start %s\n' "${_name}"
+    _log 'Container runtime is ready, start %s' "${_name}"
   fi
 
   _containerize "$@" || return 1

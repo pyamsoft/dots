@@ -2,12 +2,24 @@
 
 # Privileged script, to be used with gamer script and sudoers set up
 
+readonly _name="gamelaunch"
+
 __grant_candidates=""
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
 
 _check_user() {
   _check_me="$1"
   if ! id -u "${_check_me}" >/dev/null 2>&1; then
-    printf -- '[gamelaunch] User %s does not exist!\n' "${_check_me}"
+    _log 'User %s does not exist!' "${_check_me}"
 
     unset _check_me
     return 1
@@ -51,10 +63,10 @@ _execute() {
   #           Instead of giving entire group (and this would allow keyboard input sniffing, use facl to grant joysticks)
   readonly _extra_groups="pipewire"
 
-  printf -- '[gamelaunch] Running command: "~/bin/launcher %s"\n' "$*"
-  printf -- '[gamelaunch] Running command from user: %s\n' "${_exec_from_user}"
-  printf -- '[gamelaunch] Running command as user: %s\n' "${_exec_to_user}"
-  printf -- '[gamelaunch] Running command with extra groups: %s\n' "${_extra_groups}"
+  _log 'Running command: "~/bin/launcher %s"' "$*"
+  _log 'Running command from user: %s' "${_exec_from_user}"
+  _log 'Running command as user: %s' "${_exec_to_user}"
+  _log 'Running command with extra groups: %s' "${_extra_groups}"
 
   # Running machinectl shell gives us a "clean session to work with" that attaches to it's own systemctl --user session
   # and loginctl session
@@ -77,40 +89,40 @@ _execute() {
 
 main() {
   if [ -z "${SUDO_USER}" ]; then
-    printf -- "[gamelaunch] Requires that you run as a regular user with sudo\n"
+    _log "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ "${SUDO_UID}" -eq 0 ]; then
-    printf -- "[gamelaunch] Requires that you run as a regular user with sudo\n"
+    _log "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ "$(id -u)" -ne 0 ]; then
-    printf -- "[gamelaunch] Requires that you run with sudo\n"
+    _log "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ -z "${DISPLAY}" ]; then
-    printf -- "[gamelaunch] Requires a valid \$DISPLAY variable.\n"
+    _log "Requires a valid \$DISPLAY variable."
     return 1
   fi
 
   if [ -z "${XAUTHORITY}" ]; then
-    printf -- "[gamelaunch] Requires a valid \$XAUTHORITY variable.\n"
+    _log "Requires a valid \$XAUTHORITY variable."
     return 1
   fi
 
   _from_user="$1"
   if [ -z "${_from_user}" ]; then
-    printf -- '[gamelaunch] Requires a FROM user as the first argument\n'
+    _log 'Requires a FROM user as the first argument.'
     return 1
   fi
   shift
 
   _to_user="$1"
   if [ -z "${_to_user}" ]; then
-    printf -- '[gamelaunch] Requires a TO user as the second argument\n'
+    _log 'Requires a TO user as the second argument.'
     return 1
   fi
   shift
@@ -119,7 +131,7 @@ main() {
   case "$1" in
   --gamescope)
     if [ -z "$2" ]; then
-      printf -- '[gamelaunch] Missing required --gamescope argument value!\n'
+      _log 'Missing required --gamescope argument value!'
       return 1
     fi
 
@@ -133,7 +145,7 @@ main() {
   --gamescope=*)
     _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
     if [ -z "${_split}" ]; then
-      printf -- '[gamelaunch] Missing required --gamescope= argument value!\n'
+      _log 'Missing required --gamescope= argument value!'
       return 1
     fi
 
