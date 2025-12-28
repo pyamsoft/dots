@@ -8,7 +8,7 @@ _log() {
   _msg="$1"
   shift
 
-  printf -- "[%s]: ${_msg}\n" "$@" || return 1
+  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
 
   unset _msg
   return 0
