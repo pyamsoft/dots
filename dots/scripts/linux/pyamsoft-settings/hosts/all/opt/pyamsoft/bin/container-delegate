@@ -32,11 +32,12 @@ _usage() {
 
 [container]:   Exectue ${_cmd} operations on containers
 
-  pid          Returns the PID of the containerized process on the host system
-  ps           Runs '${_cmd} ps', passing all arguments
-  logs         Runs '${_cmd} logs', passing all arguments
   images       Runs '${_cmd} images', passing all arguments
   inspect      Runs '${_cmd} inspect', passing all arguments
+  logs         Runs '${_cmd} logs', passing all arguments
+  networks     Runs '${_cmd} network ls', passing all arguments
+  pid          Returns the PID of the containerized process on the host system
+  ps           Runs '${_cmd} ps', passing all arguments
   stats        Runs '${_cmd} stats', passing all arguments
 
 [service]:     Service management related operations
@@ -69,7 +70,6 @@ _prep_container() {
 }
 
 _collect_containers() {
-
   for _c in "$@"; do
     if [ -z "${__containers}" ]; then
       case "$1" in
@@ -155,7 +155,13 @@ main() {
     exec "${_cmd}" exec -i -t "${_container}" "$@"
     ;;
   pid)
-    exec "${_cmd}" inspect "$1" -f '{{ .State.Pid }}'
+    _container="$1"
+    shift
+
+    exec "${_cmd}" inspect "${_container}" -f '{{ .State.Pid }}' "$@"
+    ;;
+  networks)
+    exec "${_cmd}" network ls "$@"
     ;;
   prune)
     exec "${_cmd}" system prune -a "$@"
