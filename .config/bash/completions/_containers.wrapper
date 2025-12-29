@@ -6,7 +6,7 @@ if ! declare -f __containers >/dev/null 2>&1; then
     COMPREPLY=()
     local prev="${COMP_WORDS[COMP_CWORD - 1]}"
     local cur="${COMP_WORDS[COMP_CWORD]}"
-    local commands="ps logs images inspect reload disable restart status stop checkup pid prune pull teardown exec shell stats"
+    local commands="ps logs images inspect reload disable restart status stop checkup pid prune pull teardown exec shell stats networks"
 
     _reply() {
       # shellcheck disable=SC2207
@@ -17,7 +17,7 @@ if ! declare -f __containers >/dev/null 2>&1; then
       local cmd="$1"
 
       case "$2" in
-      ps | pull | checkup | prune | reload)
+      ps | pull | checkup | prune | reload | networks)
         # No further arguments
         COMPREPLY=()
         ;;
