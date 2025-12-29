@@ -133,19 +133,6 @@ _prep_caps() {
 _prep_env() {
   _env=""
 
-  if [ "${BESZEL_MODE}" = "hub" ]; then
-    _log 'Beszel Hub creates its own SSH key that agents must use.'
-
-    # Can continue with blank key, it's ignored in hub mode
-  else
-    if [ -z "${BESZEL_KEY}" ]; then
-      _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
-      _log 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
-
-      return 1
-    fi
-  fi
-
   _env="${_env} -e DATA_DIR=/beszel_data"
 
   readonly _env
@@ -256,6 +243,19 @@ _containerize() {
   }
   unset _runconf
   readonly _bz
+
+  if [ "${BESZEL_MODE}" = "hub" ]; then
+    _log 'Beszel Hub creates its own SSH key that agents must use.'
+
+    # Can continue with blank key, it's ignored in hub mode
+  else
+    if [ -z "${BESZEL_KEY}" ]; then
+      _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
+      _log 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
+
+      return 1
+    fi
+  fi
 
   # Log the commands we use next
   # Fail on errors
