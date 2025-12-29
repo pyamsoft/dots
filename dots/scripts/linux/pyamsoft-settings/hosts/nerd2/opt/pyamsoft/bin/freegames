@@ -160,9 +160,9 @@ _containerize() {
   #
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm \
-    --pull=always \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --pull=always \
     ${_fgc} \
     ${_env} \
     ${_logs} \

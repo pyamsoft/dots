@@ -76,6 +76,8 @@ _prep_caps() {
 _prep_env() {
   _env=""
 
+  _env="${_env} -e POSTGRES_PASSWORD=mysecretpostgrespasswd"
+
   readonly _env
   return 0
 }
@@ -193,7 +195,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    -e POSTGRES_PASSWORD=mysecretpostgrespasswd \
+    --pull=newer \
     ${_pg} \
     ${_env} \
     ${_logs} \

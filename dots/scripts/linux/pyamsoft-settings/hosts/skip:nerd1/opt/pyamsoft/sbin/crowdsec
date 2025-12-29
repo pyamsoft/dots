@@ -199,6 +199,7 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --cap-drop=ALL --security-opt no-new-privileges:true \
+    --pull=newer \
     ${_cs} \
     ${_network} \
     ${_env} \

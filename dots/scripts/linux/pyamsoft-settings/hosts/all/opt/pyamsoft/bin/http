@@ -131,6 +131,7 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm \
     --security-opt no-new-privileges:true --cap-drop ALL \
+    --pull newer \
     ${_logs} \
     ${_env} \
     ${_network} \
