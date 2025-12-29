@@ -2,7 +2,7 @@
 
 readonly _name="esphome"
 readonly _image="ghcr.io/esphome/esphome"
-readonly _tag="2025.12.1"
+readonly _tag="2025.12.2"
 
 _log() {
   _msg="$1"
