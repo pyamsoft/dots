@@ -1,6 +1,17 @@
 #!/bin/sh
 
-_PROG="$(basename "$0")"
+readonly _PROG="container-teardown"
+readonly _DEFAULT_TIME=5
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_PROG}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
 
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
@@ -8,19 +19,20 @@ if command -v podman >/dev/null; then
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  _log 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
 
 _usage() {
-  printf -- '%s\n' "$(
+  _log '%s' "$(
     cat <<EOF
 
-${_PROG} <name(s)> [-t|--time]
+${_PROG} [option(s)] [--] <name(s)> 
 
 <name>                name of the container to teardown (one or more)
 [-t|--time] <value>   time to wait for container to stop (default 5s)
+--                    Stop processing options
 
 Teardown will:
 
@@ -42,34 +54,34 @@ _teardown_container() {
   _teardown_time="$2"
 
   # Attempt nice stop
-  printf -- '[teardown] Attempt nice stop container: %s\n' "${_container}"
-  "${_cmd}" stop -t "${_teardown_time}" "${_container}" >/dev/null || {
-    printf -- '[teardown] Failed to nicely stop container %s\n' "${_container}"
+  _log 'Try nice stop container: %s (%ss)' "${_container}" "${_teardown_time}"
+  "${_cmd}" stop -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
+    _log 'Failed to nicely stop container %s (%ss)' "${_container}" "${_teardown_time}"
   }
 
   # Remove the container
-  printf -- '[teardown] Attempt force-remove container: %s\n' "${_container}"
-  "${_cmd}" rm -f "${_container}" >/dev/null || {
-    printf -- '[teardown] Failed to force remove the container %s\n' "${_container}"
+  _log 'Try force-remove container: %s' "${_container}"
+  "${_cmd}" rm -f "${_container}" >/dev/null 2>&1 || {
+    _log 'Failed to force remove the container %s' "${_container}"
 
     # If this fails, we failed
     return 1
   }
 
   # Remove the network
-  printf -- '[teardown] Attempt remove container network: %s\n' "${_container}"
+  _log 'Try remove container network: %s (%ss)' "${_container}" "${_teardown_time}"
   if [ "${_cmd}" = "podman" ]; then
-    "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null || {
-      printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
+    "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
+      _log 'Failed to remove the container network: %s (%ss)' "${_container}" "${_teardown_time}"
     }
   else
     # Docker does not support -t flag for network rm
-    "${_cmd}" network rm -f "${_container}" >/dev/null || {
-      printf -- '[teardown] Failed to remove the container network: %s\n' "${_container}"
+    "${_cmd}" network rm -f "${_container}" >/dev/null 2>&1 || {
+      _log 'Failed to remove the container network: %s' "${_container}"
     }
   fi
 
-  printf -- '[teardown] Container is completely torn down: %s\n\n' "${_container}"
+  _log 'Container is completely torn down: %s' "${_container}"
 
   unset _teardown_time
   unset _container
@@ -104,17 +116,17 @@ _teardown_compose() {
   _teardown_time="$2"
 
   cd "${_compose_dir}" || {
-    printf -- '[teardown] Failed to move into project: %s\n' "${_compose_dir}"
+    _log 'Failed to move into compose project: %s' "${_compose_dir}"
     return 1
   }
 
-  printf -- '[teardown] Attempt bring down compose: %s\n' "${_container}"
-  "${_cmd}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" || {
-    printf -- '[teardown] Failed to bring down compose: %s\n' "${_container}"
+  _log 'Try bring down compose: %s' "${_container}"
+  "${_cmd}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" >/dev/null 2>&1 || {
+    _log 'Failed to bring down compose: %s' "${_container}"
     return 1
   }
 
-  printf -- '[teardown] Compose is completely torn down: %s\n' "${_container}"
+  _log 'Compose is completely torn down: %s' "${_container}"
 
   unset _teardown_time
   return 0
@@ -122,54 +134,85 @@ _teardown_compose() {
 
 main() {
   # Podman expects us to be in a accessible CWD
-  if [ "$(id -u)" -ne 0 ]; then
-    cd "${HOME}" || {
-      printf -- '[teardown] Unable to cd to user HOME for %s usage\n' "${_cmd}"
-      return 1
-    }
-  fi
+  cd "${HOME}" || {
+    _log 'Unable to cd to user HOME for sanity'
+    return 1
+  }
 
-  _time=5
+  _time="${_DEFAULT_TIME}"
   _containers=""
+  _no_more_options=0
   for _arg in "$@"; do
-    if [ -z "$1" ]; then
-      # Done looping
-      break
-    fi
-    if [ "$1" = "-t" ] || [ "$1" = "--time" ]; then
-      # We handle time
-      shift
+    if [ "${_no_more_options}" -eq 0 ]; then
+      case "$1" in
+      --time=*)
+        _time="$(printf -- '%s' "$1" | tr '=' ' ' | awk '{ print $2 }')"
 
-      # Did we pass an argument and is it a time
-      if [ "$1" -eq "$1" ] >/dev/null 2>&1; then
+        # Did we pass an argument and is it a time
+        if ! [ "${_time}" -eq "${_time}" ] >/dev/null 2>&1; then
+          _log 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
+          _time="${_DEFAULT_TIME}"
+        fi
+
+        # Eat argument
+        shift
+
+        continue
+        ;;
+      -t | --time)
+        # Eat this $1 so that we can process the passed in "time value"
+        shift
+
         _time="$1"
-      else
-        printf -- '[teardown] Unexpected "time" argument: "%s". Fallback to default: %s\n' "$1" "${_time}"
-      fi
-    else
-      # Add to containers
-      if [ -z "${_containers}" ]; then
-        _containers="$1"
-      else
-        # Go in order
-        _containers="${_containers} $1"
-      fi
+        # Did we pass an argument and is it a time
+        if ! [ "${_time}" -eq "${_time}" ] >/dev/null 2>&1; then
+          _log 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
+          _time="${_DEFAULT_TIME}"
+        fi
+
+        # Eat time value
+        shift
+
+        continue
+        ;;
+      --)
+        _no_more_options=1
+        shift
+
+        continue
+        ;;
+      *) ;;
+      esac
     fi
 
-    # Eat
-    shift
+    # Add to containers
+    if [ -z "${_containers}" ]; then
+      _containers="$1"
+    else
+      # Go in order
+      _containers="${_containers} $1"
+    fi
+
+    if [ "$#" -gt 0 ]; then
+      # Eat
+      shift
+    fi
+    unset _arg
   done
+  unset _arg
 
   if [ -z "${_containers}" ]; then
-    printf -- '[teardown] Must provide at least one container name to teardown\n.'
+    _log 'Must provide at least one container name to teardown.'
     _usage || return 1
     return 1
   fi
 
   for _c in ${_containers}; do
     if _is_compose "${_c}"; then
+      _log 'Attempting teardown of compose %s (%ss)' "${_c}" "${_time}"
       _teardown_compose "${_c}" "${_time}" || return 1
     else
+      _log 'Attempting teardown of container %s (%ss)' "${_c}" "${_time}"
       _teardown_container "${_c}" "${_time}" || return 1
     fi
 
@@ -178,6 +221,10 @@ main() {
     unset _compose_file
     unset _c
   done
+  unset _c
+
+  # Done operation
+  _log '---'
 
   unset _time
   unset _containers
