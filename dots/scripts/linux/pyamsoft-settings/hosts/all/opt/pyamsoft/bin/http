@@ -54,32 +54,12 @@ _prep_ports() {
 _prep_env() {
   _env=""
 
-  if [ "${BESZEL_MODE}" = "hub" ]; then
-    _log 'Beszel Hub creates its own SSH key that agents must use.'
-
-    # Can continue with blank key, it's ignored in hub mode
-  else
-    if [ -z "${BESZEL_KEY}" ]; then
-      _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
-      _log 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
-
-      return 1
-    fi
-  fi
-
-  _env="${_env} -e DATA_DIR=/beszel_data"
-
   readonly _env
   return 0
 }
 
 _prep_network() {
   _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
 
   # We use host networking since we may want to test services running on our local machine
   _network="${_network} --net=host"
@@ -131,7 +111,6 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${_cmd} run --rm \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --pull newer \
     ${_logs} \
     ${_env} \
     ${_network} \

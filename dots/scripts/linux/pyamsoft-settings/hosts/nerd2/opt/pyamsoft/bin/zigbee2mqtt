@@ -144,7 +144,6 @@ _containerize() {
   exec ${_cmd} run --rm \
     --name "${_name}" --hostname "${_name}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --pull=newer \
     ${_z2m} \
     ${_network} \
     ${_logs} \
