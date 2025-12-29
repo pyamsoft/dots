@@ -2,7 +2,7 @@
 
 readonly _name="bentopdf"
 readonly _image="docker.io/bentopdf/bentopdf"
-readonly _tag="1.15.1"
+readonly _tag="1.15.3"
 
 _log() {
   _msg="$1"

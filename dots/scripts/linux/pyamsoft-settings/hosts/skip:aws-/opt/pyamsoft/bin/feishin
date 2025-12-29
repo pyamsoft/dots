@@ -2,7 +2,7 @@
 
 readonly _name="feishin"
 readonly _image="ghcr.io/jeffvli/feishin"
-readonly _tag="0.22.0"
+readonly _tag="1.0.2"
 
 _log() {
   _msg="$1"
