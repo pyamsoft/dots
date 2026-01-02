@@ -89,14 +89,14 @@ _prep_network() {
     # Create our own network
     if [ "${_cmd}" = "podman" ]; then
       # Podman can "ignore" networks with the same name
-      "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null 2>&1 || {
+      "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
         _log "Failed to create isolated network using %s" "${_cmd}"
         return 1
       }
     else
       # Docker must make sure the network doesn't already exist
       if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-        "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null 2>&1 || {
+        "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
           _log "Failed to create isolated network using %s" "${_cmd}"
           return 1
         }

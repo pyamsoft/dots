@@ -78,7 +78,7 @@ _prep_env() {
 _prep_network() {
   _network=""
 
-  # Hostcbetworkinf
+  # Host networking or else Samba drops Tailscale connections?
   _network="${_network} --net=host"
 
   readonly _network
