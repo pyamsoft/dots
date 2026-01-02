@@ -112,7 +112,6 @@ freeglut
 freerdp
 freetype2
 fribidi
-fstrm
 fuse-common
 fuse2
 fuse3
@@ -256,7 +255,6 @@ haskell-witherable
 hicolor-icon-theme
 hidapi
 highway
-hiredis
 hsa-rocr
 hwdata
 hyphen
