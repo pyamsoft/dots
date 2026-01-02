@@ -1,5 +1,5 @@
 [Unit]
-Description=Update root hints for unbound
+Description=Update root hints for Unbound
 After=network.target
 
 [Service]

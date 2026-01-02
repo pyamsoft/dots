@@ -1,5 +1,5 @@
 [Unit]
-Description=Update trusted-keys for unbound
+Description=Update trusted-keys for Unbound
 After=network.target
 
 [Service]

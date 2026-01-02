@@ -1,6 +1,6 @@
 # Prepare the /etc/unbound directory
 [Unit]
-Description=Prepare unbound
+Description=Prepare Unbound
 Before=network.target unbound.service
 After=unbound-trusted-keys.service
 Requires=unbound-trusted-keys.service
@@ -8,7 +8,7 @@ Requires=unbound-trusted-keys.service
 [Service]
 # oneshot so this does not fork and finishes before unbound launches
 Type=oneshot
-ExecStart=/usr/sbin/chown -R unbound:unbound /etc/unbound/
+ExecStart=/usr/sbin/chown -R %i:%i /etc/unbound/
 
 [Install]
 WantedBy=multi-user.target
