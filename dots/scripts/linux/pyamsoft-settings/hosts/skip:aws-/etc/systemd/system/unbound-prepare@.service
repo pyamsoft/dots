@@ -2,8 +2,6 @@
 [Unit]
 Description=Prepare Unbound
 Before=network.target unbound.service
-After=unbound-trusted-keys.service
-Requires=unbound-trusted-keys.service
 
 [Service]
 # oneshot so this does not fork and finishes before unbound launches
