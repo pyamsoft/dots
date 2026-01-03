@@ -25,6 +25,9 @@ _get_latest_tags() {
       # Otherwise remove latest and let's keep going
       grep -v 'latest' |
         case "${_container}" in
+        */unbound)
+          grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
+          ;;
         */navidrome)
           grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
           ;;
