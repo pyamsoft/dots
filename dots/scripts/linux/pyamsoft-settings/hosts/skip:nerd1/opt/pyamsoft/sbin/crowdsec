@@ -69,6 +69,12 @@ _prep_mounts() {
 _prep_env() {
   _env=""
 
+  if [ "${CROWDSEC_MODE}" = "agent" ]; then
+    _env="${_env} -e USE_WAL=true"
+    _env="${_env} -e NO_HUB_UPGRADE=true"
+    _env="${_env} -e DISABLE_LOCAL_API=true"
+  fi
+
   readonly _env
   return 0
 }
@@ -79,7 +85,7 @@ _prep_network() {
   if [ "${CROWDSEC_MODE}" = "lapi" ]; then
     # TODO(Peter): This used to work without --host
     # The LAPI machine must use host networking or else it hangs when downloading hub updates for some reason.
-    _network="${_network} --net=host"
+    _network="${_network} --network=host"
   else
     # We use our container DNS resolver
     # MacOS can't launch with host-gateway
@@ -104,7 +110,7 @@ _prep_network() {
     fi
 
     # Attach our isolated network
-    _network="${_network} --net=${_name}"
+    _network="${_network} --network=${_name}"
   fi
 
   readonly _network
@@ -134,8 +140,12 @@ _prep_log() {
 _prep_caps() {
   _caps=""
 
-  # Agent and Server containers can use different CAPS, see runconfig
-  # https://www.redhat.com/en/blog/secure-your-containers-one-weird-trick
+  if [ "${CROWDSEC_MODE}" = "lapi" ]; then
+    # Server needs these caps to launch
+    _caps="${_caps} --cap-add SETUID"
+    _caps="${_caps} --cap-add SETGID"
+    _caps="${_caps} --cap-add DAC_OVERRIDE"
+  fi
 
   readonly _caps
   return 0

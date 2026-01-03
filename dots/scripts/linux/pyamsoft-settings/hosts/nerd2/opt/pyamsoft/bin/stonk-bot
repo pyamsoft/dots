@@ -95,7 +95,7 @@ _prep_network() {
   fi
 
   # Attach our isolated network
-  _network="${_network} --net=${_name}"
+  _network="${_network} --network=${_name}"
 
   readonly _network
   return 0

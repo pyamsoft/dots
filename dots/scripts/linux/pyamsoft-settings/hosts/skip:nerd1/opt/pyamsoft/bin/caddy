@@ -104,8 +104,13 @@ _prep_network() {
     fi
   fi
 
-  # Attach our isolated network
-  _network="${_network} --net=${_name}"
+  # We continue using the DEFAULT network instead of creating our own.
+  # The default network uses the a special setup of the bridge driver
+  # which preserves source IP addresses
+  #
+  # We need to preserve source IP address so that Crowdsec can operate on bad actors
+  #
+  # However as a trade off, since this runs on the default bridge this decreases network isolation.
 
   readonly _network
   return 0

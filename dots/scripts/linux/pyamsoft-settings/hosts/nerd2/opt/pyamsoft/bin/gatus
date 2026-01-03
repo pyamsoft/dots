@@ -96,7 +96,11 @@ _prep_network() {
   fi
 
   # Attach our isolated network
-  _network="${_network} --net=${_name}"
+  #
+  # We shouldn't need to care about source IP addresses here as this website is proxied through Cloudflare
+  # so their protections should generally handle it. Plus there are no specific log drivers in Crowdsec that
+  # need to read these logs to identify bad actors.
+  _network="${_network} --network=${_name}"
 
   readonly _network
   return 0

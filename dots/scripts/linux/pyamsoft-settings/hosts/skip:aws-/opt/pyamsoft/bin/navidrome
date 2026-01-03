@@ -65,25 +65,13 @@ _prep_network() {
   _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
   _network="${_network} --add-host host.containers.internal:host-gateway"
 
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
-  # Attach our isolated network
-  _network="${_network} --net=${_name}"
+  # We continue using the DEFAULT network instead of creating our own.
+  # The default network uses the a special setup of the bridge driver
+  # which preserves source IP addresses
+  #
+  # We need to preserve source IP address so that Crowdsec can operate on bad actors
+  #
+  # However as a trade off, since this runs on the default bridge this decreases network isolation.
 
   readonly _network
   return 0

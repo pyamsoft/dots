@@ -166,10 +166,10 @@ _prep_network() {
     fi
 
     # Attach our isolated network
-    _network="${_network} --net=${_basename}"
+    _network="${_network} --network=${_basename}"
   else
     # Agent must run with host networking
-    _network="${_network} --net=host"
+    _network="${_network} --network=host"
   fi
 
   readonly _network

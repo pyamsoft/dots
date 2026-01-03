@@ -88,7 +88,7 @@ _prep_network() {
   _network=""
 
   # Piggyback onto the home-assistant network
-  _network="${_network} --net=container:home-assistant"
+  _network="${_network} --network=container:home-assistant"
 
   readonly _network
   return 0

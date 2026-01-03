@@ -48,11 +48,6 @@ _prep_env() {
   _env="${_env} -e LANG=en"
   _env="${_env} -e THEME=Dark"
   _env="${_env} -e THEME_OS=true"
-  _env="${_env} -e CUSTOM_BUTTON_TEXT=${_CUSTOM_BUTTON_TEXT}"
-  _env="${_env} -e CUSTOM_BUTTON_ALT_TEXT=${_CUSTOM_BUTTON_ALT_TEXT}"
-  _env="${_env} -e CUSTOM_BUTTON_ICON=${_CUSTOM_BUTTON_ICON}"
-  _env="${_env} -e FOOTER=${_FOOTER}"
-  _env="${_env} -e META_DESCRIPTION=${_META_DESCRIPTION}"
 
   readonly _env
   return 0
@@ -84,7 +79,11 @@ _prep_network() {
   fi
 
   # Attach our isolated network
-  _network="${_network} --net=${_name}"
+  #
+  # We shouldn't need to care about source IP addresses here as this website is proxied through Cloudflare
+  # so their protections should generally handle it. Plus there are no specific log drivers in Crowdsec that
+  # need to read these logs to identify bad actors.
+  _network="${_network} --network=${_name}"
 
   readonly _network
   return 0

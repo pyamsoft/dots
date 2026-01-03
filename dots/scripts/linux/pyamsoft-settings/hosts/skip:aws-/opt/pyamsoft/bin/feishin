@@ -52,7 +52,7 @@ _prep_network() {
   _network=""
 
   # Piggyback onto the navidrome network
-  _network="${_network} --net=container:navidrome"
+  _network="${_network} --network=container:navidrome"
 
   readonly _network
   return 0

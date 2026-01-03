@@ -62,7 +62,7 @@ _prep_network() {
   _network=""
 
   # Host networking for SSDP and mDNS
-  _network="${_network} --net=host"
+  _network="${_network} --network=host"
 
   readonly _network
   return 0
