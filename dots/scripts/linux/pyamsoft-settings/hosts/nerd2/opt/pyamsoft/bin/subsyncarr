@@ -1,126 +1,47 @@
 #!/bin/sh
 
-readonly _name="subsyncarr"
-readonly _image="docker.io/mrorbitman/subsyncarr"
-readonly _tag="0.0.8"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
+NAME="subsyncarr"
+IMAGE="docker.io/mrorbitman/subsyncarr"
+TAG="0.0.8"
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+CONTAINER_REQUIRE_INIT=1
 
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/media"
+  _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
 
   # Media folders are optionally symlinks to another mass storage drive
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-
-  _mounts=""
+  _mount_mkdir "${_media}"
 
   # Follow the link and mount the media folder ONLY if it is valid
-  if [ -d "$(realpath "${_mount1}")" ] && [ -e "$(realpath "${_mount1}/mounted")" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/scan_dir/1"
+  if [ -d "$(realpath "${_media}")" ] && [ -e "$(realpath "${_media}/mounted")" ]; then
+    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_media},target=/scan_dir/1"
   fi
+  unset _media
 
-  readonly _mounts
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
   # Allow writing SRT files to output location
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
-  _caps="${_caps} --cap-add FOWNER"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add FOWNER"
 
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  readonly _ports
   return 0
 }
 
 _prep_env() {
-  _env=""
-
-  readonly _env
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
-  # Attach our isolated network
-  _network="${_network} --network=${_name}"
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
+  _network_isolate || return 1
   return 0
 }
 
@@ -130,87 +51,8 @@ _check_user() {
     return 1
   fi
 
-  # Only for podman
-  if [ "${_cmd}" = "podman" ]; then
-    # Need this userns option that is podman specific or we have random OCI permission error
-    _userns="--user=0:0"
-  else
-    _userns=""
-  fi
-  readonly _userns
+  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0"
 
-  return 0
-}
-
-_containerize() {
-  _ss=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _ss
-
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --init \
-    ${_ss} \
-    ${_network} \
-    ${_logs} \
-    ${_env} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
   return 0
 }
 

@@ -8,6 +8,8 @@ TAG="${TAG:-}"
 CONTAINER_REQUIRE_RUNCONF="${CONTAINER_REQUIRE_RUNCONF:-1}"
 # Run the container with --init
 CONTAINER_REQUIRE_INIT="${CONTAINER_REQUIRE_INIT:-0}"
+# Add host gateway, disable if custom networking
+CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 # Run the container network with IPv6 if using a custom isolated network
 CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 
@@ -217,9 +219,11 @@ __require_function() {
 }
 
 __setup_network() {
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host localhost:127.0.0.1"
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns-search=."
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host host.containers.internal:host-gateway"
+  if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
+    CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host localhost:127.0.0.1"
+    CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns-search=."
+    CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host host.containers.internal:host-gateway"
+  fi
 
   _prep_network || return 1
 

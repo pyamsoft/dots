@@ -156,12 +156,12 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_CMD} run --rm \
+  exec ${CONTAINER_CMD} run --rm \
     --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e "KEY=${BESZEL_KEY}" \
-    ${_RC} \
-    ${_LOGS} \
+    ${CONTAINER_RC} \
+    ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \
     ${CONTAINER_ENV} \
     ${CONTAINER_MOUNTS} \

@@ -1,147 +1,47 @@
 #!/bin/sh
 
-readonly _name="scrutiny"
-readonly _image="ghcr.io/analogj/scrutiny"
-readonly _tag="v0.8.1-omnibus"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="/usr/local/etc/containers"
+NAME="scrutiny"
+IMAGE="ghcr.io/analogj/scrutiny"
+TAG="v0.8.1-omnibus"
 
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/config"
-  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/db"
-  readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/logs"
-  readonly _mount4="${CONTAINER_RUNTIME_DIR}/${_name}/entrypoints"
-
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-  mkdir -p "${_mount2}" || {
-    _log "Failed to create mount source %s" "${_mount2}"
-    return 1
-  }
-  mkdir -p "${_mount3}" || {
-    _log "Failed to create mount source %s" "${_mount3}"
-    return 1
-  }
-  mkdir -p "${_mount4}" || {
-    _log "Failed to create mount source %s" "${_mount4}"
-    return 1
-  }
-
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/opt/scrutiny/config"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/opt/scrutiny/influxdb"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/opt/scrutiny/logs"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/entrypoints"
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/opt/scrutiny/config" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/db" "/opt/scrutiny/influxdb" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/opt/scrutiny/logs" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/entrypoints" "/entrypoints" || return 1
 
   # Needs udev from host
-  _mounts="${_mounts} --mount type=bind,source=/run/udev,target=/run/udev,ro"
+  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=/run/udev,target=/run/udev,ro"
 
-  readonly _mounts
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
   # For smartctl
-  _caps="${_caps} --cap-add SYS_RAWIO"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_RAWIO"
 
   # Work with NVME
-  _caps="${_caps} --cap-add SYS_ADMIN"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_ADMIN"
 
-  readonly _caps
   return 0
 }
 
 _prep_env() {
-  _env=""
-
-  readonly _env
   return 0
 }
 
 _prep_network() {
-  _network=""
+  _network_isolate || return 1
 
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
-  # Attach our isolated network
-  _network="${_network} --network=${_name}"
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  _ports="${_ports} -p 127.0.0.1:8081:8080/tcp"
-  _ports="${_ports} -p 127.0.0.1:8086:8086/tcp"
-
-  readonly _ports
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8081:8080/tcp"
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8086:8086/tcp"
   return 0
 }
 
@@ -152,33 +52,12 @@ _check_user() {
   fi
 
   # Expects to be root
-  _userns="--user=0:0"
-
-  readonly _userns
+  CONTAINER_USERNS="--user=0:0"
 
   return 0
 }
 
 _containerize() {
-  # scrutiny runtime config variable
-  _sc=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source runconfig %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _sc
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -187,56 +66,25 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
+  exec ${CONTAINER_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
-    --entrypoint=/entrypoints/init \
-    ${_sc} \
-    ${_env} \
-    ${_network} \
-    ${_logs} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
+    --entrypoint "/entrypoints/init" \
+    ${CONTAINER_RC} \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" "$@"
 }
 
-main() {
-  if [ "$(uname)" = "Darwin" ]; then
-    _log 'Not supported on MacOS' "${_name}"
-    return 1
-  fi
-
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_network || return 1
-  _prep_env || return 1
-  _prep_log || return 1
-
-  # Launch the containers runtime
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the root /run/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "/run/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
-  return 0
-}
+if [ "$(uname)" = "Darwin" ]; then
+  _log 'Not supported on MacOS' "${NAME}"
+  exit 1
+fi
 
 main "$@" || exit 1
 exit 0

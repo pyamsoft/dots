@@ -1,163 +1,69 @@
 #!/bin/sh
 
-readonly _name="unbound"
-readonly _image="docker.io/madnuttah/unbound"
-readonly _tag="1.24.2-0"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
+NAME="unbound"
+IMAGE="docker.io/madnuttah/unbound"
+TAG="1.24.2-0"
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+CONTAINER_REQUIRE_RUNCONF=0
 
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
-readonly UNBOUND_DIR="/etc/${_name}"
+readonly UNBOUND_DIR="/etc/${NAME}"
 
 _prep_mounts() {
   # These are system level directories
-  readonly _mount1="${UNBOUND_DIR}/conf.d"
-  readonly _mount2="${UNBOUND_DIR}/zones.d"
-  readonly _mount3="${UNBOUND_DIR}/rpz.d"
-  readonly _mount4="${UNBOUND_DIR}/iana.d"
+  _mount_bind "${UNBOUND_DIR}/conf.d" "/usr/local/unbound/conf.d" || return 1
+  _mount_bind "${UNBOUND_DIR}/zones.d" "/usr/local/unbound/zones.d" || return 1
+  _mount_bind "${UNBOUND_DIR}/rpz.d" "/usr/local/unbound/rpz.d" || return 1
+  _mount_bind "${UNBOUND_DIR}/iana.d" "/usr/local/unbound/iana.d" || return 1
+
   readonly _conf="${UNBOUND_DIR}/unbound.conf"
 
-  if [ ! -d "${_mount1}" ]; then
-    _log 'Mount directory must exist at %s' "${_mount1}"
-    return 1
-  fi
-
-  if [ ! -d "${_mount2}" ]; then
-    _log 'Mount directory must exist at %s' "${_mount2}"
-    return 1
-  fi
-
-  if [ ! -d "${_mount3}" ]; then
-    _log 'Mount directory must exist at %s' "${_mount3}"
-    return 1
-  fi
-
-  if [ ! -d "${_mount4}" ]; then
-    _log 'Mount directory must exist at %s' "${_mount4}"
-    return 1
-  fi
-
   if [ ! -r "${_conf}" ]; then
-    _log '%s config must exist at %s' "${_name}" "${_conf}"
+    _log 'Config must exist at %s' "${_conf}"
     return 1
   fi
 
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/usr/local/unbound/conf.d"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/usr/local/unbound/zones.d"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/usr/local/unbound/rpz.d"
-  _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/usr/local/unbound/iana.d"
-  _mounts="${_mounts} --mount type=bind,source=${_conf},target=/usr/local/unbound/unbound.conf"
+  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_conf},target=/usr/local/unbound/unbound.conf"
 
-  readonly _mounts
   return 0
 }
 
 _prep_env() {
-  _env=""
+  CONTAINER_ENV="${CONTAINER_ENV} -e UNBOUND_UID=$(id -u)"
+  CONTAINER_ENV="${CONTAINER_ENV} -e UNBOUND_GID=$(id -g)"
 
-  _env="${_env} -e UNBOUND_UID=$(id -u)"
-  _env="${_env} -e UNBOUND_GID=$(id -g)"
-
-  readonly _env
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
   # Needed to setup permissions in the container
-  _caps="${_caps} --cap-add SETGID"
-  _caps="${_caps} --cap-add SETUID"
-  _caps="${_caps} --cap-add DAC_OVERRIDE"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
 
   # To bind to port 53 in the container
-  _caps="${_caps} --cap-add NET_BIND_SERVICE"
+  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add NET_BIND_SERVICE"
 
-  readonly _caps
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  _network="${_network} --add-host localhost:127.0.0.1"
-  _network="${_network} --add-host host.containers.internal:host-gateway"
+  _network_isolate || return 1
 
   # We are the DNS for this container
-  _network="${_network} --dns 127.0.0.1"
+  CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns 127.0.0.1"
 
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name (enable IPv6)
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
-  # Attach our isolated network
-  _network="${_network} --network=${_name}"
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
   # Bind a non-priv port on the host machine and forward the traffic into the container
-  _ports="${_ports} -p 127.0.0.1:5335:53/tcp"
-  _ports="${_ports} -p 127.0.0.1:5335:53/udp"
+  # Setup iptables forwarding to still use port 53 on the host
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:5335:53/tcp"
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:5335:53/udp"
 
-  readonly _ports
   return 0
 }
 
@@ -167,83 +73,10 @@ _check_user() {
     return 1
   fi
 
-  _userns=""
-  if [ "${_cmd}" = "podman" ]; then
-    _userns="${_userns} --userns keep-id"
-  fi
-  readonly _userns
-
-  return 0
-}
-
-_containerize() {
-  # Runtime configuration
-  _ub=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'Optional runconfig is supported at %s' "${_runconf}"
-  else
-    # Source the file into the environment
-    # shellcheck disable=SC1090
-    . "${_runconf}" || {
-      _log 'Failed to source %s' "${_runconf}"
-      return 1
-    }
-  fi
-  unset _runconf
-  readonly _ub
-
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_ub} \
-    ${_env} \
-    ${_network} \
-    ${_logs} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
+  if _is_podman; then
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
   fi
 
-  _containerize "$@" || return 1
   return 0
 }
 

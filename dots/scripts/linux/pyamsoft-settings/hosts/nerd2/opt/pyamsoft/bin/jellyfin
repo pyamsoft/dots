@@ -1,172 +1,47 @@
 #!/bin/sh
 
-readonly _name="jellyfin"
-readonly _image="docker.io/jellyfin/jellyfin"
-readonly _tag="10.11.5"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
+NAME="jellyfin"
+IMAGE="docker.io/jellyfin/jellyfin"
+TAG="10.11.5"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
 
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
+# Don't add the host routing when using a VPN
+if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
+  CONTAINER_NETWORK_HOST_ROUTE=0
 else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
+  CONTAINER_NETWORK_HOST_ROUTE=1
 fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+readonly CONTAINER_NETWORK_HOST_ROUTE
 
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/cache"
-  readonly _mount2="${CONTAINER_RUNTIME_DIR}/${_name}/transcodes"
-  readonly _mount3="${CONTAINER_RUNTIME_DIR}/${_name}/config"
-  readonly _mount4="${CONTAINER_RUNTIME_DIR}/${_name}/media"
-
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-  mkdir -p "${_mount2}" || {
-    _log "Failed to create mount source %s" "${_mount2}"
-    return 1
-  }
-  mkdir -p "${_mount3}" || {
-    _log "Failed to create mount source %s" "${_mount3}"
-    return 1
-  }
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/cache" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/transcodes" "/.cache" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
 
   # Media folders are optionally symlinks to another mass storage drive
-  mkdir -p "${_mount4}"
-
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/cache"
-  _mounts="${_mounts} --mount type=bind,source=${_mount2},target=/.cache"
-  _mounts="${_mounts} --mount type=bind,source=${_mount3},target=/config"
+  _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
+  _mount_mkdir "${_media}"
 
   # Follow the link and mount the media folder ONLY if it is valid
-  if [ -d "$(realpath "${_mount4}")" ]; then
-    _mounts="${_mounts} --mount type=bind,source=${_mount4},target=/media"
+  if [ -d "$(realpath "${_media}")" ]; then
+    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_media},target=/media"
   fi
-  readonly _mounts
+  unset _media
+
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
-  # No caps
-
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  # Jellyfin
-  _ports="${_ports} -p 127.0.0.1:8096:8096/tcp"
-
-  # Host networking for DLNA
-  # _ports="${_ports} --network=host"
-
-  # Jellyseerr
-  # _ports="${_ports} -p 127.0.0.1:5055:5055/tcp"
-
-  readonly _ports
-  return 0
-}
-
-_prep_env() {
-  _env=""
-
-  # Needed for GPU rendering
-  _env="${_env} --group-add=$(_get_gid_for_group "render")"
-  _env="${_env} --group-add=$(_get_gid_for_group "video")"
-
-  readonly _env
-  return 0
-}
-
-_prep_network() {
-  _network=""
-
-  if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
-    # We have optional support for a wireguard VPN container
-    _network="${_network} --network container:wireguard"
-  else
-    # Require a VPN
-    if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
-      _log 'You MUST use a VPN connection to run %s' "${_name}"
-      return 1
-    fi
-
-    # We use our container DNS resolver
-    # MacOS can't launch with host-gateway
-    _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-    _network="${_network} --add-host host.containers.internal:host-gateway"
-
-    # We continue using the DEFAULT network instead of creating our own.
-    # The default network uses the a special setup of the bridge driver
-    # which preserves source IP addresses
-    #
-    # We need to preserve source IP address so that Crowdsec can operate on bad actors
-    #
-    # However as a trade off, since this runs on the default bridge this decreases network isolation.
-  fi
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
-  return 0
-}
-
-_check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
-
-  # Only for podman
-  if [ "${_cmd}" = "podman" ]; then
-    # Need this userns option that is podman specific or we have random OCI permission error
-    _userns="--userns keep-id"
-  else
-    _userns=""
-  fi
-  readonly _userns
-
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8096:8096/tcp"
   return 0
 }
 
@@ -181,25 +56,52 @@ _get_gid_for_group() {
   return 0
 }
 
-_containerize() {
-  _jf=""
+_prep_env() {
+  # Needed for GPU rendering
+  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "render")"
+  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "video")"
+  return 0
+}
 
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
+_prep_network() {
+  if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
+    # We have optional support for a wireguard VPN container
+    CONTAINER_NETWORK="${CONTAINER_NETWORK} --network container:wireguard"
+  else
+    # Require a VPN
+    if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
+      _log 'You MUST use a VPN connection to run %s' "${NAME}"
+      return 1
+    fi
+
+    # We continue using the DEFAULT network instead of creating our own.
+    # The default network uses the a special setup of the bridge driver
+    # which preserves source IP addresses
+    #
+    # We need to preserve source IP address so that Crowdsec can operate on bad actors
+    #
+    # However as a trade off, since this runs on the default bridge this decreases network isolation.
+  fi
+
+  return 0
+}
+
+_check_user() {
+  if [ "$(id -u)" -eq 0 ]; then
+    _log 'You must run this as a rootless container'
     return 1
   fi
 
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source runconfig %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _jf
+  # Only for podman
+  if _is_podman; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+  fi
 
+  return 0
+}
+
+_containerize() {
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -208,49 +110,19 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
+  exec ${CONTAINER_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --device "/dev/dri:/dev/dri" \
-    ${_jf} \
-    ${_network} \
-    ${_env} \
-    ${_logs} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-  _prep_env || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
-  return 0
+    ${CONTAINER_RC} \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" "$@"
 }
 
 main "$@" || exit 1

@@ -1,127 +1,46 @@
 #!/bin/sh
 
-readonly _name="littlelink"
-readonly _image="ghcr.io/techno-tim/littlelink-server"
-readonly _tag="latest"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
+NAME="littlelink"
+IMAGE="ghcr.io/techno-tim/littlelink-server"
+TAG="latest"
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+CONTAINER_REQUIRE_INIT=1
 
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
+  _mount_mkdir "${CONTAINER_RUNTIME_DIR}/${NAME}/data" || return 1
 
-  # Prep the directories
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-
-  _mounts=""
-  readonly _mounts
   return 0
 }
 
 _prep_env() {
-  _env=""
+  CONTAINER_ENV="${CONTAINER_ENV} -e META_INDEX_STATUS=noindex"
+  CONTAINER_ENV="${CONTAINER_ENV} -e LANG=en"
+  CONTAINER_ENV="${CONTAINER_ENV} -e THEME=Dark"
+  CONTAINER_ENV="${CONTAINER_ENV} -e THEME_OS=true"
 
-  _env="${_env} -e META_INDEX_STATUS=noindex"
-  _env="${_env} -e LANG=en"
-  _env="${_env} -e THEME=Dark"
-  _env="${_env} -e THEME_OS=true"
-
-  readonly _env
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
   # Attach our isolated network
   #
   # We shouldn't need to care about source IP addresses here as this website is proxied through Cloudflare
   # so their protections should generally handle it. Plus there are no specific log drivers in Crowdsec that
   # need to read these logs to identify bad actors.
-  _network="${_network} --network=${_name}"
+  _network_isolate || return 1
 
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  _ports="${_ports} -p 127.0.0.1:8420:3000/tcp"
-
-  readonly _ports
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8420:3000/tcp"
   return 0
 }
 
@@ -131,32 +50,10 @@ _check_user() {
     return 1
   fi
 
-  _userns=""
-  readonly _userns
-
   return 0
 }
 
 _containerize() {
-  # Littlelink runtime config variable
-  _ll=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _ll
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -168,20 +65,20 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
+  exec ${CONTAINER_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --pull=newer \
     --init \
-    ${_ll} \
-    ${_network} \
-    ${_env} \
-    ${_logs} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
+    ${CONTAINER_RC} \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" "$@"
 }
 
 main() {

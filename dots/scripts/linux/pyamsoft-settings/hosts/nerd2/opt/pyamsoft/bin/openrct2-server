@@ -1,64 +1,28 @@
 #!/bin/sh
 
-readonly _name="openrct2-server"
-readonly _image="localhost/pyamsoft/openrct2"
-readonly _tag="latest" # built from 0.4.7
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
+NAME="openrct2-server"
+IMAGE="localhost/pyamsoft/openrct2"
+TAG="latest" # built from 0.4.7
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+CONTAINER_REQUIRE_INIT=1
 
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+readonly _save_game_root="${CONTAINER_RUNTIME_DIR}/${NAME}/config"
 
 _prep_mounts() {
   # Park/saves must be in ${_mount1}/save/
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/config"
+  _mount_bind "${_save_game_root}" "/home/openrct2/.config/OpenRCT2" || return 1
 
-  # Prep the directories
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/home/openrct2/.config/OpenRCT2"
-
-  readonly _mounts
   return 0
 }
 
 _prep_env() {
-  _env=""
-
-  readonly _env
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
   # We continue using the DEFAULT network instead of creating our own.
   # The default network uses the a special setup of the bridge driver
   # which preserves source IP addresses
@@ -66,45 +30,16 @@ _prep_network() {
   # We need to preserve source IP address so that Crowdsec can operate on bad actors
   #
   # However as a trade off, since this runs on the default bridge this decreases network isolation.
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
   # Openrct2 only uses TCP. I know. Wow
-  _ports="${_ports} -p 127.0.0.1:11753:11753/tcp"
-
-  readonly _ports
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:11753:11753/tcp"
   return 0
 }
 
@@ -114,44 +49,25 @@ _check_user() {
     return 1
   fi
 
-  if [ "${_cmd}" = "podman" ]; then
+  if _is_podman; then
     # Run as "our user" in the container instead of openrct2
-    _userns="--userns keep-id --user=$(id -u):$(id -g)"
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id --user=$(id -u):$(id -g)"
   else
     # Run as "our user" in the container instead of openrct2
-    _userns="--user=$(id -u):$(id -g)"
+    CONTAINER_USERNS="${CONTAINER_USERNS} --user=$(id -u):$(id -g)"
   fi
-  readonly _userns
 
   return 0
 }
 
 _containerize() {
   # OpenRCT2 runtime config variable
-  _or=""
   _password=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
 
   if [ -z "${_password}" ]; then
     _log 'Must provide a server password via the "_password" variable in %s' "${_runconf}"
     return 1
   fi
-
-  readonly _or
 
   # Log the commands we use next
   # Fail on errors
@@ -161,66 +77,36 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
+  exec ${CONTAINER_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --pull=newer \
     --init \
-    ${_or} \
-    ${_logs} \
-    ${_env} \
-    ${_network} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" \
+    ${CONTAINER_RC} \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" \
     host "/home/openrct2/.config/OpenRCT2/${park}" \
     --password "${_password}" \
     --headless \
     "$@"
 }
 
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-  _prep_log || return 1
+park="$1"
+if [ -z "${park}" ]; then
+  _log 'Pass a path to an OpenRCT2 save game in root: %s.' "${_save_game_root}"
+  exit 1
+fi
+shift
 
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  park="$1"
-  if [ -z "${park}" ]; then
-    _log 'Pass a path to an OpenRCT2 save game in root: %s.' "${_mount1}"
-    return 1
-  fi
-  shift
-
-  # Correct the path if it is absolute
-  # Corrects something like ${HOME}/games/openrct2/save/Park.park => save/Park.park
-  park="${park#*/openrct2-server/config/}"
-
-  _containerize "$@" || return 1
-  return 0
-}
+# Correct the path if it is absolute
+# Corrects something like ${HOME}/games/openrct2/save/Park.park => save/Park.park
+park="${park#*/openrct2-server/config/}"
 
 main "$@" || exit 1
 exit 0

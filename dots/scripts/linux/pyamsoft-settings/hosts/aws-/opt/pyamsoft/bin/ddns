@@ -1,50 +1,24 @@
 #!/bin/sh
 
-readonly _name="ddns"
-readonly _image="docker.io/favonia/cloudflare-ddns"
-readonly _tag="1.15.1"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
+NAME="ddns"
+IMAGE="docker.io/favonia/cloudflare-ddns"
+TAG="1.15.1"
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+# IPv6 support
+CONTAINER_NETWORK_IP6=1
 
 _prep_mounts() {
-  _mounts=""
-
-  readonly _mounts
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  readonly _ports
   return 0
 }
 
@@ -54,142 +28,19 @@ _check_user() {
     return 1
   fi
 
-  _userns="--user $(id -u):$(id -g)"
-  readonly _userns
+  CONTAINER_USERNS="--user $(id -u):$(id -g)"
 
   return 0
 }
 
 _prep_env() {
-  _env=""
-
   # Cloudflare owns our records
-  _env="${_env} -e PROXIED=true"
-
-  readonly _env
+  CONTAINER_ENV="${CONTAINER_ENV} -e PROXIED=true"
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name (enable IPv6)
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns --ipv6 -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
-  # Attach our isolated network
-  _network="${_network} --network=${_name}"
-
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
-  return 0
-}
-
-_containerize() {
-  _dd=""
-
-  # Optional runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'runconfig.env required at at "%s"\n' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _dd
-
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_dd} \
-    ${_env} \
-    ${_logs} \
-    ${_network} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_log || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
+  _network_isolate || return 1
   return 0
 }
 

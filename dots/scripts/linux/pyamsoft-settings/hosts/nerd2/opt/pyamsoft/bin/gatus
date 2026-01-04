@@ -1,28 +1,23 @@
 #!/bin/sh
 
-readonly _basename="gatus"
-readonly _image="docker.io/twinproduction/gatus"
-readonly _tag="v5.33.1"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_basename}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
+# Define a basename here, which will be re-evaluated later once a MODE is defined
+BASENAME="gatus"
+NAME="${BASENAME}"
+IMAGE="docker.io/twinproduction/gatus"
+TAG="v5.33.1"
 
 # Pick name based on environment mode
 case "${GATUS_MODE}" in
 internal)
-  _name="internal"
-  _port=11267
+  NAME="${NAME}-internal"
+  GATUS_PORT=11267
   ;;
 external)
-  _name="external"
-  _port=11268
+  NAME="${NAME}-external"
+  GATUS_PORT=11268
   ;;
 *)
   _log 'You must export the Gatus mode as "GATUS_MODE": "internal" "external"'
@@ -30,115 +25,33 @@ external)
   ;;
 esac
 
-_name="${_basename}-${_name}"
-readonly _name
-readonly _port
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
-
 _prep_mounts() {
-  readonly _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/config"
-
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/config"
-  readonly _mounts
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
   return 0
 }
 
 _prep_env() {
-  _env=""
-
-  _env="${_env} -e GATUS_CONFIG_PATH=/config"
-
-  readonly _env
+  CONTAINER_ENV="${CONTAINER_ENV} -e GATUS_CONFIG_PATH=/config"
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
-  # Create our own network
-  if [ "${_cmd}" = "podman" ]; then
-    # Podman can "ignore" networks with the same name
-    "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_name}" >/dev/null || {
-      _log "Failed to create isolated network using %s" "${_cmd}"
-      return 1
-    }
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_name}"; then
-      "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_name}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    fi
-  fi
-
   # Attach our isolated network
   #
   # We shouldn't need to care about source IP addresses here as this website is proxied through Cloudflare
   # so their protections should generally handle it. Plus there are no specific log drivers in Crowdsec that
   # need to read these logs to identify bad actors.
-  _network="${_network} --network=${_name}"
+  _network_isolate || return 1
 
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
-  readonly _caps
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
-  _ports="${_ports} -p 127.0.0.1:${_port}:8080/tcp"
-
-  readonly _ports
+  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:${GATUS_PORT}:8080/tcp"
   return 0
 }
 
@@ -149,87 +62,11 @@ _check_user() {
   fi
 
   # Only for podman
-  if [ "${_cmd}" = "podman" ]; then
+  if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _userns="--userns keep-id"
-  else
-    _userns=""
-  fi
-  readonly _userns
-
-  return 0
-}
-
-_containerize() {
-  _gt=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s\n' "${_runconf}"
-    return 1
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
   fi
 
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source runconfig %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _gt
-
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # We point GATUS_CONFIG_PATH to /config folder to allow usage of multiple yaml files
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    ${_gt} \
-    ${_logs} \
-    ${_env} \
-    ${_network} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
   return 0
 }
 
