@@ -187,28 +187,6 @@ _prep_rc() {
   return 0
 }
 
-##
-# Default execution function
-#
-# Restricts capabilities, privileges, and ensures the container is named and removed after execution
-_run() {
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
-}
-
 __require_function() {
   if ! _has_function "$1"; then
     _log 'Function is required: %s' "$1"
@@ -261,14 +239,55 @@ __await_directory() {
   return 0
 }
 
+##
+# Default execution function
+#
+# Restricts capabilities, privileges, and ensures the container is named and removed after execution
 _containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
+  if [ -n "${CONTAINER_REQUIRE_INIT}" ] && [ "${CONTAINER_REQUIRE_INIT}" -ne 0 ]; then
+    # Log the commands we use next
+    # Fail on errors
+    # Fail on unassigned
+    set -xeu
 
-  _run "$@" || return 1
-  return 0
+    # Don't quote so that if user is empty it still expands
+    #
+    # shellcheck disable=SC2086
+    exec ${CONTAINER_CMD} run --rm \
+      --name "${NAME}" --hostname "${NAME}" \
+      --security-opt no-new-privileges:true --cap-drop ALL \
+      --init \
+      ${CONTAINER_LOGS} \
+      ${CONTAINER_RC} \
+      ${CONTAINER_NETWORK} \
+      ${CONTAINER_ENV} \
+      ${CONTAINER_MOUNTS} \
+      ${CONTAINER_PORTS} \
+      ${CONTAINER_CAPS} \
+      ${CONTAINER_USERNS} \
+      "${IMAGE}:${TAG}" "$@"
+  else
+    # Log the commands we use next
+    # Fail on errors
+    # Fail on unassigned
+    set -xeu
+
+    # Don't quote so that if user is empty it still expands
+    #
+    # shellcheck disable=SC2086
+    exec ${CONTAINER_CMD} run --rm \
+      --name "${NAME}" --hostname "${NAME}" \
+      --security-opt no-new-privileges:true --cap-drop ALL \
+      ${CONTAINER_LOGS} \
+      ${CONTAINER_RC} \
+      ${CONTAINER_NETWORK} \
+      ${CONTAINER_ENV} \
+      ${CONTAINER_MOUNTS} \
+      ${CONTAINER_PORTS} \
+      ${CONTAINER_CAPS} \
+      ${CONTAINER_USERNS} \
+      "${IMAGE}:${TAG}" "$@"
+  fi
 }
 
 main() {
