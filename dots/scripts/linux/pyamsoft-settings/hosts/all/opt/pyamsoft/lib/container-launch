@@ -334,10 +334,17 @@ main() {
   fi
 
   # Move to accessible directory
-  cd "${HOME}" || {
-    _log 'Unable to move into HOME directory'
-    return 1
-  }
+  if [ "$(id -u)" -eq 0 ]; then
+    cd / || {
+      _log 'Unable to move into / directory'
+      return 1
+    }
+  else
+    cd "${HOME}" || {
+      _log 'Unable to move into HOME directory'
+      return 1
+    }
+  fi
 
   if [ "$(id -u)" -eq 0 ]; then
     _watch="/run/containers"
