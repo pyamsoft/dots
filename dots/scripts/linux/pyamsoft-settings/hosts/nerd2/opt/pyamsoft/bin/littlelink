@@ -70,6 +70,11 @@ _containerize() {
     --security-opt no-new-privileges:true --cap-drop ALL \
     --pull=newer \
     --init \
+    -e "CUSTOM_BUTTON_TEXT=${_CUSTOM_BUTTON_TEXT}" \
+    -e "CUSTOM_BUTTON_ALT_TEXT=${_CUSTOM_BUTTON_ALT_TEXT}" \
+    -e "CUSTOM_BUTTON_ICON=${_CUSTOM_BUTTON_ICON}" \
+    -e "FOOTER=${_FOOTER}" \
+    -e "META_DESCRIPTION=${_META_DESCRIPTION}" \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \
@@ -79,36 +84,6 @@ _containerize() {
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
     "${IMAGE}:${TAG}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_env || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
-  return 0
 }
 
 main "$@" || exit 1

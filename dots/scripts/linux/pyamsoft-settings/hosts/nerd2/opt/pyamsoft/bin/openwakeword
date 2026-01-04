@@ -7,6 +7,8 @@ NAME="openwakeword"
 IMAGE="docker.io/homeassistant/amd64-addon-openwakeword"
 TAG="2.1.0"
 
+CONTAINER_REQUIRE_RUNCONF=0
+
 # Allow model customization via variable or fallback to "Hey Jarvis"
 MODEL="${MODEL:-hey_jarvis}"
 

@@ -7,6 +7,8 @@ NAME="esphome"
 IMAGE="ghcr.io/esphome/esphome"
 TAG="2025.12.2"
 
+CONTAINER_REQUIRE_RUNCONF=0
+
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/cache" || return 1

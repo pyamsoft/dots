@@ -8,6 +8,7 @@ IMAGE="localhost/pyamsoft/stonk-bot"
 TAG="latest"
 
 CONTAINER_REQUIRE_INIT=1
+CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
   return 0
