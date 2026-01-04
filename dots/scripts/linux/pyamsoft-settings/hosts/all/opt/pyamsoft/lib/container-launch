@@ -197,13 +197,15 @@ __require_function() {
 }
 
 __setup_network() {
+  _prep_network || return 1
+
+  # Evaluate this AFTER so that just incase the script
+  # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
     CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host localhost:127.0.0.1"
     CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns-search=."
     CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host host.containers.internal:host-gateway"
   fi
-
-  _prep_network || return 1
 
   return 0
 }

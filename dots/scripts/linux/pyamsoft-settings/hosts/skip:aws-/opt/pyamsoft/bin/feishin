@@ -7,6 +7,8 @@ NAME="feishin"
 IMAGE="ghcr.io/jeffvli/feishin"
 TAG="1.0.2"
 
+CONTAINER_NETWORK_HOST_ROUTE=0
+
 _prep_mounts() {
   return 0
 }

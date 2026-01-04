@@ -10,14 +10,6 @@ TAG="10.11.5"
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
 
-# Don't add the host routing when using a VPN
-if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
-  CONTAINER_NETWORK_HOST_ROUTE=0
-else
-  CONTAINER_NETWORK_HOST_ROUTE=1
-fi
-readonly CONTAINER_NETWORK_HOST_ROUTE
-
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/cache" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/transcodes" "/.cache" || return 1
@@ -65,6 +57,9 @@ _prep_env() {
 
 _prep_network() {
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
+    # Don't add the host routing when using a VPN
+    CONTAINER_NETWORK_HOST_ROUTE=0
+
     # We have optional support for a wireguard VPN container
     CONTAINER_NETWORK="${CONTAINER_NETWORK} --network container:wireguard"
   else
