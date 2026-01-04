@@ -1,0 +1,361 @@
+#!/bin/sh
+
+NAME="${NAME:-}"
+IMAGE="${IMAGE:-}"
+TAG="${TAG:-}"
+
+# Fail if a runconfig is not provided. If 0, suggest an optional runconfig location
+CONTAINER_REQUIRE_RUNCONF="${CONTAINER_REQUIRE_RUNCONF:-1}"
+# Run the container with --init
+CONTAINER_REQUIRE_INIT="${CONTAINER_REQUIRE_INIT:-0}"
+# Run the container network with IPv6 if using a custom isolated network
+CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
+
+# Will be evaluated once main() is ran
+CONTAINER_RUNTIME_DIR=""
+CONTAINER_NETWORK=""
+CONTAINER_ENV=""
+CONTAINER_MOUNTS=""
+CONTAINER_PORTS=""
+CONTAINER_CAPS=""
+CONTAINER_USERNS=""
+CONTAINER_RC=""
+CONTAINER_LOGS=""
+CONTAINER_CMD=""
+
+## Check if container is "podman"
+_is_podman() {
+  [ "${CONTAINER_CMD}" = "podman" ]
+}
+
+## Check if container is "docker"
+_is_docker() {
+  [ "${CONTAINER_CMD}" = "docker" ]
+}
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Ensure a function or command is defined
+_has_function() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+##
+# Create a new isolated bridge network
+_network_isolate() {
+  _network_name="${1:-${NAME}}"
+
+  # Create our own network
+  if _is_podman; then
+    # Podman can "ignore" networks with the same name
+    if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns --ipv6 -- "${_network_name}" >/dev/null || {
+        _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+        unset _network_name
+        return 1
+      }
+    else
+      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${NAME}" >/dev/null || {
+        _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+
+        unset _network_name
+        return 1
+      }
+    fi
+  else
+    # Docker must make sure the network doesn't already exist
+    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -q "${NAME}"; then
+      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_network_name}" >/dev/null || {
+          _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+
+          unset _network_name
+          return 1
+        }
+      else
+        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_network_name}" >/dev/null || {
+          _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+
+          unset _network_name
+          return 1
+        }
+      fi
+    fi
+  fi
+
+  # Attach our isolated network
+  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=${_network_name}"
+
+  unset _network_name
+  return 0
+}
+
+##
+# Make a directory on the host
+_mount_mkdir() {
+  _mount_d="$1"
+
+  mkdir -p "${_mount_d}" || {
+    _log "Failed to create mount source %s" "${_mount_d}"
+
+    unset _mount_d
+    return 1
+  }
+
+  unset _mount_d
+  return 0
+}
+
+##
+# Bind most a host directory
+_mount_bind() {
+  _mount_src="$1"
+  _mount_target="$2"
+
+  _mount_mkdir "${_mount_src}" || {
+    unset _mount_src
+    unset _mount_target
+    return 1
+  }
+
+  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_mount_src},target=${_mount_target}"
+
+  unset _mount_src
+  unset _mount_target
+  return 0
+}
+
+##
+# Default function for setting up system logging
+_prep_log() {
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
+    if _is_podman; then
+      CONTAINER_LOGS="${CONTAINER_LOGS} --log-driver json-file"
+    fi
+  else
+    CONTAINER_LOGS="${CONTAINER_LOGS} -i -t"
+  fi
+
+  return 0
+}
+
+##
+# Default function for sourcing a run configuration
+_prep_rc() {
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${CONTAINER_RUNTIME_DIR}/${NAME}/runconfig.env"
+  if [ -n "${CONTAINER_REQUIRE_RUNCONF}" ] && [ "${CONTAINER_REQUIRE_RUNCONF}" -ne 0 ]; then
+    if [ ! -e "${_runconf}" ]; then
+      _log 'You must provide %s' "${_runconf}"
+      return 1
+    fi
+  else
+    if [ ! -e "${_runconf}" ]; then
+      _log 'Optional runconf supported at %s' "${_runconf}"
+    fi
+  fi
+
+  if [ -e "${_runconf}" ]; then
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || {
+      _log 'Unable to source runconfig %s' "${_runconf}"
+      return 1
+    }
+  fi
+  unset _runconf
+
+  return 0
+}
+
+##
+# Default execution function
+#
+# Restricts capabilities, privileges, and ensures the container is named and removed after execution
+_run() {
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec ${CONTAINER_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
+    --security-opt no-new-privileges:true --cap-drop ALL \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_RC} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" "$@"
+}
+
+__require_function() {
+  if ! _has_function "$1"; then
+    _log 'Function is required: %s' "$1"
+    return 1
+  fi
+
+  return 0
+}
+
+__setup_network() {
+  CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host localhost:127.0.0.1"
+  CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns-search=."
+  CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host host.containers.internal:host-gateway"
+
+  _prep_network || return 1
+
+  return 0
+}
+
+__await_directory() {
+  _awaiting="$1"
+  if [ -z "${_awaiting}" ]; then
+    _log 'Must provide directory to await'
+    return 1
+  fi
+
+  # Run a simple version command which should "start" the podman container runtime directory
+  "${CONTAINER_CMD}" --version >/dev/null 2>&1 || {
+    _log 'Unable to check %s version.' "${CONTAINER_CMD}"
+    return 1
+  }
+
+  if [ "$(uname)" = "Linux" ] && _is_podman; then
+    # Wait for the podman folder to be available before launching
+    # This folder is created "at some point" in response to podman commands being run
+    while [ ! -d "${_awaiting}" ]; do
+      sleep 1 || {
+        _log 'Cancelled while waiting for container runtime to stand up at %s' "${_awaiting}"
+
+        unset _awaiting
+        return 1
+      }
+    done
+    _log 'Container runtime is ready at %s: start %s' "${_awaiting}" "${NAME}"
+  fi
+
+  unset _awaiting
+  return 0
+}
+
+_containerize() {
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  _run "$@" || return 1
+  return 0
+}
+
+main() {
+  # Reset
+  CONTAINER_CMD=""
+  CONTAINER_LOGS=""
+  CONTAINER_RC=""
+  CONTAINER_RUNTIME_DIR=""
+  CONTAINER_NETWORK=""
+  CONTAINER_ENV=""
+  CONTAINER_MOUNTS=""
+  CONTAINER_PORTS=""
+  CONTAINER_CAPS=""
+  CONTAINER_USERNS=""
+
+  if [ -z "${NAME}" ]; then
+    # shellcheck disable=SC2016
+    printf -- '[container-launch] $NAME must be defined\n'
+    return 1
+  fi
+
+  if [ -z "${IMAGE}" ]; then
+    # shellcheck disable=SC2016
+    _log '$IMAGE must be defined'
+    return 1
+  fi
+
+  if [ -z "${TAG}" ]; then
+    # shellcheck disable=SC2016
+    _log '$TAG must be defined'
+    return 1
+  fi
+
+  # Use podman, don't use docker
+  if _has_function podman; then
+    CONTAINER_CMD="podman"
+  elif _has_function docker; then
+    CONTAINER_CMD="docker"
+  else
+    _log 'Requires either "podman" or "docker" ("podman" preferred)'
+    exit 1
+  fi
+
+  # Move to accessible directory
+  cd "${HOME}" || {
+    _log 'Unable to move into HOME directory'
+    return 1
+  }
+
+  if [ "$(id -u)" -eq 0 ]; then
+    _watch="/run/containers"
+    CONTAINER_RUNTIME_DIR="/usr/local/etc/containers"
+  else
+    _watch="${XDG_RUNTIME_DIR}/containers"
+    CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+  fi
+
+  __require_function _check_user || return 1
+  _check_user || return 1
+
+  __require_function _prep_mounts || return 1
+  _prep_mounts || return 1
+
+  __require_function _prep_ports || return 1
+  _prep_ports || return 1
+
+  __require_function _prep_caps || return 1
+  _prep_caps || return 1
+
+  __require_function _prep_network || return 1
+  __setup_network || return 1
+
+  __require_function _prep_env || return 1
+  _prep_env || return 1
+
+  # These are defined here an while they can be overridden, they should
+  # always exist
+  _prep_log || return 1
+  _prep_rc || return 1
+
+  readonly CONTAINER_CMD
+  readonly CONTAINER_LOGS
+  readonly CONTAINER_RC
+  readonly CONTAINER_MOUNTS
+  readonly CONTAINER_CAPS
+  readonly CONTAINER_ENV
+  readonly CONTAINER_NETWORK
+  readonly CONTAINER_PORTS
+  readonly CONTAINER_USERNS
+
+  __await_directory "${_watch}" || return 1
+  _containerize "$@" || return 1
+  return 0
+}

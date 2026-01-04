@@ -1,20 +1,15 @@
 #!/bin/sh
 
-readonly _basename="beszel"
-_version="0.17.0"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+# Define a basename here, which will be re-evaluated later once a MODE is defined
+BASENAME="beszel"
+NAME="${BASENAME}"
+TAG="0.17.0"
 
 # The SSH key used by hub and agents to auth each other
 BESZEL_KEY=""
-
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_basename}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
 
 ##
 # hub - the Beszel hub
@@ -30,31 +25,15 @@ hub | agent | remote) ;;
   ;;
 esac
 
-readonly _name="${_basename}-${BESZEL_MODE}"
+# Now define the real name since we have an operating mode
+NAME="${NAME}-${BESZEL_MODE}"
 if [ "${BESZEL_MODE}" = "hub" ]; then
-  _image="docker.io/henrygd/beszel"
-  _tag="${_version}"
+  IMAGE="docker.io/henrygd/beszel"
 else
-  _image="docker.io/henrygd/beszel-agent"
+  IMAGE="docker.io/henrygd/beszel-agent"
   # -alpine supports SMART data
-  _tag="${_version}-alpine"
+  TAG="${TAG}-alpine"
 fi
-unset _version
-readonly _image
-readonly _tag
-
-readonly CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
 
 _prep_ssh_key() {
   _data_dir="$1"
@@ -88,122 +67,55 @@ _prep_ssh_key() {
 }
 
 _prep_mounts() {
-  _mount1="${CONTAINER_RUNTIME_DIR}/${_name}/data"
-
-  mkdir -p "${_mount1}" || {
-    _log "Failed to create mount source %s" "${_mount1}"
-    return 1
-  }
-
-  _mounts=""
-  _mounts="${_mounts} --mount type=bind,source=${_mount1},target=/beszel_data"
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/beszel_data" || return 1
 
   if [ "${BESZEL_MODE}" != "remote" ]; then
-    _hub_data="${CONTAINER_RUNTIME_DIR}/${_basename}-hub/data"
+    _hub_data="${CONTAINER_RUNTIME_DIR}/${BASENAME}-hub/data"
 
     if [ "${BESZEL_MODE}" = "hub" ]; then
-      mkdir -p "${_hub_data}" || {
-        _log 'Failed to create hub data directory: %s' "${_hub_data}"
-        return 1
-      }
+      _mount_mkdir "${_hub_data}" || return 1
     fi
 
     _prep_ssh_key "${_hub_data}" || return 1
+    unset _hub_data
   fi
-
-  unset _hub_data
-  readonly _mounts
   return 0
 }
 
 _prep_caps() {
-  _caps=""
-
   if [ "${BESZEL_MODE}" != "hub" ]; then
     # For reading SMART data with smartctl
-    _caps="${_caps} --cap-add SYS_RAWIO"
+    CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_RAWIO"
+
     # For reading NVME data
-    _caps="${_caps} --cap-add SYS_ADMIN"
+    CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_ADMIN"
   fi
 
-  readonly _caps
   return 0
 }
 
 _prep_env() {
-  _env=""
+  CONTAINER_ENV="${CONTAINER_ENV} -e DATA_DIR=/beszel_data"
 
-  _env="${_env} -e DATA_DIR=/beszel_data"
-
-  readonly _env
   return 0
 }
 
 _prep_network() {
-  _network=""
-
-  # We use our container DNS resolver
-  # MacOS can't launch with host-gateway
-  _network="${_network} --add-host localhost:127.0.0.1 --dns-search=."
-  _network="${_network} --add-host host.containers.internal:host-gateway"
-
   if [ "${BESZEL_MODE}" = "hub" ]; then
-    # Create our own network
-    if [ "${_cmd}" = "podman" ]; then
-      # Podman can "ignore" networks with the same name
-      "${_cmd}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_basename}" >/dev/null || {
-        _log "Failed to create isolated network using %s" "${_cmd}"
-        return 1
-      }
-    else
-      # Docker must make sure the network doesn't already exist
-      if ! "${_cmd}" network ls --format '{{.Name}}' | grep -q "${_basename}"; then
-        "${_cmd}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_basename}" >/dev/null || {
-          _log "Failed to create isolated network using %s" "${_cmd}"
-          return 1
-        }
-      fi
-    fi
-
-    # Attach our isolated network
-    _network="${_network} --network=${_basename}"
+    _network_isolate "${BASENAME}" || return 1
   else
     # Agent must run with host networking
-    _network="${_network} --network=host"
+    CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=host"
   fi
 
-  readonly _network
-  return 0
-}
-
-_prep_log() {
-  _logs=""
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if [ "${_cmd}" = "podman" ]; then
-      _logs="${_logs} --log-driver json-file"
-    fi
-  else
-    _logs="${_logs} -i -t"
-  fi
-
-  readonly _logs
   return 0
 }
 
 _prep_ports() {
-  _ports=""
-
   if [ "${BESZEL_MODE}" = "hub" ]; then
-    _ports="${_ports} -p 127.0.0.1:8090:8090/tcp"
+    CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8090:8090/tcp"
   fi
 
-  readonly _ports
   return 0
 }
 
@@ -214,36 +126,15 @@ _check_user() {
   fi
 
   # Only for podman
-  if [ "${_cmd}" = "podman" ]; then
+  if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _userns="--userns keep-id"
-  else
-    _userns=""
+    CONTAINER_USERNS="--userns keep-id"
   fi
-  readonly _userns
 
   return 0
 }
 
 _containerize() {
-  _bz=""
-
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${_name}/runconfig.env"
-  if [ ! -e "${_runconf}" ]; then
-    _log 'You must provide %s' "${_runconf}"
-    return 1
-  fi
-
-  # Source the file into the environment
-  # shellcheck disable=SC1090
-  . "${_runconf}" || {
-    _log 'Unable to source runconfig %s' "${_runconf}"
-    return 1
-  }
-  unset _runconf
-  readonly _bz
-
   if [ "${BESZEL_MODE}" = "hub" ]; then
     _log 'Beszel Hub creates its own SSH key that agents must use.'
 
@@ -265,49 +156,19 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${_cmd} run --rm \
-    --name "${_name}" --hostname "${_name}" \
+  exec ${_CMD} run --rm \
+    --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e "KEY=${BESZEL_KEY}" \
-    ${_bz} \
-    ${_network} \
-    ${_env} \
-    ${_logs} \
-    ${_mounts} \
-    ${_ports} \
-    ${_caps} \
-    ${_userns} \
-    "${_image}:${_tag}" "$@"
-}
-
-main() {
-  _check_user || return 1
-  _prep_mounts || return 1
-  _prep_ports || return 1
-  _prep_caps || return 1
-  _prep_network || return 1
-  _prep_log || return 1
-  _prep_env || return 1
-
-  "${_cmd}" --version >/dev/null 2>&1 || {
-    _log 'Unable to check %s version.' "${_cmd}"
-    return 1
-  }
-
-  # Wait for the ${XDG_RUNTIME_DIR}/podman folder to be available before launching
-  # This folder is created "at some point" in response to podman commands being run
-  if [ "$(uname)" = "Linux" ] && [ "${_cmd}" = "podman" ]; then
-    while [ ! -d "${XDG_RUNTIME_DIR}/containers" ]; do
-      sleep 1 || {
-        _log 'Cancelled while waiting for container runtime to stand up.'
-        return 1
-      }
-    done
-    _log 'Container runtime is ready, start %s' "${_name}"
-  fi
-
-  _containerize "$@" || return 1
-  return 0
+    ${_RC} \
+    ${_LOGS} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" "$@"
 }
 
 main "$@" || exit 1
