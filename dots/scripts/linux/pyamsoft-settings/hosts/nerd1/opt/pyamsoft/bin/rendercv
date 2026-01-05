@@ -32,13 +32,10 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
 
   # Export files as current user
-  CONTAINER_USERNS="--user $(id -u):$(id -g)"
+  CONTAINER_USERNS="${CONTAINER_USERNS} --user $(id -u):$(id -g)"
 
   if _is_podman; then
     CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"

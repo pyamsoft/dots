@@ -46,13 +46,10 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -ne 0 ]; then
-    _log 'You must run this as a rootfull container'
-    return 1
-  fi
+  _require_root || return 1
 
   # Expects to be root
-  CONTAINER_USERNS="--user=0:0"
+  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0"
 
   return 0
 }
@@ -81,7 +78,7 @@ _containerize() {
     "${IMAGE}:${TAG}" "$@"
 }
 
-if [ "$(uname)" = "Darwin" ]; then
+if _is_macos; then
   _log 'Not supported on MacOS' "${NAME}"
   exit 1
 fi

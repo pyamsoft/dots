@@ -69,10 +69,7 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
 
   # Run as root or else s6 wont work
   # Need this userns option that is podman specific or we have random OCI permission error

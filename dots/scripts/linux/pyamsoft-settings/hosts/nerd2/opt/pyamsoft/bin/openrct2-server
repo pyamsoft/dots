@@ -44,17 +44,13 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
+
+  # Run as "our user" in the container instead of openrct2
+  CONTAINER_USERNS="${CONTAINER_USERNS} --user=$(id -u):$(id -g)"
 
   if _is_podman; then
-    # Run as "our user" in the container instead of openrct2
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id --user=$(id -u):$(id -g)"
-  else
-    # Run as "our user" in the container instead of openrct2
-    CONTAINER_USERNS="${CONTAINER_USERNS} --user=$(id -u):$(id -g)"
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
   fi
 
   return 0

@@ -45,13 +45,10 @@ _prep_network() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
 
   # Run as root for s6
-  CONTAINER_USERNS="--user=0:0"
+  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0"
 
   return 0
 }

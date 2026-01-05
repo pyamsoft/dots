@@ -9,14 +9,23 @@ TAG="1.24.2-0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
-readonly UNBOUND_DIR="/etc/${NAME}"
+if _is_macos; then
+  UNBOUND_DIR="/opt/pyamsoft/etc/${NAME}"
+else
+  UNBOUND_DIR="/etc/${NAME}"
+fi
+readonly UNBOUND_DIR
 
 _prep_mounts() {
   # These are system level directories
   _mount_bind "${UNBOUND_DIR}/conf.d" "/usr/local/unbound/conf.d" || return 1
   _mount_bind "${UNBOUND_DIR}/zones.d" "/usr/local/unbound/zones.d" || return 1
   _mount_bind "${UNBOUND_DIR}/rpz.d" "/usr/local/unbound/rpz.d" || return 1
-  _mount_bind "${UNBOUND_DIR}/iana.d" "/usr/local/unbound/iana.d" || return 1
+
+  # Use the host system root.key and hints on Linux, otherwise use the container
+  if _is_linux; then
+    _mount_bind "${UNBOUND_DIR}/iana.d" "/usr/local/unbound/iana.d" || return 1
+  fi
 
   readonly _conf="${UNBOUND_DIR}/unbound.conf"
 
@@ -68,10 +77,7 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
 
   if _is_podman; then
     CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"

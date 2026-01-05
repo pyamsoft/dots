@@ -25,6 +25,25 @@ CONTAINER_RC=""
 CONTAINER_LOGS=""
 CONTAINER_CMD=""
 
+## Private variables
+__os_name="$(uname)"
+__uid="$(id -u)"
+
+## Check host user is root
+_is_root() {
+  [ "${__uid}" -eq 0 ]
+}
+
+## Check host is running Linux
+_is_linux() {
+  [ "${__os_name}" = "Linux" ]
+}
+
+## Check host is MacOS
+_is_macos() {
+  [ "${__os_name}" = "Darwin" ]
+}
+
 ## Check if container is "podman"
 _is_podman() {
   [ "${CONTAINER_CMD}" = "podman" ]
@@ -33,6 +52,24 @@ _is_podman() {
 ## Check if container is "docker"
 _is_docker() {
   [ "${CONTAINER_CMD}" = "docker" ]
+}
+
+_require_root() {
+  if ! _is_root; then
+    _log 'You must run this as a rootfull container'
+    return 1
+  fi
+
+  return 0
+}
+
+_require_nonroot() {
+  if _is_root; then
+    _log 'You must run this as a rootless container'
+    return 1
+  fi
+
+  return 0
 }
 
 ##
@@ -138,55 +175,6 @@ _mount_bind() {
   return 0
 }
 
-##
-# Default function for setting up system logging
-_prep_log() {
-  # On Linux, our user session executes from systemd and thus sets the systemd vars
-  # like JOURNAL_STREAM and INVOCATION_ID
-  #
-  # We cannot reliably use them to sniff "am I being ran by systemd"
-  #
-  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
-  if [ "$(uname)" = "Linux" ] && [ -n "${PYAM_SYSTEMD}" ]; then
-    if _is_podman; then
-      CONTAINER_LOGS="${CONTAINER_LOGS} --log-driver json-file"
-    fi
-  else
-    CONTAINER_LOGS="${CONTAINER_LOGS} -i -t"
-  fi
-
-  return 0
-}
-
-##
-# Default function for sourcing a run configuration
-_prep_rc() {
-  # Source the runtime config (so we don't have to hardcode keys)
-  _runconf="${CONTAINER_RUNTIME_DIR}/${NAME}/runconfig.env"
-  if [ -n "${CONTAINER_REQUIRE_RUNCONF}" ] && [ "${CONTAINER_REQUIRE_RUNCONF}" -ne 0 ]; then
-    if [ ! -e "${_runconf}" ]; then
-      _log 'You must provide %s' "${_runconf}"
-      return 1
-    fi
-  else
-    if [ ! -e "${_runconf}" ]; then
-      _log 'Optional runconf supported at %s' "${_runconf}"
-    fi
-  fi
-
-  if [ -e "${_runconf}" ]; then
-    # Source the file into the environment
-    # shellcheck disable=SC1090
-    . "${_runconf}" || {
-      _log 'Unable to source runconfig %s' "${_runconf}"
-      return 1
-    }
-  fi
-  unset _runconf
-
-  return 0
-}
-
 __require_function() {
   if ! _has_function "$1"; then
     _log 'Function is required: %s' "$1"
@@ -223,7 +211,7 @@ __await_directory() {
     return 1
   }
 
-  if [ "$(uname)" = "Linux" ] && _is_podman; then
+  if _is_linux && _is_podman; then
     # Wait for the podman folder to be available before launching
     # This folder is created "at some point" in response to podman commands being run
     while [ ! -d "${_awaiting}" ]; do
@@ -242,8 +230,62 @@ __await_directory() {
 }
 
 ##
-# Default execution function
+# Overridable
 #
+# Default function for setting up system logging
+_prep_log() {
+  # On Linux, our user session executes from systemd and thus sets the systemd vars
+  # like JOURNAL_STREAM and INVOCATION_ID
+  #
+  # We cannot reliably use them to sniff "am I being ran by systemd"
+  #
+  # As such our services set a special PYAM_SYSTEMD variable and we sniff that
+  if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
+    if _is_podman; then
+      CONTAINER_LOGS="${CONTAINER_LOGS} --log-driver json-file"
+    fi
+  else
+    CONTAINER_LOGS="${CONTAINER_LOGS} -i -t"
+  fi
+
+  return 0
+}
+
+##
+# Overridable
+#
+# Default function for sourcing a run configuration
+_prep_rc() {
+  # Source the runtime config (so we don't have to hardcode keys)
+  _runconf="${CONTAINER_RUNTIME_DIR}/${NAME}/runconfig.env"
+  if [ -n "${CONTAINER_REQUIRE_RUNCONF}" ] && [ "${CONTAINER_REQUIRE_RUNCONF}" -ne 0 ]; then
+    if [ ! -e "${_runconf}" ]; then
+      _log 'You must provide %s' "${_runconf}"
+      return 1
+    fi
+  else
+    if [ ! -e "${_runconf}" ]; then
+      _log 'Optional runconf supported at %s' "${_runconf}"
+    fi
+  fi
+
+  if [ -e "${_runconf}" ]; then
+    # Source the file into the environment
+    # shellcheck disable=SC1090
+    . "${_runconf}" || {
+      _log 'Unable to source runconfig %s' "${_runconf}"
+      return 1
+    }
+  fi
+  unset _runconf
+
+  return 0
+}
+
+##
+# Overridable
+#
+# Default execution function
 # Restricts capabilities, privileges, and ensures the container is named and removed after execution
 _containerize() {
   if [ -n "${CONTAINER_REQUIRE_INIT}" ] && [ "${CONTAINER_REQUIRE_INIT}" -ne 0 ]; then

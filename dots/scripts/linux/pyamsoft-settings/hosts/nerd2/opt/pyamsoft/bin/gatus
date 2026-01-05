@@ -56,10 +56,7 @@ _prep_ports() {
 }
 
 _check_user() {
-  if [ "$(id -u)" -eq 0 ]; then
-    _log 'You must run this as a rootless container'
-    return 1
-  fi
+  _require_nonroot || return 1
 
   # Only for podman
   if _is_podman; then

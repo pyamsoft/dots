@@ -33,6 +33,8 @@ _prep_ports() {
 }
 
 _check_user() {
+  _require_nonroot || return 1
+
   if _is_podman; then
     CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
   fi
