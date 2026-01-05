@@ -5,7 +5,7 @@
 
 NAME="zigbee2mqtt"
 IMAGE="ghcr.io/koenkk/zigbee2mqtt"
-TAG="2.7.1"
+TAG="2.7.2"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/app/data" || return 1

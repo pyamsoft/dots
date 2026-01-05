@@ -5,7 +5,7 @@
 
 NAME="feishin"
 IMAGE="ghcr.io/jeffvli/feishin"
-TAG="1.0.2"
+TAG="1.2.0"
 
 CONTAINER_NETWORK_HOST_ROUTE=0
 

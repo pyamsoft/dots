@@ -7,7 +7,7 @@
 BASENAME="gatus"
 NAME="${BASENAME}"
 IMAGE="docker.io/twinproduction/gatus"
-TAG="v5.33.1"
+TAG="v5.34.0"
 
 # Pick name based on environment mode
 case "${GATUS_MODE}" in

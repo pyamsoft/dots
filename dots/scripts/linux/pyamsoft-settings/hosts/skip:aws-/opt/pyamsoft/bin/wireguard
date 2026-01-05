@@ -5,7 +5,7 @@
 
 NAME="wireguard"
 IMAGE="docker.io/jordanpotter/wireguard"
-TAG="2025-12-23"
+TAG="2025-12-30"
 
 CONTAINER_NETWORK_HOST_ROUTE=0
 
