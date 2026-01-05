@@ -204,9 +204,6 @@ haskell-aeson
 haskell-ansi-terminal
 haskell-ansi-terminal-types
 haskell-assoc
-haskell-attoparsec
-haskell-base-compat
-haskell-base-compat-batteries
 haskell-base-orphans
 haskell-bifunctors
 haskell-colour
@@ -223,7 +220,9 @@ haskell-generically
 haskell-hashable
 haskell-indexed-traversable
 haskell-indexed-traversable-instances
+haskell-integer-conversion
 haskell-integer-logarithms
+haskell-network-uri
 haskell-onetuple
 haskell-optparse-applicative
 haskell-os-string
@@ -242,8 +241,10 @@ haskell-statevar
 haskell-strict
 haskell-tagged
 haskell-tasty
+haskell-text-iso8601
 haskell-text-short
 haskell-th-abstraction
+haskell-th-compat
 haskell-these
 haskell-time-compat
 haskell-transformers-compat
