@@ -11,7 +11,7 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
 
   # media folders are optionally symlinks to another mass storage drive
-  _media="${CONTAINER_RUNTIME_DIR}/${NAME}/share"
+  _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
   _mount_mkdir "${_media}"
 
   # Follow the link and mount the music folder ONLY if it is valid
