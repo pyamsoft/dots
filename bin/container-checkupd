@@ -1,15 +1,38 @@
 #!/bin/sh
 
+readonly NAME="container-checkup"
+
+# Don't look up the same container but with different versions more than once
+# This would happen if we were running hello-world:1 and pulled down hello-world:2
+# which podman sees as 2 container images
+__all_already_seen_containers=""
+
+# rendercv - The image is not a "server" so we may not always have it, but still want to keep it up to date.
+# httpie - The image is not a "server" so we may not always have it, but still want to keep it up to date.
+readonly ADDITIONAL_CONTAINER_LOOKUP="ghcr.io/rendercv/rendercv
+docker.io/alpine/httpie
+"
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 _get_latest_tags() {
   _container="$1"
 
   if [ -z "${_container}" ]; then
-    printf -- 'Missing required container name\n'
+    _log 'Missing required container name'
     unset _container
     return 1
   fi
 
-  printf -- '\nContainer: %s\n' "${_container}"
+  _log 'Container: %s' "${_container}"
   # Trim off the json, just get the list of tags
   # Remove anything like latest, beta, other unstable versions
   # Sort by reverse version order (newest version on top)
@@ -88,10 +111,53 @@ _get_latest_tags() {
         esac
       ;;
     esac | sort -r -V | head || {
-    printf -- 'Failed to list most recent tags for: %s\n' "${_container}"
+    _log 'Failed to list most recent tags for: %s' "${_container}"
+    unset _container
+    return 1
   }
 
   unset _container
+  return 0
+}
+
+_retrieve_latest_tags() {
+  _tag_name="$1"
+
+  if [ -z "${_tag_name}" ]; then
+    _log 'Must provide container name to lookup tags'
+    unset _tag_name
+    return 1
+  fi
+
+  _skip=0
+
+  # Check that we haven't already done this
+  if [ -n "${__all_already_seen_containers}" ]; then
+    for _c in ${__all_already_seen_containers}; do
+      if [ "${_tag_name}" = "${_c}" ]; then
+        _skip=1
+        break
+      fi
+    done
+  fi
+
+  # Keep track
+  if [ "${_skip}" -eq 0 ]; then
+    if [ -z "${__all_already_seen_containers}" ]; then
+      __all_already_seen_containers="${_tag_name}"
+    else
+      __all_already_seen_containers="${__all_already_seen_containers} ${_tag_name}"
+    fi
+
+    _get_latest_tags "${_tag_name}" || {
+      unset _tag_name
+      unset _skip
+      return 1
+    }
+  fi
+
+  unset _tag_name
+  unset _skip
   return 0
 }
 
@@ -107,48 +173,43 @@ _check_containers() {
       break
     fi
 
-    _name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }')"
+    _container_name="$(printf -- '%s' "${_containers}" | awk '{ print $1 }')"
+
+    # Re-parse the containers output to move to the next container
     _containers="$(printf -- '%s' "${_containers}" | cut -f 3- -d ' ')"
 
-    # Check that we haven't already done this
-    _skip=0
-    for _c in ${_already_seen}; do
-      if [ "${_name}" = "${_c}" ]; then
-        _skip=1
-        break
-      fi
-    done
-
-    # Keep track
-    if [ "${_skip}" -eq 0 ]; then
-      _already_seen="${_already_seen} ${_name}"
-      _get_latest_tags "${_name}" || return 1
-    fi
-
-    unset _name
+    _retrieve_latest_tags "${_container_name}" || return 1
+    unset _container_name
   done
 
-  unset _containers
   return 0
 }
 
 main() {
-  if ! command -v podman >/dev/null; then
-    printf -- 'Must install "podman"\n'
+  _container_cmd=""
+  if command -v podman >/dev/null 2>&1; then
+    _container_cmd="podman"
+  elif command -v docker >/dev/null 2>&1; then
+    _container_cmd="docker"
+  fi
+
+  if [ -z "${_container_cmd}" ]; then
+    _log 'Must install a container runner, either "podman" or "docker"'
     return 1
   fi
 
-  # Don't look up the same container but with different versions more than once
-  # This would happen if we were running hello-world:1 and pulled down hello-world:2
-  # which podman sees as 2 container images
-  _already_seen=""
-
   # Our user
-  _check_containers "podman" || return 1
+  _check_containers "${_container_cmd}" || {
+    _log 'Failed checking containers for user'
+    return 1
+  }
 
   # Direct "containers" delegate
   if id -un containers >/dev/null 2>&1; then
-    _check_containers "containers" || return 1
+    _check_containers "containers" || {
+      _log 'Failed checking containers for delegate-user containers'
+      return 1
+    }
   fi
 
   # Any containers delegates
@@ -157,17 +218,38 @@ main() {
 
     # Check the delegated command exists
     if command -v "${_container_delegate_user}" >/dev/null 2>&1; then
-      _check_containers "${_container_delegate_user}" || return 1
+      _check_containers "${_container_delegate_user}" || {
+        _log 'Failed checking containers for delegate-user %s' "${_container_delegate_user}"
+        return 1
+      }
     fi
 
     unset _container_delegate_user
   done
   unset _container_delegate_user
 
-  if [ "$(uname)" != "Darwin" ]; then
-    # Check again for root containers
-    # We don't do this on MacOS since it runs a VM as root
-    _check_containers "sudo podman" || return 1
+  # Check again for root containers
+  # We don't do this on MacOS since it runs a VM as root
+  # Check only if our runner is podman, docker uses a root-daemon
+  if [ "$(uname)" != "Darwin" ] && [ "${_container_cmd}" = "podman" ]; then
+    _check_containers "sudo ${_container_cmd}" || {
+      _log 'Failed checking containers for root'
+      return 1
+    }
+  fi
+
+  # Any additional containers
+  if [ -n "${ADDITIONAL_CONTAINER_LOOKUP}" ]; then
+    for _c in ${ADDITIONAL_CONTAINER_LOOKUP}; do
+      _retrieve_latest_tags "${_c}" || {
+        _log 'Failed checking for additional container: %s' "${_c}"
+
+        unset _c
+        return 1
+      }
+      unset _c
+    done
+    unset _c
   fi
 
   return 0
