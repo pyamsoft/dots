@@ -1,6 +1,6 @@
 #!/bin/sh
 
-readonly NAME="container-checkup"
+readonly NAME="container-checkupd"
 
 # Don't look up the same container but with different versions more than once
 # This would happen if we were running hello-world:1 and pulled down hello-world:2
