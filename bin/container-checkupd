@@ -25,6 +25,9 @@ _get_latest_tags() {
       # Otherwise remove latest and let's keep going
       grep -v 'latest' |
         case "${_container}" in
+        */rendercv)
+          grep -v 'sha'
+          ;;
         */unbound)
           grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
           ;;
