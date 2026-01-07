@@ -10,7 +10,7 @@ TAG="1.24.2-0"
 CONTAINER_REQUIRE_RUNCONF=0
 
 if _is_macos; then
-  UNBOUND_DIR="/opt/pyamsoft/etc/${NAME}"
+  UNBOUND_DIR="${HOME}/.local/etc/${NAME}"
 else
   UNBOUND_DIR="/etc/${NAME}"
 fi
