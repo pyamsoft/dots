@@ -105,7 +105,7 @@ _network_isolate() {
         return 1
       }
     else
-      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${NAME}" >/dev/null || {
+      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_network_name}" >/dev/null || {
         _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
 
         unset _network_name
@@ -114,7 +114,7 @@ _network_isolate() {
     fi
   else
     # Docker must make sure the network doesn't already exist
-    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -q "${NAME}"; then
+    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -q "${_network_name}"; then
       if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
         "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_network_name}" >/dev/null || {
           _log "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
