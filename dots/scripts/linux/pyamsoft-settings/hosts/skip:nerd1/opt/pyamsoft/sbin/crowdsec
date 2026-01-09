@@ -8,6 +8,8 @@ IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
 TAG="v1.7.4-debian"
 
+CONTAINER_MEMORY_LIMIT="1G"
+
 ##
 # lapi - Crowdsec LAPI central instance
 # agent - Agent instance, no LAPI
