@@ -25,7 +25,7 @@ _prep_caps() {
   _add_caps "--cap-add NET_RAW"
 
   # Optional only if WG module isn't loaded
-  _add_caps "--cap-add NET_SYS_MODULE"
+  _add_caps "--cap-add SYS_MODULE"
 
   # Needs this for file access and config writing
   # _add_caps "--cap-add CHOWN"
