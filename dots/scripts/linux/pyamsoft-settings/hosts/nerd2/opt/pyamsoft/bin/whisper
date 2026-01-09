@@ -7,7 +7,7 @@ NAME="whisper"
 IMAGE="docker.io/homeassistant/amd64-addon-whisper"
 TAG="3.0.1"
 
-CONTAINER_MEMORY_LIMIT="1G"
+CONTAINER_MEMORY_LIMIT="2G"
 CONTAINER_REQUIRE_RUNCONF=0
 
 # Allow model customization via variable or fallback to medium-int8
