@@ -87,17 +87,17 @@ _prep_mounts() {
 _prep_caps() {
   if [ "${BESZEL_MODE}" != "hub" ]; then
     # For reading SMART data with smartctl
-    CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_RAWIO"
+    _add_caps "--cap-add SYS_RAWIO"
 
     # For reading NVME data
-    CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_ADMIN"
+    _add_caps "--cap-add SYS_ADMIN"
   fi
 
   return 0
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e DATA_DIR=/beszel_data"
+  _add_env "-e DATA_DIR=/beszel_data"
 
   return 0
 }
@@ -107,7 +107,7 @@ _prep_network() {
     _network_isolate "${BASENAME}" || return 1
   else
     # Agent must run with host networking
-    CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=host"
+    _add_network "--network=host"
   fi
 
   return 0
@@ -115,7 +115,7 @@ _prep_network() {
 
 _prep_ports() {
   if [ "${BESZEL_MODE}" = "hub" ]; then
-    CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8090:8090/tcp"
+    _add_ports "-p 127.0.0.1:8090:8090/tcp"
   fi
 
   return 0
@@ -127,7 +127,7 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    CONTAINER_USERNS="--userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0
@@ -155,9 +155,12 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
+  exec ${CONTAINER_CMD} run \
+    --rm \
+    --name="${NAME}" \
+    --hostname="${NAME}" \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
     -e "KEY=${BESZEL_KEY}" \
     ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
@@ -168,7 +171,9 @@ _containerize() {
     ${CONTAINER_PORTS} \
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
+    "${IMAGE}:${TAG}" \
+    ${CONTAINER_ARGS} \
+    "$@"
 }
 
 main "$@" || exit 1

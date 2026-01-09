@@ -7,8 +7,9 @@ NAME="piper"
 IMAGE="docker.io/homeassistant/amd64-addon-piper"
 TAG="2.1.1"
 
-CONTAINER_MEMORY_LIMIT="1G"
 CONTAINER_REQUIRE_RUNCONF=0
+CONTAINER_REQUIRE_INIT=1
+CONTAINER_ENTRYPOINT="python3"
 
 # Allow model customization via variable or fallback to "Lessac Medium"
 MODEL="${MODEL:-en_US-lessac-medium}"
@@ -47,44 +48,17 @@ _check_user() {
   return 0
 }
 
-_containerize() {
+_finalize() {
   # Wake word command
-  _pp_cmd="-m wyoming_piper"
-  _pp_cmd="${_pp_cmd} --uri tcp://0.0.0.0:10200"
-  _pp_cmd="${_pp_cmd} --length-scale 1"
-  _pp_cmd="${_pp_cmd} --noise-scale 0.667"
-  _pp_cmd="${_pp_cmd} --speaker 0"
-  _pp_cmd="${_pp_cmd} --voice ${MODEL}"
-  _pp_cmd="${_pp_cmd} --data-dir /data"
-  _pp_cmd="${_pp_cmd} --download-dir /download"
-
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # Instead of running with privileged, you should pass devices in
-  # via runconfig
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --entrypoint python3 \
-    --init \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" \
-    ${_pp_cmd} "$@"
+  _add_args "-m wyoming_piper"
+  _add_args "--uri tcp://0.0.0.0:10200"
+  _add_args "--length-scale 1"
+  _add_args "--noise-scale 0.667"
+  _add_args "--speaker 0"
+  _add_args "--voice ${MODEL}"
+  _add_args "--data-dir /data"
+  _add_args "--download-dir /download"
+  return 0
 }
 
 main "$@" || exit 1

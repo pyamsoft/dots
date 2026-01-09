@@ -11,6 +11,10 @@ CONTAINER_REQUIRE_INIT=1
 
 readonly _save_game_root="${CONTAINER_RUNTIME_DIR}/${NAME}/config"
 
+# OpenRCT2 runtime config variable
+password=""
+park="$1"
+
 _prep_mounts() {
   # Park/saves must be in ${_mount1}/save/
   _mount_bind "${_save_game_root}" "/home/openrct2/.config/OpenRCT2" || return 1
@@ -39,7 +43,7 @@ _prep_caps() {
 
 _prep_ports() {
   # Openrct2 only uses TCP. I know. Wow
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:11753:11753/tcp"
+  _add_ports "-p 127.0.0.1:11753:11753/tcp"
   return 0
 }
 
@@ -47,24 +51,25 @@ _check_user() {
   _require_nonroot || return 1
 
   # Run as "our user" in the container instead of openrct2
-  CONTAINER_USERNS="${CONTAINER_USERNS} --user=$(id -u):$(id -g)"
+  _add_userns "--user=$(id -u):$(id -g)"
 
   if _is_podman; then
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
+  fi
+
+  return 0
+}
+
+_finalize() {
+  if [ -z "${password}" ]; then
+    _log 'Must provide a server password via the "password" variable in %s' "${_runconf}"
+    return 1
   fi
 
   return 0
 }
 
 _containerize() {
-  # OpenRCT2 runtime config variable
-  _password=""
-
-  if [ -z "${_password}" ]; then
-    _log 'Must provide a server password via the "_password" variable in %s' "${_runconf}"
-    return 1
-  fi
-
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
@@ -75,7 +80,8 @@ _containerize() {
   # shellcheck disable=SC2086
   exec ${CONTAINER_CMD} run --rm \
     --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
     --pull=newer \
     --init \
     ${CONTAINER_MEMORY} \
@@ -88,13 +94,15 @@ _containerize() {
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
     "${IMAGE}:${TAG}" \
-    host "/home/openrct2/.config/OpenRCT2/${park}" \
-    --password "${_password}" \
+    ${CONTAINER_ARGS} \
+    host \
+    "/home/openrct2/.config/OpenRCT2/${park}" \
+    --password \
+    "${password}" \
     --headless \
     "$@"
 }
 
-park="$1"
 if [ -z "${park}" ]; then
   _log 'Pass a path to an OpenRCT2 save game in root: %s.' "${_save_game_root}"
   exit 1

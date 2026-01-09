@@ -15,12 +15,12 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e SERVER_NAME=navidrome"
-  CONTAINER_ENV="${CONTAINER_ENV} -e SERVER_TYPE=navidrome"
-  CONTAINER_ENV="${CONTAINER_ENV} -e SERVER_LOCK=true"
+  _add_env "-e SERVER_NAME=navidrome"
+  _add_env "-e SERVER_TYPE=navidrome"
+  _add_env "-e SERVER_LOCK=true"
 
-  CONTAINER_ENV="${CONTAINER_ENV} -e PUID=$(id -u)"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PGID=$(id -g)"
+  _add_env "-e PUID=$(id -u)"
+  _add_env "-e PGID=$(id -g)"
 
   readonly _env
   return 0
@@ -28,21 +28,23 @@ _prep_env() {
 
 _prep_network() {
   # Piggyback onto the navidrome network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=container:navidrome"
+  _add_network "--network=container:navidrome"
   return 0
 }
 
 _prep_caps() {
-  # For S6
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  # s6-init uses chown and drops privilege
+  _add_caps "--cap-add CHOWN"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
+
+  # Needed to chown files during startup and execute start script
+  _add_caps "--cap-add DAC_OVERRIDE"
   return 0
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:9180:9180/tcp"
+  _add_ports "-p 127.0.0.1:9180:9180/tcp"
   return 0
 }
 

@@ -16,14 +16,14 @@ _prep_mounts() {
 
   # Follow the link and mount the share folder ONLY if it is valid
   if [ -d "$(realpath "${_share}")" ]; then
-    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_share},target=/storage"
+    _add_mounts "--mount type=bind,source=${_share},target=/storage"
   fi
   unset _share
 
   # Custom samba config override
   _override="${CONTAINER_RUNTIME_DIR}/${NAME}/smb.conf"
   if [ -f "$(realpath "${_override}")" ]; then
-    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_override},target=/etc/samba/smb.conf"
+    _add_mounts "--mount type=bind,source=${_override},target=/etc/samba/smb.conf"
   fi
   unset _override
 
@@ -33,16 +33,16 @@ _prep_mounts() {
 
 _prep_caps() {
   # s6-init uses chown and drops privilege
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  _add_caps "--cap-add CHOWN"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
 
   # Needed right after startup to open samba /cron/lock
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add FOWNER"
+  _add_caps "--cap-add DAC_OVERRIDE"
+  _add_caps "--cap-add FOWNER"
 
-  # Server runs on port 137-139 and 445
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add NET_BIND_SERVICE"
+  # Server runs on port 445 internally
+  _add_caps "--cap-add NET_BIND_SERVICE"
 
   return 0
 }
@@ -53,12 +53,12 @@ _prep_env() {
 
 _prep_network() {
   # Host networking or else Samba drops Tailscale connections?
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=host"
+  _add_network "--network=host"
   return 0
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:1445:445/tcp"
+  _add_ports "-p 127.0.0.1:1445:445/tcp"
   return 0
 }
 

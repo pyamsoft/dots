@@ -20,16 +20,16 @@ _prep_mounts() {
 
 _prep_caps() {
   # Needed for s6
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  _add_caps "--cap-add DAC_OVERRIDE"
+  _add_caps "--cap-add CHOWN"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
   return 0
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:1883:1883/tcp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:9001:9001/tcp"
+  _add_ports "-p 127.0.0.1:1883:1883/tcp"
+  _add_ports "-p 127.0.0.1:9001:9001/tcp"
   return 0
 }
 
@@ -41,7 +41,7 @@ _prep_network() {
   CONTAINER_NETWORK_HOST_ROUTE=0
 
   # Piggyback onto the home-assistant network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=container:home-assistant"
+  _add_network "--network=container:home-assistant"
   return 0
 }
 
@@ -49,7 +49,7 @@ _check_user() {
   _require_nonroot || return 1
 
   # Run as root for s6
-  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0"
+  _add_userns "--user=0:0"
 
   return 0
 }

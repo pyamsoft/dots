@@ -16,10 +16,10 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e META_INDEX_STATUS=noindex"
-  CONTAINER_ENV="${CONTAINER_ENV} -e LANG=en"
-  CONTAINER_ENV="${CONTAINER_ENV} -e THEME=Dark"
-  CONTAINER_ENV="${CONTAINER_ENV} -e THEME_OS=true"
+  _add_env "-e META_INDEX_STATUS=noindex"
+  _add_env "-e LANG=en"
+  _add_env "-e THEME=Dark"
+  _add_env "-e THEME_OS=true"
 
   return 0
 }
@@ -40,7 +40,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8420:3000/tcp"
+  _add_ports "-p 127.0.0.1:8420:3000/tcp"
   return 0
 }
 
@@ -62,9 +62,11 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
+  exec ${CONTAINER_CMD} run \
+    --rm \
+    --name="${NAME}" --hostname="${NAME}" \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
     --pull=newer \
     --init \
     -e "CUSTOM_BUTTON_TEXT=${_CUSTOM_BUTTON_TEXT}" \
@@ -81,7 +83,9 @@ _containerize() {
     ${CONTAINER_PORTS} \
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
+    "${IMAGE}:${TAG}" \
+    ${CONTAINER_ARGS} \
+    "$@"
 }
 
 main "$@" || exit 1

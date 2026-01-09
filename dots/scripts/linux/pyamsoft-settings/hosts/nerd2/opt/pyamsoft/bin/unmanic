@@ -20,7 +20,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
-    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_media},target=/library"
+    _add_mounts "--mount type=bind,source=${_media},target=/library"
   fi
   unset _media
 
@@ -38,10 +38,16 @@ _get_gid_for_group() {
   return 0
 }
 
-_prep_env() {
+_finalize() {
   # Needed for GPU rendering
-  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "render")"
-  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "video")"
+  _add_rc "--group-add=$(_get_gid_for_group "render")"
+  _add_rc "--group-add=$(_get_gid_for_group "video")"
+  return 0
+}
+
+_prep_env() {
+  _add_env "-e PUID=$(id -u)"
+  _add_env "-e PGID=$(id -g)"
   return 0
 }
 
@@ -52,19 +58,19 @@ _prep_network() {
 
 _prep_caps() {
   # s6-init uses chown and drops privilege
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  _add_caps "--cap-add CHOWN"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
 
   # Needed to chown files during startup and execute start script
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add FOWNER"
+  _add_caps "--cap-add DAC_OVERRIDE"
+  _add_caps "--cap-add FOWNER"
 
   return 0
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8888:8888/tcp"
+  _add_ports "-p 127.0.0.1:8888:8888/tcp"
   return 0
 }
 
@@ -75,9 +81,9 @@ _check_user() {
   # Need this userns option that is podman specific or we have random OCI permission error
   # Then drop to PUID and PGID permission that owns the media folder
   # Only for podman
-  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0 -e PUID=$(id -u) -e PGID=$(id -g)"
+  _add_userns "--user=0:0"
   if _is_podman; then
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0
@@ -92,10 +98,13 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --device "/dev/dri:/dev/dri" \
+  exec ${CONTAINER_CMD} run \
+    --rm \
+    --name="${NAME}" \
+    --hostname="${NAME}" \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
+    --device="/dev/dri:/dev/dri" \
     ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
@@ -105,7 +114,9 @@ _containerize() {
     ${CONTAINER_PORTS} \
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
+    "${IMAGE}:${TAG}" \
+    ${CONTAINER_ARGS} \
+    "$@"
 }
 
 main "$@" || exit 1

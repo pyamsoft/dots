@@ -21,17 +21,17 @@ _prep_mounts() {
 
 _prep_caps() {
   # For networking and iptables
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add NET_ADMIN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add NET_RAW"
+  _add_caps "--cap-add NET_ADMIN"
+  _add_caps "--cap-add NET_RAW"
 
   # Optional only if WG module isn't loaded
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_MODULE"
+  _add_caps "--cap-add NET_SYS_MODULE"
 
   # Needs this for file access and config writing
-  # CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  # CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  # CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  # CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  # _add_caps "--cap-add CHOWN"
+  # _add_caps "--cap-add DAC_OVERRIDE"
+  # _add_caps "--cap-add SETGID"
+  # _add_caps "--cap-add SETUID"
 
   return 0
 }
@@ -42,8 +42,8 @@ _prep_ports() {
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e PUID=$(id -u)"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PGID=$(id -g)"
+  _add_env "-e PUID=$(id -u)"
+  _add_env "-e PGID=$(id -g)"
   return 0
 }
 
@@ -67,9 +67,12 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
+  exec ${CONTAINER_CMD} run \
+    --rm \
+    --name="${NAME}" \
+    --hostname="${NAME}" \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
     --sysctl="net.ipv4.conf.all.src_valid_mark=1" \
     -e LOCAL_SUBNETS="${LOCAL_SUBNETS}" \
     ${CONTAINER_MEMORY} \

@@ -31,7 +31,7 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e GATUS_CONFIG_PATH=/config"
+  _add_env "-e GATUS_CONFIG_PATH=/config"
   return 0
 }
 
@@ -51,7 +51,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:${GATUS_PORT}:8080/tcp"
+  _add_ports "-p 127.0.0.1:${GATUS_PORT}:8080/tcp"
   return 0
 }
 
@@ -61,7 +61,7 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0

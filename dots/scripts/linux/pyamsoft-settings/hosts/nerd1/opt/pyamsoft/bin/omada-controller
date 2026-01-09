@@ -15,26 +15,22 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  # ULimit increase
-  CONTAINER_ENV="${CONTAINER_ENV} --ulimit nofile=4096:8192"
-
   # Environment to Port binding
-  CONTAINER_ENV="${CONTAINER_ENV} -e MANAGE_HTTP_PORT=8088"
-  CONTAINER_ENV="${CONTAINER_ENV} -e MANAGE_HTTPS_PORT=8043"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORTAL_HTTP_PORT=8088"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORTAL_HTTPS_PORT=8843"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_ADOPT_V1=29812"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_APP_DISCOVERY=27001"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_DISCOVERY=29810"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_MANAGER_V1=29811"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_MANAGER_V2=29814"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_TRANSFER_V2=29815"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_RTTY=29816"
-  CONTAINER_ENV="${CONTAINER_ENV} -e PORT_UPGRADE_V1=29813"
+  _add_env "-e MANAGE_HTTP_PORT=8088"
+  _add_env "-e MANAGE_HTTPS_PORT=8043"
+  _add_env "-e PORTAL_HTTP_PORT=8088"
+  _add_env "-e PORTAL_HTTPS_PORT=8843"
+  _add_env "-e PORT_ADOPT_V1=29812"
+  _add_env "-e PORT_APP_DISCOVERY=27001"
+  _add_env "-e PORT_DISCOVERY=29810"
+  _add_env "-e PORT_MANAGER_V1=29811"
+  _add_env "-e PORT_MANAGER_V2=29814"
+  _add_env "-e PORT_TRANSFER_V2=29815"
+  _add_env "-e PORT_RTTY=29816"
+  _add_env "-e PORT_UPGRADE_V1=29813"
 
-  # Logging
-  CONTAINER_ENV="${CONTAINER_ENV} -e SHOW_SERVER_LOGS=true"
-  CONTAINER_ENV="${CONTAINER_ENV} -e SHOW_MONGODB_LOGS=false"
+  _add_env "-e SHOW_SERVER_LOGS=true"
+  _add_env "-e SHOW_MONGODB_LOGS=false"
 
   return 0
 }
@@ -44,28 +40,35 @@ _prep_network() {
   return 0
 }
 
+_finalize() {
+  # ULimit increase
+  _add_rc "--ulimit nofile=4096:8192"
+
+  return 0
+}
+
 _prep_caps() {
   # Needed to write omada group to container groupfile
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
 
   # Drop priv and switch to omada user
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
+  _add_caps "--cap-add CHOWN"
 
   # Won't be able to create the DB on first launch without this
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
+  _add_caps "--cap-add DAC_OVERRIDE"
 
   return 0
 }
 
 _prep_ports() {
   # Bind to localhost (if you need other ports, use runconfig.env)
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8088:8088/tcp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8043:8043/tcp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8843:8843/tcp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:27001:27001/udp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:29810:29810/udp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:29811-29816:29811-29816/tcp"
+  _add_ports "-p 127.0.0.1:8088:8088/tcp"
+  _add_ports "-p 127.0.0.1:8043:8043/tcp"
+  _add_ports "-p 127.0.0.1:8843:8843/tcp"
+  _add_ports "-p 127.0.0.1:27001:27001/udp"
+  _add_ports "-p 127.0.0.1:29810:29810/udp"
+  _add_ports "-p 127.0.0.1:29811-29816:29811-29816/tcp"
 
   return 0
 }

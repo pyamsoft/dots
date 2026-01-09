@@ -8,6 +8,7 @@ IMAGE="docker.io/alpine/httpie"
 TAG="3.2.4"
 
 CONTAINER_MEMORY_LIMIT="64M"
+CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
   return 0
@@ -28,7 +29,7 @@ _prep_env() {
 
 _prep_network() {
   # We use host networking since we may want to test services running on our local machine
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=host"
+  _add_network "--network=host"
   return 0
 }
 

@@ -28,18 +28,21 @@ _prep_mounts() {
 
 _prep_caps() {
   # s6
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add CHOWN"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETGID"
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SETUID"
+  # s6-init uses chown and drops privilege
+  _add_caps "--cap-add CHOWN"
+  _add_caps "--cap-add SETGID"
+  _add_caps "--cap-add SETUID"
+
+  # Needed to chown files during startup and execute start script
+  _add_caps "--cap-add DAC_OVERRIDE"
 
   # To own /var/run/postgresql
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add FOWNER"
+  _add_caps "--cap-add FOWNER"
   return 0
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e POSTGRES_PASSWORD=mysecretpostgrespasswd"
+  _add_env "-e POSTGRES_PASSWORD=mysecretpostgrespasswd"
   return 0
 }
 
@@ -49,7 +52,7 @@ _prep_network() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:5432:5432/tcp"
+  _add_ports "-p 127.0.0.1:5432:5432/tcp"
   return 0
 }
 
@@ -59,13 +62,13 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Otherwise we keep OCI
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   # On MacOS we need to own the files to chown them
   # because just VM things
   if _is_macos; then
-    CONTAINER_USERNS="${CONTAINER_USERNS} --user=$(id -u):$(id -g)"
+    _add_userns "--user=$(id -u):$(id -g)"
   fi
 
   return 0

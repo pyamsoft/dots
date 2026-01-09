@@ -15,7 +15,7 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add DAC_OVERRIDE"
+  _add_caps "--cap-add DAC_OVERRIDE"
   return 0
 }
 
@@ -29,7 +29,7 @@ _prep_network() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8080:8080/tcp"
+  _add_ports "-p 127.0.0.1:8080:8080/tcp"
   return 0
 }
 
@@ -37,7 +37,7 @@ _check_user() {
   _require_nonroot || return 1
 
   if _is_podman; then
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0

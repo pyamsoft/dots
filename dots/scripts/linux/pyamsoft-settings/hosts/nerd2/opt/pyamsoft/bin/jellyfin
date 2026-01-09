@@ -23,7 +23,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
-    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_media},target=/media"
+    _add_mounts "--mount type=bind,source=${_media},target=/media"
   fi
   unset _media
 
@@ -35,7 +35,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8096:8096/tcp"
+  _add_ports "-p 127.0.0.1:8096:8096/tcp"
   return 0
 }
 
@@ -51,9 +51,13 @@ _get_gid_for_group() {
 }
 
 _prep_env() {
+  return 0
+}
+
+_finalize() {
   # Needed for GPU rendering
-  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "render")"
-  CONTAINER_ENV="${CONTAINER_ENV} --group-add=$(_get_gid_for_group "video")"
+  _add_rc "--group-add=$(_get_gid_for_group "render")"
+  _add_rc "--group-add=$(_get_gid_for_group "video")"
   return 0
 }
 
@@ -63,7 +67,7 @@ _prep_network() {
     CONTAINER_NETWORK_HOST_ROUTE=0
 
     # We have optional support for a wireguard VPN container
-    CONTAINER_NETWORK="${CONTAINER_NETWORK} --network container:wireguard"
+    _add_network "--network container:wireguard"
   else
     # Require a VPN
     if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
@@ -89,7 +93,7 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0
@@ -104,10 +108,13 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --device "/dev/dri:/dev/dri" \
+  exec ${CONTAINER_CMD} run \
+    --rm \
+    --name="${NAME}" \
+    --hostname="${NAME}" \
+    --security-opt=no-new-privileges:true \
+    --cap-drop=ALL \
+    --device="/dev/dri:/dev/dri" \
     ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
@@ -117,7 +124,9 @@ _containerize() {
     ${CONTAINER_PORTS} \
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
+    "${IMAGE}:${TAG}" \
+    ${CONTAINER_ARGS} \
+    "$@"
 }
 
 main "$@" || exit 1

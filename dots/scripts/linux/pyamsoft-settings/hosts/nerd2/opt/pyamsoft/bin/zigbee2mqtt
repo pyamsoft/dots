@@ -13,7 +13,7 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/app/data" || return 1
 
   # Needs udev from host
-  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=/run/udev,target=/run/udev,ro"
+  _add_mounts "--mount type=bind,source=/run/udev,target=/run/udev,ro"
 
   return 0
 }
@@ -26,7 +26,7 @@ _prep_network() {
   CONTAINER_NETWORK_HOST_ROUTE=0
 
   # Piggyback onto the home-assistant network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=container:home-assistant"
+  _add_network "--network=container:home-assistant"
   return 0
 }
 
@@ -35,7 +35,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8080:8080/tcp"
+  _add_ports "-p 127.0.0.1:8080:8080/tcp"
   return 0
 }
 
@@ -44,8 +44,8 @@ _check_user() {
 
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
-    CONTAINER_USERNS="${CONTAINER_USERNS} --group-add keep-groups"
+    _add_userns "--userns keep-id"
+    _add_userns "--group-add keep-groups"
   fi
 
   return 0

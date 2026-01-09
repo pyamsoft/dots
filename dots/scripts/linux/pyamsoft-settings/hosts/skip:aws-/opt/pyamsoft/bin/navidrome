@@ -18,7 +18,7 @@ _prep_mounts() {
 
   # Follow the link and mount the music folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
-    CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_media},target=/music"
+    _add_mounts "--mount type=bind,source=${_media},target=/music"
   fi
   unset _media
 
@@ -27,7 +27,7 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  CONTAINER_ENV="${CONTAINER_ENV} -e ND_LOGLEVEL=info"
+  _add_env "-e ND_LOGLEVEL=info"
   return 0
 }
 
@@ -54,16 +54,16 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:4533:4533/tcp"
+  _add_ports "-p 127.0.0.1:4533:4533/tcp"
   return 0
 }
 
 _check_user() {
   _require_nonroot || return 1
 
-  CONTAINER_USERNS="${CONTAINER_USERNS} --user $(id -u):$(id -g)"
+  _add_userns "--user $(id -u):$(id -g)"
   if _is_podman; then
-    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    _add_userns "--userns keep-id"
   fi
 
   return 0

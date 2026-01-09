@@ -21,7 +21,8 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:6052:6052/tcp"
+  _add_ports "-p 127.0.0.1:6052:6052/tcp"
+
   return 0
 }
 
@@ -33,7 +34,7 @@ _prep_network() {
   CONTAINER_NETWORK_HOST_ROUTE=0
 
   # Piggyback onto the home-assistant network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=container:home-assistant"
+  _add_network "--network=container:home-assistant"
   return 0
 }
 
