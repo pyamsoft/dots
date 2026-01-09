@@ -7,6 +7,8 @@ NAME="httpie"
 IMAGE="docker.io/alpine/httpie"
 TAG="3.2.4"
 
+CONTAINER_MEMORY_LIMIT="64M"
+
 _prep_mounts() {
   return 0
 }

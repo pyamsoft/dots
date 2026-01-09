@@ -96,6 +96,7 @@ _containerize() {
     --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --device "/dev/dri:/dev/dri" \
+    ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \

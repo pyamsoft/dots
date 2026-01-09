@@ -7,6 +7,7 @@ NAME="bentopdf"
 IMAGE="docker.io/bentopdf/bentopdf"
 TAG="1.15.3"
 
+CONTAINER_MEMORY_LIMIT="64M"
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {

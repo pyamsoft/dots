@@ -8,6 +8,8 @@ BASENAME="beszel"
 NAME="${BASENAME}"
 TAG="0.17.0"
 
+CONTAINER_MEMORY_LIMIT="64M"
+
 # The SSH key used by hub and agents to auth each other
 BESZEL_KEY=""
 
@@ -157,6 +159,7 @@ _containerize() {
     --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     -e "KEY=${BESZEL_KEY}" \
+    ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \

@@ -7,6 +7,8 @@ NAME="jellyfin"
 IMAGE="docker.io/jellyfin/jellyfin"
 TAG="10.11.5"
 
+CONTAINER_MEMORY_LIMIT="4G"
+
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
 
@@ -106,6 +108,7 @@ _containerize() {
     --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --device "/dev/dri:/dev/dri" \
+    ${CONTAINER_MEMORY} \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \

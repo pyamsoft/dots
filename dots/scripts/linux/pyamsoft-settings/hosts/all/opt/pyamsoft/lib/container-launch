@@ -12,6 +12,8 @@ CONTAINER_REQUIRE_INIT="${CONTAINER_REQUIRE_INIT:-0}"
 CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 # Run the container network with IPv6 if using a custom isolated network
 CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
+# The amount of memory a container can use
+CONTAINER_MEMORY_LIMIT="${CONTAINER_MEMORY_LIMIT:-}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -23,7 +25,10 @@ CONTAINER_CAPS=""
 CONTAINER_USERNS=""
 CONTAINER_RC=""
 CONTAINER_LOGS=""
+CONTAINER_MEMORY=""
 CONTAINER_CMD=""
+
+readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
 
 ## Private variables
 __os_name="$(uname)"
@@ -233,6 +238,20 @@ __await_directory() {
 # Overridable
 #
 # Default function for setting up system logging
+_prep_memory() {
+  if [ -z "${CONTAINER_MEMORY_LIMIT}" ]; then
+    _log 'Memory limit is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_MEMORY_LIMIT}"
+    CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
+  fi
+
+  CONTAINER_MEMORY="${CONTAINER_MEMORY} --memory ${CONTAINER_MEMORY_LIMIT}"
+  return 0
+}
+
+##
+# Overridable
+#
+# Default function for setting up system logging
 _prep_log() {
   # On Linux, our user session executes from systemd and thus sets the systemd vars
   # like JOURNAL_STREAM and INVOCATION_ID
@@ -301,6 +320,7 @@ _containerize() {
       --name "${NAME}" --hostname "${NAME}" \
       --security-opt no-new-privileges:true --cap-drop ALL \
       --init \
+      ${CONTAINER_MEMORY} \
       ${CONTAINER_LOGS} \
       ${CONTAINER_RC} \
       ${CONTAINER_NETWORK} \
@@ -416,6 +436,7 @@ main() {
 
   # These are defined here an while they can be overridden, they should
   # always exist
+  _prep_memory || return 1
   _prep_log || return 1
   _prep_rc || return 1
 
@@ -428,6 +449,7 @@ main() {
   readonly CONTAINER_NETWORK
   readonly CONTAINER_PORTS
   readonly CONTAINER_USERNS
+  readonly CONTAINER_MEMORY
 
   __await_directory "${_watch}" || return 1
   _containerize "$@" || return 1

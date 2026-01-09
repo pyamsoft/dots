@@ -7,6 +7,8 @@ NAME="samba"
 IMAGE="docker.io/dockurr/samba"
 TAG="4.22.6"
 
+CONTAINER_MEMORY_LIMIT="128M"
+
 _prep_mounts() {
   # Share folders are optionally symlinks to another mass storage drive
   _share="${CONTAINER_RUNTIME_DIR}/${NAME}/share"
