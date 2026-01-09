@@ -71,6 +71,7 @@ _containerize() {
     --name "${NAME}" --hostname "${NAME}" \
     --security-opt no-new-privileges:true --cap-drop ALL \
     --entrypoint python3 \
+    --init \
     ${CONTAINER_RC} \
     ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \

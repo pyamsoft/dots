@@ -40,6 +40,12 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
+  if _is_podman; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    CONTAINER_USERNS="${CONTAINER_USERNS} --userns keep-id"
+    CONTAINER_USERNS="${CONTAINER_USERNS} --group-add keep-groups"
+  fi
+
   return 0
 }
 
