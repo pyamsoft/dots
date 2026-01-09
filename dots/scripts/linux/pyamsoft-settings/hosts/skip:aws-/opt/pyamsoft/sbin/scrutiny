@@ -7,6 +7,8 @@ NAME="scrutiny"
 IMAGE="ghcr.io/analogj/scrutiny"
 TAG="v0.8.1-omnibus"
 
+CONTAINER_ENTRYPOINT="/entrypoints/init"
+
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/opt/scrutiny/config" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/db" "/opt/scrutiny/influxdb" || return 1
@@ -14,17 +16,17 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/entrypoints" "/entrypoints" || return 1
 
   # Needs udev from host
-  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=/run/udev,target=/run/udev,ro"
+  _add_mounts "--mount type=bind,source=/run/udev,target=/run/udev,ro"
 
   return 0
 }
 
 _prep_caps() {
   # For smartctl
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_RAWIO"
+  _add_caps "--cap-add SYS_RAWIO"
 
   # Work with NVME
-  CONTAINER_CAPS="${CONTAINER_CAPS} --cap-add SYS_ADMIN"
+  _add_caps "--cap-add SYS_ADMIN"
 
   return 0
 }
@@ -40,8 +42,8 @@ _prep_network() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8081:8080/tcp"
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:8086:8086/tcp"
+  _add_ports "-p 127.0.0.1:8081:8080/tcp"
+  _add_ports "-p 127.0.0.1:8086:8086/tcp"
   return 0
 }
 
@@ -49,34 +51,9 @@ _check_user() {
   _require_root || return 1
 
   # Expects to be root
-  CONTAINER_USERNS="${CONTAINER_USERNS} --user=0:0"
+  _add_userns "--user=0:0"
 
   return 0
-}
-
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt no-new-privileges:true --cap-drop ALL \
-    --entrypoint "/entrypoints/init" \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
 }
 
 if _is_macos; then
