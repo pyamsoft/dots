@@ -342,6 +342,7 @@ _containerize() {
     exec ${CONTAINER_CMD} run --rm \
       --name "${NAME}" --hostname "${NAME}" \
       --security-opt no-new-privileges:true --cap-drop ALL \
+      ${CONTAINER_MEMORY} \
       ${CONTAINER_LOGS} \
       ${CONTAINER_RC} \
       ${CONTAINER_NETWORK} \
