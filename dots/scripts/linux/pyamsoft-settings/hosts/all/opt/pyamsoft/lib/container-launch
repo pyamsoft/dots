@@ -579,6 +579,8 @@ main() {
     exit 1
   fi
 
+  readonly CONTAINER_CMD
+
   # Move to accessible directory
   if [ "$(id -u)" -eq 0 ]; then
     cd / || {
@@ -623,8 +625,6 @@ main() {
   _prep_memory || return 1
   _prep_log || return 1
   _prep_rc || return 1
-
-  readonly CONTAINER_CMD
 
   __await_directory "${_watch}" || return 1
   _finalize "$@" || return 1
