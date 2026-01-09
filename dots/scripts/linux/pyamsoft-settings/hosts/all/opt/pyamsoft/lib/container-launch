@@ -14,6 +14,10 @@ CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 # The amount of memory a container can use
 CONTAINER_MEMORY_LIMIT="${CONTAINER_MEMORY_LIMIT:-}"
+# Custom Entrypoint
+CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
+# Custom Arguments
+CONTAINER_ARGS="${CONTAINER_ARGS:-}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -57,6 +61,86 @@ _is_podman() {
 ## Check if container is "docker"
 _is_docker() {
   [ "${CONTAINER_CMD}" = "docker" ]
+}
+
+##
+# Add to MOUNTS
+_add_mounts() {
+  CONTAINER_MOUNTS="${CONTAINER_MOUNTS}
+$1"
+  return 0
+}
+
+##
+# Add to NETWORK
+_add_network() {
+  CONTAINER_NETWORK="${CONTAINER_NETWORK}
+$1"
+  return 0
+}
+
+##
+# Add to ENV
+_add_env() {
+  CONTAINER_ENV="${CONTAINER_ENV}
+$1"
+  return 0
+}
+
+##
+# Add to PORTS
+_add_ports() {
+  CONTAINER_PORTS="${CONTAINER_PORTS}
+$1"
+  return 0
+}
+
+##
+# Add to CAPS
+_add_caps() {
+  CONTAINER_CAPS="${CONTAINER_CAPS}
+$1"
+  return 0
+}
+
+##
+# Add to CAPS
+_add_userns() {
+  CONTAINER_USERNS="${CONTAINER_USERNS}
+$1"
+  return 0
+}
+
+##
+# Add to RC
+_add_rc() {
+  CONTAINER_RC="${CONTAINER_RC}
+$1"
+  return 0
+}
+
+##
+# Add to MEMORY
+_add_memory() {
+  CONTAINER_MEMORY="${CONTAINER_MEMORY}
+$1"
+  return 0
+}
+
+##
+# Add to LOGS
+_add_logs() {
+  CONTAINER_LOGS="${CONTAINER_LOGS}
+$1"
+  return 0
+}
+
+##
+# Add to RC
+_add_args() {
+  CONTAINER_ARGS="${CONTAINER_ARGS}
+$1"
+  return 0
 }
 
 _require_root() {
@@ -139,7 +223,7 @@ _network_isolate() {
   fi
 
   # Attach our isolated network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=${_network_name}"
+  _add_network "--network=${_network_name}"
 
   unset _network_name
   return 0
@@ -173,13 +257,15 @@ _mount_bind() {
     return 1
   }
 
-  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=${_mount_src},target=${_mount_target}"
+  _add_mounts "--mount type=bind,source=${_mount_src},target=${_mount_target}"
 
   unset _mount_src
   unset _mount_target
   return 0
 }
 
+##
+# Private
 __require_function() {
   if ! _has_function "$1"; then
     _log 'Function is required: %s' "$1"
@@ -189,20 +275,24 @@ __require_function() {
   return 0
 }
 
+##
+# Private
 __setup_network() {
   _prep_network || return 1
 
   # Evaluate this AFTER so that just incase the script
   # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
-    CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host localhost:127.0.0.1"
-    CONTAINER_NETWORK="${CONTAINER_NETWORK} --dns-search=."
-    CONTAINER_NETWORK="${CONTAINER_NETWORK} --add-host host.containers.internal:host-gateway"
+    _add_network "--add-host localhost:127.0.0.1"
+    _add_network "--dns-search=."
+    _add_network "--add-host host.containers.internal:host-gateway"
   fi
 
   return 0
 }
 
+##
+# Private
 __await_directory() {
   _awaiting="$1"
   if [ -z "${_awaiting}" ]; then
@@ -244,7 +334,7 @@ _prep_memory() {
     CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
   fi
 
-  CONTAINER_MEMORY="${CONTAINER_MEMORY} --memory ${CONTAINER_MEMORY_LIMIT}"
+  _add_memory "--memory ${CONTAINER_MEMORY_LIMIT}"
   return 0
 }
 
@@ -261,10 +351,11 @@ _prep_log() {
   # As such our services set a special PYAM_SYSTEMD variable and we sniff that
   if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
     if _is_podman; then
-      CONTAINER_LOGS="${CONTAINER_LOGS} --log-driver json-file"
+      _add_logs "--log-driver json-file"
     fi
   else
-    CONTAINER_LOGS="${CONTAINER_LOGS} -i -t"
+    _add_logs "-i"
+    _add_logs "-t"
   fi
 
   return 0
@@ -308,50 +399,128 @@ _prep_rc() {
 # Restricts capabilities, privileges, and ensures the container is named and removed after execution
 _containerize() {
   if [ -n "${CONTAINER_REQUIRE_INIT}" ] && [ "${CONTAINER_REQUIRE_INIT}" -ne 0 ]; then
-    # Log the commands we use next
-    # Fail on errors
-    # Fail on unassigned
-    set -xeu
+    if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
+      # Log the commands we use next
+      # Fail on errors
+      # Fail on unassigned
+      set -xeu
 
-    # Don't quote so that if user is empty it still expands
-    #
-    # shellcheck disable=SC2086
-    exec ${CONTAINER_CMD} run --rm \
-      --name "${NAME}" --hostname "${NAME}" \
-      --security-opt no-new-privileges:true --cap-drop ALL \
-      --init \
-      ${CONTAINER_MEMORY} \
-      ${CONTAINER_LOGS} \
-      ${CONTAINER_RC} \
-      ${CONTAINER_NETWORK} \
-      ${CONTAINER_ENV} \
-      ${CONTAINER_MOUNTS} \
-      ${CONTAINER_PORTS} \
-      ${CONTAINER_CAPS} \
-      ${CONTAINER_USERNS} \
-      "${IMAGE}:${TAG}" "$@"
+      # Don't quote so that if variables is empty it still expands
+      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
+      #       maybe one day we will to IFS=\n
+      #
+      # shellcheck disable=SC2086
+      exec ${CONTAINER_CMD} \
+        run \
+        --rm \
+        --name="${NAME}" \
+        --hostname="${NAME}" \
+        --cap-drop ALL \
+        --security-opt-no-new-privileges:true \
+        --init \
+        --entrypoint="${CONTAINER_ENTRYPOINT}" \
+        ${CONTAINER_MEMORY} \
+        ${CONTAINER_LOGS} \
+        ${CONTAINER_RC} \
+        ${CONTAINER_NETWORK} \
+        ${CONTAINER_ENV} \
+        ${CONTAINER_MOUNTS} \
+        ${CONTAINER_PORTS} \
+        ${CONTAINER_CAPS} \
+        ${CONTAINER_USERNS} \
+        "${IMAGE}:${TAG}" \
+        ${CONTAINER_ARGS} \
+        "$@"
+    else
+      # Log the commands we use next
+      # Fail on errors
+      # Fail on unassigned
+      set -xeu
+
+      # Don't quote so that if variables is empty it still expands
+      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
+      #       maybe one day we will to IFS=\n
+      #
+      # shellcheck disable=SC2086
+      exec ${CONTAINER_CMD} run \
+        --rm \
+        --name="${NAME}" \
+        --hostname="${NAME}" \
+        --cap-drop=ALL \
+        --security-opt-no-new-privileges:true \
+        --init \
+        ${CONTAINER_MEMORY} \
+        ${CONTAINER_LOGS} \
+        ${CONTAINER_RC} \
+        ${CONTAINER_NETWORK} \
+        ${CONTAINER_ENV} \
+        ${CONTAINER_MOUNTS} \
+        ${CONTAINER_PORTS} \
+        ${CONTAINER_CAPS} \
+        ${CONTAINER_USERNS} \
+        "${IMAGE}:${TAG}" \
+        ${CONTAINER_ARGS} \
+        "$@"
+    fi
   else
-    # Log the commands we use next
-    # Fail on errors
-    # Fail on unassigned
-    set -xeu
+    if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
+      # Log the commands we use next
+      # Fail on errors
+      # Fail on unassigned
+      set -xeu
 
-    # Don't quote so that if user is empty it still expands
-    #
-    # shellcheck disable=SC2086
-    exec ${CONTAINER_CMD} run --rm \
-      --name "${NAME}" --hostname "${NAME}" \
-      --security-opt no-new-privileges:true --cap-drop ALL \
-      ${CONTAINER_MEMORY} \
-      ${CONTAINER_LOGS} \
-      ${CONTAINER_RC} \
-      ${CONTAINER_NETWORK} \
-      ${CONTAINER_ENV} \
-      ${CONTAINER_MOUNTS} \
-      ${CONTAINER_PORTS} \
-      ${CONTAINER_CAPS} \
-      ${CONTAINER_USERNS} \
-      "${IMAGE}:${TAG}" "$@"
+      # Don't quote so that if variables is empty it still expands
+      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
+      #       maybe one day we will to IFS=\n
+      #
+      # shellcheck disable=SC2086
+      exec ${CONTAINER_CMD} run \
+        --rm \
+        --name="${NAME}" \
+        --hostname="${NAME}" \
+        --cap-drop=ALL \
+        --security-opt-no-new-privileges:true \
+        --entrypoint="${CONTAINER_ENTRYPOINT}" \
+        ${CONTAINER_MEMORY} \
+        ${CONTAINER_LOGS} \
+        ${CONTAINER_RC} \
+        ${CONTAINER_NETWORK} \
+        ${CONTAINER_ENV} \
+        ${CONTAINER_MOUNTS} \
+        ${CONTAINER_PORTS} \
+        ${CONTAINER_CAPS} \
+        ${CONTAINER_USERNS} \
+        "${IMAGE}:${TAG}" \
+        ${CONTAINER_ARGS} \
+        "$@"
+    else
+      # Log the commands we use next
+      # Fail on errors
+      # Fail on unassigned
+      set -xeu
+
+      # Don't quote so that if user is empty it still expands
+      #
+      # shellcheck disable=SC2086
+      exec ${CONTAINER_CMD} run \
+        --rm \
+        --name="${NAME}" \
+        --hostname="${NAME}" \
+        --cap-drop=ALL \
+        --security-opt-no-new-privileges:true \
+        ${CONTAINER_MEMORY} \
+        ${CONTAINER_LOGS} \
+        ${CONTAINER_RC} \
+        ${CONTAINER_NETWORK} \
+        ${CONTAINER_ENV} \
+        ${CONTAINER_MOUNTS} \
+        ${CONTAINER_PORTS} \
+        ${CONTAINER_CAPS} \
+        ${CONTAINER_USERNS} \
+        "${IMAGE}:${TAG}" \
+        ${CONTAINER_ARGS} \
+        "$@"
+    fi
   fi
 }
 
