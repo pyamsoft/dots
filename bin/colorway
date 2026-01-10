@@ -1,5 +1,105 @@
 #!/bin/sh
 
+GNOME_TERMINAL_PROFILE_ID_PYAMSOFT="20e9b532-9ea3-49ae-8d5c-196a171d6435"
+
+_dconf_write() {
+  _dconf_key="$1"
+  _dconf_value="$2"
+
+  dconf write "${_dconf_key}" "${_dconf_value}" || {
+    printf -- 'Failed writing %s to DCONF %s\n' "${_dconf_value}" "${_dconf_key}"
+    unset _dconf_key
+    unset _dconf_value
+    return 1
+  }
+
+  unset _dconf_key
+  unset _dconf_value
+  return 0
+}
+
+__ensure_gnome_terminal_profile_list() {
+  # Read the current list of profiles
+  _gnome_current_profiles="$(dconf read '/org/gnome/terminal/legacy/profiles:/list')"
+
+  if [ -z "${_gnome_current_profiles}" ]; then
+    _gnome_current_profiles="[]"
+  fi
+
+  _gnome_current_profiles="$(printf -- '%s' "${_gnome_current_profiles}" | sed 's/\[//g' | sed 's/\]//g' | tr ',' '\n' | tr -d ' ')"
+
+  _has_theme=0
+  for _p in ${_gnome_current_profiles}; do
+    if [ "${_p}" = "'${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}'" ]; then
+      _has_theme=1
+      break
+    fi
+    unset _p
+  done
+  unset _p
+
+  if [ "${_has_theme}" -ne 1 ]; then
+    _gnome_current_profiles="${_gnome_current_profiles}
+'${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}'"
+  fi
+  unset _has_theme
+
+  _gnome_current_profiles="$(printf -- '%s' "${_gnome_current_profiles}" | sed 's/$/,/g' | tr '\n' ' ' | sed 's/,$//g')"
+  _gnome_current_profiles="[${_gnome_current_profiles}]"
+
+  _dconf_write "/org/gnome/terminal/legacy/profiles:/list" "${_gnome_current_profiles}"
+
+  unset _gnome_current_profiles
+}
+
+__ensure_gnome_terminal_profile() {
+  _gnome_profile_id="$1"
+  _gnome_bg_color="$2"
+  _gnome_fg_color="$3"
+  _gnome_highlight_bg="$4"
+  _gnome_highlight_fg="$5"
+  _gnome_cursor_bg="$6"
+  _gnome_cursor_fg="$7"
+  _gnome_palette="$8"
+
+  # Create a new profile and ensure these fields are written to it
+  _dconf_profile="/org/gnome/terminal/legacy/profiles:/:${_gnome_profile_id}"
+  _dconf_write "${_dconf_profile}/visible-name" "'pyamsoft'"
+
+  _dconf_write "${_dconf_profile}/background-color" "${_gnome_bg_color}"
+  _dconf_write "${_dconf_profile}/foreground-color" "${_gnome_fg_color}"
+
+  _dconf_write "${_dconf_profile}/highlight-colors-set" "true"
+  _dconf_write "${_dconf_profile}/highlight-background-color" "${_gnome_highlight_bg}"
+  _dconf_write "${_dconf_profile}/highlight-foreground-color" "${_gnome_highlight_fg}"
+
+  _dconf_write "${_dconf_profile}/cursor-colors-set" "true"
+  _dconf_write "${_dconf_profile}/cursor-background-color" "${_gnome_cursor_bg}"
+  _dconf_write "${_dconf_profile}/cursor-foreground-color" "${_gnome_cursor_fg}"
+
+  _dconf_write "${_dconf_profile}/use-theme-colors" "false"
+  _dconf_write "${_dconf_profile}/bold-is-bright" "true"
+
+  _dconf_write "${_dconf_profile}/palette" "${_gnome_palette}"
+
+  _dconf_write "${_dconf_profile}/audible-bell" "false"
+  _dconf_write "${_dconf_profile}/scrollbar-policy" "'never'"
+  _dconf_write "${_dconf_profile}/login-shell" "false"
+  _dconf_write "${_dconf_profile}/use-custom-command" "true"
+  _dconf_write "${_dconf_profile}/custom-command" "'/usr/bin/tmux -2u'"
+
+  unset _dconf_profile
+  unset _gnome_bg_color
+  unset _gnome_fg_color
+  unset _gnome_highlight_bg
+  unset _gnome_highlight_fg
+  unset _gnome_cursor_bg
+  unset _gnome_cursor_fg
+  unset _gnome_palette
+  unset _gnome_profile_id
+  return 0
+}
+
 _light_macos() {
   # MacOS sed is BSD
 
@@ -79,7 +179,7 @@ _light_linux() {
   # Guake
   if command -v guake >/dev/null && command -v dconf >/dev/null; then
     # Need to quote the string
-    dconf write '/org/guake/style/font/palette' "'#5c5c5f5f7777:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#acacb0b0bebe:#6f6e6f6e8585:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#bcbcc0c0cccc:#4c4c4f4e6969:#efeff1f1f5f5'"
+    _dconf_write "/org/guake/style/font/palette" "'#5c5c5f5f7777:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#acacb0b0bebe:#6f6e6f6e8585:#d2d20f0e3939:#4040a0a02b2b:#dfdf8e8e1d1d:#1e1e6665f5f5:#eaea7675cbca:#171792929999:#bcbcc0c0cccc:#4c4c4f4e6969:#efeff1f1f5f5'"
   fi
 
   # KDE
@@ -108,6 +208,20 @@ EOF
   if command -v flatpak >/dev/null; then
     flatpak override --user org.pulseaudio.pavucontrol --env=GTK_THEME=Adwaita
     flatpak override --user org.pulseaudio.pavucontrol --env=ICON_THEME=Papirus
+  fi
+
+  # GNOME Terminal
+  if command -v gnome-terminal >/dev/null && command -v dconf >/dev/null; then
+    # You must pick the "pyamsoft" profile in GNOME Terminal for the colors to update in realtime
+    __ensure_gnome_terminal_profile \
+      "${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}" \
+      "'#eff1f5'" "'#4c4f69'" "'#dc8a78'" "'#acb0be'" "'#dc8a78'" "'#eff1f5'" \
+      "['#5c5f77', '#d20f39', '#40a02b', '#df8e1d', '#1e66f5', '#ea76cb', '#179299', '#acb0be', '#6c6f85', '#de293e', '#49af3d', '#eea02d', '#456eff', '#fe85d8', '#2d9fa8', '#bcc0cc']" || return 1
+
+    __ensure_gnome_terminal_profile_list
+
+    # Pick theme
+    _dconf_write "/org/gnome/terminal/legacy/profiles:/default" "'${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}'"
   fi
 
   return 0
@@ -202,7 +316,7 @@ _dark_linux() {
   # Guake
   if command -v dconf >/dev/null && command -v guake >/dev/null; then
     # Need to quote the string
-    dconf write '/org/guake/style/font/palette' "'#49494d4d6464:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#b8b8c0c0e0e0:#5b5a605f7878:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#a5a5adadcbcb:#cacad3d3f5f5:#242427273a3a'"
+    _dconf_write "/org/guake/style/font/palette" "'#49494d4d6464:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#b8b8c0c0e0e0:#5b5a605f7878:#eded87869696:#a6a5dada9595:#eeeed4d49f9f:#8a8aadadf4f4:#f5f5bdbde6e6:#8b8bd5d5caca:#a5a5adadcbcb:#cacad3d3f5f5:#242427273a3a'"
   fi
 
   # KDE
@@ -231,6 +345,20 @@ EOF
   if command -v flatpak >/dev/null; then
     flatpak override --user org.pulseaudio.pavucontrol --env=GTK_THEME=Adwaita-dark
     flatpak override --user org.pulseaudio.pavucontrol --env=ICON_THEME=Papirus-Dark
+  fi
+
+  # GNOME Terminal
+  if command -v gnome-terminal >/dev/null && command -v dconf >/dev/null; then
+    # You must pick the "pyamsoft" profile in GNOME Terminal for the colors to update in realtime
+    __ensure_gnome_terminal_profile \
+      "${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}" \
+      "'#24273a'" "'#cad3f5'" "'#f4dbd6'" "'#5b6078'" "'#f4dbd6'" "'#24273a'" \
+      "['#45475a', '#f38ba8', '#a6e3a1', '#f9e2af', '#89b4fa', '#f5c2e7', '#94e2d5', '#a6adc8', '#585b70', '#f37799', '#89d88b', '#ebd391', '#74a8fc', '#f2aede', '#6bd7ca', '#bac2de']" || return 1
+
+    __ensure_gnome_terminal_profile_list
+
+    # Pick theme
+    _dconf_write "/org/gnome/terminal/legacy/profiles:/default" "'${GNOME_TERMINAL_PROFILE_ID_PYAMSOFT}'"
   fi
 
   return 0

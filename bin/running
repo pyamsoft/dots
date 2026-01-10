@@ -1,9 +1,12 @@
 #!/bin/sh
 
-set -e
+main() {
+  set -eu
 
-# Check if process is running
-# shellcheck disable=SC2009
-ps aux | grep -v 'grep' | grep -v 'running' | grep -E --color=auto "$*"
+  exec ps aux | grep -v 'grep' | grep -v 'running' | grep -E --color=auto "$@"
+}
+
+main "$@" || exit 1
+exit 0
 
 # vim: set syntax=sh tabstop=2 softtabstop=2 shiftwidth=2 shiftround expandtab:
