@@ -18,12 +18,14 @@ gdm
 gnome-remote-desktop
 gnome-shell-extension-appindicator
 gnome-shell-extension-caffeine
+gnome-terminal
 gst-libav
 gst-plugin-va
 guake
 gvfs-mtp
 hplip
 inter-font
+irqbalance
 iwd
 kdeconnect
 kernel-modules-hook
