@@ -29,7 +29,7 @@ _prep_network() {
   CONTAINER_NETWORK_HOST_ROUTE=0
 
   # Piggyback onto the home-assistant network
-  CONTAINER_NETWORK="${CONTAINER_NETWORK} --network=container:home-assistant"
+  _add_network --network="container:home-assistant"
   return 0
 }
 
@@ -38,7 +38,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS} -p 127.0.0.1:10300:10300/tcp"
+  _add_ports -p "127.0.0.1:10300:10300/tcp"
   return 0
 }
 
@@ -50,14 +50,14 @@ _check_user() {
 
 _finalize() {
   # Wake word command
-  _add_args "-m wyoming_faster_whisper"
-  _add_args "--uri tcp://0.0.0.0:10300"
-  _add_args "--model ${MODEL}"
-  _add_args "--beam-size 1"
-  _add_args "--compute-type int8"
-  _add_args "--language en"
-  _add_args "--data-dir /data"
-  _add_args "--download-dir /download"
+  _add_args -m "wyoming_faster_whisper"
+  _add_args --uri "tcp://0.0.0.0:10300"
+  _add_args --model "${MODEL}"
+  _add_args --beam-size 1
+  _add_args --compute-type "int8"
+  _add_args --language "en"
+  _add_args --data-dir "/data"
+  _add_args --download-dir "/download"
   return 0
 }
 

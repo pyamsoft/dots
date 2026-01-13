@@ -17,7 +17,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ] && [ -e "$(realpath "${_media}/mounted")" ]; then
-    _add_mounts "--mount type=bind,source=${_media},target=/scan_dir/1"
+    _add_mounts --mount "type=bind,source=${_media},target=/scan_dir/1"
   fi
   unset _media
 
@@ -26,8 +26,8 @@ _prep_mounts() {
 
 _prep_caps() {
   # Allow writing SRT files to output location
-  _add_caps "--cap-add DAC_OVERRIDE"
-  _add_caps "--cap-add FOWNER"
+  _add_caps --cap-add DAC_OVERRIDE
+  _add_caps --cap-add FOWNER
 
   return 0
 }
@@ -48,7 +48,7 @@ _prep_network() {
 _check_user() {
   _require_nonroot || return 1
 
-  _add_userns "--user=0:0"
+  _add_userns --user="0:0"
 
   return 0
 }

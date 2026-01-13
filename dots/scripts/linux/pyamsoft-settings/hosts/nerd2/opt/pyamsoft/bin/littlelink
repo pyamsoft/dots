@@ -8,6 +8,7 @@ IMAGE="ghcr.io/techno-tim/littlelink-server"
 TAG="latest"
 
 CONTAINER_REQUIRE_INIT=1
+CONTAINER_PULL_POLICY="newer"
 
 _prep_mounts() {
   _mount_mkdir "${CONTAINER_RUNTIME_DIR}/${NAME}/data" || return 1
@@ -16,10 +17,10 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  _add_env "-e META_INDEX_STATUS=noindex"
-  _add_env "-e LANG=en"
-  _add_env "-e THEME=Dark"
-  _add_env "-e THEME_OS=true"
+  _add_env -e META_INDEX_STATUS=noindex
+  _add_env -e LANG=en
+  _add_env -e THEME=Dark
+  _add_env -e THEME_OS=true
 
   return 0
 }
@@ -40,7 +41,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  _add_ports "-p 127.0.0.1:8420:3000/tcp"
+  _add_ports -p "127.0.0.1:8420:3000/tcp"
   return 0
 }
 
@@ -62,7 +63,8 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run \
+  exec ${CONTAINER_CMD} \
+    run \
     --rm \
     --name="${NAME}" --hostname="${NAME}" \
     --security-opt=no-new-privileges:true \

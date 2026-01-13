@@ -14,7 +14,7 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
 
   # DBUS access for bluetooth
-  _add_mounts "--mount type=bind,source=/run/dbus,target=/run/dbus,ro"
+  _add_mounts --mount "type=bind,source=/run/dbus,target=/run/dbus,ro"
 
   return 0
 }
@@ -25,20 +25,20 @@ _prep_env() {
 
 _prep_network() {
   # Host networking for SSDP and mDNS
-  _add_network "--network=host"
+  _add_network --network="host"
   return 0
 }
 
 _prep_caps() {
   # Needed for s6
-  _add_caps "--cap-add DAC_OVERRIDE"
-  _add_caps "--cap-add CHOWN"
-  _add_caps "--cap-add SETGID"
-  _add_caps "--cap-add SETUID"
+  _add_caps --cap-add DAC_OVERRIDE
+  _add_caps --cap-add CHOWN
+  _add_caps --cap-add SETGID
+  _add_caps --cap-add SETUID
 
   # For bluetooth
-  _add_caps "--cap-add NET_RAW"
-  _add_caps "--cap-add NET_ADMIN"
+  _add_caps --cap-add NET_RAW
+  _add_caps --cap-add NET_ADMIN
 
   return 0
 }
@@ -53,13 +53,14 @@ _check_user() {
   # Ok so what the hell is this
   # well, we need keep-id to use bluetooth in the container
   # but we also need s6 to run as root, so we declare the main user as root
-  _add_userns "--user=0:0"
-  _add_userns "-e PUID=$(id -u) -e PGID=$(id -g)"
+  _add_userns --user="0:0"
+  _add_userns -e PUID="$(id -u)"
+  _add_userns -e PGID="$(id -g)"
 
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _add_userns "--userns keep-id"
-    _add_userns "--group-add keep-groups"
+    _add_userns --userns keep-id
+    _add_userns --group-add keep-groups
   fi
 
   return 0

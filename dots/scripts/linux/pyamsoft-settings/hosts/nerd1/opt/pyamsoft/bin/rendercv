@@ -23,7 +23,7 @@ _prep_network() {
 }
 
 _prep_caps() {
-  _add_caps "--cap-add DAC_OVERRIDE"
+  _add_caps --cap-add DAC_OVERRIDE
   return 0
 }
 
@@ -35,43 +35,18 @@ _check_user() {
   _require_nonroot || return 1
 
   # Export files as current user
-  _add_userns "--user $(id -u):$(id -g)"
+  _add_userns --user "$(id -u):$(id -g)"
 
   if _is_podman; then
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
   return 0
 }
 
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run \
-    --rm \
-    --name="${NAME}" \
-    --hostname="${NAME}" \
-    --security-opt=no-new-privileges:true \
-    --cap-drop=ALL \
-    --workdir="/work" \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" \
-    ${CONTAINER_ARGS} \
-    "$@"
+_finalize() {
+  _add_rc --workdir="/work"
+  return 0
 }
 
 main "$@" || exit 1

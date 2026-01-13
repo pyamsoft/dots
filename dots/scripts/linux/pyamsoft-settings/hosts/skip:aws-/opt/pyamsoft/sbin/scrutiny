@@ -16,17 +16,17 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/entrypoints" "/entrypoints" || return 1
 
   # Needs udev from host
-  _add_mounts "--mount type=bind,source=/run/udev,target=/run/udev,ro"
+  _add_mounts --mount "type=bind,source=/run/udev,target=/run/udev,ro"
 
   return 0
 }
 
 _prep_caps() {
   # For smartctl
-  _add_caps "--cap-add SYS_RAWIO"
+  _add_caps --cap-add SYS_RAWIO
 
   # Work with NVME
-  _add_caps "--cap-add SYS_ADMIN"
+  _add_caps --cap-add SYS_ADMIN
 
   return 0
 }
@@ -42,8 +42,8 @@ _prep_network() {
 }
 
 _prep_ports() {
-  _add_ports "-p 127.0.0.1:8081:8080/tcp"
-  _add_ports "-p 127.0.0.1:8086:8086/tcp"
+  _add_ports -p "127.0.0.1:8081:8080/tcp"
+  _add_ports -p "127.0.0.1:8086:8086/tcp"
   return 0
 }
 
@@ -51,13 +51,13 @@ _check_user() {
   _require_root || return 1
 
   # Expects to be root
-  _add_userns "--user=0:0"
+  _add_userns --user "0:0"
 
   return 0
 }
 
 if _is_macos; then
-  _log 'Not supported on MacOS' "${NAME}"
+  _log 'Not supported on MacOS'
   exit 1
 fi
 

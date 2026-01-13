@@ -22,7 +22,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
-    _add_mounts "--mount type=bind,source=${_media},target=/media"
+    _add_mounts --mount "type=bind,source=${_media},target=/media"
   fi
   unset _media
 
@@ -34,12 +34,12 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  _add_ports "-p 127.0.0.1:13378:13378/tcp"
+  _add_ports -p "127.0.0.1:13378:13378/tcp"
   return 0
 }
 
 _prep_env() {
-  _add_env "-e PORT=13378"
+  _add_env -e PORT=13378
 
   readonly _env
   return 0
@@ -51,7 +51,7 @@ _prep_network() {
     CONTAINER_NETWORK_HOST_ROUTE=0
 
     # We have optional support for a wireguard VPN container
-    _add_network "--network container:wireguard"
+    _add_network --network "container:wireguard"
   else
     # Require a VPN
     if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
@@ -77,7 +77,7 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
   return 0

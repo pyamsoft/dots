@@ -20,7 +20,7 @@ _prep_caps() {
 
 _prep_ports() {
   # Allow local connection to TurboVNC
-  _add_ports "-p 127.0.0.1:6080:6080/tcp"
+  _add_ports -p "127.0.0.1:6080:6080/tcp"
   return 0
 }
 

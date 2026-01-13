@@ -15,7 +15,7 @@ _prep_mounts() {
 
   _caddy="/etc/caddy"
   if [ -d "${_caddy}" ]; then
-    _add_mounts "--mount type=bind,source=${_caddy},target=/etc/caddy"
+    _add_mounts --mount "type=bind,source=${_caddy},target=/etc/caddy"
   fi
   unset _caddy
 
@@ -38,11 +38,11 @@ _prep_network() {
 }
 
 _prep_caps() {
-  _add_caps "--cap-add NET_BIND_SERVICE"
-  _add_caps "--cap-add NET_ADMIN"
+  _add_caps --cap-add "NET_BIND_SERVICE"
+  _add_caps --cap-add NET_ADMIN
 
   if _is_macos; then
-    _add_caps "--cap-add DAC_OVERRIDE"
+    _add_caps --cap-add DAC_OVERRIDE
   fi
 
   return 0
@@ -50,8 +50,8 @@ _prep_caps() {
 
 _prep_ports() {
   # Bind to a non-priv port and force redirect via firewall DNAT
-  _add_ports "-p 127.0.0.1:3080:80/tcp"
-  _add_ports "-p 127.0.0.1:3443:443/tcp"
+  _add_ports -p "127.0.0.1:3080:80/tcp"
+  _add_ports -p "127.0.0.1:3443:443/tcp"
   return 0
 }
 
@@ -60,7 +60,7 @@ _check_user() {
 
   # Expects to be root (since the cert file is owned by root)
   if _is_podman; then
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
   return 0

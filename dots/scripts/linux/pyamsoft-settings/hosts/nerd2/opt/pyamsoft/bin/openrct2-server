@@ -8,6 +8,7 @@ IMAGE="localhost/pyamsoft/openrct2"
 TAG="latest" # built from 0.4.7
 
 CONTAINER_REQUIRE_INIT=1
+CONTAINER_PULL_POLICY="newer"
 
 readonly _save_game_root="${CONTAINER_RUNTIME_DIR}/${NAME}/config"
 
@@ -43,7 +44,7 @@ _prep_caps() {
 
 _prep_ports() {
   # Openrct2 only uses TCP. I know. Wow
-  _add_ports "-p 127.0.0.1:11753:11753/tcp"
+  _add_ports -p "127.0.0.1:11753:11753/tcp"
   return 0
 }
 
@@ -51,10 +52,10 @@ _check_user() {
   _require_nonroot || return 1
 
   # Run as "our user" in the container instead of openrct2
-  _add_userns "--user=$(id -u):$(id -g)"
+  _add_userns --user="$(id -u):$(id -g)"
 
   if _is_podman; then
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
   return 0
@@ -66,41 +67,11 @@ _finalize() {
     return 1
   fi
 
+  _add_args host "/home/openrct2/.config/OpenRCT2/${park}"
+  _add_args --password "${password}"
+  _add_args --headless
+
   return 0
-}
-
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run --rm \
-    --name "${NAME}" --hostname "${NAME}" \
-    --security-opt=no-new-privileges:true \
-    --cap-drop=ALL \
-    --pull=newer \
-    --init \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" \
-    ${CONTAINER_ARGS} \
-    host \
-    "/home/openrct2/.config/OpenRCT2/${park}" \
-    --password \
-    "${password}" \
-    --headless \
-    "$@"
 }
 
 if [ -z "${park}" ]; then

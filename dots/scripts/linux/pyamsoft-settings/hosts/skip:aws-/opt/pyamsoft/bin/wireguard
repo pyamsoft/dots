@@ -13,7 +13,7 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/wg" "/etc/wireguard" || return 1
 
   # Bind kernel modules
-  CONTAINER_MOUNTS="${CONTAINER_MOUNTS} --mount type=bind,source=/lib/modules,target=/lib/modules"
+  _add_mounts --mount "type=bind,source=/lib/modules,target=/lib/modules"
 
   readonly _mounts
   return 0
@@ -21,17 +21,17 @@ _prep_mounts() {
 
 _prep_caps() {
   # For networking and iptables
-  _add_caps "--cap-add NET_ADMIN"
-  _add_caps "--cap-add NET_RAW"
+  _add_caps --cap-add NET_ADMIN
+  _add_caps --cap-add NET_RAW
 
   # Optional only if WG module isn't loaded
-  _add_caps "--cap-add SYS_MODULE"
+  _add_caps --cap-add SYS_MODULE
 
   # Needs this for file access and config writing
-  # _add_caps "--cap-add CHOWN"
-  # _add_caps "--cap-add DAC_OVERRIDE"
-  # _add_caps "--cap-add SETGID"
-  # _add_caps "--cap-add SETUID"
+  # _add_caps --cap-add CHOWN
+  # _add_caps --cap-add DAC_OVERRIDE
+  # _add_caps --cap-add SETGID
+  # _add_caps --cap-add SETUID
 
   return 0
 }
@@ -42,8 +42,8 @@ _prep_ports() {
 }
 
 _prep_env() {
-  _add_env "-e PUID=$(id -u)"
-  _add_env "-e PGID=$(id -g)"
+  _add_env -e PUID="$(id -u)"
+  _add_env -e PGID="$(id -g)"
   return 0
 }
 
@@ -67,7 +67,8 @@ _containerize() {
   # Don't quote so that if user is empty it still expands
   #
   # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run \
+  exec ${CONTAINER_CMD} \
+    run \
     --rm \
     --name="${NAME}" \
     --hostname="${NAME}" \

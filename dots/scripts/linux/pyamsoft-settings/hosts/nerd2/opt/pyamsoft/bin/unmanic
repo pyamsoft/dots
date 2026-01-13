@@ -38,16 +38,9 @@ _get_gid_for_group() {
   return 0
 }
 
-_finalize() {
-  # Needed for GPU rendering
-  _add_rc "--group-add=$(_get_gid_for_group "render")"
-  _add_rc "--group-add=$(_get_gid_for_group "video")"
-  return 0
-}
-
 _prep_env() {
-  _add_env "-e PUID=$(id -u)"
-  _add_env "-e PGID=$(id -g)"
+  _add_env -e PUID="$(id -u)"
+  _add_env -e PGID="$(id -g)"
   return 0
 }
 
@@ -58,19 +51,19 @@ _prep_network() {
 
 _prep_caps() {
   # s6-init uses chown and drops privilege
-  _add_caps "--cap-add CHOWN"
-  _add_caps "--cap-add SETGID"
-  _add_caps "--cap-add SETUID"
+  _add_caps --cap-add CHOWN
+  _add_caps --cap-add SETGID
+  _add_caps --cap-add SETUID
 
   # Needed to chown files during startup and execute start script
-  _add_caps "--cap-add DAC_OVERRIDE"
-  _add_caps "--cap-add FOWNER"
+  _add_caps --cap-add DAC_OVERRIDE
+  _add_caps --cap-add FOWNER
 
   return 0
 }
 
 _prep_ports() {
-  _add_ports "-p 127.0.0.1:8888:8888/tcp"
+  _add_ports -p "127.0.0.1:8888:8888/tcp"
   return 0
 }
 
@@ -81,11 +74,19 @@ _check_user() {
   # Need this userns option that is podman specific or we have random OCI permission error
   # Then drop to PUID and PGID permission that owns the media folder
   # Only for podman
-  _add_userns "--user=0:0"
+  _add_userns --user="0:0"
   if _is_podman; then
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
+  return 0
+}
+
+_finalize() {
+  # Needed for GPU rendering
+  _add_rc --device "/dev/dri:/dev/dri"
+  _add_rc "--group-add=$(_get_gid_for_group "render")"
+  _add_rc "--group-add=$(_get_gid_for_group "video")"
   return 0
 }
 
