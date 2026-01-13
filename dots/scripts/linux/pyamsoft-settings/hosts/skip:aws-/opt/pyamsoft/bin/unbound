@@ -10,25 +10,22 @@ TAG="1.24.2-0"
 CONTAINER_MEMORY_LIMIT="128M"
 CONTAINER_REQUIRE_RUNCONF=0
 
-if _is_macos; then
-  UNBOUND_DIR="${HOME}/.local/etc/${NAME}"
-else
-  UNBOUND_DIR="/etc/${NAME}"
-fi
-readonly UNBOUND_DIR
-
 _prep_mounts() {
-  # These are system level directories
-  _mount_bind "${UNBOUND_DIR}/conf.d" "/usr/local/unbound/conf.d" || return 1
-  _mount_bind "${UNBOUND_DIR}/zones.d" "/usr/local/unbound/zones.d" || return 1
-  _mount_bind "${UNBOUND_DIR}/rpz.d" "/usr/local/unbound/rpz.d" || return 1
-
-  # Use the host system root.key and hints on Linux, otherwise use the container
-  if _is_linux; then
-    _mount_bind "${UNBOUND_DIR}/iana.d" "/usr/local/unbound/iana.d" || return 1
+  if _is_macos; then
+    _unbound_dir="${CONTAINER_RUNTIME_DIR}/${NAME}"
+  else
+    _unbound_dir="/etc/${NAME}"
   fi
 
-  readonly _conf="${UNBOUND_DIR}/unbound.conf"
+  # These are system level directories
+  _mount_bind "${_unbound_dir}/conf.d" "/usr/local/unbound/conf.d" || return 1
+  _mount_bind "${_unbound_dir}/zones.d" "/usr/local/unbound/zones.d" || return 1
+  _mount_bind "${_unbound_dir}/rpz.d" "/usr/local/unbound/rpz.d" || return 1
+  _mount_bind "${_unbound_dir}/iana.d" "/usr/local/unbound/iana.d" || return 1
+  _mount_bind "${_unbound_dir}/log.d" "/usr/local/unbound/log.d" || return 1
+
+  readonly _conf="${_unbound_dir}/unbound.conf"
+  unset _unbound_dir
 
   if [ ! -r "${_conf}" ]; then
     _log 'Config must exist at %s' "${_conf}"
