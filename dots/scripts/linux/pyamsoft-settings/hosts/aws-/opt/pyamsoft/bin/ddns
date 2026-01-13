@@ -25,14 +25,14 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
-  _add_userns "--user $(id -u):$(id -g)"
+  _add_userns --user "$(id -u):$(id -g)"
 
   return 0
 }
 
 _prep_env() {
   # Cloudflare owns our records
-  _add_env="-e PROXIED=true"
+  _add_env -e PROXIED=true
   return 0
 }
 
