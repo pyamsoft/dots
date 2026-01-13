@@ -87,17 +87,17 @@ _prep_mounts() {
 _prep_caps() {
   if [ "${BESZEL_MODE}" != "hub" ]; then
     # For reading SMART data with smartctl
-    _add_caps "--cap-add SYS_RAWIO"
+    _add_caps --cap-add SYS_RAWIO
 
     # For reading NVME data
-    _add_caps "--cap-add SYS_ADMIN"
+    _add_caps --cap-add SYS_ADMIN
   fi
 
   return 0
 }
 
 _prep_env() {
-  _add_env "-e DATA_DIR=/beszel_data"
+  _add_env -e DATA_DIR="/beszel_data"
 
   return 0
 }
@@ -107,7 +107,7 @@ _prep_network() {
     _network_isolate "${BASENAME}" || return 1
   else
     # Agent must run with host networking
-    _add_network "--network=host"
+    _add_network --network="host"
   fi
 
   return 0
@@ -115,7 +115,7 @@ _prep_network() {
 
 _prep_ports() {
   if [ "${BESZEL_MODE}" = "hub" ]; then
-    _add_ports "-p 127.0.0.1:8090:8090/tcp"
+    _add_ports -p "127.0.0.1:8090:8090/tcp"
   fi
 
   return 0
@@ -127,13 +127,13 @@ _check_user() {
   # Only for podman
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
-    _add_userns "--userns keep-id"
+    _add_userns --userns keep-id
   fi
 
   return 0
 }
 
-_containerize() {
+_finalize() {
   if [ "${BESZEL_MODE}" = "hub" ]; then
     _log 'Beszel Hub creates its own SSH key that agents must use.'
 
@@ -147,6 +147,10 @@ _containerize() {
     fi
   fi
 
+  return 0
+}
+
+_containerize() {
   # Log the commands we use next
   # Fail on errors
   # Fail on unassigned
