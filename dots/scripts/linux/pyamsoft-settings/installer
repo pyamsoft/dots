@@ -246,7 +246,7 @@ main() {
             # sudoers requires readonly for everyone
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
             ;;
-          */polkit/rules.d)
+          */polkit-1/rules.d)
             # polkit rules should not be read by others
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "640" || return 1
             ;;
