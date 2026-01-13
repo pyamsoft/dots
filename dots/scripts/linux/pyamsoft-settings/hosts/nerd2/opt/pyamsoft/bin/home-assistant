@@ -7,7 +7,7 @@ NAME="home-assistant"
 IMAGE="ghcr.io/linuxserver/homeassistant"
 TAG="2026.1.1"
 
-CONTAINER_MEMORY_LIMIT="2G"
+CONTAINER_MEMORY_LIMIT="4G"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
