@@ -68,80 +68,130 @@ _is_docker() {
 ##
 # Add to MOUNTS
 _add_mounts() {
-  CONTAINER_MOUNTS="${CONTAINER_MOUNTS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_MOUNTS="${CONTAINER_MOUNTS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to NETWORK
 _add_network() {
-  CONTAINER_NETWORK="${CONTAINER_NETWORK}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_NETWORK="${CONTAINER_NETWORK}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to ENV
 _add_env() {
-  CONTAINER_ENV="${CONTAINER_ENV}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_ENV="${CONTAINER_ENV}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to PORTS
 _add_ports() {
-  CONTAINER_PORTS="${CONTAINER_PORTS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_PORTS="${CONTAINER_PORTS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to CAPS
 _add_caps() {
-  CONTAINER_CAPS="${CONTAINER_CAPS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_CAPS="${CONTAINER_CAPS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to CAPS
 _add_userns() {
-  CONTAINER_USERNS="${CONTAINER_USERNS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_USERNS="${CONTAINER_USERNS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to RC
 _add_rc() {
-  CONTAINER_RC="${CONTAINER_RC}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_RC="${CONTAINER_RC}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to MEMORY
 _add_memory() {
-  CONTAINER_MEMORY="${CONTAINER_MEMORY}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_MEMORY="${CONTAINER_MEMORY}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to LOGS
 _add_logs() {
-  CONTAINER_LOGS="${CONTAINER_LOGS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_LOGS="${CONTAINER_LOGS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
 ##
 # Add to RC
 _add_args() {
-  CONTAINER_ARGS="${CONTAINER_ARGS}
-$1"
+  for _arg in "$@"; do
+    CONTAINER_ARGS="${CONTAINER_ARGS}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   return 0
 }
 
@@ -225,7 +275,7 @@ _network_isolate() {
   fi
 
   # Attach our isolated network
-  _add_network "--network=${_network_name}"
+  _add_network --network="${_network_name}"
 
   unset _network_name
   return 0
@@ -259,7 +309,7 @@ _mount_bind() {
     return 1
   }
 
-  _add_mounts "--mount type=bind,source=${_mount_src},target=${_mount_target}"
+  _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
 
   unset _mount_src
   unset _mount_target
@@ -285,9 +335,9 @@ __setup_network() {
   # Evaluate this AFTER so that just incase the script
   # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
-    _add_network "--add-host localhost:127.0.0.1"
-    _add_network "--dns-search=."
-    _add_network "--add-host host.containers.internal:host-gateway"
+    _add_network --add-host "localhost:127.0.0.1"
+    _add_network --dns-search="."
+    _add_network --add-host "host.containers.internal:host-gateway"
   fi
 
   return 0
@@ -336,7 +386,7 @@ _prep_memory() {
     CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
   fi
 
-  _add_memory "--memory ${CONTAINER_MEMORY_LIMIT}"
+  _add_memory --memory "${CONTAINER_MEMORY_LIMIT}"
   return 0
 }
 
@@ -353,11 +403,11 @@ _prep_log() {
   # As such our services set a special PYAM_SYSTEMD variable and we sniff that
   if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
     if _is_podman; then
-      _add_logs "--log-driver json-file"
+      _add_logs --log-driver json-file
     fi
   else
-    _add_logs "-i"
-    _add_logs "-t"
+    _add_logs -i
+    _add_logs -t
   fi
 
   return 0
@@ -425,7 +475,7 @@ _containerize() {
         --rm \
         --name="${NAME}" \
         --hostname="${NAME}" \
-        --cap-drop ALL \
+        --cap-drop=ALL \
         --security-opt=no-new-privileges:true \
         --init \
         --entrypoint="${CONTAINER_ENTRYPOINT}" \
