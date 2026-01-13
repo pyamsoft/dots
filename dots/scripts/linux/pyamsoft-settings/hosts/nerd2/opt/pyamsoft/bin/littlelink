@@ -51,44 +51,5 @@ _check_user() {
   return 0
 }
 
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # You need to add a CUSTOM_BUTTON_* for each new link
-  # All CUSTOM_BUTTON_* FIELDS REQUIRED
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} \
-    run \
-    --rm \
-    --name="${NAME}" --hostname="${NAME}" \
-    --security-opt=no-new-privileges:true \
-    --cap-drop=ALL \
-    --pull=newer \
-    --init \
-    -e "CUSTOM_BUTTON_TEXT=${_CUSTOM_BUTTON_TEXT}" \
-    -e "CUSTOM_BUTTON_ALT_TEXT=${_CUSTOM_BUTTON_ALT_TEXT}" \
-    -e "CUSTOM_BUTTON_ICON=${_CUSTOM_BUTTON_ICON}" \
-    -e "FOOTER=${_FOOTER}" \
-    -e "META_DESCRIPTION=${_META_DESCRIPTION}" \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" \
-    ${CONTAINER_ARGS} \
-    "$@"
-}
-
 main "$@" || exit 1
 exit 0

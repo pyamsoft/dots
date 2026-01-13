@@ -90,35 +90,5 @@ _finalize() {
   return 0
 }
 
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} run \
-    --rm \
-    --name="${NAME}" \
-    --hostname="${NAME}" \
-    --security-opt=no-new-privileges:true \
-    --cap-drop=ALL \
-    --device="/dev/dri:/dev/dri" \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" \
-    ${CONTAINER_ARGS} \
-    "$@"
-}
-
 main "$@" || exit 1
 exit 0

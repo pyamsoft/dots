@@ -58,34 +58,9 @@ _check_user() {
   return 0
 }
 
-_containerize() {
-  # Log the commands we use next
-  # Fail on errors
-  # Fail on unassigned
-  set -xeu
-
-  # Don't quote so that if user is empty it still expands
-  #
-  # shellcheck disable=SC2086
-  exec ${CONTAINER_CMD} \
-    run \
-    --rm \
-    --name="${NAME}" \
-    --hostname="${NAME}" \
-    --security-opt=no-new-privileges:true \
-    --cap-drop=ALL \
-    --sysctl="net.ipv4.conf.all.src_valid_mark=1" \
-    -e LOCAL_SUBNETS="${LOCAL_SUBNETS}" \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_RC} \
-    ${CONTAINER_LOGS} \
-    ${CONTAINER_NETWORK} \
-    ${CONTAINER_ENV} \
-    ${CONTAINER_MOUNTS} \
-    ${CONTAINER_PORTS} \
-    ${CONTAINER_CAPS} \
-    ${CONTAINER_USERNS} \
-    "${IMAGE}:${TAG}" "$@"
+_finalize() {
+  _add_rc --sysctl="net.ipv4.conf.all.src_valid_mark=1"
+  return 0
 }
 
 main "$@" || exit 1

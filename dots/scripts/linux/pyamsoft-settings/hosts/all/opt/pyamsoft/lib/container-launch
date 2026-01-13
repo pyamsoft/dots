@@ -15,11 +15,9 @@ CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 # The amount of memory a container can use
 CONTAINER_MEMORY_LIMIT="${CONTAINER_MEMORY_LIMIT:-}"
 # Custom Entrypoint
-CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-missing}"
+CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 # Custom Entrypoint
 CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
-# Custom Arguments
-CONTAINER_ARGS="${CONTAINER_ARGS:-}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -33,6 +31,7 @@ CONTAINER_RC=""
 CONTAINER_LOGS=""
 CONTAINER_MEMORY=""
 CONTAINER_CMD=""
+CONTAINER_ARGS=""
 
 readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
 
@@ -458,134 +457,55 @@ _finalize() {
 # Default execution function
 # Restricts capabilities, privileges, and ensures the container is named and removed after execution
 _containerize() {
+  # Parse the args in a way we expect
+  for _arg in "$@"; do
+    _add_args "${_arg}"
+    unset _arg
+  done
+  unset _arg
+
   if [ -n "${CONTAINER_REQUIRE_INIT}" ] && [ "${CONTAINER_REQUIRE_INIT}" -ne 0 ]; then
-    if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
-      # Log the commands we use next
-      # Fail on errors
-      # Fail on unassigned
-      set -xeu
-
-      # Don't quote so that if variables is empty it still expands
-      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
-      #       maybe one day we will to IFS=\n
-      #
-      # shellcheck disable=SC2086
-      exec ${CONTAINER_CMD} \
-        run \
-        --rm \
-        --name="${NAME}" \
-        --hostname="${NAME}" \
-        --cap-drop=ALL \
-        --security-opt=no-new-privileges:true \
-        --init \
-        --entrypoint="${CONTAINER_ENTRYPOINT}" \
-        --pull="${CONTAINER_PULL_POLICY}" \
-        ${CONTAINER_MEMORY} \
-        ${CONTAINER_LOGS} \
-        ${CONTAINER_RC} \
-        ${CONTAINER_NETWORK} \
-        ${CONTAINER_ENV} \
-        ${CONTAINER_MOUNTS} \
-        ${CONTAINER_PORTS} \
-        ${CONTAINER_CAPS} \
-        ${CONTAINER_USERNS} \
-        "${IMAGE}:${TAG}" \
-        ${CONTAINER_ARGS} \
-        "$@"
-    else
-      # Log the commands we use next
-      # Fail on errors
-      # Fail on unassigned
-      set -xeu
-
-      # Don't quote so that if variables is empty it still expands
-      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
-      #       maybe one day we will to IFS=\n
-      #
-      # shellcheck disable=SC2086
-      exec ${CONTAINER_CMD} run \
-        --rm \
-        --name="${NAME}" \
-        --hostname="${NAME}" \
-        --cap-drop=ALL \
-        --security-opt=no-new-privileges:true \
-        --init \
-        --pull="${CONTAINER_PULL_POLICY}" \
-        ${CONTAINER_MEMORY} \
-        ${CONTAINER_LOGS} \
-        ${CONTAINER_RC} \
-        ${CONTAINER_NETWORK} \
-        ${CONTAINER_ENV} \
-        ${CONTAINER_MOUNTS} \
-        ${CONTAINER_PORTS} \
-        ${CONTAINER_CAPS} \
-        ${CONTAINER_USERNS} \
-        "${IMAGE}:${TAG}" \
-        ${CONTAINER_ARGS} \
-        "$@"
-    fi
-  else
-    if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
-      # Log the commands we use next
-      # Fail on errors
-      # Fail on unassigned
-      set -xeu
-
-      # Don't quote so that if variables is empty it still expands
-      # NOTE: This prevents us from passing arguments with embedded spaces unless we modify the IFS
-      #       maybe one day we will to IFS=\n
-      #
-      # shellcheck disable=SC2086
-      exec ${CONTAINER_CMD} run \
-        --rm \
-        --name="${NAME}" \
-        --hostname="${NAME}" \
-        --cap-drop=ALL \
-        --security-opt=no-new-privileges:true \
-        --entrypoint="${CONTAINER_ENTRYPOINT}" \
-        --pull="${CONTAINER_PULL_POLICY}" \
-        ${CONTAINER_MEMORY} \
-        ${CONTAINER_LOGS} \
-        ${CONTAINER_RC} \
-        ${CONTAINER_NETWORK} \
-        ${CONTAINER_ENV} \
-        ${CONTAINER_MOUNTS} \
-        ${CONTAINER_PORTS} \
-        ${CONTAINER_CAPS} \
-        ${CONTAINER_USERNS} \
-        "${IMAGE}:${TAG}" \
-        ${CONTAINER_ARGS} \
-        "$@"
-    else
-      # Log the commands we use next
-      # Fail on errors
-      # Fail on unassigned
-      set -xeu
-
-      # Don't quote so that if user is empty it still expands
-      #
-      # shellcheck disable=SC2086
-      exec ${CONTAINER_CMD} run \
-        --rm \
-        --name="${NAME}" \
-        --hostname="${NAME}" \
-        --cap-drop=ALL \
-        --security-opt=no-new-privileges:true \
-        --pull="${CONTAINER_PULL_POLICY}" \
-        ${CONTAINER_MEMORY} \
-        ${CONTAINER_LOGS} \
-        ${CONTAINER_RC} \
-        ${CONTAINER_NETWORK} \
-        ${CONTAINER_ENV} \
-        ${CONTAINER_MOUNTS} \
-        ${CONTAINER_PORTS} \
-        ${CONTAINER_CAPS} \
-        ${CONTAINER_USERNS} \
-        "${IMAGE}:${TAG}" \
-        ${CONTAINER_ARGS} \
-        "$@"
-    fi
+    _add_rc --init
   fi
+
+  if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
+    _add_rc --entrypoint="${CONTAINER_ENTRYPOINT}"
+  fi
+
+  if [ -n "${CONTAINER_PULL_POLICY}" ]; then
+    _add_rc --pull="${CONTAINER_PULL_POLICY}"
+  fi
+
+  # Make the IFS into newline only so we can correctly parse arguments with embedded spaces
+  IFS='
+'
+
+  # Log the commands we use next
+  # Fail on errors
+  # Fail on unassigned
+  set -xeu
+
+  # Don't quote so that if user is empty it still expands
+  #
+  # shellcheck disable=SC2086
+  exec "${CONTAINER_CMD}" \
+    run \
+    --rm \
+    --name="${NAME}" \
+    --hostname="${NAME}" \
+    --cap-drop=ALL \
+    --security-opt=no-new-privileges:true \
+    ${CONTAINER_MEMORY} \
+    ${CONTAINER_LOGS} \
+    ${CONTAINER_RC} \
+    ${CONTAINER_NETWORK} \
+    ${CONTAINER_ENV} \
+    ${CONTAINER_MOUNTS} \
+    ${CONTAINER_PORTS} \
+    ${CONTAINER_CAPS} \
+    ${CONTAINER_USERNS} \
+    "${IMAGE}:${TAG}" \
+    ${CONTAINER_ARGS}
 }
 
 main() {
@@ -600,6 +520,7 @@ main() {
   CONTAINER_PORTS=""
   CONTAINER_CAPS=""
   CONTAINER_USERNS=""
+  CONTAINER_ARGS=""
 
   if [ -z "${NAME}" ]; then
     # shellcheck disable=SC2016
@@ -678,17 +599,6 @@ main() {
 
   __await_directory "${_watch}" || return 1
   _finalize "$@" || return 1
-
-  readonly CONTAINER_LOGS
-  readonly CONTAINER_MOUNTS
-  readonly CONTAINER_CAPS
-  readonly CONTAINER_ENV
-  readonly CONTAINER_NETWORK
-  readonly CONTAINER_PORTS
-  readonly CONTAINER_USERNS
-  readonly CONTAINER_MEMORY
-  readonly CONTAINER_RC
-  readonly CONTAINER_ARGS
 
   _containerize "$@" || return 1
   return 0
