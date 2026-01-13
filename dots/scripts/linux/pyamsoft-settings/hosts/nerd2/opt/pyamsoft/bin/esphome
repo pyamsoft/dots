@@ -7,7 +7,8 @@ NAME="esphome"
 IMAGE="ghcr.io/esphome/esphome"
 TAG="2025.12.5"
 
-CONTAINER_MEMORY_LIMIT="2G"
+# default is fine unless you are compiling, then you need 8g lol
+#CONTAINER_MEMORY_LIMIT="8G"
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
