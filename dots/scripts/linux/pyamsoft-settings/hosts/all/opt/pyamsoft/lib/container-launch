@@ -330,9 +330,9 @@ _mount_bind() {
   }
 
   if [ -n "${_mount_options}" ]; then
-    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
-  else
     _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target},${_mount_options}"
+  else
+    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
   fi
 
   unset _mount_src
