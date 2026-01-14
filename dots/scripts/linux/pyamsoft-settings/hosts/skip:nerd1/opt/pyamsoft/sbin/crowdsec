@@ -27,9 +27,11 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/var/lib/crowdsec/data" || return 1
 
   # Bouncers should live at their real directory for systemd service scripts to handle them
-  if [ -d "/etc/crowdsec/bouncers" ]; then
-    _add_mounts --mount "type=bind,source=/etc/crowdsec/bouncers,target=/etc/crowdsec/bouncers"
+  _bouncers="/etc/crowdsec/bouncers"
+  if [ -d "${_bouncers}" ]; then
+    _mount_bind "${_bouncers}" "${_bouncers}" || return 1
   fi
+  unset _bouncers
 
   return 0
 }

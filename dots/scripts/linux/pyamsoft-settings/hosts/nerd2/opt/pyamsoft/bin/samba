@@ -16,18 +16,17 @@ _prep_mounts() {
 
   # Follow the link and mount the share folder ONLY if it is valid
   if [ -d "$(realpath "${_share}")" ]; then
-    _add_mounts --mount "type=bind,source=${_share},target=/storage"
+    _mount_bind "${_share}" "/storage" || return 1
   fi
   unset _share
 
   # Custom samba config override
   _override="${CONTAINER_RUNTIME_DIR}/${NAME}/smb.conf"
   if [ -f "$(realpath "${_override}")" ]; then
-    _add_mounts --mount "type=bind,source=${_override},target=/etc/samba/smb.conf"
+    _mount_bind "${_override}" "/etc/samba/smb.conf" || return 1
   fi
   unset _override
 
-  readonly _mounts
   return 0
 }
 

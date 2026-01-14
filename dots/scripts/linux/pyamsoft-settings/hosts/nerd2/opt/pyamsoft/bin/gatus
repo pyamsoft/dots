@@ -4,8 +4,7 @@
 . "/opt/pyamsoft/lib/container-launch"
 
 # Define a basename here, which will be re-evaluated later once a MODE is defined
-BASENAME="gatus"
-NAME="${BASENAME}"
+NAME="gatus"
 IMAGE="docker.io/twinproduction/gatus"
 TAG="v5.34.0"
 

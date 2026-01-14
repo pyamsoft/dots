@@ -38,35 +38,8 @@ CONTAINER_ARGS=""
 
 ## Defaults
 
-# We want a system with at least this many CPUs
-#
-# If we have at least 4 CPUs, then we limit containers by default to 3 CPUs (4-1)
-# If we do NOT have at least 4 CPUs, we let the container use all CPUs
-readonly MINIMUM_REQUIRED_CPU_NUMBER=4
-
 # Default container memory allocation to 256MB
 readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
-
-# Figure out how many CPU cores our system has
-if command -v nproc >/dev/null 2>&1; then
-  # If we have nproc just use it
-  SYSTEM_CPU_NUMBER="$(nproc)"
-elif _is_linux; then
-  # Otherwise on Linux we count processors
-  SYSTEM_CPU_NUMBER="$(grep -c "processor" "/proc/cpuinfo")"
-else
-  # On macos we use sysctl
-  SYSTEM_CPU_NUMBER="$(sysctl -n hw.ncpu)"
-fi
-readonly SYSTEM_CPU_NUMBER
-
-# And the default container CPU count is 1 less than system total
-if [ "${SYSTEM_CPU_NUMBER}" -gt "${MINIMUM_REQUIRED_CPU_NUMBER}" ]; then
-  DEFAULT_CONTAINER_CPU_NUMBER="$((SYSTEM_CPU_NUMBER - 1))"
-else
-  DEFAULT_CONTAINER_CPU_NUMBER="${SYSTEM_CPU_NUMBER}"
-fi
-readonly DEFAULT_CONTAINER_CPU_NUMBER
 
 ## Private variables
 __os_name="$(uname)"
@@ -347,17 +320,24 @@ _mount_mkdir() {
 _mount_bind() {
   _mount_src="$1"
   _mount_target="$2"
+  _mount_options="$3"
 
   _mount_mkdir "${_mount_src}" || {
     unset _mount_src
     unset _mount_target
+    unset _mount_options
     return 1
   }
 
-  _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
+  if [ -n "${_mount_options}" ]; then
+    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
+  else
+    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target},${_mount_options}"
+  fi
 
   unset _mount_src
   unset _mount_target
+  unset _mount_options
   return 0
 }
 
@@ -441,12 +421,6 @@ _prep_memory() {
 #
 # Default function for setting up CPU usage
 _prep_cpu() {
-  if [ -z "${CONTAINER_CPU_NUMBER}" ]; then
-    _log 'CPU number is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_CPU_NUMBER}"
-    CONTAINER_CPU_NUMBER="${DEFAULT_CONTAINER_CPU_NUMBER}"
-  fi
-
-  _add_cpu --cpus "${CONTAINER_CPU_NUMBER}"
   return 0
 }
 

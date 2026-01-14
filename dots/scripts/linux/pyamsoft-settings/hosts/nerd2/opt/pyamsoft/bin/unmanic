@@ -20,7 +20,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
-    _add_mounts "--mount type=bind,source=${_media},target=/library"
+    _mount_bind "${_media}" "/library" || return 1
   fi
   unset _media
 

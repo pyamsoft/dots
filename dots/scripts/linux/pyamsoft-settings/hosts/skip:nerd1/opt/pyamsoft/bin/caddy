@@ -15,7 +15,7 @@ _prep_mounts() {
 
   _caddy="/etc/caddy"
   if [ -d "${_caddy}" ]; then
-    _add_mounts --mount "type=bind,source=${_caddy},target=/etc/caddy"
+    _mount_bind "${_caddy}" "/etc/caddy" || return 1
   fi
   unset _caddy
 
@@ -38,7 +38,7 @@ _prep_network() {
 }
 
 _prep_caps() {
-  _add_caps --cap-add "NET_BIND_SERVICE"
+  _add_caps --cap-add NET_BIND_SERVICE
   _add_caps --cap-add NET_ADMIN
 
   if _is_macos; then

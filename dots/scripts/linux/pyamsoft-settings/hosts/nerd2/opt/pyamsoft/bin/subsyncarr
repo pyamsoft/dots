@@ -17,7 +17,7 @@ _prep_mounts() {
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ] && [ -e "$(realpath "${_media}/mounted")" ]; then
-    _add_mounts --mount "type=bind,source=${_media},target=/scan_dir/1"
+    _mount_bind "${_media}" "/scan_dir" || return 1
   fi
   unset _media
 

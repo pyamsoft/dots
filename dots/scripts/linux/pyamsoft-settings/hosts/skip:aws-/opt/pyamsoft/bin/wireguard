@@ -13,7 +13,7 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/wg" "/etc/wireguard" || return 1
 
   # Bind kernel modules
-  _add_mounts --mount "type=bind,source=/lib/modules,target=/lib/modules"
+  _mount_bind "/lib/modules" "/lib/modules" || return 1
 
   readonly _mounts
   return 0
