@@ -10,4 +10,5 @@ server:
   do-daemonize: no
 
   include-toplevel: "conf.d/*.conf"
+  include-toplevel: "rpz.d/*.conf"
   include-toplevel: "zones.d/*.conf"

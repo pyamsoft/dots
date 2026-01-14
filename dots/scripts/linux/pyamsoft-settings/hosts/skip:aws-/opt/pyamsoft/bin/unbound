@@ -7,7 +7,7 @@ NAME="unbound"
 IMAGE="docker.io/madnuttah/unbound"
 TAG="1.24.2-0"
 
-CONTAINER_MEMORY_LIMIT="128M"
+CONTAINER_MEMORY_LIMIT="2G"
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {

@@ -14,10 +14,14 @@ CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 # The amount of memory a container can use
 CONTAINER_MEMORY_LIMIT="${CONTAINER_MEMORY_LIMIT:-}"
-# Custom Entrypoint
+# Pull policy
 CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 # Custom Entrypoint
 CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
+# Read only root filesystem
+CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
+# Further read-only restrictions. CONTAINER_READONLY must be set
+CONTAINER_READONLY_ALL="${CONTAINER_READONLY_ALL:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -30,10 +34,9 @@ CONTAINER_USERNS=""
 CONTAINER_RC=""
 CONTAINER_LOGS=""
 CONTAINER_MEMORY=""
+CONTAINER_CPU=""
 CONTAINER_CMD=""
 CONTAINER_ARGS=""
-
-readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
 
 ## Private variables
 __os_name="$(uname)"
@@ -160,6 +163,19 @@ ${_arg}"
 _add_memory() {
   for _arg in "$@"; do
     CONTAINER_MEMORY="${CONTAINER_MEMORY}
+${_arg}"
+    unset _arg
+  done
+  unset _arg
+
+  return 0
+}
+
+##
+# Add to CPU
+_add_cpu() {
+  for _arg in "$@"; do
+    CONTAINER_CPU="${CONTAINER_CPU}
 ${_arg}"
     unset _arg
   done
@@ -334,9 +350,10 @@ __setup_network() {
   # Evaluate this AFTER so that just incase the script
   # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
-    _add_network --add-host "localhost:127.0.0.1"
     _add_network --dns-search="."
+    _add_network --add-host "localhost:127.0.0.1"
     _add_network --add-host "host.containers.internal:host-gateway"
+    _add_network --add-host "host.docker.internal:host-gateway"
   fi
 
   return 0
@@ -378,14 +395,45 @@ __await_directory() {
 ##
 # Overridable
 #
-# Default function for setting up system logging
+# Default function for setting up Memory usage
 _prep_memory() {
   if [ -z "${CONTAINER_MEMORY_LIMIT}" ]; then
+    readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
+
     _log 'Memory limit is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_MEMORY_LIMIT}"
     CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
   fi
 
   _add_memory --memory "${CONTAINER_MEMORY_LIMIT}"
+  return 0
+}
+
+##
+# Overridable
+#
+# Default function for setting up CPU usage
+_prep_cpu() {
+  if [ -z "${CONTAINER_CPU_NUMBER}" ]; then
+    # Figure out how many CPU cores our system has
+    if _is_linux; then
+      SYSTEM_CPU_NUMBER="$(grep -c "processor" "/proc/cpuinfo")"
+    else
+      SYSTEM_CPU_NUMBER="$(sysctl -n hw.ncpu)"
+    fi
+    readonly SYSTEM_CPU_NUMBER
+
+    if [ "${SYSTEM_CPU_NUMBER}" -gt 1 ]; then
+      DEFAULT_CONTAINER_CPU_NUMBER="$((SYSTEM_CPU_NUMBER - 1))"
+    else
+      DEFAULT_CONTAINER_CPU_NUMBER=1
+    fi
+    readonly DEFAULT_CONTAINER_CPU_NUMBER
+
+    _log 'CPU number is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_CPU_NUMBER}"
+    CONTAINER_CPU_NUMBER="${DEFAULT_CONTAINER_CPU_NUMBER}"
+  fi
+
+  _add_cpu --cpus "${CONTAINER_CPU_NUMBER}"
   return 0
 }
 
@@ -468,6 +516,13 @@ _containerize() {
     _add_rc --init
   fi
 
+  if [ -n "${CONTAINER_READONLY}" ] && [ "${CONTAINER_READONLY}" -ne 0 ]; then
+    _add_rc --read-only
+    if [ -n "${CONTAINER_READONLY_ALL}" ] && [ "${CONTAINER_READONLY_ALL}" -ne 0 ]; then
+      _add_rc --read-only-tmpfs
+    fi
+  fi
+
   if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
     _add_rc --entrypoint="${CONTAINER_ENTRYPOINT}"
   fi
@@ -475,6 +530,20 @@ _containerize() {
   if [ -n "${CONTAINER_PULL_POLICY}" ]; then
     _add_rc --pull="${CONTAINER_PULL_POLICY}"
   fi
+
+  # Set container name and hostname
+  _add_rc --name="${NAME}"
+  _add_rc --hostname="${NAME}"
+
+  # Disable detach keys
+  _add_rc --detach-keys=""
+
+  # Security
+  _add_rc --cap-drop=ALL
+  _add_rc --security-opt=no-new-privileges
+
+  # Slightly increase security by starting with a blank hosts file
+  _add_network --hosts-file="none"
 
   # Make the IFS into newline only so we can correctly parse arguments with embedded spaces
   IFS='
@@ -491,13 +560,10 @@ _containerize() {
   exec "${CONTAINER_CMD}" \
     run \
     --rm \
-    --name="${NAME}" \
-    --hostname="${NAME}" \
-    --cap-drop=ALL \
-    --security-opt=no-new-privileges:true \
-    ${CONTAINER_MEMORY} \
-    ${CONTAINER_LOGS} \
     ${CONTAINER_RC} \
+    ${CONTAINER_MEMORY} \
+    ${CONTAINER_CPU} \
+    ${CONTAINER_LOGS} \
     ${CONTAINER_NETWORK} \
     ${CONTAINER_ENV} \
     ${CONTAINER_MOUNTS} \
@@ -520,6 +586,8 @@ main() {
   CONTAINER_PORTS=""
   CONTAINER_CAPS=""
   CONTAINER_USERNS=""
+  CONTAINER_MEMORY=""
+  CONTAINER_CPU=""
   CONTAINER_ARGS=""
 
   if [ -z "${NAME}" ]; then
@@ -593,6 +661,7 @@ main() {
 
   # These are defined here an while they can be overridden, they should
   # always exist
+  _prep_cpu || return 1
   _prep_memory || return 1
   _prep_log || return 1
   _prep_rc || return 1
