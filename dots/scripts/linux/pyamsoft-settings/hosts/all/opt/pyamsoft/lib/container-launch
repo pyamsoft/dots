@@ -20,8 +20,6 @@ CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
 # Read only root filesystem
 CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
-# Further read-only restrictions. CONTAINER_READONLY must be set
-CONTAINER_READONLY_ALL="${CONTAINER_READONLY_ALL:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -40,6 +38,12 @@ CONTAINER_ARGS=""
 
 ## Defaults
 
+# We want a system with at least this many CPUs
+#
+# If we have at least 4 CPUs, then we limit containers by default to 3 CPUs (4-1)
+# If we do NOT have at least 4 CPUs, we let the container use all CPUs
+readonly MINIMUM_REQUIRED_CPU_NUMBER=4
+
 # Default container memory allocation to 256MB
 readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
 
@@ -57,10 +61,10 @@ fi
 readonly SYSTEM_CPU_NUMBER
 
 # And the default container CPU count is 1 less than system total
-if [ "${SYSTEM_CPU_NUMBER}" -gt 1 ]; then
+if [ "${SYSTEM_CPU_NUMBER}" -gt "${MINIMUM_REQUIRED_CPU_NUMBER}" ]; then
   DEFAULT_CONTAINER_CPU_NUMBER="$((SYSTEM_CPU_NUMBER - 1))"
 else
-  DEFAULT_CONTAINER_CPU_NUMBER=1
+  DEFAULT_CONTAINER_CPU_NUMBER="${SYSTEM_CPU_NUMBER}"
 fi
 readonly DEFAULT_CONTAINER_CPU_NUMBER
 
@@ -527,9 +531,6 @@ _containerize() {
 
   if [ -n "${CONTAINER_READONLY}" ] && [ "${CONTAINER_READONLY}" -ne 0 ]; then
     _add_rc --read-only
-    if [ -n "${CONTAINER_READONLY_ALL}" ] && [ "${CONTAINER_READONLY_ALL}" -ne 0 ]; then
-      _add_rc --read-only-tmpfs
-    fi
   fi
 
   if [ -n "${CONTAINER_ENTRYPOINT}" ]; then
@@ -551,8 +552,10 @@ _containerize() {
   _add_rc --cap-drop=ALL
   _add_rc --security-opt=no-new-privileges
 
-  # Slightly increase security by starting with a blank hosts file
-  _add_network --hosts-file="none"
+  if _is_podman; then
+    # Slightly increase security by starting with a blank hosts file
+    _add_network --hosts-file="none"
+  fi
 
   # Make the IFS into newline only so we can correctly parse arguments with embedded spaces
   IFS='
@@ -630,24 +633,22 @@ main() {
   readonly CONTAINER_CMD
 
   # Move to accessible directory
-  if [ "$(id -u)" -eq 0 ]; then
+  if _is_root; then
+    _watch="/run/containers"
+    CONTAINER_RUNTIME_DIR="/usr/local/etc/containers"
+
     cd / || {
       _log 'Unable to move into / directory'
       return 1
     }
   else
+    _watch="${XDG_RUNTIME_DIR}/containers"
+    CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
+
     cd "${HOME}" || {
       _log 'Unable to move into HOME directory'
       return 1
     }
-  fi
-
-  if [ "$(id -u)" -eq 0 ]; then
-    _watch="/run/containers"
-    CONTAINER_RUNTIME_DIR="/usr/local/etc/containers"
-  else
-    _watch="${XDG_RUNTIME_DIR}/containers"
-    CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
   fi
 
   __require_function _check_user || return 1
