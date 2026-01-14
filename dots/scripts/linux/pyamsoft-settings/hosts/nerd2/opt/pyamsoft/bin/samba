@@ -23,7 +23,7 @@ _prep_mounts() {
   # Custom samba config override
   _override="${CONTAINER_RUNTIME_DIR}/${NAME}/smb.conf"
   if [ -f "$(realpath "${_override}")" ]; then
-    _mount_bind "${_override}" "/etc/samba/smb.conf" || return 1
+    _add_mounts --mount "type=bind,src=${_override},target=/etc/samba/smb.conf" || return 1
   fi
   unset _override
 
