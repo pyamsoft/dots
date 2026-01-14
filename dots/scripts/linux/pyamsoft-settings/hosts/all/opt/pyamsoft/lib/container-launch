@@ -38,6 +38,32 @@ CONTAINER_CPU=""
 CONTAINER_CMD=""
 CONTAINER_ARGS=""
 
+## Defaults
+
+# Default container memory allocation to 256MB
+readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
+
+# Figure out how many CPU cores our system has
+if command -v nproc >/dev/null 2>&1; then
+  # If we have nproc just use it
+  SYSTEM_CPU_NUMBER="$(nproc)"
+elif _is_linux; then
+  # Otherwise on Linux we count processors
+  SYSTEM_CPU_NUMBER="$(grep -c "processor" "/proc/cpuinfo")"
+else
+  # On macos we use sysctl
+  SYSTEM_CPU_NUMBER="$(sysctl -n hw.ncpu)"
+fi
+readonly SYSTEM_CPU_NUMBER
+
+# And the default container CPU count is 1 less than system total
+if [ "${SYSTEM_CPU_NUMBER}" -gt 1 ]; then
+  DEFAULT_CONTAINER_CPU_NUMBER="$((SYSTEM_CPU_NUMBER - 1))"
+else
+  DEFAULT_CONTAINER_CPU_NUMBER=1
+fi
+readonly DEFAULT_CONTAINER_CPU_NUMBER
+
 ## Private variables
 __os_name="$(uname)"
 __uid="$(id -u)"
@@ -398,8 +424,6 @@ __await_directory() {
 # Default function for setting up Memory usage
 _prep_memory() {
   if [ -z "${CONTAINER_MEMORY_LIMIT}" ]; then
-    readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
-
     _log 'Memory limit is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_MEMORY_LIMIT}"
     CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
   fi
@@ -414,21 +438,6 @@ _prep_memory() {
 # Default function for setting up CPU usage
 _prep_cpu() {
   if [ -z "${CONTAINER_CPU_NUMBER}" ]; then
-    # Figure out how many CPU cores our system has
-    if _is_linux; then
-      SYSTEM_CPU_NUMBER="$(grep -c "processor" "/proc/cpuinfo")"
-    else
-      SYSTEM_CPU_NUMBER="$(sysctl -n hw.ncpu)"
-    fi
-    readonly SYSTEM_CPU_NUMBER
-
-    if [ "${SYSTEM_CPU_NUMBER}" -gt 1 ]; then
-      DEFAULT_CONTAINER_CPU_NUMBER="$((SYSTEM_CPU_NUMBER - 1))"
-    else
-      DEFAULT_CONTAINER_CPU_NUMBER=1
-    fi
-    readonly DEFAULT_CONTAINER_CPU_NUMBER
-
     _log 'CPU number is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_CPU_NUMBER}"
     CONTAINER_CPU_NUMBER="${DEFAULT_CONTAINER_CPU_NUMBER}"
   fi
