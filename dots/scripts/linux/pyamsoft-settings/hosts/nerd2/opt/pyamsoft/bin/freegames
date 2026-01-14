@@ -7,6 +7,8 @@ NAME="freegames"
 IMAGE="ghcr.io/vogler/free-games-claimer"
 TAG="dev"
 
+# Browsers are heavy
+CONTAINER_MEMORY_LIMIT="2G"
 CONTAINER_PULL_POLICY="newer"
 
 _prep_mounts() {
