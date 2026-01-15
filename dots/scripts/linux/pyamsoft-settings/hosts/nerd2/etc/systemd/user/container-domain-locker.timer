@@ -1,0 +1,10 @@
+[Unit]
+Description=Update domain-locker container
+
+[Timer]
+OnCalendar=0/4:00:00
+Persistent=true
+Unit=container-update-domain-locker.service
+
+[Install]
+WantedBy=timers.target
