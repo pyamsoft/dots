@@ -13,7 +13,11 @@
 # Stop the container with `podman stop -t 0 postgres`
 # And then start it again and it should start up
 
-NAME="postgres"
+# Since this container is more of a "library", we could potentially have many instances
+# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
+# themselves when invoking this script.
+NAME="${NAME:-postgres}"
+
 IMAGE="docker.io/postgres"
 TAG="18.1"
 

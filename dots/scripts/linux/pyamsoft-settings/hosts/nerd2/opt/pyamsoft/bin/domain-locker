@@ -7,6 +7,13 @@ NAME="domain-locker"
 IMAGE="docker.io/lissy93/domain-locker"
 TAG="latest"
 
+# The name of the postgres container we are attaching to
+# or "postgres" if none provided
+#
+# This way we can support multiple instances of postgres running at
+# a time.
+POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-postgres}"
+
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
@@ -43,7 +50,7 @@ _prep_network() {
   CONTAINER_NETWORK_HOST_ROUTE=0
 
   # So we can talk to the postgres DB via localhost ports
-  _add_network --network="container:postgres"
+  _add_network --network="container:${POSTGRES_CONTAINER}"
   return 0
 }
 
@@ -54,7 +61,7 @@ _prep_ports() {
 
 _finalize() {
   # Require the postgres container
-  _add_rc --requires postgres
+  _add_rc --requires "${POSTGRES_CONTAINER}"
   return 0
 }
 

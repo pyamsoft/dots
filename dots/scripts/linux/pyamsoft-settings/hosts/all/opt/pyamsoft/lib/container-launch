@@ -20,6 +20,8 @@ CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
 # Read only root filesystem
 CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
+# Use the "unique" name instead of adopting $NAME
+CONTAINER_UNIQUE_NAME="${CONTAINER_UNIQUE_NAME:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -515,9 +517,13 @@ _containerize() {
     _add_rc --pull="${CONTAINER_PULL_POLICY}"
   fi
 
-  # Set container name and hostname
-  _add_rc --name="${NAME}"
+  # Set hostname
   _add_rc --hostname="${NAME}"
+
+  # Set a standard name if we do NOT want a unique one
+  if [ -z "${CONTAINER_UNIQUE_NAME}" ] || [ "${CONTAINER_UNIQUE_NAME}" -eq 0 ]; then
+    _add_rc --name="${NAME}"
+  fi
 
   # Breaks on MacOS with a complaint about "unrecognized key ''"
   if _is_linux; then
