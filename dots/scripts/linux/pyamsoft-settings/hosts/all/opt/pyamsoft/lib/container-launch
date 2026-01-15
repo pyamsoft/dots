@@ -519,8 +519,11 @@ _containerize() {
   _add_rc --name="${NAME}"
   _add_rc --hostname="${NAME}"
 
-  # Disable detach keys
-  _add_rc --detach-keys=""
+  # Breaks on MacOS with a complaint about "unrecognized key ''"
+  if _is_linux; then
+    # Disable detach keys
+    _add_rc --detach-keys=""
+  fi
 
   # Security
   _add_rc --cap-drop=ALL
