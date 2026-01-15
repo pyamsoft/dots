@@ -15,9 +15,7 @@
 
 NAME="postgres"
 IMAGE="docker.io/postgres"
-TAG="17.6"
-
-CONTAINER_REQUIRE_RUNCONF=0
+TAG="18.1"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/var/lib/postgresql/data" || return 1
@@ -42,7 +40,8 @@ _prep_caps() {
 }
 
 _prep_env() {
-  _add_env -e POSTGRES_PASSWORD="mysecretpostgrespasswd"
+  # Setup a POSTGRES_USER, POSTGRES_DB, POSTGRES_PASSWORD
+  # via runconfig.env
   return 0
 }
 
