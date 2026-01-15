@@ -51,7 +51,8 @@ _prep_network() {
 }
 
 _prep_ports() {
-  _add_ports -p "127.0.0.1:5432:5432/tcp"
+  # Setup a port that maps to 5432/tcp
+  # via runconfig.env
   return 0
 }
 
