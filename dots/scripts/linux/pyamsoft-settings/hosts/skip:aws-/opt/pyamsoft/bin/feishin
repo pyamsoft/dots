@@ -54,5 +54,10 @@ _check_user() {
   return 0
 }
 
+_finalize() {
+  # Make sure the navidrome container is alive
+  _add_rc --requires "navidrome"
+}
+
 main "$@" || exit 1
 exit 0

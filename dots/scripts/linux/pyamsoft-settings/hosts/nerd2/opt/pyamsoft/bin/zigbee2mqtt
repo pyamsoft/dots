@@ -51,5 +51,12 @@ _check_user() {
   return 0
 }
 
+_finalize() {
+  # Make sure home assistant is alive
+  _add_rc --requires "home-assistant"
+
+  return 0
+}
+
 main "$@" || exit 1
 exit 0

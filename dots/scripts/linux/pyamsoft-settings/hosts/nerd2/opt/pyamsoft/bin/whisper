@@ -58,6 +58,10 @@ _finalize() {
   _add_args --language "en"
   _add_args --data-dir "/data"
   _add_args --download-dir "/download"
+
+  # Make sure home assistant is alive
+  _add_rc --requires "home-assistant"
+
   return 0
 }
 

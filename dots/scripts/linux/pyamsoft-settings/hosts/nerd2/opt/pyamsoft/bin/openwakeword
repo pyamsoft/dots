@@ -53,6 +53,10 @@ _finalize() {
   _add_args --uri "tcp://0.0.0.0:10400"
   _add_args --preload-model "${MODEL}"
   _add_args --custom-model-dir "/custom-model"
+
+  # Make sure home assistant is alive
+  _add_rc --requires "home-assistant"
+
   return 0
 }
 

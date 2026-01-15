@@ -83,5 +83,14 @@ _check_user() {
   return 0
 }
 
+_finalize() {
+  if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
+    # Make sure we have the wireguard VPN
+    _add_rc --requires "wireguard"
+  fi
+
+  return 0
+}
+
 main "$@" || exit 1
 exit 0
