@@ -3,7 +3,11 @@
 # Source our common library
 . "/opt/pyamsoft/lib/container-launch"
 
-NAME="wireguard"
+# Since this container is more of a "library", we could potentially have many instances
+# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
+# themselves when invoking this script.
+NAME="${NAME:-wireguard}"
+
 IMAGE="docker.io/jordanpotter/wireguard"
 TAG="2025-12-30"
 
