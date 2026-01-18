@@ -72,6 +72,90 @@ _is_docker() {
   [ "${CONTAINER_CMD}" = "docker" ]
 }
 
+## Check if CMD is atleast version "$1"
+_is_cmd_version_atleast() {
+  _expect_v="$1"
+
+  _has_v_array="$("${CONTAINER_CMD}" --version | grep -o '[0-9][0-9]*\(\.[0-9][0-9]*\)\{1,2\}' | tr '.' ' ')"
+  _exp_v_array="$(printf -- '%s' "${_expect_v}" | tr '.' ' ')"
+
+  _has_v_major="$(printf -- '%s' "${_has_v_array}" | awk '{ print $1 }')"
+  _has_v_minor="$(printf -- '%s' "${_has_v_array}" | awk '{ print $2 }')"
+  _has_v_patch="$(printf -- '%s' "${_has_v_array}" | awk '{ print $3 }')"
+
+  _exp_v_major="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $1 }')"
+  _exp_v_minor="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $2 }')"
+  _exp_v_patch="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $3 }')"
+
+  if [ -n "${_has_v_major}" ] && [ -n "${_exp_v_major}" ]; then
+    # If our current version MAJOR is less than we expect, fail
+    if [ "${_has_v_major}" -lt "${_exp_v_major}" ]; then
+      unset _exp_v_major
+      unset _exp_v_minor
+      unset _exp_v_patch
+      unset _exp_v_array
+
+      unset _has_v_major
+      unset _has_v_minor
+      unset _has_v_patch
+      unset _has_v_array
+
+      unset _expect_v
+      return 1
+    fi
+  fi
+
+  if [ -n "${_has_v_minor}" ] && [ -n "${_exp_v_minor}" ]; then
+    # If our current version MINOR is less than we expect, fail
+    if [ "${_has_v_minor}" -lt "${_exp_v_minor}" ]; then
+      unset _exp_v_major
+      unset _exp_v_minor
+      unset _exp_v_patch
+      unset _exp_v_array
+
+      unset _has_v_major
+      unset _has_v_minor
+      unset _has_v_patch
+      unset _has_v_array
+
+      unset _expect_v
+      return 1
+    fi
+  fi
+
+  if [ -n "${_has_v_patch}" ] && [ -n "${_exp_v_patch}" ]; then
+    # If our current version PATCH is less than we expect, fail
+    if [ "${_has_v_patch}" -lt "${_exp_v_patch}" ]; then
+      unset _exp_v_major
+      unset _exp_v_minor
+      unset _exp_v_patch
+      unset _exp_v_array
+
+      unset _has_v_major
+      unset _has_v_minor
+      unset _has_v_patch
+      unset _has_v_array
+
+      unset _expect_v
+      return 1
+    fi
+  fi
+
+  # Otherwise we are good
+  unset _exp_v_major
+  unset _exp_v_minor
+  unset _exp_v_patch
+  unset _exp_v_array
+
+  unset _has_v_major
+  unset _has_v_minor
+  unset _has_v_patch
+  unset _has_v_array
+
+  unset _expect_v
+  return 0
+}
+
 ##
 # Add to MOUNTS
 _add_mounts() {
@@ -536,8 +620,10 @@ _containerize() {
   _add_rc --security-opt=no-new-privileges
 
   if _is_podman; then
-    # Slightly increase security by starting with a blank hosts file
-    _add_network --hosts-file="none"
+    if _is_cmd_version_atleast 5.4; then
+      # Slightly increase security by starting with a blank hosts file
+      _add_network --hosts-file="none"
+    fi
   fi
 
   # Make the IFS into newline only so we can correctly parse arguments with embedded spaces
