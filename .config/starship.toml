@@ -7,8 +7,13 @@ add_newline = false
 # Don't follow symlinks (slow with networked file systems)
 follow_symlinks = false
 
-# Put the CWD on the second line
-format = "$all$directory$character"
+# Put Custom modules on the second line
+# ONLY render the second line IF a custom module is enabled and has output
+# This will place the prompt on the third line, otherwise second
+format = """
+$all($custom
+)$character
+"""
 
 # Don't track command duration
 [cmd_duration]
