@@ -3,7 +3,7 @@
 # Source our common library
 . "/opt/pyamsoft/lib/container-launch"
 
-NAME="crowdsec"
+NAME="${NAME:-crowdsec}"
 IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
 TAG="v1.7.4-debian"

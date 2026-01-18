@@ -1,5 +1,7 @@
 #!/bin/sh
 
+CSCLI="${CSCLI:-/opt/pyamsoft/bin/cscli}"
+
 _post() {
   exec curl -s -X POST -H "Authorization: Bearer ${BEARER_TOKEN}" "$1?success=$2"
 }
@@ -24,7 +26,7 @@ main() {
     _url="$(systemd-escape --unescape "${_url}")"
   fi
 
-  /opt/pyamsoft/bin/cscli lapi status && {
+  "${CSCLI}" lapi status && {
     printf -- '[Crowdsec Heartbeat] Crowdsec is still alive! Report: %s\n' "${_url}"
     _post "${_url}" "true" || {
       printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"\n' "${_url}"

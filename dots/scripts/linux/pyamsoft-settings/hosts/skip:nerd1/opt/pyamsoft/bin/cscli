@@ -1,5 +1,7 @@
 #!/bin/sh
 
+NAME="${NAME:-crowdsec}"
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
@@ -12,7 +14,7 @@ fi
 readonly _cmd
 
 if [ "$(id -u)" -eq 0 ]; then
-  exec "${_cmd}" exec -i -t crowdsec cscli "$@"
+  exec "${_cmd}" exec -i -t "${NAME}" cscli "$@"
 else
-  exec sudo "$0" "$@"
+  exec sudo "${_cmd}" exec -i -t "${NAME}" cscli "$@"
 fi
