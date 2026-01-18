@@ -89,7 +89,7 @@ main() {
     return 1
   fi
 
-  # On aws machines, we run debian
+  # On VPS machines, we run debian :)
   # Since debian packaging is tough, we use checkinstall
   # but checkinstall is 1. old, 2. messed up on this script for some reason
   #
