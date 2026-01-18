@@ -50,4 +50,13 @@ when = "tailscale status"
 command = "tailscale ip | head -n 1"
 symbol = "󰢩 TS"
 style = "dimmed purple"
-format = "[$symbol ($output)]($style)"
+format = "[$symbol ($output)]($style) "
+
+# Print out our ZeroTier IPv4
+[custom.zerotier]
+os = "linux"
+when = "ip -color=never -br -4 addr show | grep ztrf"
+command = "ip -color=never -br -4 addr show | grep ztrf | awk '{print $3 }' | sed 's/\\/.*//'"
+symbol = "󰢩 ZT"
+style = "dimmed cyan"
+format = "[$symbol ($output)]($style) "
