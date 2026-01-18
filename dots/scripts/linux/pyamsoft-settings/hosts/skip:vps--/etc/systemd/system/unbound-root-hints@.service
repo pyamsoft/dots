@@ -7,3 +7,4 @@ After=network.target
 Type=oneshot
 ExecStart=/usr/bin/mkdir -p /etc/unbound/iana.d/
 ExecStart=/usr/bin/curl -o /etc/unbound/iana.d/root.hints https://www.internic.net/domain/named.cache
+ExecStart=/usr/sbin/chown -R %i:%i /etc/unbound/iana.d

@@ -7,6 +7,7 @@ Before=network.target unbound.service
 # oneshot so this does not fork and finishes before unbound launches
 Type=oneshot
 ExecStart=/usr/sbin/chown -R %i:%i /etc/unbound/rpz.d/
+ExecStart=/usr/sbin/chown -R %i:%i /etc/unbound/iana.d/
 
 [Install]
 WantedBy=multi-user.target
