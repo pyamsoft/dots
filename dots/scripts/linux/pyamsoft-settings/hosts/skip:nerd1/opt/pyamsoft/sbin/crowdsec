@@ -70,8 +70,9 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  _add_ports -p "127.0.0.1:7080:7080/tcp"
-  _add_ports -p "127.0.0.1:6060:6060/tcp"
+  # Drop localhost port binding, we don't need local machine access
+  # _add_ports -p "127.0.0.1:7080:7080/tcp"
+  # _add_ports -p "127.0.0.1:6060:6060/tcp"
 
   return 0
 }
