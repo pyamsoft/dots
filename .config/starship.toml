@@ -1,8 +1,14 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
 # Don't add a newline to the prompt (above the prompt)
 add_newline = false
 
 # Don't follow symlinks (slow with networked file systems)
 follow_symlinks = false
+
+# Put the CWD on the second line
+format = "$all$directory$character"
 
 # Don't track command duration
 [cmd_duration]
@@ -15,6 +21,9 @@ show_always = true
 # Always show the hostname so we know where we are
 [hostname]
 ssh_only = false
+# Change the default format to remove the word "in"
+# format = "[$ssh_symbol$hostname]($style) in "
+format = "[$ssh_symbol$hostname]($style) "
 
 # Never truncate directory names
 [directory]
@@ -31,3 +40,12 @@ disabled = true
 # anyway
 [battery]
 disabled = true
+
+# Print out our Tailscale IPv4
+[custom.tailscale]
+os = "linux"
+when = "tailscale status"
+command = "tailscale ip | head -n 1"
+symbol = "󰢩 TS"
+style = "dimmed purple"
+format = "[$symbol ($output)]($style)"
