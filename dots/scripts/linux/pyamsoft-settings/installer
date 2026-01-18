@@ -33,20 +33,18 @@ _package_install() {
   }
 
   # Install file
-  # Most files can be 644 permission, but some will be individually chmodded
-  install -m=644 "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}" || {
+  cp "${_package_install__src_dir}/${_package_install__file}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
     printf -- 'Failed to copy install file: %s\n' "${_package_install__tag} ${_package_install__src_dir}/${_package_install__file}"
     return 1
   }
 
   # Re-apply a new mode if provided
-  if [ -n "${_package_install__file_chmod}" ]; then
-    printf -- "--> CHMOD%s %s (%s)\n" "${_package_install__tag}" "${_package_install__install_dir}/${_package_install__file}" "${_package_install__file_chmod}"
-    chmod "${_package_install__file_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
-      printf -- 'Failed to chmod install file:%s\n' "${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
-      return 1
-    }
-  fi
+  _chmod="${_package_install__file_chmod:-644}"
+  printf -- "--> CHMOD%s %s (%s)\n" "${_package_install__tag}" "${_package_install__install_dir}/${_package_install__file}" "${_chmod}"
+  chmod "${_chmod}" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}" || {
+    printf -- 'Failed to chmod install file:%s\n' "${_package_install__tag} ${_package_install__install_dir}/${_package_install__file}"
+    return 1
+  }
 
   # Replace the user placeholder
   #
@@ -60,6 +58,7 @@ _package_install() {
     sed -i -e "s/%MY_USER%/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
   fi
 
+  unset _chmod
   unset _package_install__tag
   unset _package_install__dir_chmod
   unset _package_install__src_dir
