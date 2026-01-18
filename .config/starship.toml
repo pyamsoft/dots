@@ -26,9 +26,6 @@ show_always = true
 # Always show the hostname so we know where we are
 [hostname]
 ssh_only = false
-# Change the default format to remove the word "in"
-# format = "[$ssh_symbol$hostname]($style) in "
-format = "[$ssh_symbol$hostname]($style) "
 
 # Never truncate directory names
 [directory]
