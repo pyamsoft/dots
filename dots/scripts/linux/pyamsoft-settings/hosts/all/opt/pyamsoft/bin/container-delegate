@@ -3,6 +3,25 @@
 _PROG_NAME="$(basename "$0")"
 readonly _PROG_NAME
 
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_PROG_NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
 __scripts=""
 __containers=""
 __args=""
@@ -13,7 +32,7 @@ if command -v podman >/dev/null; then
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
+  _elog 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
@@ -23,7 +42,7 @@ _dotfiles() {
 }
 
 _usage() {
-  printf -- '%s\n' "$(
+  _log -- '%s' "$(
     cat <<EOF
 
 ($(id -un)) ${_PROG_NAME} <action>
@@ -128,7 +147,7 @@ main() {
 
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    printf -- '[%s] Unable to cd to user HOME for %s usage\n' "${_PROG_NAME}" "${_cmd}"
+    _elog 'Unable to cd to user HOME for %s usage' "${_cmd}"
     return 1
   }
 
@@ -142,7 +161,7 @@ main() {
     ;;
   checkup)
     if [ "${_cmd}" != "podman" ]; then
-      printf -- '[%s] The "checkup" option is only supported with podman\n' "${_PROG_NAME}"
+      _elog 'The "checkup" option is only supported with podman'
       return 1
     fi
 
@@ -174,7 +193,7 @@ main() {
     _collect_containers "$@" || return 1
 
     if [ -z "${__containers}" ]; then
-      printf -- '[%s] Must call %s with at least one container name\n' "${_PROG_NAME}" "${_action}"
+      _elog 'Must call %s with at least one container name' "${_action}"
       return 1
     fi
 
@@ -204,7 +223,7 @@ main() {
     # Otherwise we expect at least one container name
     _collect_containers "$@" || return 1
     if [ -z "${__containers}" ]; then
-      printf -- '[%s] Must call %s with at least one container name\n' "${_PROG_NAME}" "${_action}"
+      _elog 'Must call %s with at least one container name' "${_action}"
       return 1
     fi
 
@@ -226,7 +245,7 @@ main() {
     exec /opt/pyamsoft/bin/container-teardown "$@"
     ;;
   *)
-    printf -- '[%s] Invalid action: "%s"\n' "${_PROG_NAME}" "${_action}"
+    _elog 'Invalid action: "%s"' "${_action}"
     _usage || return 1
     return 1
     ;;

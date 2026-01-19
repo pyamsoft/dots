@@ -55,7 +55,7 @@ _prep_network() {
   else
     # Require a VPN
     if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
-      _log 'You MUST use a VPN connection to run %s' "${NAME}"
+      _elog 'You MUST use a VPN connection to run %s' "${NAME}"
       return 1
     fi
 

@@ -13,13 +13,20 @@ _log() {
   return 0
 }
 
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
 # Use podman, don't use docker
 if command -v podman >/dev/null; then
   _cmd="podman"
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  _log 'Requires either "podman" or "docker" ("podman" preferred)'
+  _elog 'Requires either "podman" or "docker" ("podman" preferred)'
   exit 1
 fi
 readonly _cmd
@@ -56,13 +63,13 @@ _teardown_container() {
   # Attempt nice stop
   _log 'Try nice stop container: %s (%ss)' "${_container}" "${_teardown_time}"
   "${_cmd}" stop -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
-    _log 'Failed to nicely stop container %s (%ss)' "${_container}" "${_teardown_time}"
+    _elog 'Failed to nicely stop container %s (%ss)' "${_container}" "${_teardown_time}"
   }
 
   # Remove the container
   _log 'Try force-remove container: %s' "${_container}"
   "${_cmd}" rm -f "${_container}" >/dev/null 2>&1 || {
-    _log 'Failed to force remove the container %s' "${_container}"
+    _elog 'Failed to force remove the container %s' "${_container}"
 
     # If this fails, we failed
     return 1
@@ -72,12 +79,12 @@ _teardown_container() {
   _log 'Try remove container network: %s (%ss)' "${_container}" "${_teardown_time}"
   if [ "${_cmd}" = "podman" ]; then
     "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
-      _log 'Failed to remove the container network: %s (%ss)' "${_container}" "${_teardown_time}"
+      _elog 'Failed to remove the container network: %s (%ss)' "${_container}" "${_teardown_time}"
     }
   else
     # Docker does not support -t flag for network rm
     "${_cmd}" network rm -f "${_container}" >/dev/null 2>&1 || {
-      _log 'Failed to remove the container network: %s' "${_container}"
+      _elog 'Failed to remove the container network: %s' "${_container}"
     }
   fi
 
@@ -116,13 +123,13 @@ _teardown_compose() {
   _teardown_time="$2"
 
   cd "${_compose_dir}" || {
-    _log 'Failed to move into compose project: %s' "${_compose_dir}"
+    _elog 'Failed to move into compose project: %s' "${_compose_dir}"
     return 1
   }
 
   _log 'Try bring down compose: %s' "${_container}"
   "${_cmd}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" >/dev/null 2>&1 || {
-    _log 'Failed to bring down compose: %s' "${_container}"
+    _elog 'Failed to bring down compose: %s' "${_container}"
     return 1
   }
 
@@ -135,7 +142,7 @@ _teardown_compose() {
 main() {
   # Podman expects us to be in a accessible CWD
   cd "${HOME}" || {
-    _log 'Unable to cd to user HOME for sanity'
+    _elog 'Unable to cd to user HOME for sanity'
     return 1
   }
 
@@ -150,7 +157,7 @@ main() {
 
         # Did we pass an argument and is it a time
         if ! [ "${_time}" -eq "${_time}" ] >/dev/null 2>&1; then
-          _log 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
+          _elog 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
           _time="${_DEFAULT_TIME}"
         fi
 
@@ -166,7 +173,7 @@ main() {
         _time="$1"
         # Did we pass an argument and is it a time
         if ! [ "${_time}" -eq "${_time}" ] >/dev/null 2>&1; then
-          _log 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
+          _elog 'Unexpected "time" argument: "%s". Fallback to default: %ss' "${_time}" "${_DEFAULT_TIME}"
           _time="${_DEFAULT_TIME}"
         fi
 
@@ -202,7 +209,7 @@ main() {
   unset _arg
 
   if [ -z "${_containers}" ]; then
-    _log 'Must provide at least one container name to teardown.'
+    _elog 'Must provide at least one container name to teardown.'
     _usage || return 1
     return 1
   fi

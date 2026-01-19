@@ -28,7 +28,7 @@ _prep_mounts() {
   unset _unbound_dir
 
   if [ ! -r "${_conf}" ]; then
-    _log 'Config must exist at %s' "${_conf}"
+    _elog 'Config must exist at %s' "${_conf}"
     return 1
   fi
 

@@ -1,6 +1,24 @@
 #!/bin/sh
 
 _PROG_NAME="$(basename "$0")"
+readonly _PROG_NAME
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_PROG_NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
 
 _check() {
   # Try curl first (silence if curl is not present in the image)
@@ -15,7 +33,7 @@ _check() {
 
 _check_mullvad() {
   _vpn_output="$(_check "$1" "https://am.i.mullvad.net/json")" || {
-    printf -- '[%s] Failed to check container (%s) VPN status for Mullvad VPN\n' "${_PROG_NAME}" "$1"
+    _elog 'Failed to check container (%s) VPN status for Mullvad VPN' "$1"
     return 1
   }
 
@@ -24,7 +42,7 @@ _check_mullvad() {
     return 0
   fi
 
-  printf -- '[%s] Container (%s) IS NOT CONNECTED to Mullvad VPN.\n' "${_PROG_NAME}" "$1"
+  _elog 'Container (%s) IS NOT CONNECTED to Mullvad VPN!' "$1"
   unset _vpn_output
 
   return 1
@@ -32,7 +50,7 @@ _check_mullvad() {
 
 _check_airvpn() {
   _vpn_output="$(_check "$1" "https://airvpn.org/api/whatismyip/")" || {
-    printf -- '[%s] Failed to check container (%s) VPN status for AirVPN\n' "${_PROG_NAME}" "$1"
+    _elog 'Failed to check container (%s) VPN status for AirVPN' "${_PROG_NAME}" "$1"
     return 1
   }
 
@@ -41,7 +59,7 @@ _check_airvpn() {
     return 0
   fi
 
-  printf -- '[%s] Container (%s) IS NOT CONNECTED to AirVPN.\n' "${_PROG_NAME}" "$1"
+  _elog 'Container (%s) IS NOT CONNECTED to AirVPN!' "$1"
   unset _vpn_output
 
   return 1
@@ -54,13 +72,13 @@ main() {
     shift
     ;;
   *)
-    printf -- 'You must specify either "--mullvad" or "--airvpn"\n'
+    _elog 'You must specify either "--mullvad" or "--airvpn"'
     return 1
     ;;
   esac
 
   if [ -z "$1" ]; then
-    printf -- '[%s] You must specify a container\n' "${_PROG_NAME}"
+    _elog 'You must specify a container'
     return 1
   fi
 
@@ -70,7 +88,7 @@ main() {
     elif [ "${_vpn}" = "--airvpn" ]; then
       _check_airvpn "${_c}" || return 1
     else
-      printf -- 'Unsupported VPN checker backend. %s\n' "${_vpn}"
+      _elog 'Unsupported VPN checker backend: %s' "${_vpn}"
       return 1
     fi
     unset _c

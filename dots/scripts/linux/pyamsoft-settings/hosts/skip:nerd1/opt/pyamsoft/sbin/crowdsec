@@ -17,7 +17,7 @@ CONTAINER_MEMORY_LIMIT="1G"
 case "${CROWDSEC_MODE}" in
 lapi | agent) ;;
 *)
-  _log 'Must run with CROWDSEC_MODE set to one of "lapi" "agent"'
+  _elog 'Must run with CROWDSEC_MODE set to one of "lapi" "agent"'
   exit 1
   ;;
 esac
@@ -79,7 +79,7 @@ _prep_ports() {
 
 _check_user() {
   if _is_macos; then
-    _log 'Not supported on MacOS'
+    _elog 'Not supported on MacOS'
     return 1
   fi
 

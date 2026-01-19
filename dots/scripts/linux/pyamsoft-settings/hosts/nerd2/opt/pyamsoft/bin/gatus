@@ -19,7 +19,7 @@ external)
   GATUS_PORT=11268
   ;;
 *)
-  _log 'You must export the Gatus mode as "GATUS_MODE": "internal" "external"'
+  _elog 'You must export the Gatus mode as "GATUS_MODE": "internal" "external"'
   exit 1
   ;;
 esac

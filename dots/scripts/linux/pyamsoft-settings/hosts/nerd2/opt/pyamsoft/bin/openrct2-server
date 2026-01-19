@@ -63,7 +63,7 @@ _check_user() {
 
 _finalize() {
   if [ -z "${password}" ]; then
-    _log 'Must provide a server password via the "password" variable in %s' "${_runconf}"
+    _elog 'Must provide a server password via the "password" variable in %s' "${_runconf}"
     return 1
   fi
 
@@ -75,7 +75,7 @@ _finalize() {
 }
 
 if [ -z "${park}" ]; then
-  _log 'Pass a path to an OpenRCT2 save game in root: %s.' "${_save_game_root}"
+  _elog 'Pass a path to an OpenRCT2 save game in root: %s.' "${_save_game_root}"
   exit 1
 fi
 shift

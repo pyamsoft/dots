@@ -1,6 +1,24 @@
 #!/bin/sh
 
+_PROG="$(basename "$0")"
+readonly _PROG
+
 CSCLI="${CSCLI:-/opt/pyamsoft/bin/cscli}"
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_PROG}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
 
 _post() {
   exec curl -s -X POST -H "Authorization: Bearer ${BEARER_TOKEN}" "$1?success=$2"
@@ -14,7 +32,7 @@ main() {
   fi
 
   if [ -z "$1" ]; then
-    printf -- 'You must pass a heartbeat URL!\n'
+    _elog 'You must pass a heartbeat URL!'
     return 1
   fi
 
@@ -22,14 +40,14 @@ main() {
   shift
 
   if [ "${_unescape}" -eq 1 ]; then
-    printf -- '[Crowdsec Heartbeat] Unescape URL: %s\n' "${_url}"
+    _log 'Unescape URL: %s' "${_url}"
     _url="$(systemd-escape --unescape "${_url}")"
   fi
 
   "${CSCLI}" lapi status && {
-    printf -- '[Crowdsec Heartbeat] Crowdsec is still alive! Report: %s\n' "${_url}"
+    _log 'Crowdsec is still alive! Report: %s' "${_url}"
     _post "${_url}" "true" || {
-      printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"\n' "${_url}"
+      _elog 'Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"' "${_url}"
       return 1
     }
 
@@ -37,14 +55,15 @@ main() {
   }
 
   _post "${_url}" "false" || {
-    printf -- '[Crowdsec Heartbeat] Failed to ping Heartbeat URL, and Crowdsec is dead: "%s"\n' "${_url}"
+    _elog 'Failed to ping Heartbeat URL, and Crowdsec is dead: "%s"' "${_url}"
   }
 
   # Restart the crowdsec service
-  printf -- '[Crowdsec Heartbeat]: Crowdsec LAPI is down, restart the container service...\n'
+  _log 'Crowdsec LAPI is down, restart the container service...'
   systemctl restart container@crowdsec.service || {
-    printf -- '[Crowdsec Heartbeat] Failed to restart the Crowdsec container.\n'
+    _elog 'Failed to restart the Crowdsec container.'
   }
+
   return 0
 }
 

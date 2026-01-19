@@ -1,5 +1,8 @@
 #!/bin/sh
 
+PROG="$(basename "$0")"
+readonly PROG
+
 # Checks that NetworkManager is alive
 # Checks that NetworkManager is online
 # Checks that ping works on Google without DNS (8.8.8.8)
@@ -7,6 +10,23 @@
 
 # Max time to wait for backoff
 readonly BACKOFF_LIMIT_S=30
+
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${PROG}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
 
 _nm_online() {
   # nm-online is optional, only used for systems that use NetworkManager
@@ -41,7 +61,7 @@ _check_nm_online() {
 
 _ping() {
   if ! command -v ping >/dev/null; then
-    printf -- 'Missing "ping", cannot run check\n'
+    _elog 'Missing "ping", cannot run check'
     return 1
   fi
 
@@ -71,17 +91,17 @@ _ping_google_dns() {
 
 main() {
   _check_nm_alive || {
-    printf -- 'NetworkManager is dead. NOT ONLINE\n'
+    _elog 'NetworkManager is dead. NOT ONLINE'
     return 1
   }
 
   _check_nm_online || {
-    printf -- 'NetworkManager is offline. NOT ONLINE\n'
+    _elog 'NetworkManager is offline. NOT ONLINE'
     return 2
   }
 
   _ping_google_ip || {
-    printf -- 'Could not ping Google IP. NOT ONLINE\n'
+    _elog 'Could not ping Google IP. NOT ONLINE'
     return 3
   }
 
@@ -89,13 +109,13 @@ main() {
   case "$1" in
   d | dns | -d | --dns)
     _ping_google_dns || {
-      printf -- 'Could not ping Google DNS. NOT ONLINE\n'
+      _elog 'Could not ping Google DNS. NOT ONLINE'
       return 4
     }
     ;;
   esac
 
-  printf -- 'NETWORK ONLINE\n'
+  _log 'NETWORK ONLINE'
   return 0
 }
 

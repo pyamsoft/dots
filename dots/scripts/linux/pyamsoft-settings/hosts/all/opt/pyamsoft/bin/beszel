@@ -22,7 +22,7 @@ BESZEL_KEY=""
 case "${BESZEL_MODE}" in
 hub | agent | remote) ;;
 *)
-  _log 'Must run with BESZEL_MODE set to one of "agent" "hub" "remote"'
+  _elog 'Must run with BESZEL_MODE set to one of "agent" "hub" "remote"'
   exit 1
   ;;
 esac
@@ -50,7 +50,7 @@ _prep_ssh_key() {
     # Create the private SSH key if it does not already exist
     if [ ! -e "${_data_dir}/id_ed25519" ]; then
       ssh-keygen -q -N "" -C "" -t ed25519 -f "${_data_dir}/id_ed25519" || {
-        _log 'Failed to generate private SSH key'
+        _elog 'Failed to generate private SSH key'
         return 1
       }
     fi
@@ -58,7 +58,7 @@ _prep_ssh_key() {
     # Create the public SSH key if it does not already exist
     if [ ! -e "${_data_dir}/id_ed25519.pub" ]; then
       ssh-keygen -q -N "" -C "" -y -f "${_data_dir}/id_ed25519" || {
-        _log 'Failed to generate public SSH key'
+        _elog 'Failed to generate public SSH key'
         return 1
       }
     fi
@@ -140,8 +140,8 @@ _finalize() {
     # Can continue with blank key, it's ignored in hub mode
   else
     if [ -z "${BESZEL_KEY}" ]; then
-      _log 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
-      _log 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
+      _elog 'You must export the Beszel Hub SSH public key as "BESZEL_KEY"'
+      _elog 'This ssh public key MUST be the same as the one in the beszel-hub data directory.'
 
       return 1
     fi

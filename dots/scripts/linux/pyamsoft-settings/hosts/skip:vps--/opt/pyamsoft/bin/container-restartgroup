@@ -1,13 +1,33 @@
 #!/bin/sh
 
+PROG="$(basename "$0")"
+readonly PROG
+
 __containers_user=""
 __network_owner=""
 __running_containers=""
 
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${PROG}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
 _stop() {
-  printf -- 'Stop container %s\n' "$1"
+  _log 'Stop container %s' "$1"
   "${__containers_user}" stop "$1" || {
-    printf -- 'Failed to stop container %s\n' "$1"
+    _elog 'Failed to stop container %s' "$1"
     return 1
   }
 
@@ -15,9 +35,9 @@ _stop() {
 }
 
 _restart() {
-  printf -- 'Restarting container %s\n' "$1"
+  _log 'Restarting container %s' "$1"
   "${__containers_user}" restart "$1" || {
-    printf -- 'Failed to restart container %s\n' "$1"
+    _elog 'Failed to restart container %s' "$1"
     return 1
   }
 
@@ -91,12 +111,12 @@ main() {
   # Resolve the user
   __containers_user="$1"
   if [ -z "${__containers_user}" ]; then
-    printf -- 'Must specify a user to run script.\n'
+    _elog 'Must specify a user to run script.'
     return 1
   fi
 
   if ! id -u "${__containers_user}" >/dev/null 2>&1; then
-    printf -- 'Must specify a valid user. Cannot continue with "%s"\n' "${__containers_user}"
+    _elog 'Must specify a valid user. Cannot continue with "%s"' "${__containers_user}"
     return 1
   fi
 
@@ -106,7 +126,7 @@ main() {
   # Resolve the network owner container
   __network_owner="$1"
   if [ -z "${__network_owner}" ]; then
-    printf -- 'Must specify a container group network-owner.\n'
+    _elog 'Must specify a container group network-owner.'
     return 1
   fi
 

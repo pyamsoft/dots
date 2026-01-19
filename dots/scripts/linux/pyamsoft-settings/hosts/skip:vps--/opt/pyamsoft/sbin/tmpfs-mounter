@@ -15,6 +15,11 @@ _log() {
  return 0
 }
 
+_elog() {
+ _log "$@" 1>&2 || return 1
+ return 0
+}
+
 _usage_mount() {
  _log '%s' "$(
   /bin/cat <<EOF
@@ -71,7 +76,7 @@ _validate() {
 
  # Path provided
  if [ -z "${_validate_target}" ]; then
-  _log 'Missing target directory path.'
+  _elog 'Missing target directory path.'
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -80,7 +85,7 @@ _validate() {
 
  # Path must exist and be directory
  if [ ! -d "${_validate_target}" ]; then
-  _log 'Missing target directory path %s' "${_validate_target}"
+  _elog 'Missing target directory path %s' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -89,7 +94,7 @@ _validate() {
 
  # Check not symlink
  if [ -L "${_validate_target}" ]; then
-  _log 'Target directory can NOT be a symlink %s.' "${_validate_target}"
+  _elog 'Target directory can NOT be a symlink %s.' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -98,7 +103,7 @@ _validate() {
 
  # Check that path is absolute
  if [ "$(/bin/realpath "${_validate_target}")" != "${_validate_target}" ]; then
-  _log 'Target directory MUST be absolute path %s' "${_validate_target}"
+  _elog 'Target directory MUST be absolute path %s' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -108,7 +113,7 @@ _validate() {
  if [ "${_validate_require_user}" -eq 1 ]; then
   # User provided for a function that requires it
   if [ -z "${_validate_user}" ]; then
-   _log 'Target USER is required.'
+   _elog 'Target USER is required.'
    unset _validate_target
    unset _validate_user
    unset _validate_require_user
@@ -117,7 +122,7 @@ _validate() {
 
   # Check user exists
   if ! /bin/id -u "${_validate_user}" >/dev/null 2>&1; then
-   _log 'Target USER must exist: %s' "${_validate_user}"
+   _elog 'Target USER must exist: %s' "${_validate_user}"
    unset _validate_target
    unset _validate_user
    unset _validate_require_user
@@ -183,7 +188,7 @@ _mount() {
  _log 'Options -> %s' "${_mount_all_options}"
 
  /sbin/mount -t tmpfs -o "${_mount_all_options}" tmpfs "${_mount_target}" || {
-  _log 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_all_options}"
+  _elog 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_all_options}"
 
   unset _mount_all_options
   unset _mount_default_options
@@ -222,7 +227,7 @@ _umount() {
 
  # Perform the umount
  /sbin/umount -t tmpfs "${_umount_target}" || {
-  _log 'Failed to umount tmpfs at %s' "${_umount_target}"
+  _elog 'Failed to umount tmpfs at %s' "${_umount_target}"
 
   unset _umount_target
   return 1
@@ -234,7 +239,7 @@ _umount() {
 
 main() {
  if [ "$(/bin/id -u)" -ne 0 ]; then
-  _log 'You must run this tool as root.'
+  _elog 'You must run this tool as root.'
   _usage || return 1
   return 1
  fi

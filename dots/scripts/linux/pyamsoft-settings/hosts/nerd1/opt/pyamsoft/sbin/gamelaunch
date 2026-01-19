@@ -2,7 +2,7 @@
 
 # Privileged script, to be used with gamer script and sudoers set up
 
-readonly _name="gamelaunch"
+readonly _NAME="gamelaunch"
 
 __grant_candidates=""
 
@@ -10,16 +10,21 @@ _log() {
   _msg="$1"
   shift
 
-  printf -- "[%s]: ${_msg}\n" "${_name}" "$@" || return 1
+  printf -- "[%s]: ${_msg}\n" "${_NAME}" "$@" || return 1
 
   unset _msg
+  return 0
+}
+
+_elog() {
+  _log "$@" 1>&2 || return 1
   return 0
 }
 
 _check_user() {
   _check_me="$1"
   if ! id -u "${_check_me}" >/dev/null 2>&1; then
-    _log 'User %s does not exist!' "${_check_me}"
+    _elog 'User %s does not exist!' "${_check_me}"
 
     unset _check_me
     return 1
@@ -89,40 +94,40 @@ _execute() {
 
 main() {
   if [ -z "${SUDO_USER}" ]; then
-    _log "Requires that you run as a regular user with sudo."
+    _elog "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ "${SUDO_UID}" -eq 0 ]; then
-    _log "Requires that you run as a regular user with sudo."
+    _elog "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ "$(id -u)" -ne 0 ]; then
-    _log "Requires that you run as a regular user with sudo."
+    _elog "Requires that you run as a regular user with sudo."
     return 1
   fi
 
   if [ -z "${DISPLAY}" ]; then
-    _log "Requires a valid \$DISPLAY variable."
+    _elog "Requires a valid \$DISPLAY variable."
     return 1
   fi
 
   if [ -z "${XAUTHORITY}" ]; then
-    _log "Requires a valid \$XAUTHORITY variable."
+    _elog "Requires a valid \$XAUTHORITY variable."
     return 1
   fi
 
   _from_user="$1"
   if [ -z "${_from_user}" ]; then
-    _log 'Requires a FROM user as the first argument.'
+    _elog 'Requires a FROM user as the first argument.'
     return 1
   fi
   shift
 
   _to_user="$1"
   if [ -z "${_to_user}" ]; then
-    _log 'Requires a TO user as the second argument.'
+    _elog 'Requires a TO user as the second argument.'
     return 1
   fi
   shift
@@ -131,7 +136,7 @@ main() {
   case "$1" in
   --gamescope)
     if [ -z "$2" ]; then
-      _log 'Missing required --gamescope argument value!'
+      _elog 'Missing required --gamescope argument value!'
       return 1
     fi
 
@@ -145,7 +150,7 @@ main() {
   --gamescope=*)
     _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
     if [ -z "${_split}" ]; then
-      _log 'Missing required --gamescope= argument value!'
+      _elog 'Missing required --gamescope= argument value!'
       return 1
     fi
 

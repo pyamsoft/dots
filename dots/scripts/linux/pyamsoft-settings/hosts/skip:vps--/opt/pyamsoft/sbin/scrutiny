@@ -57,7 +57,7 @@ _check_user() {
 }
 
 if _is_macos; then
-  _log 'Not supported on MacOS'
+  _elog 'Not supported on MacOS'
   exit 1
 fi
 
