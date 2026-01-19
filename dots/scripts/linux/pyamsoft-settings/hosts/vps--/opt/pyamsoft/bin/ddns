@@ -41,5 +41,16 @@ _prep_network() {
   return 0
 }
 
+_finalize() {
+  if _is_podman; then
+    if ! _is_cmd_version_atleast 5.4; then
+      # ddns requires podman 5.4 which for some reason is able to support resolving IPv6 from
+      # the container network
+      _elog 'Your %s version must be at least %s to run the %s container' "${CONTAINER_CMD}" 5.4 "${NAME}"
+      return 1
+    fi
+  fi
+}
+
 main "$@" || exit 1
 exit 0
