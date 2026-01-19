@@ -4,8 +4,8 @@
 . "/opt/pyamsoft/lib/container-launch"
 
 NAME="scrutiny"
-IMAGE="ghcr.io/analogj/scrutiny"
-TAG="v0.8.1-omnibus"
+IMAGE="ghcr.io/starosdev/scrutiny"
+TAG="1.9.0-omnibus"
 
 CONTAINER_ENTRYPOINT="/entrypoints/init"
 

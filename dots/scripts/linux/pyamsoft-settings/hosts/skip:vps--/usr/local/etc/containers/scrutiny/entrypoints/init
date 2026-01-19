@@ -1,20 +1,20 @@
 #!/usr/bin/sh
 
-# In scrutiny v0.8.0, /bin/sh does not exist.
+# In scrutiny 1.9.0, /bin/sh does not exist.
 # /usr/bin/sh is where shell lives. What the hell?
 
-# scrutiny v0.7.1-v0.8.0 ships with a web folder that has assets
+# scrutiny v0.7.1-v1.9.0 ships with a web folder that has assets
 # that cannot be read because the directory doesn't have
 # exec permission, so icons don't load.
 #
 # Fix it by going in before init, and then let init take over
 # after
 
-# Mark the assets folder executable so we can go into it
-chmod +X -R /opt/scrutiny/web/assets
+# Mark the web folder executable so we can go into it
+chmod +X -R /opt/scrutiny/web
 
 # But now it can be read by everyone, take away group and other
-chmod go= -R /opt/scrutiny/web/assets
+chmod go= -R /opt/scrutiny/web
 
 # Update the smart database before we get started
 # Use no-verify since we do not have GPG installed in the container
