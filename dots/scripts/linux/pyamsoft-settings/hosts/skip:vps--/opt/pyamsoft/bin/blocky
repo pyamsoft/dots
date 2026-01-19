@@ -1,0 +1,76 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="blocky"
+IMAGE="docker.io/spx01/blocky"
+TAG="v0.28.2"
+
+CONTAINER_MEMORY_LIMIT="2G"
+CONTAINER_REQUIRE_RUNCONF=0
+CONTAINER_NETWORK_IP6=1
+
+_prep_mounts() {
+  if _is_macos; then
+    _blocky_dir="${CONTAINER_RUNTIME_DIR}/${NAME}"
+  else
+    _blocky_dir="/etc/${NAME}"
+  fi
+
+  readonly _conf="${_blocky_dir}/config.yml"
+  unset _blocky_dir
+
+  if [ ! -r "${_conf}" ]; then
+    _elog 'Config must exist at %s' "${_conf}"
+    return 1
+  fi
+
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/logs" || return 1
+  _add_mounts --mount "type=bind,src=${_conf},target=/app/config.yml" || return 1
+
+  return 0
+}
+
+_prep_caps() {
+  # Bind port 53
+  _add_caps --cap-add NET_BIND_SERVICE
+
+  return 0
+}
+
+_prep_env() {
+  return 0
+}
+
+_prep_network() {
+  _network_isolate || return 1
+
+  # We are the DNS for this container
+  _add_network --dns "127.0.0.1"
+
+  return 0
+}
+
+_prep_ports() {
+  # Bind a non-priv port on the host machine and forward the traffic into the container
+  # Setup iptables forwarding to still use port 53 on the host
+  _add_ports -p "127.0.0.1:5335:53/tcp"
+  _add_ports -p "127.0.0.1:5335:53/udp"
+
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  # Blocky uses UID 100 in the container
+  if _is_podman; then
+    _add_userns --userns=keep-id:uid=100
+  fi
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
