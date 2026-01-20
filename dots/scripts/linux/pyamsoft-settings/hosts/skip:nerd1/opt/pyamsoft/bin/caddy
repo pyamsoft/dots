@@ -8,7 +8,7 @@
 # themselves when invoking this script.
 NAME="${NAME:-caddy}"
 
-IMAGE="ghcr.io/caddybuilds/caddy-cloudflare"
+IMAGE="docker.io/encg/caddy-cloudflare-crowdsec"
 TAG="2.10.2"
 
 _prep_mounts() {

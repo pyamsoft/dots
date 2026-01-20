@@ -3,7 +3,7 @@
 # Source our common library
 . "/opt/pyamsoft/lib/container-launch"
 
-NAME="${NAME:-crowdsec}"
+NAME="crowdsec"
 IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
 TAG="v1.7.4-debian"
@@ -37,9 +37,10 @@ _prep_mounts() {
 }
 
 _prep_env() {
+  _add_env -e NO_HUB_UPGRADE=true
+
   if [ "${CROWDSEC_MODE}" = "agent" ]; then
     _add_env -e USE_WAL=true
-    _add_env -e NO_HUB_UPGRADE=true
     _add_env -e DISABLE_LOCAL_API=true
   fi
 
@@ -47,13 +48,9 @@ _prep_env() {
 }
 
 _prep_network() {
-  if [ "${CROWDSEC_MODE}" = "lapi" ]; then
-    # TODO(Peter): This used to work without --host
-    # The LAPI machine must use host networking or else it hangs when downloading hub updates for some reason.
-    _add_network --network="host"
-  else
-    _network_isolate || return 1
-  fi
+  # TODO(Peter): This used to work without --host
+  # The machine must use host networking or else it hangs when downloading hub updates for some reason.
+  _add_network --network="host"
 
   return 0
 }
