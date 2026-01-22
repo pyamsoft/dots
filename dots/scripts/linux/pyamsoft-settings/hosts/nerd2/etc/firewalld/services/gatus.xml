@@ -2,6 +2,7 @@
 <service version="1">
   <short>gatus</short>
   <description>Gatus Monitoring</description>
+  <port port="11267" protocol="tcp" />
   <port port="11268" protocol="tcp" />
 </service>
 
