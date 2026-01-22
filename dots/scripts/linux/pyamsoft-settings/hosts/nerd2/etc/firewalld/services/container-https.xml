@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>container-https</short>
+  <description>Run HTTPS in a container on an unprivileged port and redirect at the firewall level
+    via direct rules</description>
+  <port port="3443" protocol="tcp" />
+</service>

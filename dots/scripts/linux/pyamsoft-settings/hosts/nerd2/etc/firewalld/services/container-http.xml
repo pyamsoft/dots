@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>container-http</short>
+  <description>Run HTTP in a container on an unprivileged port and redirect at the firewall level
+    via direct rules</description>
+  <port port="3080" protocol="tcp" />
+</service>
