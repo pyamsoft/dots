@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>ZeroTier</short>
+  <description>ZeroTier creates secure networks between on-premise, cloud, desktop, and mobile
+    devices.</description>
+  <port port="9993" protocol="udp" />
+  <port port="9993" protocol="tcp" />
+</service>
