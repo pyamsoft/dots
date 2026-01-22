@@ -688,6 +688,7 @@ linux-firmware-other
 linux-firmware-radeon
 linux-firmware-realtek
 linux-firmware-whence
+lksctp-tools
 llvm-libs
 lmdb
 localsearch
