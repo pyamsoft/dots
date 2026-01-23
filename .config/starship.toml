@@ -45,6 +45,7 @@ disabled = true
 
 # Print out our Tailscale IPv4
 [custom.tailscale]
+disabled = true
 os = "linux"
 when = "tailscale status"
 command = "tailscale ip | head -n 1"
@@ -54,6 +55,7 @@ format = "[$symbol ($output)]($style) "
 
 # Print out our ZeroTier IPv4
 [custom.zerotier]
+disabled = true
 os = "linux"
 when = "ip -color=never -br -4 addr show | grep ztrf"
 command = "ip -color=never -br -4 addr show | grep ztrf | awk '{print $3 }' | sed 's/\\/.*//'"
