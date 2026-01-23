@@ -38,6 +38,11 @@ _prep_network() {
   # We need to preserve source IP address so that Crowdsec can operate on bad actors
   #
   # However as a trade off, since this runs on the default bridge this decreases network isolation.
+
+  # Force the DNS resolvers in the container so that we can avoid DNS caching issues
+  # when attempting DNS-01 challenges
+  _add_network --dns="1.1.1.1"
+  _add_network --dns="1.0.0.1"
   return 0
 }
 
