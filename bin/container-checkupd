@@ -57,6 +57,9 @@ _get_latest_tags() {
         */navidrome)
           grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
           ;;
+        */beets)
+          grep -v '2021.' | grep -v '\-ls'
+          ;;
         */httpie)
           grep -v '3.5-0.9.9'
           ;;
