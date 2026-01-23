@@ -51,6 +51,8 @@ _usage() {
 
 [container]:   Exectue ${_cmd} operations on containers
 
+  enter        Attempts to exec into container <name> and run /bin/bash or /bin/sh
+  exec         Runs '${_cmd} exec -it <name>'
   images       Runs '${_cmd} images', passing all arguments
   inspect      Runs '${_cmd} inspect', passing all arguments
   logs         Runs '${_cmd} logs', passing all arguments
@@ -70,7 +72,6 @@ _usage() {
 [system]:      System management related operations
 
   checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
-  exec         Runs '${_cmd} exec -it <name>'
   prune        Runs '${_cmd} system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
@@ -166,6 +167,21 @@ main() {
     fi
 
     exec "${_cmd}" auto-update --dry-run "$@"
+    ;;
+  enter)
+    _container="$1"
+    shift
+
+    # Try bash
+    "${_cmd}" exec -i -t "${_container}" /bin/bash 2>/dev/null ||
+      "${_cmd}" exec -i -t "${_container}" /usr/bin/sh 2>/dev/null ||
+      # # If no bash, try sh
+      "${_cmd}" exec -i -t "${_container}" /bin/sh 2>/dev/null ||
+      "${_cmd}" exec -i -t "${_container}" /usr/bin/sh 2>/dev/null ||
+      {
+        _elog 'Unable to enter SHELL (/bin/bash /usr/bin/bash /bin/sh /usr/bin/sh) in container %s' "${_container}"
+        return 1
+      }
     ;;
   exec)
     _container="$1"
