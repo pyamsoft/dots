@@ -38,6 +38,14 @@ _prep_env() {
 
 _prep_network() {
   _network_isolate || return 1
+
+  # Force the DNS resolvers in the container so that we can avoid DNS caching issues
+  # when attempting DNS-01 challenges
+  _add_network --dns="1.1.1.1"
+  _add_network --dns="1.0.0.1"
+  _add_network --dns="2606:4700:4700::1111"
+  _add_network --dns="2606:4700:4700::1001"
+
   return 0
 }
 
