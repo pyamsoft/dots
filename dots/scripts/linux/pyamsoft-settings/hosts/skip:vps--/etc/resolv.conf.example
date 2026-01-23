@@ -1,13 +1,8 @@
 # Use local DNS cache
 nameserver 127.0.0.1
-nameserver ::1
 
-# Use public Cloudflare DNS resolver
-#nameserver 1.1.1.1
-#nameserver 1.0.0.1
-
-# Rotate nameservers
-options rotate
+# Don't bind IPv6 by default since docker/podman networks do NOT have IPv6 setup by default.
+# nameserver ::1
 
 # Enable support for DNS Extensions
 options edns0
