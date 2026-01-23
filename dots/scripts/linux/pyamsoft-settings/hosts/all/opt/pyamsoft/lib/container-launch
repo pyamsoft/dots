@@ -453,6 +453,7 @@ __setup_network() {
   # Evaluate this AFTER so that just incase the script
   # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
+    _add_network --dns-option="edns0,trust-ad"
     _add_network --dns-search="."
     _add_network --add-host "localhost:127.0.0.1"
     _add_network --add-host "host.containers.internal:host-gateway"
