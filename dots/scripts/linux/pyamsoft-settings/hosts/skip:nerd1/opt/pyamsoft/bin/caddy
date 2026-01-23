@@ -43,6 +43,12 @@ _prep_network() {
   # when attempting DNS-01 challenges
   _add_network --dns="1.1.1.1"
   _add_network --dns="1.0.0.1"
+
+  # Even though the default bridge network has IPv6 disabled, somehow we ARE assigned IPv6 addresses?
+  # Add IPv6 DNS
+  # Is it because we sometimes bind to the IPv6 interface too for ports?
+  _add_network --dns="2606:4700:4700::1111"
+  _add_network --dns="2606:4700:4700::1001"
   return 0
 }
 
