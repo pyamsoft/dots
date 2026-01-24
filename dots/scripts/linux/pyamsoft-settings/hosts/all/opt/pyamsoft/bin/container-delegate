@@ -42,7 +42,7 @@ _dotfiles() {
 }
 
 _usage() {
-  _log -- '%s' "$(
+  _log '%s' "$(
     cat <<EOF
 
 ($(id -un)) ${_PROG_NAME} <action>
