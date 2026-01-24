@@ -169,6 +169,11 @@ main() {
     exec "${_cmd}" auto-update --dry-run "$@"
     ;;
   enter)
+    if [ -z "$1" ]; then
+      _usage || return 1
+      return 1
+    fi
+
     _container="$1"
     shift
 
@@ -184,12 +189,22 @@ main() {
       }
     ;;
   exec)
+    if [ -z "$1" ]; then
+      _usage || return 1
+      return 1
+    fi
+
     _container="$1"
     shift
 
     exec "${_cmd}" exec -i -t "${_container}" "$@"
     ;;
   pid)
+    if [ -z "$1" ]; then
+      _usage || return 1
+      return 1
+    fi
+
     _container="$1"
     shift
 
@@ -258,6 +273,11 @@ main() {
     exec systemctl --user daemon-reload
     ;;
   teardown)
+    if [ -z "$1" ]; then
+      _usage || return 1
+      return 1
+    fi
+
     exec /opt/pyamsoft/bin/container-teardown "$@"
     ;;
   *)
