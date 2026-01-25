@@ -17,6 +17,9 @@ _prep_mounts() {
   # Follow the link and mount the share folder ONLY if it is valid
   if [ -d "$(realpath "${_share}")" ]; then
     _mount_bind "${_share}" "/storage" || return 1
+
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
   fi
   unset _share
 
@@ -24,6 +27,9 @@ _prep_mounts() {
   _override="${CONTAINER_RUNTIME_DIR}/${NAME}/smb.conf"
   if [ -f "$(realpath "${_override}")" ]; then
     _add_mounts --mount "type=bind,src=${_override},target=/etc/samba/smb.conf" || return 1
+
+    # Mark the smb.conf group access
+    _host_chmod "g+rwX" "${_override}" || return 1
   fi
   unset _override
 
@@ -35,10 +41,7 @@ _prep_caps() {
   _add_caps --cap-add CHOWN
   _add_caps --cap-add SETGID
   _add_caps --cap-add SETUID
-
-  # Needed right after startup to open samba /cron/lock
-  _add_caps --cap-add DAC_OVERRIDE
-  _add_caps --cap-add FOWNER
+  _add_caps --cap-add KILL
 
   # Server runs on port 445 internally
   _add_caps --cap-add NET_BIND_SERVICE
@@ -63,6 +66,16 @@ _prep_ports() {
 
 _check_user() {
   _require_nonroot || return 1
+
+  _add_userns --user="0:0"
+  if _is_podman; then
+    # Need this userns option that is podman specific or we have random OCI permission error
+    _add_userns --userns keep-id
+    _add_userns --group-add keep-groups
+  fi
+
+  # Cannot safely run as read-only because it runs samba setup as root and writes to /etc
+  # _add_rc --read-only
 
   return 0
 }
