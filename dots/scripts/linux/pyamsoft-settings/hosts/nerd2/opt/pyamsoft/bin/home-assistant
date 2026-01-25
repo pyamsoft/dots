@@ -58,6 +58,7 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
+  _add_userns --user="0:0"
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
     _add_userns --userns keep-id
