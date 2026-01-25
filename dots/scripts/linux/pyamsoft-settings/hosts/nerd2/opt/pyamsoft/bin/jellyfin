@@ -5,7 +5,7 @@
 
 NAME="jellyfin"
 IMAGE="docker.io/jellyfin/jellyfin"
-TAG="10.11.5"
+TAG="10.11.6"
 
 CONTAINER_MEMORY_LIMIT="4G"
 

@@ -9,7 +9,7 @@
 NAME="${NAME:-wireguard}"
 
 IMAGE="docker.io/jordanpotter/wireguard"
-TAG="2025-12-30"
+TAG="2026-01-20"
 
 CONTAINER_NETWORK_HOST_ROUTE=0
 

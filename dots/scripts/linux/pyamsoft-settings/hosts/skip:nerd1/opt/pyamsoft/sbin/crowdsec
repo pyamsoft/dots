@@ -6,7 +6,7 @@
 NAME="crowdsec"
 IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
-TAG="v1.7.4-debian"
+TAG="v1.7.6-debian"
 
 CONTAINER_MEMORY_LIMIT="1G"
 
