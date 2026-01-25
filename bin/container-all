@@ -56,11 +56,6 @@ main() {
     return 1
   fi
 
-  # Direct "containers" delegate
-  if id -un containers >/dev/null 2>&1; then
-    _act "$1" containers || return 1
-  fi
-
   # Any containers delegates
   for _container_delegate_user in /home/containers-*; do
     _container_delegate_user="$(basename "${_container_delegate_user}")"
