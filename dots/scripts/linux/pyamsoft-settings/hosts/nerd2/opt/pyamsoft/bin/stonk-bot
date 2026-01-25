@@ -37,5 +37,12 @@ _prep_network() {
   return 0
 }
 
+_finalize() {
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
 main "$@" || exit 1
 exit 0
