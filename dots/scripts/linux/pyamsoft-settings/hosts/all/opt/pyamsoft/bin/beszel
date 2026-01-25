@@ -85,13 +85,14 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  if [ "${BESZEL_MODE}" != "hub" ]; then
-    # For reading SMART data with smartctl
-    _add_caps --cap-add SYS_RAWIO
-
-    # For reading NVME data
-    _add_caps --cap-add SYS_ADMIN
-  fi
+  # Since we don't run as root, beszel cannot read our disks anyway.
+  # if [ "${BESZEL_MODE}" != "hub" ]; then
+  #   # For reading SMART data with smartctl
+  #   _add_caps --cap-add SYS_RAWIO
+  #
+  #   # For reading NVME data
+  #   _add_caps --cap-add SYS_ADMIN
+  # fi
 
   return 0
 }

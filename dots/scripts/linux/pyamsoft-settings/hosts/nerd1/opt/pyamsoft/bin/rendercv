@@ -23,7 +23,6 @@ _prep_network() {
 }
 
 _prep_caps() {
-  _add_caps --cap-add DAC_OVERRIDE
   return 0
 }
 
@@ -46,6 +45,8 @@ _check_user() {
 
 _finalize() {
   _add_rc --workdir="/work"
+
+  _add_rc --read-only
   return 0
 }
 

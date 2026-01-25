@@ -50,9 +50,6 @@ _prep_ports() {
 _check_user() {
   _require_root || return 1
 
-  # Expects to be root
-  _add_userns --user "0:0"
-
   return 0
 }
 

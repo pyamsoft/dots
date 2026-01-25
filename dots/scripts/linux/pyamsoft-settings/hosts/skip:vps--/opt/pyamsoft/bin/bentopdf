@@ -7,7 +7,6 @@ NAME="bentopdf"
 IMAGE="docker.io/bentopdf/bentopdf"
 TAG="1.15.3"
 
-CONTAINER_MEMORY_LIMIT="64M"
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
@@ -15,7 +14,6 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  _add_caps --cap-add DAC_OVERRIDE
   return 0
 }
 
@@ -29,7 +27,7 @@ _prep_network() {
 }
 
 _prep_ports() {
-  _add_ports -p "127.0.0.1:8080:8080/tcp"
+  _add_ports -p "127.0.0.1:9080:8080/tcp"
   return 0
 }
 

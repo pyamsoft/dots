@@ -14,6 +14,9 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/downloads" "/downloads" || return 1
 
+  _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/config" || return 1
+  _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/downloads" || return 1
+
   # Media folders are optionally symlinks to another mass storage drive
   _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
   _mount_mkdir "${_media}"
@@ -22,6 +25,9 @@ _prep_mounts() {
   if [ -d "$(realpath "${_media}")" ]; then
     _mount_bind "${_media}" "/music" || return 1
   fi
+
+  _host_chmod "g+rwX" "${_media}" || return 1
+
   unset _media
 
   return 0
@@ -40,10 +46,10 @@ _prep_network() {
 
 _prep_caps() {
   # Needed for s6
-  _add_caps --cap-add DAC_OVERRIDE
   _add_caps --cap-add CHOWN
   _add_caps --cap-add SETGID
   _add_caps --cap-add SETUID
+  _add_caps --cap-add KILL
 
   return 0
 }
@@ -56,7 +62,6 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
-  # Run as root user
   _add_userns --user="0:0"
 
   if _is_podman; then

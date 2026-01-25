@@ -435,6 +435,24 @@ _mount_bind() {
 }
 
 ##
+# chmod a file or directory on the host
+_host_chmod() {
+  _chmod_mode="$1"
+  _chmod_target="$2"
+
+  chmod -R "${_chmod_mode}" "${_chmod_target}" || {
+    _elog "Failed to chmod host directory %s (%s)" "${_chmod_target}" "${_chmod_mode}"
+    unset _chmod_mode
+    unset _chmod_target
+    return 1
+  }
+
+  unset _chmod_mode
+  unset _chmod_target
+  return 0
+}
+
+##
 # Private
 __require_function() {
   if ! _has_function "$1"; then

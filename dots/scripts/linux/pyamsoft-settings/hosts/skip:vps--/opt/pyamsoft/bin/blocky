@@ -27,6 +27,7 @@ _prep_mounts() {
   fi
 
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/logs" || return 1
+
   _add_mounts --mount "type=bind,src=${_conf},target=/app/config.yml" || return 1
 
   return 0

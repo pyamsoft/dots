@@ -33,13 +33,11 @@ _prep_network() {
 }
 
 _prep_caps() {
-  # s6-init uses chown and drops privilege
+  # docker-entrypoint uses chown and drops privilege
   _add_caps --cap-add CHOWN
   _add_caps --cap-add SETGID
   _add_caps --cap-add SETUID
-
-  # Needed to chown files during startup and execute start script
-  _add_caps --cap-add DAC_OVERRIDE
+  _add_caps --cap-add KILL
   return 0
 }
 
@@ -52,11 +50,6 @@ _check_user() {
   _require_nonroot || return 1
 
   return 0
-}
-
-_finalize() {
-  # Make sure the navidrome container is alive
-  _add_rc --requires "navidrome"
 }
 
 main "$@" || exit 1
