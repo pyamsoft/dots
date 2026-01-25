@@ -58,6 +58,9 @@ _finalize() {
       return 1
     fi
   fi
+
+  # Can run as read-only root
+  _add_rc --read-only
 }
 
 main "$@" || exit 1
