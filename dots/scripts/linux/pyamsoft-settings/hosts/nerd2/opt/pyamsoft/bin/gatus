@@ -63,6 +63,9 @@ _check_user() {
     _add_userns --userns keep-id
   fi
 
+  # Can run as read-only root
+  _add_rc --read-only
+
   return 0
 }
 

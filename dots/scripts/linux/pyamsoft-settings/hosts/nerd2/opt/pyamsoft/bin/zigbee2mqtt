@@ -52,8 +52,8 @@ _check_user() {
 }
 
 _finalize() {
-  # Make sure home assistant is alive
-  _add_rc --requires "home-assistant"
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

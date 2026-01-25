@@ -24,9 +24,10 @@ _prep_mounts() {
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
     _mount_bind "${_media}" "/music" || return 1
-  fi
 
-  _host_chmod "g+rwX" "${_media}" || return 1
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
+  fi
 
   unset _media
 

@@ -56,10 +56,6 @@ _prep_caps() {
   _add_caps --cap-add NET_BIND_SERVICE
   _add_caps --cap-add NET_ADMIN
 
-  if _is_macos; then
-    _add_caps --cap-add DAC_OVERRIDE
-  fi
-
   return 0
 }
 
@@ -90,6 +86,9 @@ _finalize() {
       return 1
     fi
   fi
+
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

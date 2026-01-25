@@ -10,6 +10,8 @@ TAG="0.0.8"
 CONTAINER_REQUIRE_INIT=1
 
 _prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/app/logs" || return 1
+
   _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
 
   # Media folders are optionally symlinks to another mass storage drive
@@ -18,6 +20,9 @@ _prep_mounts() {
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ] && [ -e "$(realpath "${_media}/mounted")" ]; then
     _mount_bind "${_media}" "/scan_dir" || return 1
+
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
   fi
   unset _media
 
@@ -25,10 +30,6 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  # Allow writing SRT files to output location
-  _add_caps --cap-add DAC_OVERRIDE
-  _add_caps --cap-add FOWNER
-
   return 0
 }
 
@@ -37,6 +38,9 @@ _prep_ports() {
 }
 
 _prep_env() {
+  # Exclude currently downloading
+  _add_env -e EXCLUDE_PATHS="/scan_dir/Downloads"
+
   return 0
 }
 
@@ -48,7 +52,14 @@ _prep_network() {
 _check_user() {
   _require_nonroot || return 1
 
-  _add_userns --user="0:0"
+  # Only for podman
+  if _is_podman; then
+    _add_userns --userns keep-id
+    _add_userns --group-add keep-groups
+  fi
+
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

@@ -60,6 +60,8 @@ _prep_caps() {
     # Server needs these caps to launch
     _add_caps --cap-add SETUID
     _add_caps --cap-add SETGID
+
+    # Needed to launch discord plugin
     _add_caps --cap-add DAC_OVERRIDE
   fi
 
@@ -82,8 +84,8 @@ _check_user() {
 
   _require_root || return 1
 
-  # Expects to be root (since the cert file is owned by root)
-  _add_userns --user "0:0"
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

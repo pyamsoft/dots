@@ -17,6 +17,14 @@ POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-postgres}"
 CONTAINER_REQUIRE_RUNCONF=0
 
 _prep_mounts() {
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_env() {
   _add_env -e DL_ENV_TYPE="selfHosted"
   _add_env -e DL_PG_HOST="127.0.0.1"
   _add_env -e DL_PG_PORT=5432
@@ -24,25 +32,6 @@ _prep_mounts() {
   _add_env -e DL_PG_PASSWORD="domain-locker"
   _add_env -e DL_PG_NAME="domain-locker"
 
-  return 0
-}
-
-_prep_caps() {
-  # s6
-  # s6-init uses chown and drops privilege
-  # _add_caps --cap-add CHOWN
-  # _add_caps --cap-add SETGID
-  # _add_caps --cap-add SETUID
-
-  # Needed to chown files during startup and execute start script
-  # _add_caps --cap-add DAC_OVERRIDE
-
-  # To own /var/run/postgresql
-  # _add_caps --cap-add FOWNER
-  return 0
-}
-
-_prep_env() {
   return 0
 }
 
@@ -60,8 +49,9 @@ _prep_ports() {
 }
 
 _finalize() {
-  # Require the postgres container
-  _add_rc --requires "${POSTGRES_CONTAINER}"
+  # Can run as read-only root
+  _add_rc --read-only
+
   return 0
 }
 

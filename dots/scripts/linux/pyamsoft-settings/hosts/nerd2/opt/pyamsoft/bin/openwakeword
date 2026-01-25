@@ -17,6 +17,9 @@ MODEL="${MODEL:-hey_jarvis}"
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/models" "/custom-model" || return 1
 
+  # For huggingface cache
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/root/.cache" || return 1
+
   return 0
 }
 
@@ -54,8 +57,8 @@ _finalize() {
   _add_args --preload-model "${MODEL}"
   _add_args --custom-model-dir "/custom-model"
 
-  # Make sure home assistant is alive
-  _add_rc --requires "home-assistant"
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

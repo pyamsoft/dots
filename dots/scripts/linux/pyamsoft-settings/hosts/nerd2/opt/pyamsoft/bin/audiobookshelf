@@ -23,6 +23,9 @@ _prep_mounts() {
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
     _mount_bind "${_media}" "/media" || return 1
+
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
   fi
   unset _media
 
@@ -88,6 +91,9 @@ _finalize() {
     # Make sure we have the wireguard VPN
     _add_rc --requires "wireguard"
   fi
+
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

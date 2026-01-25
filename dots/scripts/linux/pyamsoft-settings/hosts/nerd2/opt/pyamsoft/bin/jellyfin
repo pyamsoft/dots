@@ -24,6 +24,9 @@ _prep_mounts() {
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ]; then
     _mount_bind "${_media}" "/media" || return 1
+
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
   fi
   unset _media
 
@@ -102,6 +105,9 @@ _finalize() {
   _add_rc --device "/dev/dri:/dev/dri"
   _add_rc --group-add="$(_get_gid_for_group "render")"
   _add_rc --group-add="$(_get_gid_for_group "video")"
+
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }

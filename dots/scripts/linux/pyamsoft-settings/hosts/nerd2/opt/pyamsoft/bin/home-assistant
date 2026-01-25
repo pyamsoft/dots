@@ -11,7 +11,10 @@ CONTAINER_MEMORY_LIMIT="4G"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
+  _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/config" || return 1
+
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
+  _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/data" || return 1
 
   # DBUS access for bluetooth
   _mount_bind "/run/dbus" "/run/dbus" "ro" || return 1
@@ -33,7 +36,6 @@ _prep_network() {
 
 _prep_caps() {
   # Needed for s6
-  _add_caps --cap-add DAC_OVERRIDE
   _add_caps --cap-add CHOWN
   _add_caps --cap-add SETGID
   _add_caps --cap-add SETUID
@@ -41,6 +43,10 @@ _prep_caps() {
   # For bluetooth
   _add_caps --cap-add NET_RAW
   _add_caps --cap-add NET_ADMIN
+
+  # Complains about missing this cap, but when we add it
+  # it loops forever on a fail because of no-new-privileges
+  # unable to set CAP_SETFCAP effective capability: Operation not permitted
 
   return 0
 }
@@ -52,16 +58,17 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
-  # Ok so what the hell is this
-  # well, we need keep-id to use bluetooth in the container
-  # but we also need s6 to run as root, so we declare the main user as root
-  _add_userns --user="0:0"
-
   if _is_podman; then
     # Need this userns option that is podman specific or we have random OCI permission error
     _add_userns --userns keep-id
     _add_userns --group-add keep-groups
   fi
+
+  # Cannot safely run as read-only because of setcap call for bluetooth
+  # even though that call fails
+  #
+  # if it fails because of permission denied instead of Operation not permitted, it loops forever
+  # _add_rc --read-only
 
   return 0
 }

@@ -19,11 +19,8 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  # Needed for s6
-  _add_caps --cap-add DAC_OVERRIDE
+  # runs a chown on startup
   _add_caps --cap-add CHOWN
-  _add_caps --cap-add SETGID
-  _add_caps --cap-add SETUID
   return 0
 }
 
@@ -48,15 +45,17 @@ _prep_network() {
 _check_user() {
   _require_nonroot || return 1
 
-  # Run as root for s6
-  _add_userns --user="0:0"
+  if _is_podman; then
+    _add_userns --userns keep-id
+    _add_userns --group-add keep-groups
+  fi
 
   return 0
 }
 
 _finalize() {
-  # Make sure home assistant is alive
-  _add_rc --requires "home-assistant"
+  # Can run as read-only root
+  _add_rc --read-only
 
   return 0
 }
