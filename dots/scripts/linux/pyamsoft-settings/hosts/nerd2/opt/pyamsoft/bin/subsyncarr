@@ -8,6 +8,7 @@ IMAGE="docker.io/mrorbitman/subsyncarr"
 TAG="0.0.8"
 
 CONTAINER_REQUIRE_INIT=1
+CONTAINER_MEMORY_LIMIT="2G"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/app/logs" || return 1
