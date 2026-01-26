@@ -394,7 +394,7 @@ _network_isolate() {
 
 ##
 # Make a directory on the host
-_mount_mkdir() {
+_host_mkdir() {
   _mount_d="$1"
 
   mkdir -p "${_mount_d}" || {
@@ -405,32 +405,6 @@ _mount_mkdir() {
   }
 
   unset _mount_d
-  return 0
-}
-
-##
-# Bind most a host directory
-_mount_bind() {
-  _mount_src="$1"
-  _mount_target="$2"
-  _mount_options="$3"
-
-  _mount_mkdir "${_mount_src}" || {
-    unset _mount_src
-    unset _mount_target
-    unset _mount_options
-    return 1
-  }
-
-  if [ -n "${_mount_options}" ]; then
-    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target},${_mount_options}"
-  else
-    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
-  fi
-
-  unset _mount_src
-  unset _mount_target
-  unset _mount_options
   return 0
 }
 
@@ -449,6 +423,32 @@ _host_chmod() {
 
   unset _chmod_mode
   unset _chmod_target
+  return 0
+}
+
+##
+# Bind most a host directory
+_mount_bind() {
+  _mount_src="$1"
+  _mount_target="$2"
+  _mount_options="$3"
+
+  _host_mkdir "${_mount_src}" || {
+    unset _mount_src
+    unset _mount_target
+    unset _mount_options
+    return 1
+  }
+
+  if [ -n "${_mount_options}" ]; then
+    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target},${_mount_options}"
+  else
+    _add_mounts --mount "type=bind,source=${_mount_src},target=${_mount_target}"
+  fi
+
+  unset _mount_src
+  unset _mount_target
+  unset _mount_options
   return 0
 }
 

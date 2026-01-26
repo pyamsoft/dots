@@ -75,7 +75,7 @@ _prep_mounts() {
     _hub_data="${CONTAINER_RUNTIME_DIR}/${BASENAME}-hub/data"
 
     if [ "${BESZEL_MODE}" = "hub" ]; then
-      _mount_mkdir "${_hub_data}" || return 1
+      _host_mkdir "${_hub_data}" || return 1
     fi
 
     _prep_ssh_key "${_hub_data}" || return 1

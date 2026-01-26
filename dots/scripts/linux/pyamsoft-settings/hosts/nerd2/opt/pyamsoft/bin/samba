@@ -12,7 +12,7 @@ CONTAINER_MEMORY_LIMIT="128M"
 _prep_mounts() {
   # Share folders are optionally symlinks to another mass storage drive
   _share="${CONTAINER_RUNTIME_DIR}/${NAME}/share"
-  _mount_mkdir "${_share}"
+  _host_mkdir "${_share}"
 
   # Follow the link and mount the share folder ONLY if it is valid
   if [ -d "$(realpath "${_share}")" ]; then

@@ -17,7 +17,7 @@ _prep_mounts() {
   _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
 
   # Media folders are optionally symlinks to another mass storage drive
-  _mount_mkdir "${_media}"
+  _host_mkdir "${_media}"
 
   # Follow the link and mount the media folder ONLY if it is valid
   if [ -d "$(realpath "${_media}")" ] && [ -e "$(realpath "${_media}/mounted")" ]; then
