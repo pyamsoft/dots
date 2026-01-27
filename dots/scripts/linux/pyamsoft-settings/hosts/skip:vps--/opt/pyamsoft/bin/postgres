@@ -62,12 +62,6 @@ _check_user() {
     _add_userns --userns keep-id:uid=999
   fi
 
-  # On MacOS we need to own the files to chown them
-  # because just VM things
-  if _is_macos; then
-    _add_userns --user "$(id -u):$(id -g)"
-  fi
-
   return 0
 }
 
