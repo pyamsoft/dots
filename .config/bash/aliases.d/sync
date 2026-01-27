@@ -8,3 +8,5 @@
 # calling sync twice will ensure that by the time the second one
 # returns, the first one is done
 alias sync="sync && sync "
+
+# vim: set filetype=sh :

@@ -33,3 +33,5 @@ flatpak__remove_background_permissions() {
 
   return 0
 }
+
+# vim: set filetype=sh :

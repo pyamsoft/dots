@@ -1,1 +1,5 @@
+# shellcheck shell=bash
+
 alias act="act --container-architecture linux/amd64"
+
+# vim: set filetype=sh :

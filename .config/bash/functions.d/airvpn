@@ -11,3 +11,4 @@ amiairvpn() {
   return 0
 }
 
+# vim: set filetype=sh :

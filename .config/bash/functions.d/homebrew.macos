@@ -32,3 +32,5 @@ __upall_macos_macports() {
 upall() {
   umask 0022 && __upall_macos_homebrew && __upall_macos_macports && umask 0077
 }
+
+# vim: set filetype=sh :

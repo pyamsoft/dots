@@ -6,3 +6,5 @@ if command -v gls >/dev/null; then
 else
   alias ls="ls -CHh --color=always "
 fi
+
+# vim: set filetype=sh :

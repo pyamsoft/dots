@@ -6,3 +6,5 @@ if [ -z "${XDG_CONFIG_HOME}" ]; then
 else
   alias ssh='ssh -F "${XDG_CONFIG_HOME}/ssh/config" '
 fi
+
+# vim: set filetype=sh :

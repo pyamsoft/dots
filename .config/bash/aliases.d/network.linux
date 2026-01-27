@@ -2,3 +2,5 @@
 
 # List ports in use
 alias ports="ss -tulanp"
+
+# vim: set filetype=sh :

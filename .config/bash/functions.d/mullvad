@@ -10,3 +10,5 @@ amimullvad() {
   curl "https://am.i.mullvad.net/${_arg}" "$@" || return 1
   return 0
 }
+
+# vim: set filetype=sh :

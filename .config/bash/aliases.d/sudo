@@ -2,3 +2,5 @@
 
 # Allow sudo calls to receive alias support as well.
 alias sudo="sudo "
+
+# vim: set filetype=sh :

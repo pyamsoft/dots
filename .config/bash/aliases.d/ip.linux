@@ -2,3 +2,5 @@
 
 # Ip with colored output
 alias ip="ip --color=auto "
+
+# vim: set filetype=sh :

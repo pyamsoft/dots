@@ -64,3 +64,5 @@ upall() {
   __up_containers || return 1
   return 0
 }
+
+# vim: set filetype=sh :

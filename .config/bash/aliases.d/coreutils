@@ -18,3 +18,5 @@ alias mkdir="mkdir -vp"
 # Cleaner human output
 alias df="df -H"
 alias du="du -ch"
+
+# vim: set filetype=sh :

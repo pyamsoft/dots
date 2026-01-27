@@ -73,3 +73,5 @@ unset _all_alias
 IFS="${_old_ifs}"
 
 return 0
+
+# vim: set filetype=sh :

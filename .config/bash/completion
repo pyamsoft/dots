@@ -64,3 +64,5 @@ IFS="${_old_ifs}"
 unset _self_directory
 
 return 0
+
+# vim: set filetype=sh :

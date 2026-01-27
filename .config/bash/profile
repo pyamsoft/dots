@@ -79,3 +79,5 @@ unset _all_profile
 IFS="${_old_ifs}"
 
 return 0
+
+# vim: set filetype=sh :

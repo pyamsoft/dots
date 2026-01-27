@@ -13,3 +13,5 @@ man() {
     LESS_TERMCAP_us=$'\E[04;38;5;146m' \
     "$(command -v man)" "$@"
 }
+
+# vim: set filetype=sh :

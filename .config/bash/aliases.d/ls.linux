@@ -2,3 +2,5 @@
 
 # ls, arrow room for aliases
 alias ls="ls -CHh --color=auto "
+
+# vim: set filetype=sh :

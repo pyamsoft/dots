@@ -2,3 +2,5 @@
 
 # Allow for alias expansion
 alias paccache="paccache -v "
+
+# vim: set filetype=sh :

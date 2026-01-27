@@ -17,4 +17,5 @@ _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
 [ -f "${_cfg}/bash/rc" ] && . "${_cfg}/bash/rc" "${_cfg}" "$(uname)"
 
 unset _cfg
-unset _os
+
+# vim: set filetype=sh :
