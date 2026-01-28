@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<service version="1">
-  <short>domain-locker</short>
-  <description>Domain Locker</description>
-  <port port="5293" protocol="tcp" />
-</service>
