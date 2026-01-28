@@ -7,29 +7,40 @@ devices=dri;!all;!kvm;!shm;!input;!usb;
 features=!devel;!multiarch;!bluetooth;!canbus;
 
 [Session Bus Policy]
-org.freedesktop.secrets=none
-org.freedesktop.impl.portal.PermissionStore=none
-org.freedesktop.UPower=none
-org.freedesktop.fwupd=none
+org.fedoraproject.FirewallD1=none
+org.fedoraproject.FirewallD1.config=none
+org.freedesktop.Avahi=none
 org.freedesktop.Flatpak=none
+org.freedesktop.fwupd=none
+org.freedesktop.impl.portal.PermissionStore=none
+org.freedesktop.login1=none
+org.freedesktop.UPower=none
+org.freedesktop.UDisks2=none
+org.freedesktop.ScreenSaver=none
+org.freedesktop.secrets=none
+org.gnome.SessionManager=none
 org.gnome.Shell=none
 org.gnome.Shell.Extensions=none
-org.freedesktop.Avahi=none
-org.freedesktop.ScreenSaver=none
-org.freedesktop.UDisks2=none
 org.gnome.Software=none
-org.gnome.SessionManager=none
-org.freedesktop.login1=none
 org.kde.kdeconnect=none
 
 [System Bus Policy]
+org.fedoraproject.FirewallD1=none
+org.fedoraproject.FirewallD1.config=none
+org.freedesktop.Avahi=none
 org.freedesktop.Flatpak=none
 org.freedesktop.fwupd=none
-org.freedesktop.Avahi=none
-org.freedesktop.login1=none
-org.freedesktop.secrets=none
-org.freedesktop.hostname1=none
 org.freedesktop.impl.portal.PermissionStore=none
+org.freedesktop.login1=none
+org.freedesktop.UPower=none
+org.freedesktop.UDisks2=none
+org.freedesktop.ScreenSaver=none
+org.freedesktop.secrets=none
+org.gnome.SessionManager=none
+org.gnome.Shell=none
+org.gnome.Shell.Extensions=none
+org.gnome.Software=none
+org.kde.kdeconnect=none
 
 [Environment]
 GTK_THEME=
