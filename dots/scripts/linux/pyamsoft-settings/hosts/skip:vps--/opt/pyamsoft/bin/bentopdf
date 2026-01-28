@@ -4,8 +4,8 @@
 . "/opt/pyamsoft/lib/container-launch"
 
 NAME="bentopdf"
-IMAGE="docker.io/bentopdf/bentopdf"
-TAG="1.15.3"
+IMAGE="ghcr.io/alam00000/bentopdf"
+TAG="1.16.1"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
