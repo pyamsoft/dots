@@ -7,7 +7,7 @@ NAME="navidrome"
 IMAGE="docker.io/deluan/navidrome"
 TAG="0.59.0"
 
-CONTAINER_MEMORY_LIMIT="128M"
+CONTAINER_MEMORY_LIMIT="1G"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
