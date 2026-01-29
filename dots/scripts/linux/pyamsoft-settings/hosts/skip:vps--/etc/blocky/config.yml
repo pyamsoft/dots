@@ -39,6 +39,10 @@ blocking:
     default:
       - "default"
 
+# Only respond to queries for FQDN
+fqdnOnly:
+  enable: true
+
 # Bind to port 53 for normal DNS
 ports:
   dns: "53"
