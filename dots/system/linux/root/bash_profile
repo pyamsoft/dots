@@ -2,41 +2,61 @@
 
 # Some nice aliases
 _aliases() {
-  alias ls="ls -CHh --color=auto "
+  # Grep with colors
+  alias grep="grep -E --color=auto "
+
+  # ls, allow room for aliases
+  if command -v gls >/dev/null; then
+    alias ls="gls -CHh --color=auto "
+  else
+    alias ls="ls -CHh --color=always "
+  fi
+
+  # Quick ls
   alias ll="ls -l"
   alias la="ls -A"
+  alias lla="ls -Al"
+  alias lal="ls -Al"
 
+  # Verbose
   alias rm="rm -iv"
-  alias mv="mv -iv"
   alias cp="cp -iv"
+  alias mv="mv -iv"
+  alias mkdir="mkdir -vp"
+
+  # Cleaner human output
+  alias df="df -H"
+  alias du="du -ch"
 
   return 0
 }
 
 # Fix homebrew on macos
 _homebrew_path() {
-  if [ "$(uname)" = "Darwin" ]; then
-    if [ -x "/opt/homebrew/bin/brew" ]; then
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-    fi
+  if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
 
   return 0
+}
+
+__has_path() {
+  printf -- '%s' "${PATH}" | grep -q "$1" >/dev/null 2>&1
 }
 
 # Debian resets the path in /etc/profile, regardless of sudo secure_path
 #
 # we need to add our pyamsoft path back to this
 _pyamsoft_path() {
-  if [ -f "/etc/os-release" ] && grep -q "ID=debian" /etc/os-release >/dev/null 2>&1; then
-    if [ -d "/opt/pyamsoft/sbin" ]; then
-      PATH="/opt/pyamsoft/sbin:${PATH}"
-    fi
-    if [ -d "/opt/pyamsoft/bin" ]; then
-      PATH="/opt/pyamsoft/bin:${PATH}"
-    fi
-    export PATH
+  if ! __has_path "/opt/pyamsoft/sbin"; then
+    PATH="/opt/pyamsoft/sbin:${PATH}"
   fi
+
+  if ! __has_path "/opt/pyamsoft/bin"; then
+    PATH="/opt/pyamsoft/bin:${PATH}"
+  fi
+
+  export PATH
 
   return 0
 }
@@ -48,12 +68,12 @@ _editor() {
     return 0
   fi
 
-  if [ -x /usr/bin/nvim ]; then
-    EDITOR=/usr/bin/nvim
-  elif [ -x /usr/bin/vim ]; then
-    EDITOR=/usr/bin/nvim
-  elif [ -x /usr/bin/vi ]; then
-    EDITOR=/usr/bin/nvim
+  if [ -x "/usr/bin/nvim" ]; then
+    EDITOR="/usr/bin/nvim"
+  elif [ -x "/usr/bin/vim" ]; then
+    EDITOR="/usr/bin/vim"
+  elif [ -x "/usr/bin/vi" ]; then
+    EDITOR="/usr/bin/vi"
   else
     return 0
   fi
@@ -69,6 +89,7 @@ _editor() {
 }
 
 _lang() {
+  # Enforce COLLATE as C
   if [ -z "${LC_COLLATE}" ]; then
     LC_COLLATE="C.UTF-8"
     export LC_COLLATE
@@ -88,5 +109,10 @@ unset _homebrew_path
 unset _editor
 unset _lang
 
+unset __has_path
+
 # Source bashrc
+# shellcheck disable=SC1091
 [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
+
+# vim: set filetype=sh :

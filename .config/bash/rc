@@ -5,8 +5,15 @@
 # $1 - CONFIG_DIR
 # $2 - OS
 
-# If not running interactively, don't do anything
-[[ "$-" != *i* ]] && return
+case "$-" in
+*i*)
+  # Continue as normal
+  ;;
+*)
+  # Stop if not running interactively
+  return 0
+  ;;
+esac
 
 if [ -z "$1" ]; then
   # shellcheck disable=SC2016

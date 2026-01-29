@@ -1,7 +1,14 @@
 # shellcheck shell=bash
 
-# Stop if not running interactively
-[[ "$-" != *i* ]] && return
+case "$-" in
+*i*)
+  # Continue as normal
+  ;;
+*)
+  # Stop if not running interactively
+  return 0
+  ;;
+esac
 
 _starship() {
   # Starship
@@ -17,3 +24,5 @@ _starship() {
 _starship
 
 unset _starship
+
+# vim: set filetype=sh :

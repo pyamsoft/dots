@@ -1,7 +1,14 @@
 # shellcheck shell=bash
 
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
+case "$-" in
+*i*)
+  # Continue as normal
+  ;;
+*)
+  # Stop if not running interactively
+  return 0
+  ;;
+esac
 
 _cfg="${XDG_CONFIG_HOME:-${HOME}/.config}"
 
