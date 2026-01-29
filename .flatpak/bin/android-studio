@@ -1,8 +1,107 @@
 #!/bin/sh
 
-readonly pak="com.google.AndroidStudio"
-readonly def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
+readonly _pak="com.google.AndroidStudio"
 
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${_pak}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+# Send a notify message or log to the console when migration is needed
+_notify_migrate() {
+  _migrate_from="$1"
+  _migrate_to="$2"
+
+  _msg="You should migrate your tmpfs-mounter from ${_migrate_from} => ${_migrate_to}"
+
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "${_pak} Migration Recommended" "${_msg}"
+  fi
+
+  _log "${_pak}: ${_msg}"
+
+  unset _msg
+  unset _migrate_from
+  unset _migrate_to
+
+  return 0
+}
+
+_warn_outdated() {
+  _my_user="$(id -u -n)"
+  _my_user_home="$(systemd-escape "${HOME}")"
+
+  _dir="$(printf -- '%s' "/etc/systemd/system/local-fs.target.wants/tmpfs-mounter@${_my_user}:${_my_user_home}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio"*"-caches:mode\x3d0700\x2cnoexec.service")"
+
+  case "${_dir}" in
+  *\**)
+    # No directory, nothing to warn about
+    unset _dir
+
+    unset _my_user
+    unset _my_user_home
+
+    return 0
+    ;;
+  *) ;;
+  esac
+
+  # Version like 2025.2.2
+  _cache_version="$(printf -- '%s' "${_dir}" | grep -oE 'AndroidStudio[0-9]+(\.[0-9]+)+' | sed 's/AndroidStudio//')"
+
+  # Full version with rel, 2025.2.3.4. We don't care about rel
+  # split by spaces per code
+  _current_version_str="$(flatpak info "${_pak}" | grep 'Version: ' | grep -oE '[0-9]+(\.[0-9]+)+' | tr '.' ' ')"
+
+  _current_version_maj="$(printf -- '%s' "${_current_version_str}" | awk '{ print $1 }')"
+  _current_version_min="$(printf -- '%s' "${_current_version_str}" | awk '{ print $2 }')"
+  _current_version_patch="$(printf -- '%s' "${_current_version_str}" | awk '{ print $3 }')"
+  _current_version="${_current_version_maj}.${_current_version_min}.${_current_version_patch}"
+
+  # Make sure our current version starts with the cached one
+  case "${_current_version}" in
+  "${_cache_version}" | "${_cache_version}".*) ;;
+  *)
+    _notify_migrate "${_cache_version}" "${_current_version}" || {
+      unset _my_user
+      unset _my_user_home
+
+      unset _current_version
+
+      unset _current_version_patch
+      unset _current_version_min
+      unset _current_version_maj
+      unset _current_version_str
+
+      unset _cache_version
+
+      return 1
+    }
+    ;;
+  esac
+
+  unset _my_user
+  unset _my_user_home
+
+  unset _current_version
+
+  unset _current_version_patch
+  unset _current_version_min
+  unset _current_version_maj
+  unset _current_version_str
+
+  unset _cache_version
+  return 0
+}
+
+readonly def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
 readonly dev_root="${HOME}/devel"
 readonly android_root="${dev_root}/sdk/android"
 
@@ -25,6 +124,9 @@ path="${path}:/usr/lib/sdk/${_nodejs}/bin"
 
 readonly path
 
+# Warn abound outdated builds
+_warn_outdated
+
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
@@ -43,11 +145,8 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-##
-# KTOR 3.3.2 does NOT build in Android Studio in Flatpak?
-#
 # shellcheck disable=SC2086
-flatpak-env "${pak}" \
+flatpak-env "${_pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${dev_root}/project/pyamsoft/android" \
   --filesystem="${android_root}" \

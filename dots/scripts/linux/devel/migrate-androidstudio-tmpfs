@@ -1,0 +1,54 @@
+#!/bin/sh
+
+_my_user="$(id -u -n)"
+_my_home_path="$(systemd-escape "${HOME}")"
+
+_systemctl() {
+  _enable_or_disable="$1"
+  _version="$2"
+  _d="$3"
+  _noexec="$4"
+
+  _esc_d="$(systemd-escape "${_d}")"
+
+  if [ -n "${_noexec}" ] && [ "${_noexec}" -eq 1 ]; then
+    sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
+  else
+    sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio${_version}-${_esc_d}:mode\x3d0700.service"
+  fi
+
+  unset _enable_or_disable
+  unset _version
+  unset _d
+  unset _noexec
+  unset _esc_d
+
+  return 0
+}
+
+_do() {
+  _cmd="$1"
+  _v="$2"
+
+  # exec allowed
+  _systemctl "${_cmd}" "${_v}" "tmp"
+
+  # noexec
+  _systemctl "${_cmd}" "${_v}" "compile-server" 1
+  _systemctl "${_cmd}" "${_v}" "caches" 1
+  _systemctl "${_cmd}" "${_v}" "vcs-log" 1
+  _systemctl "${_cmd}" "${_v}" "log" 1
+  _systemctl "${_cmd}" "${_v}" "index" 1
+  _systemctl "${_cmd}" "${_v}" "editor" 1
+  _systemctl "${_cmd}" "${_v}" "compiler" 1
+
+  return 0
+}
+
+main() {
+  _do "disable" "2025.2.2"
+  _do "enable" "2025.2.3"
+  return 0
+}
+main "$@" || exit 0
+exit 1
