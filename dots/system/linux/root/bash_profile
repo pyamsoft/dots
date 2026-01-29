@@ -48,12 +48,12 @@ __has_path() {
 #
 # we need to add our pyamsoft path back to this
 _pyamsoft_path() {
-  if ! __has_path "/opt/pyamsoft/sbin"; then
-    PATH="/opt/pyamsoft/sbin:${PATH}"
-  fi
-
   if ! __has_path "/opt/pyamsoft/bin"; then
     PATH="/opt/pyamsoft/bin:${PATH}"
+  fi
+
+  if ! __has_path "/opt/pyamsoft/sbin"; then
+    PATH="/opt/pyamsoft/sbin:${PATH}"
   fi
 
   export PATH
