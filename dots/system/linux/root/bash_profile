@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
 # Some nice aliases
+#
+# We must have the PATH setup first so that command -v can resolve things
 _aliases() {
   # Grep with colors
   alias grep="grep -E --color=auto "
@@ -97,16 +99,16 @@ _lang() {
   return 0
 }
 
-_aliases
+_lang
 _homebrew_path
 _pyamsoft_path
 _editor
-_lang
+_aliases
 
 unset _aliases
+unset _editor
 unset _pyamsoft_path
 unset _homebrew_path
-unset _editor
 unset _lang
 
 unset __has_path
