@@ -5,7 +5,7 @@
 
 NAME="bentopdf"
 IMAGE="ghcr.io/alam00000/bentopdf"
-TAG="1.16.1"
+TAG="2.0.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
