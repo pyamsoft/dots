@@ -5,7 +5,7 @@
 
 NAME="mosquitto"
 IMAGE="docker.io/library/eclipse-mosquitto"
-TAG="2.0.22"
+TAG="2.1.0-alpine"
 
 CONTAINER_MEMORY_LIMIT="64M"
 CONTAINER_REQUIRE_RUNCONF=0

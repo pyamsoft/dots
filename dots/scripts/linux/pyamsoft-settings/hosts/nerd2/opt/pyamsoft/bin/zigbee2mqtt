@@ -5,7 +5,7 @@
 
 NAME="zigbee2mqtt"
 IMAGE="ghcr.io/koenkk/zigbee2mqtt"
-TAG="2.7.2"
+TAG="2.8.0"
 
 CONTAINER_MEMORY_LIMIT="128M"
 

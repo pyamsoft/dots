@@ -5,7 +5,7 @@
 
 NAME="esphome"
 IMAGE="ghcr.io/esphome/esphome"
-TAG="2026.1.1"
+TAG="2026.1.3"
 
 # default is fine unless you are compiling, then you need 8g lol
 CONTAINER_MEMORY_LIMIT="8G"
