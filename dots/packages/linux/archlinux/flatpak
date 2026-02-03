@@ -1,3 +1,4 @@
+com.github.neithern.g4music
 com.github.wwmm.easyeffects
 com.google.AndroidStudio
 com.heroicgameslauncher.hgl
@@ -15,5 +16,6 @@ org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.localsend.localsend_app
 org.mozilla.firefox
+org.musicbrainz.Picard
 org.remmina.Remmina
 page.tesk.Refine
