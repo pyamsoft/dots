@@ -11,7 +11,7 @@
 # This script can be dropped-in to places like GNOME keyboard shortcuts
 
 _rofi_wayland_display="${WAYLAND_DISPLAY}"
-unset WAYLAND_DISPLAY=
+unset WAYLAND_DISPLAY
 
 # Unset the WAYLAND_DISPLAY so that rofi can run, but re-set it for the executed program
 # because we may want to use Wayland
