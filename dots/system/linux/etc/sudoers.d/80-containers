@@ -1,2 +1,0 @@
-# Allow user to run commands as containers user
-<<MY_USER>> ALL=(<<CONTAINER_USER>>) NOPASSWD:/opt/pyamsoft/bin/container-delegate

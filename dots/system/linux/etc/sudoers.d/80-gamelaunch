@@ -1,2 +1,0 @@
-# Keep gamer related vars only for gamelaunch script
-Defaults!/opt/pyamsoft/sbin/gamelaunch env_keep += "GAMER_*"

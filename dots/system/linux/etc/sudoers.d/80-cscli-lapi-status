@@ -1,2 +1,0 @@
-# Run "cscli lapi status" without password
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/cscli lapi status

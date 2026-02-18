@@ -1,5 +1,0 @@
-# Allow user to check tailscale status
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale ""
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale status
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale version
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/bin/tailscale ip

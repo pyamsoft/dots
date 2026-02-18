@@ -1,0 +1,37 @@
+# This must be first, as a future NOPASSWD command would be overridden otherwise
+#
+# Sudo reads these files in order. This file goes first to declare that <<MY_USER>> can perform
+# any command as root.
+#
+# Then future files declare things like NOPASSWD needed when entering certain approved commands.
+
+######
+# Let sudo group use sudo
+%sudo ALL=(ALL:ALL) ALL
+
+# Reset environment
+Defaults env_reset
+
+# Password feedback
+Defaults pwfeedback
+
+# Set umask to 0022 as most files are owned by root but used by everyone
+Defaults umask=0022
+Defaults umask_override
+
+# Define secure path
+# Add pyamsoft directories to PATH
+# Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Defaults secure_path="/opt/pyamsoft/sbin:/opt/pyamsoft/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Keep defined proxies
+Defaults env_keep += "*_proxy *_PROXY"
+
+# Preserve editor environment variables for visudo
+Defaults!/usr/bin/visudo env_keep += "SUDO_EDITOR EDITOR"
+
+# Preserve editor environment variables for systemctl
+Defaults!/usr/bin/systemctl env_keep += "SUDO_EDITOR EDITOR SYSTEMD_EDITOR"
+
+# Preserve editor environment variables for pacdiff
+Defaults!/usr/bin/pacdiff env_keep += "DIFFPROG"

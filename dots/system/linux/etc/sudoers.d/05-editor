@@ -1,8 +1,0 @@
-# Preserve editor environment variables for visudo
-Defaults!/usr/bin/visudo env_keep += "SUDO_EDITOR EDITOR"
-
-# Preserve editor environment variables for systemctl
-Defaults!/usr/bin/systemctl env_keep += "SUDO_EDITOR EDITOR SYSTEMD_EDITOR"
-
-# Preserve editor environment variables for pacdiff
-Defaults!/usr/bin/pacdiff env_keep += "DIFFPROG"

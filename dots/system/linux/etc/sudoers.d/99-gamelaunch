@@ -1,4 +1,0 @@
-# Safe access to launching the gamelaunch script
-# <<PROGRAM>> is the direct name of a program, like "steam" which
-# should have a corresponding "gaming-steam" user on the system
-<<MY_USER>> ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/gamelaunch <<PROGRAM>
