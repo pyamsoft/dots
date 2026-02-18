@@ -5,7 +5,7 @@
 
 NAME="home-assistant"
 IMAGE="ghcr.io/linuxserver/homeassistant"
-TAG="2026.1.3"
+TAG="2026.2.2"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
