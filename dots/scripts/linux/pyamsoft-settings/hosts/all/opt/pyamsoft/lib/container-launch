@@ -537,6 +537,17 @@ _prep_memory() {
 #
 # Default function for setting up CPU usage
 _prep_cpu() {
+  _cpu_number="$(grep -c "processor" /proc/cpuinfo)"
+
+  if [ -n "${_cpu_number}" ] && [ "${_cpu_number}" -gt 2 ]; then
+    # If we have more than 2 cores, allow a container to use most
+    _add_cpu --cpus "$((_cpu_number - 2))"
+  else
+    # Otherwise, allocate a single core allowance
+    _add_cpu --cpus 1
+  fi
+
+  unset _cpu_number
   return 0
 }
 
