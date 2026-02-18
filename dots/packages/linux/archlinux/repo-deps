@@ -325,7 +325,6 @@ leancrypto
 less
 lib32-alsa-lib
 lib32-alsa-plugins
-lib32-audit
 lib32-brotli
 lib32-bzip2
 lib32-curl
@@ -344,7 +343,6 @@ lib32-icu
 lib32-json-c
 lib32-keyutils
 lib32-krb5
-lib32-libcap
 lib32-libdisplay-info
 lib32-libdrm
 lib32-libelf
@@ -358,14 +356,12 @@ lib32-libnghttp2
 lib32-libnghttp3
 lib32-libngtcp2
 lib32-libnm
-lib32-libnsl
 lib32-libpciaccess
 lib32-libpipewire
 lib32-libpng
 lib32-libpsl
 lib32-libssh2
 lib32-libtasn1
-lib32-libtirpc
 lib32-libunistring
 lib32-libva
 lib32-libx11
@@ -390,7 +386,6 @@ lib32-nspr
 lib32-nss
 lib32-openssl
 lib32-p11-kit
-lib32-pam
 lib32-pcre2
 lib32-pipewire
 lib32-pipewire-jack
@@ -412,10 +407,12 @@ libadwaita
 libaemu
 libaio
 libarchive
+libasan
 libass
 libassuan
 libasyncns
 libatasmart
+libatomic
 libavc1394
 libavif
 libavtp
@@ -480,13 +477,16 @@ libfontenc
 libfreeaptx
 libftdi
 libfyaml
+libgcc
 libgcrypt
 libgdm
 libgexiv2
+libgfortran
 libgirepository
 libglvnd
 libgme
 libgoa
+libgomp
 libgpg-error
 libgphoto2
 libgsf
@@ -523,6 +523,7 @@ libldac
 libldap
 liblqr
 liblrdf
+liblsan
 libltc
 libluv
 libmakepkg-dropins
@@ -560,6 +561,7 @@ libnma-gtk4
 libnotify
 libnsl
 libnvme
+libobjc
 libogg
 libopenmpt
 libosinfo
@@ -583,6 +585,7 @@ libpulse
 libpwquality
 libqmi
 libqrtr-glib
+libquadmath
 libraqm
 libraw1394
 librest
@@ -601,6 +604,7 @@ libsoxr
 libsrtp
 libssh
 libssh2
+libstdc++
 libstemmer
 libsysprof-capture
 libtasn1
@@ -614,6 +618,8 @@ libtool
 libtpms
 libtraceevent
 libtracefs
+libtsan
+libubsan
 libunibreak
 libunistring
 libunwind
@@ -838,6 +844,7 @@ python-msgpack
 python-packaging
 python-pbr
 python-pillow
+python-pkg_resources
 python-platformdirs
 python-prettytable
 python-protobuf
@@ -854,6 +861,7 @@ python-requests
 python-setuptools
 python-sgmllib3k
 python-six
+python-typing_extensions
 python-urllib3
 python-wcwidth
 python-wheel
@@ -966,6 +974,7 @@ sqlite
 sratom
 srt
 startup-notification
+steam-devices
 sudo
 svt-av1
 svt-hevc
@@ -1005,6 +1014,8 @@ upower
 usbredir
 usbutils
 util-linux-libs
+v2ray-domain-list-community
+v2ray-geoip
 v4l-utils
 vapoursynth
 vde2
@@ -1071,6 +1082,7 @@ zbar
 zenity
 zeromq
 zimg
+zint
 zix
 zlib
 zlib-ng
