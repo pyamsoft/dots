@@ -521,12 +521,12 @@ _prep_memory() {
   fi
 
   # Grab the total amount of RAM available to the system
-  _total_ram_gb="$(free -g | grep '^Mem:' | awk '{ print $2 }')"
-  _leave_free="$((_total_ram_gb * 2 / 10))"
+  _total_ram_mb="$(free -m | grep '^Mem:' | awk '{ print $2 }')"
+  _leave_free="$((_total_ram_mb * 2 / 10))"
 
-  _add_memory --memory "$((_total_ram_gb - _leave_free))G"
+  _add_memory --memory "$((_total_ram_mb - _leave_free))M"
 
-  unset _total_ram_gb
+  unset _total_ram_mb
   unset _leave_free
 
   return 0
