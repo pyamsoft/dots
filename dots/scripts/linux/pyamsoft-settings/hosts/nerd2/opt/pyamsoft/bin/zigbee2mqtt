@@ -7,8 +7,6 @@ NAME="zigbee2mqtt"
 IMAGE="ghcr.io/koenkk/zigbee2mqtt"
 TAG="2.8.0"
 
-CONTAINER_MEMORY_LIMIT="128M"
-
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/app/data" || return 1
 

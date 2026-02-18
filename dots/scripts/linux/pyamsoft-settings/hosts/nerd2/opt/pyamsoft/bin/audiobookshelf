@@ -7,8 +7,6 @@ NAME="audiobookshelf"
 IMAGE="ghcr.io/advplyr/audiobookshelf"
 TAG="2.32.1"
 
-CONTAINER_MEMORY_LIMIT="2G"
-
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
 

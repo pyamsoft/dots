@@ -40,9 +40,6 @@ CONTAINER_ARGS=""
 
 ## Defaults
 
-# Default container memory allocation to 256MB
-readonly DEFAULT_CONTAINER_MEMORY_LIMIT="256M"
-
 ## Private variables
 __os_name="$(uname)"
 __uid="$(id -u)"
@@ -519,12 +516,19 @@ __await_directory() {
 #
 # Default function for setting up Memory usage
 _prep_memory() {
-  if [ -z "${CONTAINER_MEMORY_LIMIT}" ]; then
-    _log 'Memory limit is not set for container %s, using default: %s' "${NAME}" "${DEFAULT_CONTAINER_MEMORY_LIMIT}"
-    CONTAINER_MEMORY_LIMIT="${DEFAULT_CONTAINER_MEMORY_LIMIT}"
+  if [ -n "${CONTAINER_MEMORY_LIMIT}" ]; then
+    _elog 'Setting container memory limit for %s directly is deprecated. Containers will always use MAX-20%%' "${NAME}"
   fi
 
-  _add_memory --memory "${CONTAINER_MEMORY_LIMIT}"
+  # Grab the total amount of RAM available to the system
+  _total_ram_gb="$(free -g | grep '^Mem:' | awk '{ print $2 }')"
+  _leave_free="$((_total_ram_gb * 2 / 10))"
+
+  _add_memory --memory "$((_total_ram_gb - _leave_free))G"
+
+  unset _total_ram_gb
+  unset _leave_free
+
   return 0
 }
 

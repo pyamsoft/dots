@@ -7,8 +7,6 @@ NAME="jellyfin"
 IMAGE="docker.io/jellyfin/jellyfin"
 TAG="10.11.6"
 
-CONTAINER_MEMORY_LIMIT="4G"
-
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
 
