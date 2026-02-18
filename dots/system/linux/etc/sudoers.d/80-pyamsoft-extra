@@ -2,7 +2,7 @@
 # Safe access to launching the gamelaunch script
 # <<PROGRAM>> is the direct name of a program, like "steam" which
 # should have a corresponding "gaming-steam" user on the system
-%gamelaunch ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/gamelaunch <<PROGRAM>
+%gamelaunch ALL=(root) NOPASSWD:/opt/pyamsoft/sbin/gamelaunch
 # Keep gamer related vars only for gamelaunch script
 Defaults!/opt/pyamsoft/sbin/gamelaunch env_keep += "GAMER_*"
 
