@@ -12,8 +12,10 @@ _systemctl() {
   _esc_d="$(systemd-escape "${_d}")"
 
   if [ -n "${_noexec}" ] && [ "${_noexec}" -eq 1 ]; then
+    printf -- '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
     sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
   else
+    printf -- '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700.service"
     sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700.service"
   fi
 
