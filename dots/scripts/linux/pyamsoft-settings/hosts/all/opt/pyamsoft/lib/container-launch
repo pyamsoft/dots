@@ -12,8 +12,6 @@ CONTAINER_REQUIRE_INIT="${CONTAINER_REQUIRE_INIT:-0}"
 CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 # Run the container network with IPv6 if using a custom isolated network
 CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
-# The amount of memory a container can use
-CONTAINER_MEMORY_LIMIT="${CONTAINER_MEMORY_LIMIT:-}"
 # Pull policy
 CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 # Custom Entrypoint
@@ -516,18 +514,16 @@ __await_directory() {
 #
 # Default function for setting up Memory usage
 _prep_memory() {
-  if [ -n "${CONTAINER_MEMORY_LIMIT}" ]; then
-    _elog 'Setting container memory limit for %s directly is deprecated. Containers will always use MAX-20%%' "${NAME}"
+  if _is_linux; then
+    # Grab the total amount of RAM available to the system
+    _total_ram_mb="$(free -m | grep '^Mem:' | awk '{ print $2 }')"
+    _leave_free="$((_total_ram_mb * 2 / 10))"
+
+    _add_memory --memory "$((_total_ram_mb - _leave_free))M"
+
+    unset _total_ram_mb
+    unset _leave_free
   fi
-
-  # Grab the total amount of RAM available to the system
-  _total_ram_mb="$(free -m | grep '^Mem:' | awk '{ print $2 }')"
-  _leave_free="$((_total_ram_mb * 2 / 10))"
-
-  _add_memory --memory "$((_total_ram_mb - _leave_free))M"
-
-  unset _total_ram_mb
-  unset _leave_free
 
   return 0
 }
@@ -537,14 +533,16 @@ _prep_memory() {
 #
 # Default function for setting up CPU usage
 _prep_cpu() {
-  _cpu_number="$(grep -c "processor" /proc/cpuinfo)"
+  if _is_linux; then
+    _cpu_number="$(grep -c "processor" /proc/cpuinfo)"
 
-  if [ -n "${_cpu_number}" ] && [ "${_cpu_number}" -gt 2 ]; then
-    # If we have more than 2 cores, allow a container to use most
-    _add_cpu --cpus "$((_cpu_number - 2))"
-  else
-    # Otherwise, allocate a single core allowance
-    _add_cpu --cpus 1
+    if [ -n "${_cpu_number}" ] && [ "${_cpu_number}" -gt 2 ]; then
+      # If we have more than 2 cores, allow a container to use most
+      _add_cpu --cpus "$((_cpu_number - 2))"
+    else
+      # Otherwise, allocate a single core allowance
+      _add_cpu --cpus 1
+    fi
   fi
 
   unset _cpu_number
