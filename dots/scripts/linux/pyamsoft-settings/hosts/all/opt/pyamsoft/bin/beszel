@@ -148,6 +148,11 @@ _finalize() {
 
   _add_env -e KEY="${BESZEL_KEY}"
 
+  if [ "${BESZEL_MODE}" != "hub" ]; then
+    _add_env -e DISABLE_SSH=true
+    _add_env -e SKIP_SYSTEMD=true
+  fi
+
   # Can run as read-only root
   _add_rc --read-only
 
