@@ -6,7 +6,7 @@
 # Define a basename here, which will be re-evaluated later once a MODE is defined
 BASENAME="beszel"
 NAME="${BASENAME}"
-TAG="0.18.3"
+TAG="0.18.4"
 
 # The SSH key used by hub and agents to auth each other
 BESZEL_KEY=""
