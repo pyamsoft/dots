@@ -16,6 +16,8 @@ Defaults!/opt/pyamsoft/sbin/gamelaunch env_keep += "GAMER_*"
 ##########
 # Run "podman ps" without password
 %podman ALL=(root) NOPASSWD:/usr/bin/podman ps
+# Run "container-delegate ps" without password
+%podman ALL=(ALL:ALL) NOPASSWD:/opt/pyamsoft/bin/container-delegate ps
 
 ##########
 # Run "cscli lapi status" without password
