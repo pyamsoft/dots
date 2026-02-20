@@ -83,7 +83,9 @@ _check_user() {
   _require_root || return 1
 
   # Can run as read-only root
-  _add_rc --read-only
+  if [ "${CROWDSEC_MODE}" = "lapi" ]; then
+    _add_rc --read-only
+  fi
 
   return 0
 }
