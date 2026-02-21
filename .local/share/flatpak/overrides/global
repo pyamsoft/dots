@@ -1,5 +1,5 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!~/.keepass;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;!xdg-music;!xdg-run/keyring;!/media;!/run/media;!/var/lib/flatpak/app;!xdg-download;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config/sunshine;!xdg-templates;!xdg-data/gnupg;xdg-config/gtk-3.0:ro;!xdg-config;!home;!xdg-data/containers;!xdg-config/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-run/gamescope-0.lock;!/var/lib/flatpak/overrides;!~/.config/ssh;!/tmp;!xdg-pictures;~/.themes;~/.icons;!xdg-config/gnupg;!~/.gnupg;!~/.config/git-ssh;!~/.ssh;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!~/.keepass;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;!xdg-music;!xdg-run/keyring;!/media;!/run/media;!/var/lib/flatpak/app;!xdg-download;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config/sunshine;!xdg-templates;!xdg-data/gnupg;xdg-config/gtk-3.0:ro;!xdg-config;!home;!xdg-data/containers;!xdg-config/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-run/gamescope-0.lock;!/var/lib/flatpak/overrides;!~/.config/ssh;!/tmp;!xdg-pictures;~/.themes;~/.icons;!xdg-config/gnupg;!~/.ssh;!~/.config/git-ssh;!~/.gnupg;
 unset-environment=GTK_THEME;SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;ICON_THEME;
 persistent=.;
 sockets=!ssh-auth;!pcsc;!gpg-agent;
@@ -7,40 +7,40 @@ devices=dri;!all;!kvm;!shm;!input;!usb;
 features=!devel;!multiarch;!bluetooth;!canbus;
 
 [Session Bus Policy]
-org.fedoraproject.FirewallD1=none
-org.fedoraproject.FirewallD1.config=none
-org.freedesktop.Avahi=none
-org.freedesktop.Flatpak=none
-org.freedesktop.fwupd=none
-org.freedesktop.impl.portal.PermissionStore=none
-org.freedesktop.login1=none
+org.gnome.SessionManager=none
 org.freedesktop.UPower=none
 org.freedesktop.UDisks2=none
-org.freedesktop.ScreenSaver=none
 org.freedesktop.secrets=none
-org.gnome.SessionManager=none
-org.gnome.Shell=none
+org.fedoraproject.FirewallD1=none
+org.freedesktop.fwupd=none
+org.freedesktop.Avahi=none
 org.gnome.Shell.Extensions=none
-org.gnome.Software=none
 org.kde.kdeconnect=none
+org.fedoraproject.FirewallD1.config=none
+org.freedesktop.impl.portal.PermissionStore=none
+org.freedesktop.Flatpak=none
+org.freedesktop.login1=none
+org.gnome.Shell=none
+org.gnome.Software=none
+org.freedesktop.ScreenSaver=none
 
 [System Bus Policy]
-org.fedoraproject.FirewallD1=none
-org.fedoraproject.FirewallD1.config=none
-org.freedesktop.Avahi=none
-org.freedesktop.Flatpak=none
-org.freedesktop.fwupd=none
-org.freedesktop.impl.portal.PermissionStore=none
-org.freedesktop.login1=none
+org.gnome.SessionManager=none
 org.freedesktop.UPower=none
 org.freedesktop.UDisks2=none
-org.freedesktop.ScreenSaver=none
 org.freedesktop.secrets=none
-org.gnome.SessionManager=none
-org.gnome.Shell=none
+org.fedoraproject.FirewallD1=none
+org.freedesktop.fwupd=none
+org.freedesktop.Avahi=none
 org.gnome.Shell.Extensions=none
-org.gnome.Software=none
 org.kde.kdeconnect=none
+org.fedoraproject.FirewallD1.config=none
+org.freedesktop.impl.portal.PermissionStore=none
+org.freedesktop.Flatpak=none
+org.freedesktop.login1=none
+org.gnome.Shell=none
+org.gnome.Software=none
+org.freedesktop.ScreenSaver=none
 
 [Environment]
 GTK_THEME=

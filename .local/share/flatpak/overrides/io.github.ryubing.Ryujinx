@@ -1,0 +1,11 @@
+[Context]
+filesystems=!xdg-run/app/com.discordapp.Discord;
+features=bluetooth;
+devices=all;input;
+unset-environment=SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;SDL_AUDIODRIVER;SDL_AUDIO_DRIVER;
+
+[Environment]
+SDL_VIDEODRIVER=
+SDL_VIDEO_DRIVER=
+SDL_AUDIODRIVER=
+SDL_AUDIO_DRIVER=
