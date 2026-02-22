@@ -546,6 +546,7 @@ libnbd
 libndp
 libnet
 libnetfilter_conntrack
+libnetfilter_queue
 libnewt
 libnfnetlink
 libnfs

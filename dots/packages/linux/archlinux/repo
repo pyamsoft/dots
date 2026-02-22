@@ -9,7 +9,6 @@ bluez-utils
 btop
 buildah
 cups-pdf
-dante
 dbus-broker
 dconf-editor
 edk2-shell
@@ -73,6 +72,7 @@ tailscale
 tmux
 ttf-gentium
 ttf-liberation
+unrar
 util-linux
 v2ray
 virt-manager
