@@ -39,7 +39,6 @@ _do() {
   _systemctl "${_cmd}" "${_v}" "caches" 1
   _systemctl "${_cmd}" "${_v}" "log" 1
   _systemctl "${_cmd}" "${_v}" "index" 1
-  _systemctl "${_cmd}" "${_v}" "vcs-log" 1
 
   _systemctl "${_cmd}" "${_v}" "stat" 1
 

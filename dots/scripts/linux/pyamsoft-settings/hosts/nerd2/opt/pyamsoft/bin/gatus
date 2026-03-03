@@ -6,7 +6,7 @@
 # Define a basename here, which will be re-evaluated later once a MODE is defined
 NAME="gatus"
 IMAGE="docker.io/twinproduction/gatus"
-TAG="v5.34.0"
+TAG="v5.35.0"
 
 # Pick name based on environment mode
 case "${GATUS_MODE}" in
