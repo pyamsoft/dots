@@ -87,6 +87,7 @@ eglexternalplatform
 ell
 enchant
 exempi
+exfat-utils
 exiv2
 expat
 faac
@@ -406,6 +407,7 @@ lib32-zstd
 libadwaita
 libaemu
 libaio
+libappindicator
 libarchive
 libasan
 libass
@@ -603,6 +605,7 @@ libsodium
 libsoup3
 libsoxr
 libsrtp
+libssc
 libssh
 libssh2
 libstdc++
@@ -733,7 +736,6 @@ ndctl
 neon
 net-snmp
 netavark
-netpbm
 nettle
 networkmanager
 nftables
@@ -753,6 +755,7 @@ opencore-amr
 openexr
 openh264
 openjpeg2
+openjph
 openssh
 openssl
 opus
