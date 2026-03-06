@@ -15,6 +15,9 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/opt/scrutiny/logs" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/entrypoints" "/entrypoints" || return 1
 
+  # Optional PDF reports
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/reports" "/opt/scrutiny/reports" || return 1
+
   # Needs udev from host
   _mount_bind "/run/udev" "/run/udev" "ro" || return 1
 
