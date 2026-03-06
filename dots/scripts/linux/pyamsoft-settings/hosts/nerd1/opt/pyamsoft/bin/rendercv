@@ -5,7 +5,7 @@
 
 NAME="rendercv"
 IMAGE="ghcr.io/rendercv/rendercv"
-TAG="v2.6"
+TAG="v2.7"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/work" "/work" || return 1
