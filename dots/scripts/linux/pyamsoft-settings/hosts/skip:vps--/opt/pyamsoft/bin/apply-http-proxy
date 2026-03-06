@@ -34,7 +34,7 @@ $ eval "\$(apply-http-proxy clear)"
 $ eval "\$(apply-http-proxy http)"
 $ eval "\$(apply-http-proxy -a socks4)"
 $ eval "\$(apply-http-proxy http://192.168.49.1:8228)"
-$ eval "\$(apply-http-proxy --all socks5h://192.168.49.1:8229)"
+$ eval "\$(apply-http-proxy --all socks5h://192.168.49.1:8228)"
 $ apply-http-proxy systemd-apply
 $ apply-http-proxy systemd-clear
 EOF
@@ -105,10 +105,10 @@ _parse_proxy() {
     _proxy="http://192.168.49.1:8228"
   elif [ "${_proxy}" = "socks4" ] || [ "${_proxy}" = "socks4a" ]; then
     # SOCKS4A proxy defaults
-    _proxy="socks4a://192.168.49.1:8229"
+    _proxy="socks4a://192.168.49.1:8228"
   elif [ "${_proxy}" = "socks5" ] || [ "${_proxy}" = "socks5h" ]; then
     # SOCKS5H proxy defaults
-    _proxy="socks5h://192.168.49.1:8229"
+    _proxy="socks5h://192.168.49.1:8228"
   fi
   # Otherwise we assume the ${_proxy} variable is a "valid" proxy string. So just accept it.
 
