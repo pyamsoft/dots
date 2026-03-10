@@ -9,7 +9,7 @@
 NAME="${NAME:-caddy}"
 
 IMAGE="docker.io/encg/caddy-cloudflare-crowdsec"
-TAG="2.11.1"
+TAG="2.11.2"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
