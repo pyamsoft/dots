@@ -35,11 +35,8 @@ _prep_mounts() {
 }
 
 _prep_caps() {
-  # s6-init uses chown and drops privilege
-  _add_caps --cap-add CHOWN
   _add_caps --cap-add SETGID
   _add_caps --cap-add SETUID
-  _add_caps --cap-add KILL
 
   # Server runs on port 445 internally
   _add_caps --cap-add NET_BIND_SERVICE
@@ -52,8 +49,6 @@ _prep_env() {
 }
 
 _prep_network() {
-  # Host networking or else Samba drops Tailscale connections?
-  _add_network --network="host"
   return 0
 }
 
@@ -64,13 +59,6 @@ _prep_ports() {
 
 _check_user() {
   _require_nonroot || return 1
-
-  _add_userns --user="0:0"
-  if _is_podman; then
-    # Need this userns option that is podman specific or we have random OCI permission error
-    _add_userns --userns keep-id
-    _add_userns --group-add keep-groups
-  fi
 
   # Cannot safely run as read-only because it runs samba setup as root and writes to /etc
   # _add_rc --read-only
