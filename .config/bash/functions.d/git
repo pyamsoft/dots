@@ -1,0 +1,10 @@
+##
+# Git add all files, commit with message and options, and push
+#
+# This assumes a push remote is already setup
+gitacp() {
+  git add . || return 1
+  git commit "$@" || return 1
+  git push || return 1
+  return 0
+}
