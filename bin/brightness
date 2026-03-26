@@ -18,7 +18,7 @@ fi
 _usage() {
   printf -- '%s\n' "$(
     cat <<EOF
-usage: brightness [--no-bus] <get|set|up|down|help> [amount]
+usage: brightness [options] <commands> [amount]
 
 [options]
 --not-my-monitor     - Autodetect bus to run on instead of assuming my specific monitor bus
