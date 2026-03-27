@@ -44,8 +44,8 @@ _do() {
 }
 
 main() {
-  _do "disable" "2025.2.3"
-  _do "enable" "2025.3"
+  _do "disable" "2025.3"
+  _do "enable" "2026.1"
   return 0
 }
 main "$@" || exit 0
