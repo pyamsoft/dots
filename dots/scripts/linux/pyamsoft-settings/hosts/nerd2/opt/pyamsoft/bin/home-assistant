@@ -63,12 +63,15 @@ _check_user() {
     _add_userns --group-add keep-groups
   fi
 
+  return 0
+}
+
+_finalize() {
   # Cannot safely run as read-only because of setcap call for bluetooth
   # even though that call fails
   #
   # if it fails because of permission denied instead of Operation not permitted, it loops forever
   # _add_rc --read-only
-
   return 0
 }
 

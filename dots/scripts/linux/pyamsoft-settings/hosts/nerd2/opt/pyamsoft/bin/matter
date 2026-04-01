@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="matter"
+IMAGE="ghcr.io/matter-js/python-matter-server"
+TAG="8.1.2"
+
+CONTAINER_REQUIRE_RUNCONF=0
+CONTAINER_REQUIRE_INIT=0
+
+_prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
+  _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/data" || return 1
+
+  # DBUS access for bluetooth
+  _mount_bind "/run/dbus" "/run/dbus" "ro" || return 1
+
+  return 0
+}
+
+_prep_env() {
+  return 0
+}
+
+_prep_network() {
+  CONTAINER_NETWORK_HOST_ROUTE=0
+
+  # Piggyback onto the home-assistant network
+  _add_network --network="container:home-assistant"
+  return 0
+}
+
+_prep_caps() {
+  # For bluetooth
+  _add_caps --cap-add NET_RAW
+  _add_caps --cap-add NET_ADMIN
+
+  return 0
+}
+
+_prep_ports() {
+  _add_ports -p "127.0.0.1:5580:5580/tcp"
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  return 0
+}
+
+_finalize() {
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
