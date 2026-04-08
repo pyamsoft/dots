@@ -3,6 +3,7 @@ aardvark-dns
 abseil-cpp
 accountsservice
 acl
+ada
 adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
@@ -87,7 +88,6 @@ eglexternalplatform
 ell
 enchant
 exempi
-exfat-utils
 exiv2
 expat
 faac
@@ -148,6 +148,7 @@ glm
 glslang
 glu
 glycin
+glycin-gtk4
 gmp
 gnome-autoar
 gnome-bluetooth-3.0
@@ -200,6 +201,7 @@ gupnp-igd
 gvfs
 gvfs-nfs
 gvfs-smb
+gweather-locations
 gzip
 harfbuzz
 harfbuzz-icu
@@ -273,7 +275,7 @@ imath
 imlib2
 iniparser
 iproute2
-iptables-nft
+iptables
 iputils
 iso-codes
 iw
@@ -482,7 +484,6 @@ libfyaml
 libgcc
 libgcrypt
 libgdm
-libgexiv2
 libgfortran
 libgirepository
 libglvnd
@@ -492,6 +493,7 @@ libgomp
 libgpg-error
 libgphoto2
 libgsf
+libgsystemservice
 libgtop
 libgudev
 libgusb
@@ -685,6 +687,7 @@ libxv
 libxxf86vm
 libyaml
 libyuv
+libzip
 licenses
 lilv
 linux-api-headers
@@ -707,6 +710,7 @@ lsb-release
 lsof
 lua
 lua51-lpeg
+lua54
 luajit
 lv2
 lz4
@@ -1071,7 +1075,6 @@ xorg-xhost
 xorg-xkbcomp
 xorg-xprop
 xorg-xrandr
-xorg-xrdb
 xorg-xset
 xorg-xwayland
 xorgproto
