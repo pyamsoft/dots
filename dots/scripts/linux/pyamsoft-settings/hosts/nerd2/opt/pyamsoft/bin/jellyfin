@@ -5,7 +5,7 @@
 
 NAME="jellyfin"
 IMAGE="docker.io/jellyfin/jellyfin"
-TAG="10.11.6"
+TAG="10.11.8"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
