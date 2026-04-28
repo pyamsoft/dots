@@ -130,8 +130,7 @@ gd
 gdbm
 gdk-pixbuf2
 geoclue
-geocode-glib-2
-geocode-glib-common
+geocode-glib
 gettext
 gexiv2
 gflags
@@ -704,6 +703,7 @@ linux-firmware-realtek
 linux-firmware-whence
 lksctp-tools
 llvm-libs
+llvm21-libs
 lmdb
 localsearch
 lsb-release
