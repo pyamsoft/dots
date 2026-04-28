@@ -5,7 +5,7 @@
 
 NAME="subsyncarr"
 IMAGE="docker.io/mrorbitman/subsyncarr"
-TAG="0.0.8"
+TAG="1.2.13"
 
 CONTAINER_REQUIRE_INIT=1
 

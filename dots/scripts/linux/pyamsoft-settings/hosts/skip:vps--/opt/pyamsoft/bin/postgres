@@ -19,7 +19,7 @@
 NAME="${NAME:-postgres}"
 
 IMAGE="docker.io/postgres"
-TAG="18.1"
+TAG="18.3"
 
 _prep_mounts() {
   # Updated location for postgres 18

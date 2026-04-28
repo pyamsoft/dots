@@ -5,7 +5,7 @@
 
 NAME="ddns"
 IMAGE="docker.io/favonia/cloudflare-ddns"
-TAG="1.15.1"
+TAG="1.16.2"
 
 # IPv6 support
 CONTAINER_NETWORK_IP6=1

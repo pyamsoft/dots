@@ -5,7 +5,7 @@
 
 NAME="audiobookshelf"
 IMAGE="ghcr.io/advplyr/audiobookshelf"
-TAG="2.33.1"
+TAG="2.34.0"
 
 # Require a VPN unless you absolutely know what you are doing
 readonly REQUIRE_VPN="${REQUIRE_VPN:-1}"
