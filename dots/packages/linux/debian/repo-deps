@@ -264,6 +264,7 @@ mokutil
 neovim-runtime
 netavark
 netcat-openbsd
+netfilter-persistent
 netplan-generator
 nftables
 openssh-client

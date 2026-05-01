@@ -40,6 +40,7 @@ init
 init-system-helpers
 iptables
 iptables-geoblock
+iptables-persistent
 iputils-ping
 less
 libacl1
@@ -103,7 +104,6 @@ ncurses-base
 ncurses-bin
 neovim
 netbase
-netfilter-persistent
 netplan.io
 openssh-server
 openssl
