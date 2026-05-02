@@ -5,13 +5,16 @@
 #
 # Expected format is <user>:<escaped-path>[:options]
 
-readonly _NAME="systemd-tmpfs-mounter"
+PROG="$(/bin/basename "$0")"
+readonly PROG
+
+readonly VERSION="0.0.2"
 
 _log() {
   _msg="$1"
   shift
 
-  printf -- "[%s]: ${_msg}\n" "${_NAME}" "$@" || return 1
+  printf -- "[%s]: ${_msg}\n" "${PROG}" "$@" || return 1
 
   unset _msg
   return 0
@@ -27,6 +30,7 @@ main() {
   _instance="$2"
 
   if [ -z "${_cmd}" ]; then
+    _elog '[%s] %s' "${PROG}" "${VERSION}"
     _elog 'Missing command, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]'
 
@@ -36,6 +40,7 @@ main() {
   fi
 
   if [ -z "${_instance}" ]; then
+    _elog '[%s] %s' "${PROG}" "${VERSION}"
     _elog 'Missing instance, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]'
 
@@ -48,6 +53,7 @@ main() {
   *:*)
     ;;
   *)
+    _elog '[%s] %s' "${PROG}" "${VERSION}"
     _elog 'Invalid instance format, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]'
     unset _cmd
@@ -77,6 +83,7 @@ main() {
   unset _rest
 
   if [ -z "${_user}" ] || [ -z "${_path}" ]; then
+    _elog '[%s] %s' "${PROG}" "${VERSION}"
     _elog 'Invalid instance format, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]'
     unset _user

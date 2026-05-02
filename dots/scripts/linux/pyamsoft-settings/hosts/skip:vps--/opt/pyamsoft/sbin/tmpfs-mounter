@@ -3,7 +3,7 @@
 PROG="$(/bin/basename "$0")"
 readonly PROG
 
-readonly VERSION="0.0.1"
+readonly VERSION="0.0.2"
 
 _log() {
  _msg="$1"
