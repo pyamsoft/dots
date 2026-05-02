@@ -203,8 +203,9 @@ _mount() {
  _log 'User -> %s' "${_mount_user}"
  _log 'Options -> %s' "${_mount_all_options}"
 
- /sbin/mount -t tmpfs -o "${_mount_all_options}" tmpfs "${_mount_target}" || {
-  _elog 'Failed to mount tmpfs at %s for (%s) [options=%s]\n' "${_mount_target}" "${_mount_user}" "${_mount_all_options}"
+ # Mount if we are not already mounted
+ if mountpoint -q "${_mount_target}"; then
+  _elog 'Mountpoint %s is already mounted.' "${_mount_target}"
 
   unset _mount_all_options
   unset _mount_default_options
@@ -212,7 +213,18 @@ _mount() {
   unset _mount_user
   unset _mount_options
   return 1
- }
+ else
+  /sbin/mount -t tmpfs -o "${_mount_all_options}" tmpfs "${_mount_target}" || {
+   _elog 'Failed to mount tmpfs at %s for (%s) [options=%s]' "${_mount_target}" "${_mount_user}" "${_mount_all_options}"
+
+   unset _mount_all_options
+   unset _mount_default_options
+   unset _mount_target
+   unset _mount_user
+   unset _mount_options
+   return 1
+  }
+ fi
 
  unset _mount_all_options
  unset _mount_default_options
