@@ -679,6 +679,32 @@ _prep_rc() {
   fi
 
   if [ -e "${_runconf}" ]; then
+    # Must be owned by current user
+    if _is_macos; then
+      _owner_uid="$(stat -f %u "${_runconf}")"
+      _perm="$(stat -f %Lp "${_runconf}")"
+    else
+      _owner_uid="$(stat -c %u "${_runconf}")"
+      _perm="$(stat -c %a "${_runconf}")"
+    fi
+    if [ "${_owner_uid}" != "${__uid}" ]; then
+      _elog '%s must be owned by current user %s != %s' "${_runconf}" "${_owner_uid}" "${__uid}"
+      unset _owner_uid
+      return 1
+    fi
+
+    # Must not be writable by group/others
+    case "${_perm}" in
+    *[2367])
+      _elog '%s permissions too open. Must only be writable by owner %s (%s)' "${_runconf}" "${_owner_uid}" "${_perm}"
+      unset _owner_uid
+      unset _perm
+      return 1
+      ;;
+    esac
+    unset _perm
+    unset _owner_uid
+
     # Source the file into the environment
     # shellcheck disable=SC1090
     . "${_runconf}" || {
