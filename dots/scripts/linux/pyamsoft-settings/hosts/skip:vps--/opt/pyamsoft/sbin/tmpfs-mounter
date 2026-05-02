@@ -83,6 +83,15 @@ _validate() {
   return 1
  fi
 
+ # Path can NOT be root
+ if [ "${_validate_target}" = "/" ]; then
+  _elog 'Target directory must not be root %s' "${_validate_target}"
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
  # Path must exist and be directory
  if [ ! -d "${_validate_target}" ]; then
   _elog 'Missing target directory path %s' "${_validate_target}"
@@ -102,7 +111,8 @@ _validate() {
  fi
 
  # Check that path is absolute
- if [ "$(/bin/realpath "${_validate_target}")" != "${_validate_target}" ]; then
+ # Trim the trailing slash from the path if provided because it should not impact things
+ if [ "$(/bin/realpath "${_validate_target}")" != "${_validate_target%/}" ]; then
   _elog 'Target directory MUST be absolute path %s' "${_validate_target}"
   unset _validate_target
   unset _validate_user
