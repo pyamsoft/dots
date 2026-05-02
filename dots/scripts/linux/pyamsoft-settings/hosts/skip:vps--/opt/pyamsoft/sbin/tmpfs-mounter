@@ -21,9 +21,8 @@ _elog() {
 }
 
 _usage_mount() {
- _log '%s' "$(
-  /bin/cat <<EOF
-${VERSION}
+ /bin/cat <<EOF
+[${PROG}] ${VERSION}
 
 ${PROG} mount <path> <user> [mount-options]
 
@@ -37,13 +36,11 @@ Create a tmpfs mount on <path> owned by <user>
 
 [mount-options] are OPTIONAL and are passed DIRECTLY to mount(8)
 EOF
- )"
 }
 
 _usage_umount() {
- _log '%s' "$(
-  /bin/cat <<EOF
-${VERSION}
+ /bin/cat <<EOF
+[${PROG}] ${VERSION}
 
 ${PROG} umount <path> [umount-options]
 
@@ -54,19 +51,16 @@ Unmount a tmpfs mount on <path>
 
 [umount-options] are OPTIONAL and are passed DIRECTLY to umount(8)
 EOF
- )"
 }
 
 _usage() {
- _log '%s' "$(
-  /bin/cat <<EOF
-${VERSION}
+ /bin/cat <<EOF
+[${PROG}] ${VERSION}
 
 [Commands]
 mount              - Mount a tmpfs
 umount | unmount   - Unmount a tmpfs
 EOF
- )"
 }
 
 _validate() {
