@@ -68,6 +68,15 @@ _validate() {
  _validate_target="$2"
  _validate_user="$3"
 
+ # Validate option provided
+ if [ -z "${_validate_require_user}" ]; then
+  _elog 'Bad Programmer: You must call this function with the first argument as 1 or 0\n'
+  unset _validate_target
+  unset _validate_user
+  unset _validate_require_user
+  return 1
+ fi
+
  # Path provided
  if [ -z "${_validate_target}" ]; then
   _elog 'Missing target directory path.'
