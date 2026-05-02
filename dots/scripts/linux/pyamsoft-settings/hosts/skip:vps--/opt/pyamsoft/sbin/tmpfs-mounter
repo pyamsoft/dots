@@ -192,7 +192,7 @@ _mount() {
 
  _mount_all_options=""
  if [ -n "${_mount_options}" ]; then
-  _mount_all_options="${_mount_default_options},${_mount_options}"
+  _mount_all_options="${_mount_options},${_mount_default_options}"
  else
   _mount_all_options="${_mount_default_options}"
  fi
