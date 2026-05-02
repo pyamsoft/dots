@@ -115,13 +115,16 @@ _validate() {
 
  # Check that path is absolute
  # Trim the trailing slash from the path if provided because it should not impact things
- if [ "$(/bin/realpath "${_validate_target}")" != "${_validate_target%/}" ]; then
+ case "$_validate_target" in
+ /*) ;;
+ *)
   _elog 'Target directory MUST be absolute path %s' "${_validate_target}"
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
   return 1
- fi
+  ;;
+ esac
 
  if [ "${_validate_require_user}" -eq 1 ]; then
   # User provided for a function that requires it
