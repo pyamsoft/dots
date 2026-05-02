@@ -155,6 +155,14 @@ _is_cmd_version_atleast() {
 # Add to MOUNTS
 _add_mounts() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --mounts argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_MOUNTS="${CONTAINER_MOUNTS}
 ${_arg}"
     unset _arg
@@ -168,6 +176,14 @@ ${_arg}"
 # Add to NETWORK
 _add_network() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --network argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_NETWORK="${CONTAINER_NETWORK}
 ${_arg}"
     unset _arg
@@ -181,6 +197,14 @@ ${_arg}"
 # Add to ENV
 _add_env() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --env argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_ENV="${CONTAINER_ENV}
 ${_arg}"
     unset _arg
@@ -194,6 +218,14 @@ ${_arg}"
 # Add to PORTS
 _add_ports() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --ports argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_PORTS="${CONTAINER_PORTS}
 ${_arg}"
     unset _arg
@@ -207,6 +239,14 @@ ${_arg}"
 # Add to CAPS
 _add_caps() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --caps argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_CAPS="${CONTAINER_CAPS}
 ${_arg}"
     unset _arg
@@ -220,6 +260,14 @@ ${_arg}"
 # Add to CAPS
 _add_userns() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --userns argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_USERNS="${CONTAINER_USERNS}
 ${_arg}"
     unset _arg
@@ -233,6 +281,14 @@ ${_arg}"
 # Add to RC
 _add_rc() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --rc argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_RC="${CONTAINER_RC}
 ${_arg}"
     unset _arg
@@ -246,6 +302,14 @@ ${_arg}"
 # Add to MEMORY
 _add_memory() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --memory argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_MEMORY="${CONTAINER_MEMORY}
 ${_arg}"
     unset _arg
@@ -259,6 +323,14 @@ ${_arg}"
 # Add to CPU
 _add_cpu() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --cpu argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_CPU="${CONTAINER_CPU}
 ${_arg}"
     unset _arg
@@ -272,6 +344,14 @@ ${_arg}"
 # Add to LOGS
 _add_logs() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --logs argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_LOGS="${CONTAINER_LOGS}
 ${_arg}"
     unset _arg
@@ -285,6 +365,14 @@ ${_arg}"
 # Add to RC
 _add_args() {
   for _arg in "$@"; do
+    case "${_arg}" in
+    *'
+'*)
+      _elog 'Invalid newline in --args argument "%s"' "${_arg}"
+      return 1
+      ;;
+    esac
+
     CONTAINER_ARGS="${CONTAINER_ARGS}
 ${_arg}"
     unset _arg
