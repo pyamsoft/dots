@@ -204,7 +204,7 @@ _mount() {
  _log 'Options -> %s' "${_mount_all_options}"
 
  # Mount if we are not already mounted
- if mountpoint -q "${_mount_target}"; then
+ if /bin/mountpoint -q "${_mount_target}"; then
   _elog 'Mountpoint %s is already mounted.' "${_mount_target}"
 
   unset _mount_all_options
