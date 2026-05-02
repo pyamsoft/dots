@@ -45,14 +45,24 @@ main() {
   fi
 
   # Split the instance by colon
-  _split="$(printf -- '%s' "${_instance}" | /bin/tr ':' ' ')"
-  unset _instance
+  # First found is the user
+  # Everything else is path and options
+  _user=${_instance%%:*}
+  _rest=${_instance#*:}
 
-  # Grab the user and path (path is escaped by systemd)
-  _user="$(printf -- '%s' "${_split}" | /bin/awk '{ print $1 }')"
-  _path="$(printf -- '%s' "${_split}" | /bin/awk '{ print $2 }')"
-  _options="$(printf -- '%s' "${_split}" | /bin/awk '{ print $3 }')"
-  unset _split
+  # Then split the rest into path and options
+  # If options have embedded colons for path mounts, keep them
+  case "$_rest" in
+  *:*)
+    _path=${_rest%%:*}
+    _options=${_rest#*:}
+    ;;
+  *)
+    _path=${_rest}
+    _options=""
+    ;;
+  esac
+  unset _rest
 
   # Fix the path
   _unescaped_path="$(/bin/systemd-escape --unescape -- "${_path}")"
@@ -63,9 +73,9 @@ main() {
     # Fix the options
     _unescaped_options="$(/bin/systemd-escape --unescape -- "${_options}")"
     unset _options
-
     exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "${_unescaped_options}"
   else
+    unset _options
     exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
   fi
 }
