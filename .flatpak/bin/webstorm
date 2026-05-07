@@ -128,6 +128,7 @@ _warn_outdated
 
 # shellcheck disable=SC2086
 exec flatpak-env "${_pak}" \
+  --filesystem="${dev_root}/project/pyamsoft/tools" \
   --filesystem="${dev_root}/project/pyamsoft/js" \
   --filesystem="${dev_root}/project/pyamsoft/shell" \
   --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
