@@ -210,6 +210,7 @@ haskell-ansi-terminal-types
 haskell-assoc
 haskell-base-orphans
 haskell-bifunctors
+haskell-character-ps
 haskell-colour
 haskell-comonad
 haskell-contravariant
@@ -219,7 +220,6 @@ haskell-distributive
 haskell-dlist
 haskell-erf
 haskell-fgl
-haskell-foldable1-classes-compat
 haskell-generically
 haskell-hashable
 haskell-indexed-traversable
