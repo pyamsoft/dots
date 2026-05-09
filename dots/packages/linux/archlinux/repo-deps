@@ -85,6 +85,7 @@ e2fsprogs
 edk2-ovmf
 egl-wayland
 eglexternalplatform
+electron39
 ell
 enchant
 exempi
@@ -722,6 +723,7 @@ mdadm
 media-player-info
 mesa
 miniupnpc
+minizip
 mjpegtools
 mkinitcpio
 mkinitcpio-busybox
@@ -733,6 +735,7 @@ mpfr
 mpg123
 msgpack-c
 mtdev
+mullvad-vpn-daemon
 mutter
 nautilus
 ncurses
