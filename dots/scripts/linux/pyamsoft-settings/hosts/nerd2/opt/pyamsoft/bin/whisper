@@ -11,8 +11,8 @@ CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=1
 CONTAINER_ENTRYPOINT="python3"
 
-# Allow model customization via variable or fallback to medium-int8
-MODEL="${MODEL:-medium-int8}"
+# Allow model customization via variable or fallback to base-int8
+MODEL="${MODEL:-base-int8}"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
