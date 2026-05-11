@@ -1,0 +1,114 @@
+#!/bin/sh
+
+# Install the real machine's bash configuration into a flatpak application
+#
+# Makes it easier to run a nice bash shell in a flatpak container
+
+_require_bash_environment() {
+  if [ ! -f "${HOME}/.bashrc" ]; then
+    printf -- 'Need a .bashrc at %s\n' "${HOME}/.bashrc"
+    return 1
+  fi
+
+  if [ ! -f "${HOME}/.bash_profile" ]; then
+    printf -- 'Need a .bash_profile at %s\n' "${HOME}/.bash_profile"
+    return 1
+  fi
+
+  if [ ! -d "${HOME}/.config/bash" ]; then
+    printf -- 'Need bash configuration at %s\n' "${HOME}/.config/bash"
+    return 1
+  fi
+
+  return 0
+}
+
+_install_bash_environment() {
+  _install_flatpak_id="$1"
+
+  mkdir -p "${_install_flatpak_id}/config/" || {
+    printf -- 'Failed to setup configuration directory %s\n' "${_install_flatpak_id}/config/"
+
+    unset _install_flatpak_id
+    return 1
+  }
+
+  cp -r "${HOME}/.config/bash" "${_install_flatpak_id}/config/" || {
+    printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
+
+    unset _install_flatpak_id
+    return 1
+  }
+
+  cp -r "${HOME}/.bashrc" "${_install_flatpak_id}/.bashrc" || {
+    printf -- 'Failed to install .bashrc to %s\n' "${_install_flatpak_id}/.bashrc"
+
+    unset _install_flatpak_id
+    return 1
+  }
+
+  cp -r "${HOME}/.bash_profile" "${_install_flatpak_id}/.bash_profile" || {
+    printf -- 'Failed to install .bash_profile to %s\n' "${_install_flatpak_id}/.bash_profile"
+
+    unset _install_flatpak_id
+    return 1
+  }
+
+  unset _install_flatpak_id
+  return 0
+}
+
+_install_starship() {
+  _starship_flatpak_id="$1"
+
+  mkdir -p "${_starship_flatpak_id}/.local/bin/" || {
+    printf -- 'Failed to create bin directory %s\n' "${_starship_flatpak_id}/.local/bin"
+
+    unset _starship_flatpak_id
+    return 1
+  }
+
+  cp /usr/bin/starship "${_starship_flatpak_id}/.local/bin/starship" || {
+    printf -- 'Failed to install starship to %s\n' "${_starship_flatpak_id}/.local/bin/starship"
+
+    unset _starship_flatpak_id
+    return 1
+  }
+
+  unset _starship_flatpak_id
+
+  return 0
+}
+
+main() {
+  _require_bash_environment || return 1
+
+  _flatpak_id="$1"
+
+  if [ -z "${_flatpak_id}" ]; then
+    printf -- 'Must pass flatpak ID\n'
+
+    unset _flatpak_id
+    return 1
+  fi
+
+  _flatpak_directory="${HOME}/.var/app/${_flatpak_id}"
+  if [ ! -d "${_flatpak_directory}" ]; then
+    printf -- 'flatpak app directory must exist at %s\n' "${_flatpak_directory}"
+
+    unset _flatpak_directory
+    unset _flatpak_id
+    return 1
+  fi
+
+  _install_bash_environment "${_flatpak_directory}" || return 1
+  _install_starship "${_flatpak_directory}" || return 1
+
+  unset _flatpak_directory
+  unset _flatpak_id
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
