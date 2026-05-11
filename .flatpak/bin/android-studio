@@ -131,7 +131,7 @@ _args=""
 while [ -n "$1" ]; do
   case "$1" in
   --shell)
-    _args="${_args} --command=/bin/sh"
+    _args="${_args} --command=/bin/bash"
     shift
     ;;
   --offline)
