@@ -101,7 +101,11 @@ _warn_outdated() {
   return 0
 }
 
+readonly def_path="/app/bin:/usr/bin"
 readonly dev_root="${HOME}/devel"
+
+# Local scripts
+path="${HOME}/.local/bin"
 
 _args=""
 while [ -n "$1" ]; do
@@ -124,10 +128,13 @@ readonly _args
 # Extensions
 readonly _nodejs="node24"
 
+readonly path
+
 _warn_outdated
 
 # shellcheck disable=SC2086
 exec flatpak-env "${_pak}" \
+  --with-env PATH "${path}:" "${def_path}" \
   --filesystem="${dev_root}/project/pyamsoft/tools" \
   --filesystem="${dev_root}/project/pyamsoft/js" \
   --filesystem="${dev_root}/project/pyamsoft/shell" \
