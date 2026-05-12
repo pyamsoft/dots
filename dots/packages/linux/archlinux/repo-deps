@@ -29,6 +29,7 @@ bluez
 bluez-libs
 bluez-obex
 bolt
+boost-libs
 bpf
 breeze-icons
 brotli
@@ -86,6 +87,7 @@ edk2-ovmf
 egl-wayland
 eglexternalplatform
 electron39
+elfutils
 ell
 enchant
 exempi
@@ -128,6 +130,8 @@ gcc-libs
 gcr
 gcr-4
 gd
+gdb
+gdb-common
 gdbm
 gdk-pixbuf2
 geoclue
@@ -477,6 +481,7 @@ libexif
 libfakekey
 libfdk-aac
 libffi
+libfido2
 libfontenc
 libfreeaptx
 libftdi
@@ -974,6 +979,7 @@ sonnet
 sord
 sound-theme-freedesktop
 soundtouch
+source-highlight
 spandsp
 speex
 speexdsp

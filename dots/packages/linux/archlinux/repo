@@ -24,6 +24,7 @@ gst-plugin-va
 guake
 gvfs-mtp
 hplip
+intel-ucode
 inter-font
 iperf3
 irqbalance
@@ -32,6 +33,7 @@ kdeconnect
 kernel-modules-hook
 lact
 ldns
+lib32-vulkan-intel
 libvirt
 linux
 linux-firmware
@@ -79,6 +81,7 @@ ttf-liberation
 unrar
 util-linux
 virt-manager
+vulkan-intel
 vulkan-radeon
 wakeonlan
 yt-dlp
