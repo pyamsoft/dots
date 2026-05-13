@@ -1,0 +1,82 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+# Migrating major version data:
+# https://www.cloudytuts.com/tutorials/docker/how-to-upgrade-postgresql-in-docker-and-kubernetes
+
+# For some reason, on a fresh first launch, the container hangs at:
+#
+# syncing data to disk ...
+#
+# Stop the container with `podman stop -t 0 postgres`
+# And then start it again and it should start up
+
+NAME="immich-postgres"
+IMAGE="ghcr.io/immich-app/postgres"
+TAG="14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23"
+
+_prep_mounts() {
+  # Updated location for postgres 18 (but we are on 14 so old location)
+  # https://hub.docker.com/_/postgres/
+  #
+  # _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/var/lib/postgresql" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/var/lib/postgresql/data" || return 1
+
+  # For dumps for upgrading
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/dumps" "/dumps" || return 1
+
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_env() {
+  # Setup a POSTGRES_USER, POSTGRES_DB, POSTGRES_PASSWORD
+  # via runconfig.env
+
+  _add_env -e "POSTGRES_INITDB_ARGS=--data-checksums"
+
+  return 0
+}
+
+_prep_network() {
+  # Database owns the network or immich fails to start up
+  _network_isolate || return 1
+  return 0
+}
+
+_prep_ports() {
+  # We are the network owner so we must bind ports from this container
+  #
+  # Immich
+  _add_ports -p "127.0.0.1:2283:2283/tcp"
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  # Only for podman
+  if _is_podman; then
+    # postgres user in the container is 999
+    _add_userns --userns keep-id:uid=999
+  fi
+
+  return 0
+}
+
+_finalize() {
+  _add_rc --shm-size 128M
+
+  # Needs to be able to write to /etc/postgresql/postgresql.conf
+  # _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="immich-redis"
+IMAGE="docker.io/valkey/valkey"
+TAG="9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9"
+
+CONTAINER_REQUIRE_RUNCONF=0
+
+_prep_mounts() {
+  # For persistence if enabled
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
+
+  return 0
+}
+
+_prep_caps() {
+  # Need to add caps for setuid startup
+  _add_caps --cap-add SETUID
+  _add_caps --cap-add SETGID
+
+  return 0
+}
+
+_prep_env() {
+  return 0
+}
+
+_prep_network() {
+  CONTAINER_NETWORK_HOST_ROUTE=0
+
+  # Piggyback onto the immich-postgres network
+  _add_network --network="container:immich-postgres"
+  return 0
+}
+
+_prep_ports() {
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  # Only for podman
+  if _is_podman; then
+    # redis user in the container is 999
+    _add_userns --userns keep-id:uid=999
+  fi
+
+  return 0
+}
+
+_finalize() {
+  # Can run as read-only root
+  _add_rc --read-only
+  return 0
+}
+
+main "$@" || exit 1
+exit 0

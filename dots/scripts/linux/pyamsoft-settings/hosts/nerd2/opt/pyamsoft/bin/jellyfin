@@ -40,17 +40,6 @@ _prep_ports() {
   return 0
 }
 
-_get_gid_for_group() {
-  _grp="$1"
-  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
-
-  printf -- '%s' "${_gid}"
-
-  unset _grp
-  unset _gid
-  return 0
-}
-
 _prep_env() {
   return 0
 }
@@ -90,6 +79,17 @@ _check_user() {
     _add_userns --userns keep-id
   fi
 
+  return 0
+}
+
+_get_gid_for_group() {
+  _grp="$1"
+  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
+
+  printf -- '%s' "${_gid}"
+
+  unset _grp
+  unset _gid
   return 0
 }
 

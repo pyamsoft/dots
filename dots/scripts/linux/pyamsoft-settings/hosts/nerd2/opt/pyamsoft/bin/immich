@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="immich"
+IMAGE="ghcr.io/immich-app/immich-server"
+TAG="v2.7.5"
+
+readonly _localtime="/etc/localtime"
+
+_prep_mounts() {
+  # Local timezone
+  if [ ! -r "${_localtime}" ]; then
+    _elog 'Localtime must exist at %s' "${_localtime}"
+    return 1
+  fi
+
+  _add_mounts --mount "type=bind,src=${_localtime},target=${_localtime},ro" || return 1
+
+  # Media folders are optionally symlinks to another mass storage drive
+  _media="${CONTAINER_RUNTIME_DIR}/${NAME}/media"
+  _host_mkdir "${_media}"
+
+  # Follow the link and mount the media folder ONLY if it is valid
+  if [ -d "$(realpath "${_media}")" ]; then
+    _mount_bind "${_media}" "/data" || return 1
+
+    # You must manage the directory chmod yourself on the host
+    # _host_chmod "g+rwX" "${_media}" || return 1
+  fi
+  unset _media
+
+  return 0
+}
+
+_prep_env() {
+  # Override the hostname to the container names
+  _add_env -e DB_HOSTNAME="immich-postgres"
+  _add_env -e REDIS_HOSTNAME="immich-redis"
+
+  return 0
+}
+
+_prep_network() {
+  CONTAINER_NETWORK_HOST_ROUTE=0
+
+  # Piggyback onto the immich-postgres network
+  _add_network --network="container:immich-postgres"
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_ports() {
+  # Immich
+  _add_ports -p "127.0.0.1:2283:2283/tcp"
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  return 0
+}
+
+_finalize() {
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
