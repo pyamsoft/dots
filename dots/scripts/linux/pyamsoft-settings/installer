@@ -350,12 +350,6 @@ main() {
       done
       unset _file_or_folder
 
-      # cd back out
-      cd .. || {
-        printf -- 'Failed to cd out of target host directory: "%s"\n' "${_target_host_or_skip_host}"
-        return 1
-      }
-
       # Loop through root (only install example files, we NEVER touch running root)
       for _file_or_folder in ./root/.*.example; do
         # Skip folders
