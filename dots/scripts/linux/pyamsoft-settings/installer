@@ -346,12 +346,8 @@ main() {
         _file_name="$(basename "${_file_or_folder}")"
         _install_dir="${_file_dir#\.\/}"
 
-        case "${_file_dir}" in
-        *)
-          # Copy file permissions and restrict all access to only the owner
-          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "700" || return 1
-          ;;
-        esac
+        # Restrict all access to only the owner
+        _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "700" || return 1
 
         unset _install_dir
         unset _file_dir
