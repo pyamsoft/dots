@@ -1,0 +1,36 @@
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[init]
+	defaultBranch = main
+[commit]
+	verbose = true
+[core]
+	compression = 4
+	pager = delta
+[rebase]
+	autoSquash = true
+[rerere]
+	enabled = true
+[diff]
+	algorithm = histogram
+[push]
+	autoSetupRemote = true
+[commit]
+	gpgsign = true
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = ~/.config/ssh/allowed_git_signers
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = false
+
+# vim: set filetype=gitconfig :

@@ -118,3 +118,4 @@ unset __has_path
 [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
 # vim: set filetype=sh :
+
