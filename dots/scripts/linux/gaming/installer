@@ -123,6 +123,11 @@ _jail_install() {
     return 1
   }
 
+  cp -f "${current_directory}/${script}" "$t" || {
+    printf -- 'Failed to copy script %s into jail %s\n' "${script}" "${target}"
+    return 2
+  }
+
   chmod 700 "$t" || {
     printf -- 'Failed to mark script %s executable for jail %s\n' "${script}" "${target}"
     return 2
