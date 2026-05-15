@@ -54,15 +54,16 @@ _package_install() {
   # as that is your "main" user right?
   if [ "$(uname)" = "Darwin" ]; then
     # BSD sed
-    sed -i '' -e "s/%MY_USER%/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
+    sed -i '' -e "s|%MY_USER%|${_my_username}|g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
   else
     # GNU sed
-    sed -i -e "s/%MY_USER%/${_my_username}/g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
+    sed -i -e "s|%MY_USER%|${_my_username}|g" "${_my_pkgdir}/${_package_install__install_dir}/${_package_install__file}"
   fi
 
   unset _chmod
   unset _package_install__tag
   unset _package_install__dir_chmod
+  unset _package_install__file_chmod
   unset _package_install__src_dir
   unset _package_install__install_dir
   unset _package_install__file
@@ -131,7 +132,14 @@ main() {
 
   # This is an assumption that the user account you would consider "my user" is UID 1000
   # at this point in the script, we are running as fakeroot, so we have to hard-assume this
-  _my_username="$(id -un "${_target_uid}")"
+  _my_username="$(id -un "${_target_uid}")" || {
+    printf -- 'Failed to resolve username for UID %s\n' "${_target_uid}"
+    return 1
+  }
+  if [ -z "${_my_username}" ]; then
+    printf -- 'Empty username for UID %s\n' "${_target_uid}"
+    return 1
+  fi
 
   # Turn on globbing options (bash specific, but PKGBUILDs are run in bash right?)
   shopt -s globstar nullglob
