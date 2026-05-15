@@ -82,61 +82,31 @@ _is_cmd_version_atleast() {
   _exp_v_minor="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $2 }')"
   _exp_v_patch="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $3 }')"
 
+  _vcmp_ret=0
+
   if [ -n "${_has_v_major}" ] && [ -n "${_exp_v_major}" ]; then
-    # If our current version MAJOR is less than we expect, fail
+    # Our current MAJOR is less than we expect, fail
     if [ "${_has_v_major}" -lt "${_exp_v_major}" ]; then
-      unset _exp_v_major
-      unset _exp_v_minor
-      unset _exp_v_patch
-      unset _exp_v_array
-
-      unset _has_v_major
-      unset _has_v_minor
-      unset _has_v_patch
-      unset _has_v_array
-
-      unset _expect_v
-      return 1
+      _vcmp_ret=1
+    elif [ "${_has_v_major}" -ge "${_exp_v_major}" ]; then
+      # MAJOR passes, but we need to check minor
+      if [ -n "${_has_v_minor}" ] && [ -n "${_exp_v_minor}" ]; then
+        if [ "${_has_v_minor}" -lt "${_exp_v_minor}" ]; then
+          # MAJOR passes but MINOR is less than we expect, fail
+          _vcmp_ret=1
+        elif [ "${_has_v_minor}" -ge "${_exp_v_minor}" ]; then
+          # MAJOR, MINOR passes, but we need to check patch
+          if [ -n "${_has_v_patch}" ] && [ -n "${_exp_v_patch}" ]; then
+            if [ "${_has_v_patch}" -lt "${_exp_v_patch}" ]; then
+              # PATCH fails. Reallyyyyy??
+              _vcmp_ret=1
+            fi
+          fi
+        fi
+      fi
     fi
   fi
 
-  if [ -n "${_has_v_minor}" ] && [ -n "${_exp_v_minor}" ]; then
-    # If our current version MINOR is less than we expect, fail
-    if [ "${_has_v_minor}" -lt "${_exp_v_minor}" ]; then
-      unset _exp_v_major
-      unset _exp_v_minor
-      unset _exp_v_patch
-      unset _exp_v_array
-
-      unset _has_v_major
-      unset _has_v_minor
-      unset _has_v_patch
-      unset _has_v_array
-
-      unset _expect_v
-      return 1
-    fi
-  fi
-
-  if [ -n "${_has_v_patch}" ] && [ -n "${_exp_v_patch}" ]; then
-    # If our current version PATCH is less than we expect, fail
-    if [ "${_has_v_patch}" -lt "${_exp_v_patch}" ]; then
-      unset _exp_v_major
-      unset _exp_v_minor
-      unset _exp_v_patch
-      unset _exp_v_array
-
-      unset _has_v_major
-      unset _has_v_minor
-      unset _has_v_patch
-      unset _has_v_array
-
-      unset _expect_v
-      return 1
-    fi
-  fi
-
-  # Otherwise we are good
   unset _exp_v_major
   unset _exp_v_minor
   unset _exp_v_patch
@@ -148,7 +118,7 @@ _is_cmd_version_atleast() {
   unset _has_v_array
 
   unset _expect_v
-  return 0
+  return "${_vcmp_ret}"
 }
 
 ##
@@ -257,7 +227,7 @@ ${_arg}"
 }
 
 ##
-# Add to CAPS
+# Add to USERNS
 _add_userns() {
   for _arg in "$@"; do
     case "${_arg}" in
