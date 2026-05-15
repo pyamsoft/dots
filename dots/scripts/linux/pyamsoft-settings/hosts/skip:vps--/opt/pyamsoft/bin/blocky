@@ -11,17 +11,16 @@ CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_NETWORK_IP6=1
 
 _prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/logs" || return 1
+
   if _is_macos; then
     _blocky_dir="${CONTAINER_RUNTIME_DIR}/${NAME}"
   else
     _blocky_dir="/etc/${NAME}"
   fi
-
+  readonly _conf="${_blocky_dir}/config.yml"
   unset _blocky_dir
 
-  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/logs" || return 1
-
-  readonly _conf="${_blocky_dir}/config.yml"
   if [ ! -r "${_conf}" ]; then
     _elog 'Config must exist at %s' "${_conf}"
     return 1
