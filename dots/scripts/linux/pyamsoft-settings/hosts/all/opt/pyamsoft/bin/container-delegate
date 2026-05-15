@@ -179,8 +179,8 @@ main() {
 
     # Try bash
     "${_cmd}" exec -i -t "${_container}" /bin/bash 2>/dev/null ||
-      "${_cmd}" exec -i -t "${_container}" /usr/bin/sh 2>/dev/null ||
-      # # If no bash, try sh
+      "${_cmd}" exec -i -t "${_container}" /usr/bin/bash 2>/dev/null ||
+      # If no bash, try sh
       "${_cmd}" exec -i -t "${_container}" /bin/sh 2>/dev/null ||
       "${_cmd}" exec -i -t "${_container}" /usr/bin/sh 2>/dev/null ||
       {
