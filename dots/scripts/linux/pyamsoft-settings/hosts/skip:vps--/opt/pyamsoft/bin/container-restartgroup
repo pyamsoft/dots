@@ -101,7 +101,6 @@ _restarthook() {
   done
   unset _dep
 
-  unset _dependants
   unset _active_dependants
 
   return 0

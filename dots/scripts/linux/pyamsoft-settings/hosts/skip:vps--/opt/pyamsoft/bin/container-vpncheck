@@ -50,7 +50,7 @@ _check_mullvad() {
 
 _check_airvpn() {
   _vpn_output="$(_check "$1" "https://airvpn.org/api/whatismyip/")" || {
-    _elog 'Failed to check container (%s) VPN status for AirVPN' "${_PROG_NAME}" "$1"
+    _elog 'Failed to check container (%s) VPN status for AirVPN' "$1"
     return 1
   }
 
