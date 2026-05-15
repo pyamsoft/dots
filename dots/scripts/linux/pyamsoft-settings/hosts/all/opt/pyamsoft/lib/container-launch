@@ -664,8 +664,10 @@ _prep_rc() {
     fi
 
     # Must not be writable by group/others
+    # *[2367][0-7] catches group-write (second-to-last digit in write set)
+    # *[2367]      catches others-write (last digit in write set)
     case "${_perm}" in
-    *[2367])
+    *[2367][0-7] | *[2367])
       _elog '%s permissions too open. Must only be writable by owner %s (%s)' "${_runconf}" "${_owner_uid}" "${_perm}"
       unset _owner_uid
       unset _perm
