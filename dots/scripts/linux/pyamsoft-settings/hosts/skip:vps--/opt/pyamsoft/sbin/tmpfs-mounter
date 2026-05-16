@@ -70,7 +70,7 @@ _validate() {
 
  # Validate option provided
  if [ -z "${_validate_require_user}" ]; then
-  _elog 'Bad Programmer: You must call this function with the first argument as 1 or 0\n'
+  _elog 'Bad Programmer: You must call this function with the first argument as 1 or 0'
   unset _validate_target
   unset _validate_user
   unset _validate_require_user
@@ -236,6 +236,7 @@ _mount() {
 
 _umount() {
  _umount_target="$1"
+ shift
 
  if _is_help "${_umount_target}"; then
   unset _umount_target
@@ -254,7 +255,7 @@ _umount() {
  _log 'Target -> %s' "${_umount_target}"
 
  # Perform the umount
- /sbin/umount -t tmpfs "${_umount_target}" || {
+ /sbin/umount -t tmpfs "$@" "${_umount_target}" || {
   _elog 'Failed to umount tmpfs at %s' "${_umount_target}"
 
   unset _umount_target
