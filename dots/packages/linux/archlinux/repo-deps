@@ -22,7 +22,6 @@ audit
 autoconf
 automake
 avahi
-ayatana-ido
 binutils
 bison
 bluez
@@ -115,7 +114,6 @@ foomatic-db
 foomatic-db-engine
 foomatic-db-ppds
 freeglut
-freerdp
 freetype2
 fribidi
 fuse-common
@@ -424,8 +422,6 @@ libatomic
 libavc1394
 libavif
 libavtp
-libayatana-appindicator
-libayatana-indicator
 libb2
 libblockdev
 libblockdev-crypto
@@ -481,7 +477,6 @@ libexif
 libfakekey
 libfdk-aac
 libffi
-libfido2
 libfontenc
 libfreeaptx
 libftdi
@@ -491,6 +486,7 @@ libgcrypt
 libgdm
 libgfortran
 libgirepository
+libgit2
 libglvnd
 libgme
 libgoa
@@ -540,7 +536,6 @@ libmalcontent
 libmanette
 libmbim
 libmd
-libmfx
 libmicrodns
 libmicrohttpd
 libmm-glib
@@ -646,7 +641,6 @@ libvdpau-va-gl
 libverto
 libvirt-glib
 libvirt-python
-libvncserver
 libvorbis
 libvpl
 libvpx
@@ -708,6 +702,7 @@ linux-firmware-radeon
 linux-firmware-realtek
 linux-firmware-whence
 lksctp-tools
+llhttp
 llvm-libs
 llvm21-libs
 lmdb
@@ -727,7 +722,6 @@ md4c
 mdadm
 media-player-info
 mesa
-miniupnpc
 minizip
 mjpegtools
 mkinitcpio
@@ -957,7 +951,6 @@ scx-scheds
 sdl2-compat
 sdl2_image
 sdl3
-sdl3_ttf
 seabios
 seatd
 sed

@@ -14,7 +14,7 @@ dconf-editor
 edk2-shell
 gamescope
 gdm
-gnome-remote-desktop
+git-delta
 gnome-shell-extension-appindicator
 gnome-shell-extension-caffeine
 gnome-terminal
@@ -70,7 +70,6 @@ sshpass
 starship
 steam
 strace
-sunshine-git
 system-config-printer
 tailscale
 tcpdump
