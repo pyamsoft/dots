@@ -47,13 +47,13 @@ _get_latest_tags() {
     for _skip_me in ${SKIP_CONTAINER_LOOKUP}; do
       if [ "${_skip_me}" = "${_container}" ]; then
         _log 'Skipping container lookup: %s\n' "${_container}"
-        _unset _skip_me
-        _unset _container
+        unset _skip_me
+        unset _container
         return 0
       fi
-      _unset _skip_me
+      unset _skip_me
     done
-    _unset _skip_me
+    unset _skip_me
   fi
 
   skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' |
