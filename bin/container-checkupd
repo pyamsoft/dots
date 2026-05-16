@@ -13,6 +13,10 @@ readonly ADDITIONAL_CONTAINER_LOOKUP="ghcr.io/rendercv/rendercv
 docker.io/alpine/httpie
 "
 
+# immich-machine-learning - Like every PR and commit is a build, it's too large so skip it
+readonly SKIP_CONTAINER_LOOKUP="ghcr.io/immich-app/immich-machine-learning
+"
+
 _log() {
   _msg="$1"
   shift
@@ -37,6 +41,20 @@ _get_latest_tags() {
   # Remove anything like latest, beta, other unstable versions
   # Sort by reverse version order (newest version on top)
   # max 10
+
+  # These containers are very large so skip them
+  if [ -n "${SKIP_CONTAINER_LOOKUP}" ]; then
+    for _skip_me in ${SKIP_CONTAINER_LOOKUP}; do
+      if [ "${_skip_me}" = "${_container}" ]; then
+        printf -- 'Skipping container lookup: %s\n' "${_container}"
+        _unset _skip_me
+        _unset _container
+        return 0
+      fi
+      _unset _skip_me
+    done
+    _unset _skip_me
+  fi
 
   skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' |
     case "${_container}" in
