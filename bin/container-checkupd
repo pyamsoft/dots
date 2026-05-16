@@ -14,7 +14,11 @@ docker.io/alpine/httpie
 "
 
 # immich-machine-learning - Like every PR and commit is a build, it's too large so skip it
+# immich-postgres - Pinned to specific immich version, do not need to lookup updates
+# valkey - Pinned to specific immich version, do not need to lookup updates
 readonly SKIP_CONTAINER_LOOKUP="ghcr.io/immich-app/immich-machine-learning
+ghcr.io/immich-app/immich-postgres
+docker.io/valkey/valkey
 "
 
 _log() {
