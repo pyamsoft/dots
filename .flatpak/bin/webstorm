@@ -104,6 +104,9 @@ _warn_outdated() {
 readonly def_path="/app/bin:/usr/bin"
 readonly dev_root="${HOME}/devel"
 
+# Extensions
+readonly _nodejs="node24"
+
 # Local scripts
 path="${HOME}/.local/bin"
 
@@ -112,6 +115,12 @@ while [ -n "$1" ]; do
   case "$1" in
   --shell)
     _args="${_args} --command=/bin/bash"
+
+    # In shell mode, add the other path bits
+    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
+    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/node/bin"
+    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/cargo/bin"
+    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/python/bin"
     shift
     ;;
   --offline)
@@ -124,9 +133,6 @@ while [ -n "$1" ]; do
   esac
 done
 readonly _args
-
-# Extensions
-readonly _nodejs="node24"
 
 readonly path
 
