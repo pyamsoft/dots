@@ -46,7 +46,7 @@ _get_latest_tags() {
   if [ -n "${SKIP_CONTAINER_LOOKUP}" ]; then
     for _skip_me in ${SKIP_CONTAINER_LOOKUP}; do
       if [ "${_skip_me}" = "${_container}" ]; then
-        printf -- 'Skipping container lookup: %s\n' "${_container}"
+        _log 'Skipping container lookup: %s\n' "${_container}"
         _unset _skip_me
         _unset _container
         return 0
