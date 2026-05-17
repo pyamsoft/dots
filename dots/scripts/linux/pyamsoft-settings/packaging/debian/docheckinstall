@@ -26,7 +26,8 @@ main() {
     --pkglicense "GPL2" \
     --maintainer "pyamsoft" \
     --provides "pyamsoft-settings" \
-    --requires "udev,sudo,openssh-server,skopeo,systemd" \
+    --requires "udev,sudo,openssh-server,systemd" \
+    --recommends "skopeo" \
     ./installer '*#*#CHECKINSTALL*#*#' "$(id -u)"
 
   unset _version
