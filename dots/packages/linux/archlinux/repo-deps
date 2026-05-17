@@ -54,6 +54,7 @@ containers-common
 coreutils
 cpio
 cracklib
+crane
 criu
 crun
 cryptsetup
