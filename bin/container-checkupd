@@ -60,82 +60,85 @@ _get_latest_tags() {
     unset _skip_me
   fi
 
-  skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' |
-    case "${_container}" in
-    */littlelink-server)
-      # Don't remove latest from littlelink, it only publishes latest
-      cat
-      ;;
-    *)
-      # Otherwise remove latest and let's keep going
-      grep -v 'latest' |
-        case "${_container}" in
-        */rendercv)
-          grep -v 'sha'
-          ;;
-        */unbound)
-          grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
-          ;;
-        */navidrome)
-          grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
-          ;;
-        */beets)
-          grep -v '2021.' | grep -v '\-ls'
-          ;;
-        */httpie)
-          grep -v '3.5-0.9.9'
-          ;;
-        */jellyseerr)
-          grep -v 'preview'
-          ;;
-        */jellyfin)
-          grep -v '202.' | grep -v 'master'
-          ;;
-        */caddy)
-          grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
-          ;;
-        */home-assistant)
-          grep -v '.sig' | grep -v 'stable'
-          ;;
-        */esphome)
-          grep -v 'b' | grep -v 'stable' | grep -v 'cache-release'
-          ;;
-        */omada-controller)
-          grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
-          ;;
-        */cloudflare-ddns)
-          grep -v '.sig' | grep -v 'artifacthub'
-          ;;
-        */uptime-kuma)
-          grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test' | grep -v 'debian'
-          ;;
-        */crowdsec)
-          grep -v 'slim' | grep 'debian'
-          ;;
-        */scrutiny)
-          grep 'omnibus'
-          ;;
-        */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
-          grep -v 'ls' | grep -v 'libtorrent'
-          ;;
-        */readarr)
-          grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
-          ;;
-        */byparr)
-          grep -v '.sig' | grep -v 'main'
-          ;;
-        */eclipse-mosquitto)
-          grep -v 'openssl'
-          ;;
-        */zigbee2mqtt)
-          grep -v 'v1.35' | grep -v 'v1.31'
-          ;;
-        *)
-          cat
-          ;;
-        esac
-      ;;
-    esac | sort -r -V | head || {
+  { if command -v crane >/dev/null 2>&1; then
+    crane ls "${_container}"
+  else
+    skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | tr '"' ' ' | awk '{ print $1 }'
+  fi; } | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' | case "${_container}" in
+  */littlelink-server)
+    # Don't remove latest from littlelink, it only publishes latest
+    cat
+    ;;
+  *)
+    # Otherwise remove latest and let's keep going
+    grep -v 'latest' |
+      case "${_container}" in
+      */rendercv)
+        grep -v 'sha'
+        ;;
+      */unbound)
+        grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
+        ;;
+      */navidrome)
+        grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
+        ;;
+      */beets)
+        grep -v '2021.' | grep -v '\-ls'
+        ;;
+      */httpie)
+        grep -v '3.5-0.9.9'
+        ;;
+      */jellyseerr)
+        grep -v 'preview'
+        ;;
+      */jellyfin)
+        grep -v '202.' | grep -v 'master'
+        ;;
+      */caddy)
+        grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
+        ;;
+      */home-assistant)
+        grep -v '.sig' | grep -v 'stable'
+        ;;
+      */esphome)
+        grep -v 'b' | grep -v 'stable' | grep -v 'cache-release'
+        ;;
+      */omada-controller)
+        grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
+        ;;
+      */cloudflare-ddns)
+        grep -v '.sig' | grep -v 'artifacthub'
+        ;;
+      */uptime-kuma)
+        grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test' | grep -v 'debian'
+        ;;
+      */crowdsec)
+        grep -v 'slim' | grep 'debian'
+        ;;
+      */scrutiny)
+        grep 'omnibus'
+        ;;
+      */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
+        grep -v 'ls' | grep -v 'libtorrent'
+        ;;
+      */readarr)
+        grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
+        ;;
+      */byparr)
+        grep -v '.sig' | grep -v 'main'
+        ;;
+      */eclipse-mosquitto)
+        grep -v 'openssl'
+        ;;
+      */zigbee2mqtt)
+        grep -v 'v1.35' | grep -v 'v1.31'
+        ;;
+      *)
+        cat
+        ;;
+      esac
+    ;;
+  esac | sort -r -V | head || {
     _log 'Failed to list most recent tags for: %s' "${_container}"
     unset _container
     return 1
