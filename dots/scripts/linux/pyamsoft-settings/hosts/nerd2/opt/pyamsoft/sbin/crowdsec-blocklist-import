@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="crowdsec-blocklist-import"
+IMAGE="ghcr.io/wolffcatskyy/crowdsec-blocklist-import"
+TAG="3.6.0"
+
+_prep_mounts() {
+  return 0
+}
+
+_prep_env() {
+  # Ban for 24 hours, check every 5 for updates
+  _add_env -e DECISION_DURATION=24h
+  _add_env -e INTERVAL=$((5 * 60 * 60))
+
+  return 0
+}
+
+_prep_network() {
+  CONTAINER_NETWORK_HOST_ROUTE=0
+
+  # Piggyback onto the crowdsec network
+  _add_network --network="container:crowdsec"
+
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_ports() {
+
+  return 0
+}
+
+_check_user() {
+  if _is_macos; then
+    _elog 'Not supported on MacOS'
+    return 1
+  fi
+
+  _require_root || return 1
+
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
