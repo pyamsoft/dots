@@ -78,7 +78,6 @@ diffutils
 dmidecode
 dnsmasq
 dnssec-anchors
-dosfstools
 double-conversion
 dtc
 duktape
