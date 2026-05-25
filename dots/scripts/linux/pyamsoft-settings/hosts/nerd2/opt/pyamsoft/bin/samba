@@ -45,6 +45,8 @@ _prep_caps() {
 }
 
 _prep_env() {
+  _add_env -e UID="$(id -u)"
+  _add_env -e GID="$(id -g)"
   return 0
 }
 
