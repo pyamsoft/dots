@@ -114,6 +114,7 @@ foomatic-db
 foomatic-db-engine
 foomatic-db-ppds
 freeglut
+freerdp
 freetype2
 fribidi
 fuse-common
@@ -477,6 +478,7 @@ libexif
 libfakekey
 libfdk-aac
 libffi
+libfido2
 libfontenc
 libfreeaptx
 libftdi
@@ -641,6 +643,7 @@ libvdpau-va-gl
 libverto
 libvirt-glib
 libvirt-python
+libvncserver
 libvorbis
 libvpl
 libvpx
@@ -951,6 +954,7 @@ scx-scheds
 sdl2-compat
 sdl2_image
 sdl3
+sdl3_ttf
 seabios
 seatd
 sed
