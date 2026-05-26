@@ -15,9 +15,16 @@ _require_bash_environment() {
     return 1
   fi
 
-  if [ ! -d "${HOME}/.config/bash" ]; then
-    printf -- 'Need bash configuration at %s\n' "${HOME}/.config/bash"
-    return 1
+  if [ -n "${XDG_CONFIG_HOME}" ]; then
+    if [ ! -d "${XDG_CONFIG_HOME}/bash" ]; then
+      printf -- 'Need bash configuration at %s\n' "${XDG_CONFIG_HOME}/bash"
+      return 1
+    fi
+  else
+    if [ ! -d "${HOME}/.config/bash" ]; then
+      printf -- 'Need bash configuration at %s\n' "${HOME}/.config/bash"
+      return 1
+    fi
   fi
 
   return 0
@@ -33,12 +40,41 @@ _install_bash_environment() {
     return 1
   }
 
-  cp -r "${HOME}/.config/bash" "${_install_flatpak_id}/config/" || {
-    printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
+  if [ -n "${XDG_CONFIG_HOME}" ]; then
+    cp -r "${XDG_CONFIG_HOME}/bash" "${_install_flatpak_id}/config/" || {
+      printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
 
-    unset _install_flatpak_id
-    return 1
-  }
+      unset _install_flatpak_id
+      return 1
+    }
+
+    # Optional starship install
+    if [ -e "${XDG_CONFIG_HOME}/starship.toml" ]; then
+      cp "${XDG_CONFIG_HOME}/starship.toml" "${_install_flatpak_id}/config/" || {
+        printf -- 'Failed to install starship configuration to %s\n' "${_install_flatpak_id}/config/"
+
+        unset _install_flatpak_id
+        return 1
+      }
+    fi
+  else
+    cp -r "${HOME}/.config/bash" "${_install_flatpak_id}/config/" || {
+      printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
+
+      unset _install_flatpak_id
+      return 1
+    }
+
+    # Optional starship install
+    if [ -e "${HOME}/.config/starship.toml" ]; then
+      cp "${HOME}/.config/starship.toml" "${_install_flatpak_id}/config/" || {
+        printf -- 'Failed to install starship configuration to %s\n' "${_install_flatpak_id}/config/"
+
+        unset _install_flatpak_id
+        return 1
+      }
+    fi
+  fi
 
   cp -r "${HOME}/.bashrc" "${_install_flatpak_id}/.bashrc" || {
     printf -- 'Failed to install .bashrc to %s\n' "${_install_flatpak_id}/.bashrc"
