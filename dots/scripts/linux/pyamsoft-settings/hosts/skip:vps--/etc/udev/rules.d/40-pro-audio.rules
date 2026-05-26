@@ -1,0 +1,10 @@
+# So that the low-level "realtime" group can access these devices directly
+#
+# Upstream uses "audio" but we have edited it to use "realtime"
+
+# https://github.com/CachyOS/CachyOS-Settings/blob/master/usr/lib/udev/rules.d/40-hpet-permissions.rules
+KERNEL=="rtc0", GROUP="realtime"
+KERNEL=="hpet", GROUP="realtime"
+
+# https://github.com/CachyOS/CachyOS-Settings/blob/master/usr/lib/udev/rules.d/99-cpu-dma-latency.rules
+DEVPATH=="/devices/virtual/misc/cpu_dma_latency", OWNER="root", GROUP="realtime", MODE="0660"
