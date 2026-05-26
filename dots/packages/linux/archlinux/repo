@@ -67,6 +67,7 @@ sane-airscan
 sbctl
 shellcheck
 smartmontools
+sof-firmware
 sshpass
 starship
 steam
