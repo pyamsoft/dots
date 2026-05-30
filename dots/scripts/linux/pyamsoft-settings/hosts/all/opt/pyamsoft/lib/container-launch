@@ -352,6 +352,36 @@ ${_arg}"
   return 0
 }
 
+##
+# Various arguments may NOT be available if the container is setup to use inter-container networking
+# --network="container:<something>"
+_has_container_networking() {
+  _has_cn=0
+  for _net_arg in ${CONTAINER_NETWORK}; do
+    case "${_net_arg}" in
+    --network=container:*)
+      # We have container networking, do NOT add hostname
+      _has_cn=1
+      break
+      ;;
+    *)
+      ;;
+    esac
+    unset _net_arg
+  done
+  unset _net_arg
+
+  if [ "${_has_cn}" -eq 0 ]; then
+    unset _has_cn
+    # False
+    return 1
+  else
+    unset _has_cn
+    # True
+    return 0
+  fi
+}
+
 _require_root() {
   if ! _is_root; then
     _elog 'You must run this as a rootfull container'
@@ -729,9 +759,6 @@ _containerize() {
     _add_rc --pull="${CONTAINER_PULL_POLICY}"
   fi
 
-  # Set hostname
-  _add_rc --hostname="${NAME}"
-
   # Set a standard name if we do NOT want a unique one
   if [ -z "${CONTAINER_UNIQUE_NAME}" ] || [ "${CONTAINER_UNIQUE_NAME}" -eq 0 ]; then
     _add_rc --name="${NAME}"
@@ -751,6 +778,16 @@ _containerize() {
     if _is_cmd_version_atleast 5.4; then
       # Slightly increase security by starting with a blank hosts file
       _add_network --hosts-file="none"
+    fi
+  fi
+
+  # podman can always set a hostname
+  if _is_podman; then
+    _add_rc --hostname="${NAME}"
+  else
+    # Docker must be sure we are not in a container network namespace
+    if ! _has_container_networking; then
+      _add_rc --hostname="${NAME}"
     fi
   fi
 
