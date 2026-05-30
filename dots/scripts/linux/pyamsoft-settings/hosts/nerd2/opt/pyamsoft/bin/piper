@@ -15,6 +15,7 @@ CONTAINER_ENTRYPOINT="python3"
 MODEL="${MODEL:-en_US-lessac-medium}"
 
 _prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/tmp" "/tmp" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/download" "/download" || return 1
 
