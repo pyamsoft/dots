@@ -623,8 +623,11 @@ _prep_log() {
       _add_logs --log-driver json-file
     fi
   else
-    _add_logs -i
-    _add_logs -t
+    # As long as we have a terminal
+    if [ -t 0 ]; then
+      _add_logs -i
+      _add_logs -t
+    fi
   fi
 
   return 0
