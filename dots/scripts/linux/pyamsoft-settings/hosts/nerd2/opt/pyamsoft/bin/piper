@@ -29,10 +29,17 @@ _prep_env() {
 }
 
 _prep_network() {
-  CONTAINER_NETWORK_HOST_ROUTE=0
+  # On linux, we attach to the HASS container
+  if _is_linux; then
+    CONTAINER_NETWORK_HOST_ROUTE=0
 
-  # Piggyback onto the home-assistant network
-  _add_network --network="container:home-assistant"
+    # Piggyback onto the home-assistant network
+    _add_network --network="container:home-assistant"
+  else
+    # On MacOS we run standalone
+    _network_isolate || return 1
+  fi
+
   return 0
 }
 
