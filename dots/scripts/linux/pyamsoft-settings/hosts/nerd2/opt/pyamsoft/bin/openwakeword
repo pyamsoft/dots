@@ -44,8 +44,8 @@ _prep_network() {
     # Piggyback onto the home-assistant network
     _add_network --network="container:home-assistant"
   else
-    # On MacOS we run standalone
-    _network_isolate || return 1
+    # On MacOS we run standalone, just use host networking to keep things simple
+    _add_network --network="host"
   fi
   return 0
 }
