@@ -1,0 +1,33 @@
+# shellcheck shell=bash
+
+__teardown_container() {
+  COMPREPLY=()
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  local cmd=""
+
+  # Prefer podman, fallback docker
+  if command -v podman >/dev/null 2>&1; then
+    cmd="podman"
+  else
+    cmd="docker"
+  fi
+
+  _reply() {
+    # shellcheck disable=SC2207
+    COMPREPLY=($(compgen -W "$1" -- "$2"))
+  }
+
+  _select() {
+    _reply "$("${cmd}" ps --noheading --format '{{ .Names }}')" "$1"
+
+    unset cmd
+    return 0
+  }
+
+  _select "${cur}"
+}
+
+complete -o bashdefault -o default -F __teardown_container container-teardown
+
+# vim: set filetype=sh:
