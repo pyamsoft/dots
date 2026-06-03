@@ -266,6 +266,7 @@ hidapi
 highway
 hsa-rocr
 hwdata
+hwloc
 hyphen
 i2c-tools
 iana-etc
@@ -434,6 +435,7 @@ libavc1394
 libavif
 libavtp
 libb2
+libblake3
 libblockdev
 libblockdev-crypto
 libblockdev-fs
@@ -768,6 +770,7 @@ nspr
 nss
 numactl
 ocl-icd
+onetbb
 oniguruma
 openal
 opencore-amr
@@ -1097,7 +1100,6 @@ xorgproto
 xvidcore
 xxhash
 xz
-yajl
 yt-dlp-ejs
 zbar
 zenity
