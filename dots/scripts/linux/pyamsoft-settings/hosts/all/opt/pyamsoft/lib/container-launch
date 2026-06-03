@@ -20,6 +20,8 @@ CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
 CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
 # Use the "unique" name instead of adopting $NAME
 CONTAINER_UNIQUE_NAME="${CONTAINER_UNIQUE_NAME:-0}"
+# Run as daemon
+CONTAINER_DAEMON="${CONTAINER_DAEMON:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -652,12 +654,6 @@ _prep_log() {
     if _is_podman; then
       _add_logs --log-driver json-file
     fi
-  else
-    # As long as we have a terminal
-    if [ -t 0 ]; then
-      _add_logs -i
-      _add_logs -t
-    fi
   fi
 
   return 0
@@ -788,6 +784,19 @@ _containerize() {
     # Docker must be sure we are not in a container network namespace
     if ! _has_container_networking; then
       _add_rc --hostname="${NAME}"
+    fi
+  fi
+
+  # If we are running directly
+  if [ -z "${PYAM_SYSTEMD}" ]; then
+    # Daemonize
+    if [ -n "${CONTAINER_DAEMON}" ] || [ "${CONTAINER_DAEMON}" -eq 1 ]; then
+      _add_rc --detach
+    elif [ -t 0 ]; then
+      # Or attach tty stdin
+      # As long as we have a terminal
+      _add_logs -i
+      _add_logs -t
     fi
   fi
 
