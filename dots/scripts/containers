@@ -23,7 +23,7 @@ main() {
     shift
 
     # Instead execute container-runas
-    exec "${HOME}/bin/container-runas" "${_target_user#containers-}" "$@"
+    exec "/opt/pyamsoft/bin/container-runas" "${_target_user#containers-}" "$@"
   else
     exec sudo -u "${_target_user}" /opt/pyamsoft/bin/container-delegate "$@"
   fi
