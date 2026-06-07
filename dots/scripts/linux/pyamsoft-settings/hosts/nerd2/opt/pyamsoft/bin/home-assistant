@@ -28,8 +28,12 @@ _prep_env() {
 
 _prep_network() {
   # Host networking for SSDP and mDNS
-  # _add_network --network="host"
+  _add_network --network="host"
 
+  # Isolate network
+  # Currently breaks:
+  # - SONOFF
+  # - ESPHome
   _network_isolate || return 1
   return 0
 }
@@ -52,6 +56,7 @@ _prep_caps() {
 }
 
 _prep_ports() {
+  _add_ports -p "127.0.0.1:8123:8123/tcp"
   return 0
 }
 
