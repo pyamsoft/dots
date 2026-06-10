@@ -790,7 +790,7 @@ _containerize() {
   # If we are running directly
   if [ -z "${PYAM_SYSTEMD}" ]; then
     # Daemonize
-    if [ -n "${CONTAINER_DAEMON}" ] || [ "${CONTAINER_DAEMON}" -eq 1 ]; then
+    if [ -n "${CONTAINER_DAEMON}" ] && [ "${CONTAINER_DAEMON}" -eq 1 ]; then
       _add_rc --detach
     elif [ -t 0 ]; then
       # Or attach tty stdin
