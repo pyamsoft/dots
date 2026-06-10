@@ -3,7 +3,6 @@ com.google.AndroidStudio
 com.google.Chrome
 com.heroicgameslauncher.hgl
 com.jetbrains.WebStorm
-com.moonlight_stream.Moonlight
 com.obsproject.Studio
 com.saivert.pwvucontrol
 hu.irl.cameractrls
@@ -21,4 +20,5 @@ org.localsend.localsend_app
 org.mozilla.firefox
 org.musicbrainz.Picard
 org.remmina.Remmina
+org.videolan.VLC
 page.tesk.Refine
