@@ -124,12 +124,12 @@ gawk
 gc
 gcc
 gcc-libs
-gcr-4
 gd
 gdb
 gdb-common
 gdbm
 gdk-pixbuf2
+geoclue
 gettext
 gflags
 gfxstream
@@ -177,9 +177,6 @@ gtksourceview4
 guile
 gupnp
 gupnp-igd
-gvfs
-gvfs-nfs
-gvfs-smb
 gzip
 harfbuzz
 haskell-aeson
@@ -475,8 +472,6 @@ libcanberra
 libcap
 libcap-ng
 libcbor
-libcdio
-libcdio-paranoia
 libcloudproviders
 libcolord
 libcups
