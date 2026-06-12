@@ -29,6 +29,7 @@ kde-gtk-config
 kdeconnect
 kernel-modules-hook
 krdp
+kwallet-pam
 lact
 ldns
 lib32-vulkan-intel
