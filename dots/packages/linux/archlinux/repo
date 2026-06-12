@@ -10,14 +10,14 @@ btop
 buildah
 cups-pdf
 dbus-broker
-dconf-editor
 dolphin
 edk2-shell
+flatpak-kcm
+fwupd
 gamescope
 git-delta
 gst-libav
 gst-plugin-va
-guake
 gvfs-mtp
 hplip
 intel-ucode
@@ -38,9 +38,9 @@ linux
 linux-firmware
 linux-lts
 lm_sensors
-malcontent
 man-db
 man-pages
+mesa-utils
 mullvad-vpn
 neovim
 nmap
@@ -88,6 +88,7 @@ virt-manager
 vulkan-intel
 vulkan-radeon
 wakeonlan
+wayland-utils
 wev
 xorg-xlsclients
 yakuake

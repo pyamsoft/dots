@@ -8,7 +8,6 @@ adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
 adwaita-icon-theme-legacy
-aha
 alsa-card-profiles
 alsa-lib
 alsa-plugins
@@ -54,7 +53,6 @@ catatonit
 cblas
 cdparanoia
 cifs-utils
-clinfo
 composefs
 conmon
 containers-common
@@ -121,7 +119,6 @@ fribidi
 fuse-common
 fuse2
 fuse3
-fwupd
 fwupd-efi
 gawk
 gc
@@ -300,7 +297,6 @@ ki18n
 kiconthemes
 kidletime
 kimageformats
-kinfocenter
 kio
 kio-extras
 kio-fuse
@@ -524,9 +520,7 @@ libglvnd
 libgomp
 libgpg-error
 libgphoto2
-libgsystemservice
 libgudev
-libhandy
 libheif
 libice
 libidn
@@ -545,7 +539,6 @@ libjcat
 libjpeg-turbo
 libjxl
 libkexiv2
-libkeybinder3
 libksba
 libkscreen
 libksysguard
@@ -666,7 +659,6 @@ libwacom
 libwbclient
 libwebp
 libwireplumber
-libwnck3
 libx11
 libxau
 libxaw
@@ -739,7 +731,6 @@ md4c
 mdadm
 media-player-info
 mesa
-mesa-utils
 milou
 minizip
 mkinitcpio
@@ -829,7 +820,6 @@ pixman
 pkgconf
 plasma-activities
 plasma-activities-stats
-plasma-disks
 plasma-integration
 plasma-nm
 plasma-pa
@@ -855,7 +845,6 @@ psmisc
 pulseaudio-qt
 purpose
 python
-python-autocommand
 python-brotli
 python-brotlicffi
 python-cachecontrol
@@ -878,19 +867,11 @@ python-gobject
 python-greenlet
 python-html2text
 python-idna
-python-jaraco.collections
-python-jaraco.context
-python-jaraco.functools
-python-jaraco.text
 python-lockfile
-python-more-itertools
 python-msgpack
 python-mutagen
 python-packaging
-python-pbr
 python-pillow
-python-pkg_resources
-python-platformdirs
 python-prettytable
 python-protobuf
 python-psutil
@@ -905,14 +886,11 @@ python-pyqt6
 python-pyqt6-sip
 python-reportlab
 python-requests
-python-setuptools
 python-sgmllib3k
 python-six
-python-typing_extensions
 python-urllib3
 python-wcwidth
 python-websockets
-python-wheel
 python-xattr
 python-yaml
 qca-qt6
@@ -1098,7 +1076,6 @@ vulkan-mesa-layers
 vulkan-tools
 wavpack
 wayland
-wayland-utils
 webrtc-audio-processing-1
 which
 wireless-regdb
@@ -1127,7 +1104,6 @@ xkeyboard-config
 xorg-fonts-encodings
 xorg-server-common
 xorg-setxkbmap
-xorg-xdpyinfo
 xorg-xhost
 xorg-xkbcomp
 xorg-xmessage
