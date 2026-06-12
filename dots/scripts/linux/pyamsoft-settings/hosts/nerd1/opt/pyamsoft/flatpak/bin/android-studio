@@ -127,6 +127,8 @@ readonly path
 # Warn abound outdated builds
 _warn_outdated
 
+PREPARE_RELEASE=0
+
 _args=""
 while [ -n "$1" ]; do
   case "$1" in
@@ -138,6 +140,10 @@ while [ -n "$1" ]; do
     _args="${_args} --unshare=network"
     shift
     ;;
+  --release)
+    PREPARE_RELEASE=1
+    shift
+    ;;
   *)
     break
     ;;
@@ -145,16 +151,34 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-# shellcheck disable=SC2086
-flatpak-env "${_pak}" \
-  --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="${dev_root}/project/pyamsoft/tools" \
-  --filesystem="${dev_root}/project/pyamsoft/android" \
-  --filesystem="${android_root}" \
-  --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-  --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
-  ${_args} \
-  -- "$@"
+if [ "${PREPARE_RELEASE}" -eq 1 ]; then
+  # When running in release mode, include the release asset folder in the android/ root
+
+  # shellcheck disable=SC2086
+  flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/android" \
+    --filesystem="${android_root}" \
+    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- "$@"
+else
+  # Otherwise just include the projects
+
+  # shellcheck disable=SC2086
+  flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/android/app" \
+    --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
+    --filesystem="${android_root}" \
+    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- "$@"
+fi
 
 # Kill gradle-daemon after exiting
 if command -v kill-gradle >/dev/null; then
