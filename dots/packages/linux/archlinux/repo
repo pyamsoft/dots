@@ -44,7 +44,6 @@ mullvad-vpn
 neovim
 nmap
 noto-fonts-emoji
-npm
 openbsd-netcat
 otf-cascadia-code
 pacman
@@ -89,7 +88,7 @@ vulkan-radeon
 wakeonlan
 wayland-utils
 wev
+wget
 xorg-xlsclients
 yakuake
-yt-dlp
 zip

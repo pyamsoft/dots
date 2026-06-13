@@ -3,7 +3,6 @@ aardvark-dns
 abseil-cpp
 accountsservice
 acl
-ada
 adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
@@ -75,7 +74,6 @@ ddcutil
 debugedit
 debuginfod
 default-cursors
-deno
 desktop-file-utils
 device-mapper
 diffutils
@@ -747,9 +745,6 @@ nettle
 networkmanager
 networkmanager-qt
 nftables
-node-gyp
-nodejs
-nodejs-nopt
 noto-fonts
 noto-fonts-cjk
 npth
@@ -864,7 +859,6 @@ python-html2text
 python-idna
 python-lockfile
 python-msgpack
-python-mutagen
 python-packaging
 python-pillow
 python-prettytable
@@ -872,8 +866,6 @@ python-protobuf
 python-psutil
 python-pyaml
 python-pycparser
-python-pycryptodome
-python-pycryptodomex
 python-pycups
 python-pyelftools
 python-pynvim
@@ -885,8 +877,6 @@ python-sgmllib3k
 python-six
 python-urllib3
 python-wcwidth
-python-websockets
-python-xattr
 python-yaml
 qca-qt6
 qcoro
@@ -980,7 +970,6 @@ sdl3_ttf
 seabios
 seatd
 sed
-semver
 serd
 shaderc
 shadow
@@ -989,7 +978,6 @@ signon-kwallet-extension
 signon-plugin-oauth2
 signon-ui
 signond
-simdjson
 skopeo
 slang
 slirp4netns
@@ -1112,7 +1100,6 @@ xsettingsd
 xvidcore
 xxhash
 xz
-yt-dlp-ejs
 zenity
 zeromq
 zimg
