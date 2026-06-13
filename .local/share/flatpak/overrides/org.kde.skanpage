@@ -1,0 +1,6 @@
+[Context]
+devices=all;input;usb;
+
+[Session Bus Policy]
+org.freedesktop.Avahi=talk
+
