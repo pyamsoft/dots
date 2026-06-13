@@ -15,7 +15,6 @@ _prep_mounts() {
     _elog 'Localtime must exist at %s' "${_localtime}"
     return 1
   fi
-
   _add_mounts --mount "type=bind,src=${_localtime},target=${_localtime},ro" || return 1
 
   # Media folders are optionally symlinks to another mass storage drive
