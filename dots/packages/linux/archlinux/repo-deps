@@ -3,6 +3,7 @@ aardvark-dns
 abseil-cpp
 accountsservice
 acl
+ada
 adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
@@ -745,6 +746,9 @@ nettle
 networkmanager
 networkmanager-qt
 nftables
+node-gyp
+nodejs
+nodejs-nopt
 noto-fonts
 noto-fonts-cjk
 npth
@@ -970,6 +974,7 @@ sdl3_ttf
 seabios
 seatd
 sed
+semver
 serd
 shaderc
 shadow
@@ -978,6 +983,7 @@ signon-kwallet-extension
 signon-plugin-oauth2
 signon-ui
 signond
+simdjson
 skopeo
 slang
 slirp4netns
