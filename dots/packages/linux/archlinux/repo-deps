@@ -8,6 +8,7 @@ adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
 adwaita-icon-theme-legacy
+aha
 alsa-card-profiles
 alsa-lib
 alsa-plugins
@@ -53,6 +54,7 @@ catatonit
 cblas
 cdparanoia
 cifs-utils
+clinfo
 composefs
 conmon
 containers-common
@@ -174,6 +176,7 @@ gtk3
 gtk4
 gtksourceview4
 guile
+gumbo-parser
 gupnp
 gupnp-igd
 gzip
@@ -293,6 +296,7 @@ ki18n
 kiconthemes
 kidletime
 kimageformats
+kinfocenter
 kio
 kio-extras
 kio-fuse
@@ -705,6 +709,7 @@ linux-firmware-other
 linux-firmware-radeon
 linux-firmware-realtek
 linux-firmware-whence
+litehtml0.9
 lksctp-tools
 llhttp
 llvm-libs
@@ -814,6 +819,7 @@ pixman
 pkgconf
 plasma-activities
 plasma-activities-stats
+plasma-disks
 plasma-integration
 plasma-nm
 plasma-pa
@@ -1093,6 +1099,7 @@ xkeyboard-config
 xorg-fonts-encodings
 xorg-server-common
 xorg-setxkbmap
+xorg-xdpyinfo
 xorg-xhost
 xorg-xkbcomp
 xorg-xmessage
