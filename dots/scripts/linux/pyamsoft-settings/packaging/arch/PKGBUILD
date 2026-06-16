@@ -19,7 +19,6 @@ depends=('udev' 'polkit' 'sudo' 'firewalld' 'networkmanager' 'openssh' 'systemd'
 # shellcheck disable=SC2034
 optdepends=(
   'crane: Checking container updates'
-  'ddcutil: For use with brightness script'
   'docker: Possible container backend'
   'podman: Preferred container backend'
   'proxytunnel: Possible SSH proxy command'
