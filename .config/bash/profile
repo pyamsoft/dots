@@ -20,11 +20,29 @@ fi
 _cfg="$1"
 _os="$2"
 
-# Source if the environment is not setup
-# if [ -z "${PYAMSOFT_ENVIRONMENT}" ]; then
-#   # shellcheck disable=SC1091
-#   [ -f "${HOME}"/.pyamsoft ] && . "${HOME}"/.pyamsoft "$@"
-# fi
+# Append "$1" to $PATH when not already in.
+# This function API is accessible to scripts in profile.d
+append_path() {
+  case ":${PATH}:" in
+  *:"$1":*)
+    ;;
+  *)
+    PATH="${PATH:+${PATH}:}$1"
+    ;;
+  esac
+}
+
+# Prepend "$1" to $PATH when not already in.
+# This function API is accessible to scripts in profile.d
+prepend_path() {
+  case ":${PATH}:" in
+  *:"$1":*)
+    ;;
+  *)
+    PATH="$1${PATH:+:${PATH}}"
+    ;;
+  esac
+}
 
 _all_profile=""
 for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/* "${_cfg}"/bash/profile.local.d/*; do
@@ -76,6 +94,10 @@ for _profile in $(printf -- '%s' "${_all_profile}" | awk '{ base=$0; sub(".*/", 
 done
 unset _profile
 unset _all_profile
+
+unset -f append_path
+unset -f prepend_path
+
 IFS="${_old_ifs}"
 
 return 0

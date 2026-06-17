@@ -1,5 +1,15 @@
 # shellcheck shell=bash
 
+case "$-" in
+*i*)
+  # Continue as normal
+  ;;
+*)
+  # Stop if not running interactively
+  return 0
+  ;;
+esac
+
 # SSH socket defined, do nothing
 if [ -n "${SSH_AUTH_SOCK}" ]; then
   return 0
@@ -10,18 +20,15 @@ _ssh_home="${PYAMSOFT_RUNTIME_DIR}/ssh"
 
 # Expected paths
 _agent_env_path="${_ssh_home}/ssh-agent.env"
-_agent_pid_path="${_ssh_home}/ssh-agent.pid"
+_agent_sock_path="${_ssh_home}/ssh-agent.sock"
 
 # If old agent does not exist
 if [ ! -f "${_agent_env_path}" ]; then
-  # Clear the old directory
-  rm -rf "${_ssh_home}" >/dev/null 2>&1
-
   # Make a new directory
   if mkdir -p "${_ssh_home}" >/dev/null 2>&1; then
     # Launch a new agent and save the details
     # in this runtime file
-    ssh-agent -s -a "${_agent_pid_path}" >"${_agent_env_path}"
+    ssh-agent -s -a "${_agent_sock_path}" >"${_agent_env_path}"
   else
     printf -- 'Failed to create new SSH environment directory: %s\n' "${_ssh_home}"
   fi
@@ -35,7 +42,7 @@ if [ -n "${_agent_env_path}" ] && [ -f "${_agent_env_path}" ]; then
   . "${_agent_env_path}" >/dev/null 2>&1
 fi
 
-unset _agent_pid_path
+unset _agent_sock_path
 unset _agent_env_path
 unset _ssh_home
 
