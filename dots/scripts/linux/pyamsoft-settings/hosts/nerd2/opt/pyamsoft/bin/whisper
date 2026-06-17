@@ -5,7 +5,7 @@
 
 NAME="whisper"
 IMAGE="docker.io/homeassistant/amd64-addon-whisper"
-TAG="3.1.0"
+TAG="3.2.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=1
