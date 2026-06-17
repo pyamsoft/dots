@@ -10,31 +10,31 @@ _ssh_home="${PYAMSOFT_RUNTIME_DIR}/ssh"
 
 # Expected paths
 _agent_env_path="${_ssh_home}/ssh-agent.env"
-_agent_sock_path="${_ssh_home}/ssh-agent.sock"
 
 # If old agent does not exist
-if [ ! -f "${_agent_env_path}" ]; then
-  # Make a new directory
-  if mkdir -p "${_ssh_home}" >/dev/null 2>&1; then
-    # Launch a new agent and save the details
-    # in this runtime file
-    ssh-agent -s -a "${_agent_sock_path}" >"${_agent_env_path}"
-  else
-    printf -- 'Failed to create new SSH environment directory: %s\n' "${_ssh_home}"
+if [ -n "${_agent_env_path}" ]; then
+  if [ ! -f "${_agent_env_path}" ]; then
+    # Make a new directory
+    if mkdir "${_ssh_home}" >/dev/null 2>&1; then
+      # Launch a new agent and save the details
+      # in this runtime file
+      _agent_sock_path="${_ssh_home}/ssh-agent.sock"
+      ssh-agent -s -a "${_agent_sock_path}" >"${_agent_env_path}"
+      unset _agent_sock_path
+    fi
+  fi
+
+  # Either we have a new agent at this point, or we re-use existing one
+  if [ -f "${_agent_env_path}" ]; then
+    # Source the SSH agent configuration
+
+    # shellcheck disable=SC1090
+    . "${_agent_env_path}" >/dev/null 2>&1
   fi
 fi
 
-# Either we have a new agent at this point, or we re-use existing one
-if [ -n "${_agent_env_path}" ] && [ -f "${_agent_env_path}" ]; then
-  # Source the SSH agent configuration
-
-  # shellcheck disable=SC1090
-  . "${_agent_env_path}" >/dev/null 2>&1
-fi
-
-unset _agent_sock_path
-unset _agent_env_path
 unset _ssh_home
+unset _agent_env_path
 
 return 0
 

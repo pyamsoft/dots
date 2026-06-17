@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
 
-__git_alias_commit() {
-  __git_alias_wrap "commit" "$@"
-}
+if ! declare -f __git_alias_commit >/dev/null 2>&1; then
+  __git_alias_commit() {
+    __git_alias_wrap "commit" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __git_alias_commit gitc
+  complete -o bashdefault -o default -o nospace -F __git_alias_commit gitc
+fi
 
 # vim: set filetype=sh:

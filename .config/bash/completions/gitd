@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
 
-__git_alias_diff() {
-  __git_alias_wrap "diff" "$@"
-}
+if ! declare -f __git_alias_diff >/dev/null 2>&1; then
+  __git_alias_diff() {
+    __git_alias_wrap "diff" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __git_alias_diff gitd
+  complete -o bashdefault -o default -o nospace -F __git_alias_diff gitd
+fi
 
 # vim: set filetype=sh:

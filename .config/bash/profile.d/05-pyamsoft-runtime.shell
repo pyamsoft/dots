@@ -1,33 +1,33 @@
 # shellcheck shell=bash
 
-if [ -z "${PYAMSOFT_RUNTIME_DIR}" ]; then
-  if [ -z "${XDG_RUNTIME_DIR}" ]; then
-    _runtime_home="${TMPDIR:-/tmp}"
+if [ -n "${PYAMSOFT_RUNTIME_DIR}" ]; then
+  return 0
+fi
 
-    # Remove trailing slash if one exists
-    _runtime_home="${_runtime_home%/}"
+if [ -z "${XDG_RUNTIME_DIR}" ]; then
+  _runtime_home="${TMPDIR:-/tmp}"
 
-    # Mark runtime directory per user since TMPDIR may be a shared global directory
-    PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft-$(id -u)"
-  else
-    _runtime_home="${XDG_RUNTIME_DIR}"
+  # Remove trailing slash if one exists
+  _runtime_home="${_runtime_home%/}"
 
-    # Remove trailing slash if one exists
-    _runtime_home="${_runtime_home%/}"
+  # Mark runtime directory per user since TMPDIR may be a shared global directory
+  PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft-$(id -u)"
+else
+  _runtime_home="${XDG_RUNTIME_DIR}"
 
-    # Mark runtime directory (do not need per user since XDG_RUNTIME_DIR is already per user)
-    PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft"
-  fi
+  # Remove trailing slash if one exists
+  _runtime_home="${_runtime_home%/}"
 
-  # Export out
-  unset _runtime_home
+  # Mark runtime directory (do not need per user since XDG_RUNTIME_DIR is already per user)
+  PYAMSOFT_RUNTIME_DIR="${_runtime_home}/pyamsoft"
+fi
+
+# Export out
+unset _runtime_home
+
+# Create only if it does not already exist
+if mkdir "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1; then
   export PYAMSOFT_RUNTIME_DIR
-
-  # Clean up directory
-  mkdir -p "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1 || {
-    printf -- 'Failed to setup pyamsoft runtime directory: %s\n' "${PYAMSOFT_RUNTIME_DIR}"
-    return 1
-  }
 fi
 
 return 0

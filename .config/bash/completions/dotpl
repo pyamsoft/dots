@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
 
-__dotfiles_pull() {
-  __dotfiles_wrap "pull" "$@"
-}
+if ! declare -f __dotfiles_pull >/dev/null 2>&1; then
+  __dotfiles_pull() {
+    __dotfiles_wrap "pull" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __dotfiles_pull dotpl
+  complete -o bashdefault -o default -o nospace -F __dotfiles_pull dotpl
+fi
 
 # vim: set filetype=sh:

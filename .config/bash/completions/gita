@@ -3,11 +3,13 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
 
-__git_alias_add() {
-  __git_alias_wrap "add" "$@"
-}
+if ! declare -f __git_alias_add >/dev/null 2>&1; then
+  __git_alias_add() {
+    __git_alias_wrap "add" "$@"
+  }
 
-# Complete aliases (-|-- options are buggy :( )
-complete -o bashdefault -o default -o nospace -F __git_alias_add gita
+  # Complete aliases (-|-- options are buggy :( )
+  complete -o bashdefault -o default -o nospace -F __git_alias_add gita
+fi
 
 # vim: set filetype=sh:

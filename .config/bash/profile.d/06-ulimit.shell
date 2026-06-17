@@ -5,9 +5,13 @@
 # We bump the ulimit up to 2048 in any interactive shell
 if command -v ulimit >/dev/null; then
   _current_ulimit="$(ulimit -S -n)"
-  if [ "${_current_ulimit}" -lt 2048 ]; then
-    ulimit -S -n 2048 || return 1
+  if [ -n "${_current_ulimit}" ] && [ "${_current_ulimit}" -lt 2048 ]; then
+    ulimit -S -n 2048 || {
+      unset _current_ulimit
+      return 1
+    }
   fi
+
   unset _current_ulimit
 fi
 

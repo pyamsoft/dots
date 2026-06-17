@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
 
-__dotfiles_commit() {
-  __dotfiles_wrap "commit" "$@"
-}
+if ! declare -f __dotfiles_commit >/dev/null 2>&1; then
+  __dotfiles_commit() {
+    __dotfiles_wrap "commit" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __dotfiles_commit dotc
+  complete -o bashdefault -o default -o nospace -F __dotfiles_commit dotc
+fi
 
 # vim: set filetype=sh:

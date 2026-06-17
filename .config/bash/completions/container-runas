@@ -32,8 +32,8 @@ if ! declare -f __runas_container >/dev/null 2>&1; then
     # shellcheck disable=SC2207
     COMPREPLY=($(compgen -W "${_all_container_users[*]}" -- "${cur}"))
   }
-fi
 
-complete -o bashdefault -o default -F __runas_container container-runas
+  complete -o bashdefault -o default -F __runas_container container-runas
+fi
 
 # vim: set filetype=sh:

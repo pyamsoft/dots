@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_dotfiles.wrapper"
 
-__dotfiles_branch() {
-  __dotfiles_wrap "branch" "$@"
-}
+if ! declare -f __dotfiles_branch >/dev/null 2>&1; then
+  __dotfiles_branch() {
+    __dotfiles_wrap "branch" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __dotfiles_branch dotb
+  complete -o bashdefault -o default -o nospace -F __dotfiles_branch dotb
+fi
 
 # vim: set filetype=sh:

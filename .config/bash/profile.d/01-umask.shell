@@ -2,7 +2,20 @@
 
 # Strict umask
 if command -v umask >/dev/null; then
-  umask 077 || return 1
+  _current_umask="$(umask)"
+
+  case "${_current_umask}" in
+  077 | 0077)
+    ;;
+  *)
+    umask 077 || {
+      unset _current_umask
+      return 1
+    }
+    ;;
+  esac
+
+  unset _current_umask
 fi
 
 return 0

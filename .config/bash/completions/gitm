@@ -3,10 +3,12 @@
 # shellcheck disable=SC1091
 . "${BASH_COMPLETION_USER_DIR}/completions/_git.wrapper"
 
-__git_alias_merge() {
-  __git_alias_wrap "merge" "$@"
-}
+if ! declare -f __git_alias_merge >/dev/null 2>&1; then
+  __git_alias_merge() {
+    __git_alias_wrap "merge" "$@"
+  }
 
-complete -o bashdefault -o default -o nospace -F __git_alias_merge gitm
+  complete -o bashdefault -o default -o nospace -F __git_alias_merge gitm
+fi
 
 # vim: set filetype=sh:
