@@ -1,15 +1,5 @@
 # shellcheck shell=bash
 
-case "$-" in
-*i*)
-  # Continue as normal
-  ;;
-*)
-  # Stop if not running interactively
-  return 0
-  ;;
-esac
-
 # SSH socket defined, do nothing
 if [ -n "${SSH_AUTH_SOCK}" ]; then
   return 0
