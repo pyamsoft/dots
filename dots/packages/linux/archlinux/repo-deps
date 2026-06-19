@@ -345,6 +345,7 @@ layer-shell-qt
 lcms2
 ldb
 leancrypto
+leptonica
 less
 lib32-alsa-lib
 lib32-alsa-plugins
@@ -713,7 +714,6 @@ litehtml0.9
 lksctp-tools
 llhttp
 llvm-libs
-llvm21-libs
 lmdb
 lsb-release
 lsof
@@ -1028,6 +1028,9 @@ taglib
 talloc
 tar
 tdb
+tesseract
+tesseract-data-eng
+tesseract-data-osd
 tevent
 texinfo
 tinysparql
