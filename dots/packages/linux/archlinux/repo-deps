@@ -239,6 +239,7 @@ hidapi
 highway
 hsa-rocr
 hunspell
+hunspell-en_us
 hwdata
 hwloc
 i2c-tools
