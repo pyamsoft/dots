@@ -1,10 +1,10 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!~/.keepass;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;!xdg-music;!xdg-run/keyring;!/media;!/run/media;!/var/lib/flatpak/app;!xdg-download;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config/sunshine;!xdg-templates;!xdg-data/gnupg;xdg-config/gtk-3.0:ro;!xdg-config;!home;!xdg-data/containers;!xdg-config/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-run/gamescope-0.lock;!/var/lib/flatpak/overrides;!~/.config/ssh;!/tmp;!xdg-pictures;~/.themes;~/.icons;!xdg-config/gnupg;!~/.ssh;!~/.config/git-ssh;!~/.gnupg;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;xdg-config/Trolltech.conf;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!xdg-config/kdeconnect;!~/.keepass;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;!xdg-music;!xdg-run/keyring;!/media;!/run/media;!/var/lib/flatpak/app;!xdg-download;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-data/flatpak;!xdg-config/sunshine;!xdg-templates;!xdg-data/gnupg;xdg-config/gtk-3.0:ro;!xdg-config;!home;!xdg-data/containers;!xdg-config/containers;!xdg-run/crun;!xdg-run/gnupg;!xdg-cache;!xdg-run/gamescope-0.lock;!/var/lib/flatpak/overrides;!~/.config/ssh;xdg-config/xsettingsd;!/tmp;!xdg-pictures;~/.themes;~/.icons;!xdg-config/gnupg;!~/.ssh;!~/.config/git-ssh;!~/.gnupg;
 unset-environment=GTK_THEME;SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;ICON_THEME;
 persistent=.;
-sockets=!ssh-auth;!pcsc;!gpg-agent;
-devices=dri;!all;!kvm;!shm;!input;!usb;
-features=!devel;!multiarch;!bluetooth;!canbus;
+sockets=!gpg-agent;!pcsc;!ssh-auth;
+devices=!all;dri;!input;!kvm;!shm;!usb;
+features=!bluetooth;!canbus;!devel;!multiarch;
 
 [Session Bus Policy]
 org.gnome.SessionManager=none
