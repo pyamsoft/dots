@@ -472,6 +472,15 @@ _network_isolate() {
         return 1
       }
     fi
+  elif _is_macos_container; then
+    # MacOS has no driver configuration or isolation or anything really.
+    # Also no IPv6 specifics
+    "${CONTAINER_CMD}" network create "${_network_name}" >/dev/null || {
+      _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+
+      unset _network_name
+      return 1
+    }
   else
     # Docker must make sure the network doesn't already exist
     if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -qxF "${_network_name}"; then
