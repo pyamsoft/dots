@@ -38,7 +38,11 @@ _prep_network() {
     _add_network --network="container:home-assistant"
   else
     # On MacOS we run standalone, just use host networking to keep things simple
-    _add_network --network="host"
+    if _is_macos_container; then
+      _network_isolate || return 1
+    else
+      _add_network --network="host"
+    fi
   fi
 
   return 0
@@ -49,7 +53,12 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  _add_ports -p "127.0.0.1:10200:10200/tcp"
+  if _is_macos_container; then
+    # MacOS can't bind same port on other interfaces
+    _add_ports -p "10200:10200/tcp"
+  else
+    _add_ports -p "127.0.0.1:10200:10200/tcp"
+  fi
   return 0
 }
 
