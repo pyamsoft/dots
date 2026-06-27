@@ -26,8 +26,17 @@ if command -v podman >/dev/null; then
 elif command -v docker >/dev/null; then
   _cmd="docker"
 else
-  _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
+  if [ "$(uname)" = "Darwin" ]; then
+    if command -v container >/dev/null; then
+      _cmd="container"
+    else
+      _elog 'Requires either "podman" "docker" or "container" ("podman" preferred)'
+      exit 1
+    fi
+  else
+    _elog 'Requires either "podman" or "docker" ("podman" preferred)'
+    exit 1
+  fi
 fi
 readonly _cmd
 
@@ -80,6 +89,11 @@ _teardown_container() {
   if [ "${_cmd}" = "podman" ]; then
     "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
       _elog 'Failed to remove the container network: %s (%ss)' "${_container}" "${_teardown_time}"
+    }
+  elif [ "${_cmd}" = "container" ]; then
+    # Container does not support -f/-t flag for network rm
+    "${_cmd}" network rm "${_container}" >/dev/null 2>&1 || {
+      _elog 'Failed to remove the container network: %s' "${_container}"
     }
   else
     # Docker does not support -t flag for network rm
@@ -217,6 +231,14 @@ main() {
 
   for _c in ${_containers}; do
     if _is_compose "${_c}"; then
+      if [ "${_cmd}" = "container" ]; then
+        _elog 'Compose is not supported by the "container" tool (%s)' "${_c}"
+        _log '---'
+        return 1
+      else
+        _log 'Attempting teardown of compose %s (%ss)' "${_c}" "${_time}"
+        _teardown_compose "${_c}" "${_time}" || return 1
+      fi
       _log 'Attempting teardown of compose %s (%ss)' "${_c}" "${_time}"
       _teardown_compose "${_c}" "${_time}" || return 1
     else
