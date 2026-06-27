@@ -4,16 +4,18 @@
 # set as /bin/nologin
 
 _runas() {
+  _who="$1"
+
   if command -v run0 >/dev/null 2>&1; then
     # Use run0 if we have it
     # Run a bash login shell directly
     # Some users may have the shell set to /bin/nologin, explicitly use bash
-    exec sudo run0 -u "$1" --setenv=SHELL=/bin/bash /bin/bash -l
+    exec sudo run0 -u "${_who}" --setenv=SHELL=/bin/bash /bin/bash -l
   else
     # Otherwise fake the environment with sudo
     # Run a bash login shell directly
     # Some users may have the shell set to /bin/nologin, explicitly use bash
-    exec sudo -u "$1" env SHELL=/bin/bash XDG_RUNTIME_DIR="/run/user/$(id -u "$1")" /bin/bash -l
+    exec sudo -u "${_who}" env SHELL=/bin/bash XDG_RUNTIME_DIR="/run/user/$(id -u "${_who}")" /bin/bash -l
   fi
 }
 

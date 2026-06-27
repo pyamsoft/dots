@@ -1,41 +1,13 @@
 #!/bin/sh
 
-_PROG_NAME="$(basename "$0")"
-readonly _PROG_NAME
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
 
-##
-# Logs a message with newline, formatting, and a name tag
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_PROG_NAME}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-##
-# Log a message to stderr
-_elog() {
-  _log "$@" 1>&2 || return 1
-  return 0
-}
+NAME="$(basename "$0")"
 
 __scripts=""
 __containers=""
 __args=""
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-  exit 1
-fi
-readonly _cmd
 
 _dotfiles() {
   exec git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
@@ -45,20 +17,20 @@ _usage() {
   _log '%s' "$(
     cat <<EOF
 
-($(id -un)) ${_PROG_NAME} <action>
+($(id -un)) ${NAME} <action>
 
 <actions>
 
-[container]:   Exectue ${_cmd} operations on containers
+[container]:   Exectue ${CONTAINER_CMD} operations on containers
 
-  exec         Runs '${_cmd} exec -it <name>'
-  images       Runs '${_cmd} images', passing all arguments
-  inspect      Runs '${_cmd} inspect', passing all arguments
-  logs         Runs '${_cmd} logs', passing all arguments
-  networks     Runs '${_cmd} network ls', passing all arguments
+  exec         Runs '${CONTAINER_CMD} exec -it <name>'
+  images       Runs '${CONTAINER_CMD} images', passing all arguments
+  inspect      Runs '${CONTAINER_CMD} inspect', passing all arguments
+  logs         Runs '${CONTAINER_CMD} logs', passing all arguments
+  networks     Runs '${CONTAINER_CMD} network ls', passing all arguments
   pid          Returns the PID of the containerized process on the host system
-  ps           Runs '${_cmd} ps', passing all arguments
-  stats        Runs '${_cmd} stats', passing all arguments
+  ps           Runs '${CONTAINER_CMD} ps', passing all arguments
+  stats        Runs '${CONTAINER_CMD} stats', passing all arguments
 
 [service]:     Service management related operations
 
@@ -71,7 +43,7 @@ _usage() {
 [system]:      System management related operations
 
   checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
-  prune        Runs '${_cmd} system prune -a'
+  prune        Runs '${CONTAINER_CMD} system prune -a'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
 
@@ -146,10 +118,12 @@ main() {
   fi
 
   # Podman expects us to be in a accessible CWD
-  cd "${HOME}" || {
-    _elog 'Unable to cd to user HOME for %s usage' "${_cmd}"
+  _sanity="${HOME:-/}"
+  cd "${_sanity}" || {
+    _elog 'Unable to cd to sanity directory: %s\n' "${_sanity}"
     return 1
   }
+  unset _sanity
 
   # Eat argument
   _action="$1"
@@ -157,15 +131,15 @@ main() {
 
   case "${_action}" in
   ps | logs | images | inspect | stats)
-    exec "${_cmd}" "${_action}" "$@"
+    exec "${CONTAINER_CMD}" "${_action}" "$@"
     ;;
   checkup)
-    if [ "${_cmd}" != "podman" ]; then
+    if ! _is_podman; then
       _elog 'The "checkup" option is only supported with podman'
       return 1
     fi
 
-    exec "${_cmd}" auto-update --dry-run "$@"
+    exec "${CONTAINER_CMD}" auto-update --dry-run "$@"
     ;;
   exec)
     if [ -z "$1" ]; then
@@ -176,7 +150,7 @@ main() {
     _container="$1"
     shift
 
-    exec "${_cmd}" exec -i -t "${_container}" "$@"
+    exec "${CONTAINER_CMD}" exec -i -t "${_container}" "$@"
     ;;
   pid)
     if [ -z "$1" ]; then
@@ -187,13 +161,18 @@ main() {
     _container="$1"
     shift
 
-    exec "${_cmd}" inspect "${_container}" -f '{{ .State.Pid }}' "$@"
+    exec "${CONTAINER_CMD}" inspect "${_container}" -f '{{ .State.Pid }}' "$@"
     ;;
   networks)
-    exec "${_cmd}" network ls "$@"
+    exec "${CONTAINER_CMD}" network ls "$@"
     ;;
   prune)
-    exec "${_cmd}" system prune -a "$@"
+    if _is_macos_container; then
+      # MacOS container tool uses "prune" directly
+      exec "${CONTAINER_CMD}" prune "$@"
+    else
+      exec "${CONTAINER_CMD}" system prune -a "$@"
+    fi
     ;;
   pull)
     _dotfiles pull "$@"

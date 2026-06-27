@@ -1,50 +1,16 @@
 #!/bin/sh
 
-readonly _PROG="container-teardown"
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="$(basename "$0")"
 readonly _DEFAULT_TIME=5
-
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${_PROG}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-##
-# Log a message to stderr
-_elog() {
-  _log "$@" 1>&2 || return 1
-  return 0
-}
-
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  if [ "$(uname)" = "Darwin" ]; then
-    if command -v container >/dev/null; then
-      _cmd="container"
-    else
-      _elog 'Requires either "podman" "docker" or "container" ("podman" preferred)'
-      exit 1
-    fi
-  else
-    _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-    exit 1
-  fi
-fi
-readonly _cmd
 
 _usage() {
   _log '%s' "$(
     cat <<EOF
 
-${_PROG} [option(s)] [--] <name(s)> 
+${NAME} [option(s)] [--] <name(s)> 
 
 <name>                name of the container to teardown (one or more)
 [-t|--time] <value>   time to wait for container to stop (default 5s)
@@ -71,13 +37,13 @@ _teardown_container() {
 
   # Attempt nice stop
   _log 'Try nice stop container: %s (%ss)' "${_container}" "${_teardown_time}"
-  "${_cmd}" stop -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
+  "${CONTAINER_CMD}" stop -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
     _elog 'Failed to nicely stop container %s (%ss)' "${_container}" "${_teardown_time}"
   }
 
   # Remove the container
   _log 'Try force-remove container: %s' "${_container}"
-  "${_cmd}" rm -f "${_container}" >/dev/null 2>&1 || {
+  "${CONTAINER_CMD}" rm -f "${_container}" >/dev/null 2>&1 || {
     _elog 'Failed to force remove the container %s' "${_container}"
 
     # If this fails, we failed
@@ -86,18 +52,18 @@ _teardown_container() {
 
   # Remove the network
   _log 'Try remove container network: %s (%ss)' "${_container}" "${_teardown_time}"
-  if [ "${_cmd}" = "podman" ]; then
-    "${_cmd}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
+  if _is_podman; then
+    "${CONTAINER_CMD}" network rm -f -t "${_teardown_time}" "${_container}" >/dev/null 2>&1 || {
       _elog 'Failed to remove the container network: %s (%ss)' "${_container}" "${_teardown_time}"
     }
-  elif [ "${_cmd}" = "container" ]; then
+  elif _is_macos_container; then
     # Container does not support -f/-t flag for network rm
-    "${_cmd}" network rm "${_container}" >/dev/null 2>&1 || {
+    "${CONTAINER_CMD}" network rm "${_container}" >/dev/null 2>&1 || {
       _elog 'Failed to remove the container network: %s' "${_container}"
     }
   else
     # Docker does not support -t flag for network rm
-    "${_cmd}" network rm -f "${_container}" >/dev/null 2>&1 || {
+    "${CONTAINER_CMD}" network rm -f "${_container}" >/dev/null 2>&1 || {
       _elog 'Failed to remove the container network: %s' "${_container}"
     }
   fi
@@ -112,7 +78,7 @@ _teardown_container() {
 _is_compose() {
   _container="$1"
 
-  if [ "$(id -u)" -eq 0 ]; then
+  if _is_root; then
     _compose_dir="/usr/local/etc/containers/${_container}"
   else
     _compose_dir="${HOME}/.local/etc/containers/${_container}"
@@ -142,7 +108,7 @@ _teardown_compose() {
   }
 
   _log 'Try bring down compose: %s' "${_container}"
-  "${_cmd}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" >/dev/null 2>&1 || {
+  "${CONTAINER_CMD}" compose --file "${_compose_file}" down --remove-orphans -t "${_teardown_time}" >/dev/null 2>&1 || {
     _elog 'Failed to bring down compose: %s' "${_container}"
     return 1
   }
@@ -160,6 +126,7 @@ main() {
     _elog 'Unable to cd to sanity directory: %s\n' "${_sanity}"
     return 1
   }
+  unset _sanity
 
   _time="${_DEFAULT_TIME}"
   _containers=""
@@ -231,7 +198,7 @@ main() {
 
   for _c in ${_containers}; do
     if _is_compose "${_c}"; then
-      if [ "${_cmd}" = "container" ]; then
+      if _is_macos_container; then
         _elog 'Compose is not supported by the "container" tool (%s)' "${_c}"
         _log '---'
         return 1

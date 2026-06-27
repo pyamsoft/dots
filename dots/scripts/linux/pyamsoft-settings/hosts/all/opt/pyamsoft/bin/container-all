@@ -1,9 +1,12 @@
 #!/bin/sh
 
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
 _prune() {
   if command -v "$1" >/dev/null 2>&1; then
     "$1" prune || {
-      printf -- 'Failed to prune for delegate: %s\n' "$1"
+      _elog 'Failed to prune for delegate: %s' "$1"
       return 1
     }
   fi
@@ -14,7 +17,7 @@ _prune() {
 _pull() {
   if command -v "$1" >/dev/null 2>&1; then
     "$1" pull || {
-      printf -- 'Failed to pull for delegate: %s\n' "$1"
+      _elog 'Failed to pull for delegate: %s' "$1"
       return 1
     }
   fi
@@ -25,7 +28,7 @@ _pull() {
 _reload() {
   if command -v "$1" >/dev/null 2>&1; then
     "$1" reload || {
-      printf -- 'Failed to reload for delegate: %s\n' "$1"
+      _elog 'Failed to reload for delegate: %s' "$1"
       return 1
     }
   fi
@@ -45,14 +48,14 @@ _act() {
     _pull "$2" || return 1
     ;;
   *)
-    printf -- 'Invalid action %s\n' "$1"
+    _elog 'Invalid action "%s" (need one of "prune" "reload" "pull")' "$1"
     ;;
   esac
 }
 
 main() {
   if [ -z "$1" ]; then
-    printf -- 'Invalid action %s\n' "$1"
+    _elog 'Missing action action (need one of "prune" "reload" "pull")'
     return 1
   fi
 

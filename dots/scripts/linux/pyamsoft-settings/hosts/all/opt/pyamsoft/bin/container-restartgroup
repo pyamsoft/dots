@@ -1,28 +1,13 @@
 #!/bin/sh
 
-PROG="$(basename "$0")"
-readonly PROG
+# Source our common library
+. "/opt/pyamsoft/lib/container-launch"
+
+NAME="$(basename "$0")"
 
 __containers_user=""
 __network_owner=""
 __running_containers=""
-
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${PROG}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-##
-# Log a message to stderr
-_elog() {
-  _log "$@" 1>&2 || return 1
-  return 0
-}
 
 _stop() {
   _log 'Stop container %s' "$1"
@@ -45,6 +30,7 @@ _restart() {
 }
 
 _collect_running() {
+  # TODO(Peter): Does not work with MacOS container
   for _container in $("${__containers_user}" ps --format '{{ .Names }}'); do
     if [ "${_container}" = "${__network_owner}" ]; then
       unset _container
