@@ -79,3 +79,20 @@ options lockdown=confidentiality
 # This PCIE error gets spit out in console, and maybe this fixes it?
 # https://unix.stackexchange.com/questions/327730/what-causes-this-pcieport-00000003-0-pcie-bus-error-aer-bad-tlp
 # options pci=nommconf
+
+# Avoid BadDLLP error storm on PCI bus when plugging in an eGPU
+#
+# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0: PCIe Bus Error: severity=Correctable, type=Data Link Layer, (Receiver ID)
+# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0:   device [1002:1478] error status/mask=00000080/00002000
+# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0:    [ 7] BadDLLP
+#options pcie_aspm=off
+#options pcie_port_pm=off # More aggressive
+#options pci=noaer # just silence the logs
+
+# Tell Linux to allocate it's own PCI instead of listening to BIOS
+#
+# Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
+# Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: can't assign; no space
+# Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
+#options pci=realloc=on
+#options pci=realloc=on,assign-busses # More aggressive

@@ -41,3 +41,14 @@ Make sure you unset it via --unset-env override in the flatpak file
 Try using the `gametime` script, try not using the script. See what
 makes things work. Sometimes the `gamescope` version is broken, so play around
 with rolling back.
+
+## EGPU woes
+
+Sometimes the eGPU falls off the bus and won't come back when you hotplug over TB4/5
+Aside from any physical hardware things like off-and-on or unplug-replug, you
+may be able to force the system via
+```shell
+# echo 1 > /syus/devices/pci0000:00/pci_bus/0000:00/rescan
+```
+I have no idea what this does, and it takes a little while, but after doing it
+the eGPU reappeared in lspci
