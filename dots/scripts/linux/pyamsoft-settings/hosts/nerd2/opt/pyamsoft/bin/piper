@@ -4,7 +4,11 @@
 . "/opt/pyamsoft/lib/container-launch"
 
 NAME="piper"
-IMAGE="docker.io/homeassistant/amd64-addon-piper"
+if _is_arch_arm; then
+  IMAGE="docker.io/homeassistant/aarch64-addon-piper"
+else
+  IMAGE="docker.io/homeassistant/amd64-addon-piper"
+fi
 TAG="2.2.2"
 
 CONTAINER_REQUIRE_RUNCONF=0
