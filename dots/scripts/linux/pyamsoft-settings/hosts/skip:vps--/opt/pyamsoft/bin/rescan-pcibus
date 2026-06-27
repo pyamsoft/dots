@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# Sometimes, when you plug an eGPU into a machine, the PCI fails to setup correctly
+# If you see logs in your journal that look something like this, you may want to also
+# adjust your boot options cmdline:
+#
+# kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: can't assign; no space
+# kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
+#
+#options pci=realloc=on
+#
+# Or the more aggressive option
+#options pci=realloc=on,assign-busses
+
+NAME="$(basename "$0")"
+readonly NAME
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
+_force_rescan() {
+  _bus="$1"
+
+  _log 'Rescan PCI bus: %s' "${_bus}"
+  printf -- 1 >"${_bus}" || {
+    _elog 'Failed to force rescan of PCI bus: %s' "${_bus}"
+
+    unset _bus
+    return 1
+  }
+
+  unset _bus
+
+  return 0
+}
+
+_attempt_rescans() {
+  for d in /sys/devices/pci*/pci_bus/*/rescan; do
+    if [ -f "${d}" ]; then
+      # Don't stop if one errors, just keep going
+      _force_rescan "${d}"
+    fi
+    unset d
+  done
+  unset d
+
+  return 0
+}
+
+main() {
+  if [ "$(id -u)" -ne 0 ]; then
+    _elog 'You must be root.\n'
+    return 1
+  fi
+
+  _attempt_rescans || return 1
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
