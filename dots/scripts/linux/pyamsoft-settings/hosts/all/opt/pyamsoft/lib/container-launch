@@ -77,12 +77,12 @@ _is_macos_container() {
 
 ## Check machine architecture is x86_64
 _is_arch_x86() {
-  [ "${__os_name}" = "x86_64" ]
+  [ "${__os_arch}" = "x86_64" ]
 }
 
 ## Check machine architecture is AARCH64
 _is_arch_arm() {
-  case "${__os_name}" in
+  case "${__os_arch}" in
   aarch64 | arm64)
     return 0
     ;;
