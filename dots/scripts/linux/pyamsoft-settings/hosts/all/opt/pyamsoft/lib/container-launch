@@ -42,6 +42,7 @@ CONTAINER_ARGS=""
 
 ## Private variables
 __os_name="$(uname)"
+__os_arch="$(uname -m)"
 __uid="$(id -u)"
 
 ## Check host user is root
@@ -72,6 +73,23 @@ _is_docker() {
 ## Check if container is "container" (on MacOS)
 _is_macos_container() {
   _is_macos && [ "${CONTAINER_CMD}" = "container" ]
+}
+
+## Check machine architecture is x86_64
+_is_arch_x86() {
+  [ "${__os_name}" = "x86_64" ]
+}
+
+## Check machine architecture is AARCH64
+_is_arch_arm() {
+  case "${__os_name}" in
+  aarch64 | arm64)
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
+  esac
 }
 
 ## Check if CMD is atleast version "$1"
