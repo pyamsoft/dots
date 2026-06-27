@@ -563,9 +563,12 @@ __setup_network() {
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
     _add_network --dns-option="edns0,trust-ad"
     _add_network --dns-search="."
-    _add_network --add-host "localhost:127.0.0.1"
-    _add_network --add-host "host.containers.internal:host-gateway"
-    _add_network --add-host "host.docker.internal:host-gateway"
+
+    if ! _is_macos_container; then
+      _add_network --add-host "localhost:127.0.0.1"
+      _add_network --add-host "host.containers.internal:host-gateway"
+      _add_network --add-host "host.docker.internal:host-gateway"
+    fi
   fi
 
   return 0
@@ -772,8 +775,10 @@ _containerize() {
   fi
 
   # Security
+  if ! _is_macos_container; then
+    _add_rc --security-opt=no-new-privileges
+  fi
   _add_rc --cap-drop=ALL
-  _add_rc --security-opt=no-new-privileges
 
   if _is_podman; then
     if _is_cmd_version_atleast 5.4; then
@@ -782,13 +787,16 @@ _containerize() {
     fi
   fi
 
-  # podman can always set a hostname
-  if _is_podman; then
-    _add_rc --hostname="${NAME}"
-  else
-    # Docker must be sure we are not in a container network namespace
-    if ! _has_container_networking; then
+  # MacOS has no hostname
+  if ! _is_macos_container; then
+    # podman can always set a hostname
+    if _is_podman; then
       _add_rc --hostname="${NAME}"
+    else
+      # Docker must be sure we are not in a container network namespace
+      if ! _has_container_networking; then
+        _add_rc --hostname="${NAME}"
+      fi
     fi
   fi
 
