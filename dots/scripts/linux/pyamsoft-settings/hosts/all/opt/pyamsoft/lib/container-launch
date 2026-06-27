@@ -35,8 +35,10 @@ CONTAINER_RC=""
 CONTAINER_LOGS=""
 CONTAINER_MEMORY=""
 CONTAINER_CPU=""
-CONTAINER_CMD=""
 CONTAINER_ARGS=""
+
+# The container runtime command
+CONTAINER_CMD=""
 
 ## Defaults
 
@@ -873,7 +875,6 @@ _containerize() {
 
 main() {
   # Reset
-  CONTAINER_CMD=""
   CONTAINER_LOGS=""
   CONTAINER_RC=""
   CONTAINER_RUNTIME_DIR=""
@@ -904,27 +905,6 @@ main() {
     _elog '$TAG must be defined'
     return 1
   fi
-
-  # Use podman, don't use docker
-  if _has_function podman; then
-    CONTAINER_CMD="podman"
-  elif _has_function docker; then
-    CONTAINER_CMD="docker"
-  else
-    if _is_macos; then
-      if _has_function container; then
-        CONTAINER_CMD="container"
-      else
-        _elog 'Requires either "podman" "docker", or "container" (MacOS specific) ("podman" preferred)'
-        exit 1
-      fi
-    else
-      _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-      exit 1
-    fi
-  fi
-
-  readonly CONTAINER_CMD
 
   # Move to accessible directory
   if _is_root; then
@@ -976,3 +956,24 @@ main() {
   _containerize "$@" || return 1
   return 0
 }
+
+# Use podman, don't use docker
+if _has_function podman; then
+  CONTAINER_CMD="podman"
+elif _has_function docker; then
+  CONTAINER_CMD="docker"
+else
+  if _is_macos; then
+    if _has_function container; then
+      CONTAINER_CMD="container"
+    else
+      _elog 'Requires either "podman" "docker", or "container" (MacOS specific) ("podman" preferred)'
+      exit 1
+    fi
+  else
+    _elog 'Requires either "podman" or "docker" ("podman" preferred)'
+    exit 1
+  fi
+fi
+
+readonly CONTAINER_CMD
