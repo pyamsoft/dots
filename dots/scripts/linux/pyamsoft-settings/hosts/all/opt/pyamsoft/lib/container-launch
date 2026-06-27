@@ -69,6 +69,11 @@ _is_docker() {
   [ "${CONTAINER_CMD}" = "docker" ]
 }
 
+## Check if container is "container" (on MacOS)
+_is_macos_container() {
+  _is_macos && [ "${CONTAINER_CMD}" = "container" ]
+}
+
 ## Check if CMD is atleast version "$1"
 _is_cmd_version_atleast() {
   _expect_v="$1"
@@ -869,8 +874,17 @@ main() {
   elif _has_function docker; then
     CONTAINER_CMD="docker"
   else
-    _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-    exit 1
+    if _is_macos; then
+      if _has_function container; then
+        CONTAINER_CMD="container"
+      else
+        _elog 'Requires either "podman" "docker", or "container" (MacOS specific) ("podman" preferred)'
+        exit 1
+      fi
+    else
+      _elog 'Requires either "podman" or "docker" ("podman" preferred)'
+      exit 1
+    fi
   fi
 
   readonly CONTAINER_CMD
