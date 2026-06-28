@@ -1,13 +1,23 @@
 #!/bin/sh
 
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 main() {
   if [ "$(id -u)" -ne 0 ]; then
-    printf -- 'You must setup mergerfs /mnt/MassMedia as root.\n'
+    _elog 'You must setup mergerfs /mnt/MassMedia as root.'
     return 1
   fi
 
+  _log 'PLACEHOLDER: Mass Media is preparing...'
+
   # TODO Perform setup
   sleep 10 || return 1
+
+  _log 'PLACEHOLDER: Mass Media is ready!'
 
   # Report back to systemd that things are ready
   exec systemd-notify --ready || return 1

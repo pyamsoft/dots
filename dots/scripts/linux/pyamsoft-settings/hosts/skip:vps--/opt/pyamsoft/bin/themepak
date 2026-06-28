@@ -3,6 +3,7 @@
 # Copy real themes over to flatpak friendly locations
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(basename "$0")"

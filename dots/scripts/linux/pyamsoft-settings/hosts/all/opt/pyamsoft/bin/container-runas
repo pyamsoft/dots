@@ -4,6 +4,7 @@
 # set as /bin/nologin
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(basename "$0")"

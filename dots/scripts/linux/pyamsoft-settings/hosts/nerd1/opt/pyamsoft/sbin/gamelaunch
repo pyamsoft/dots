@@ -3,6 +3,7 @@
 # Privileged script, to be used with gamer script and sudoers set up
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 readonly _NAME="gamelaunch"

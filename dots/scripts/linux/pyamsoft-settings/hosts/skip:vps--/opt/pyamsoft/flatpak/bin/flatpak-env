@@ -13,6 +13,7 @@
 # You can still pass options into the --shell, it will replace the flatpak run entrypoint with /bin/sh
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(basename "$0")"

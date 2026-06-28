@@ -3,6 +3,7 @@
 # Extracts youtube-dl contents into MP3 using best quality and ignoring errors
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(basename "$0")"

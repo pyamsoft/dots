@@ -6,6 +6,7 @@
 # Expected format is <user>:<escaped-path>[:options]
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(/bin/basename "$0")"

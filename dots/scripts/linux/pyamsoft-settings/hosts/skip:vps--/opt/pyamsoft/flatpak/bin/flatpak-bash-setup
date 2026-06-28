@@ -5,6 +5,7 @@
 # Makes it easier to run a nice bash shell in a flatpak container
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
 NAME="$(basename "$0")"

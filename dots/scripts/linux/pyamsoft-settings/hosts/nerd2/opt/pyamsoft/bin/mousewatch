@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Source our common library
+# shellcheck source=/opt/pyamsoft/lib/container-launch
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
 NAME="mousewatch"
