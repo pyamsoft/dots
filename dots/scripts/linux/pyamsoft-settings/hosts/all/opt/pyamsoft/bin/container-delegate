@@ -14,6 +14,14 @@ _dotfiles() {
 }
 
 _usage() {
+  if _is_macos_container; then
+    _ps="${CONTAINER_CMD} ls"
+    _prune="${CONTAINER_CMD} prune"
+  else
+    _ps="${CONTAINER_CMD} ps"
+    _prune="${CONTAINER_CMD} system prune -a"
+  fi
+
   _log '%s' "$(
     cat <<EOF
 
@@ -29,7 +37,7 @@ _usage() {
   logs         Runs '${CONTAINER_CMD} logs', passing all arguments
   networks     Runs '${CONTAINER_CMD} network ls', passing all arguments
   pid          Returns the PID of the containerized process on the host system
-  ps           Runs '${CONTAINER_CMD} ps', passing all arguments
+  ps           Runs '${_ps}', passing all arguments
   stats        Runs '${CONTAINER_CMD} stats', passing all arguments
 
 [service]:     Service management related operations
@@ -43,12 +51,17 @@ _usage() {
 [system]:      System management related operations
 
   checkup      Runs 'podman auto-update --dry-run' ("podman" ONLY)
-  prune        Runs '${CONTAINER_CMD} system prune -a'
+  prune        Runs '${_prune}'
   pull         Runs 'dotfiles pull'
   teardown     Runs 'container-teardown <name>'
 
 EOF
   )"
+
+  unset _ps
+  unset _prune
+
+  return 0
 }
 
 _prep_container() {
@@ -130,7 +143,14 @@ main() {
   shift
 
   case "${_action}" in
-  ps | logs | images | inspect | stats)
+  ps)
+    if _is_macos_container; then
+      exec "${CONTAINER_CMD}" ls "$@"
+    else
+      exec "${CONTAINER_CMD}" "${_action}" "$@"
+    fi
+    ;;
+  logs | images | inspect | stats)
     exec "${CONTAINER_CMD}" "${_action}" "$@"
     ;;
   checkup)
