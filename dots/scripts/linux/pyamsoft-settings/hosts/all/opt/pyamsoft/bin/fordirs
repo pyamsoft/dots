@@ -1,18 +1,23 @@
 #!/bin/sh
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 for adir in ./*/; do
   cd "${adir}" || {
-    printf -- 'Failed to cd into %s\n' "${adir}"
+    _elog 'Failed to cd into %s' "${adir}"
     exit 1
   }
 
   eval "$*" || {
-    printf -- 'Eval of command failed\n'
+    _elog 'Eval of command failed: "%s"' "$*"
     exit 2
   }
 
   cd .. || {
-    printf -- 'Failed to cd out of %s\n' "${adir}"
+    _elog 'Failed to cd out of %s' "${adir}"
     exit 1
   }
 done

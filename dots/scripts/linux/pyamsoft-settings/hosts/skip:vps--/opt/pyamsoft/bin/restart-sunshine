@@ -1,8 +1,13 @@
 #!/bin/sh
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 _stale_unlink() {
   rm -f "$1" || {
-    printf -- '[ERROR] Failed removing dangling file: %s\n' "$1"
+    _elog '[ERROR] Failed removing dangling file: %s' "$1"
     return 1
   }
 
@@ -10,8 +15,8 @@ _stale_unlink() {
 }
 
 _remove_holdovers() {
-  printf -- '[LOG] We remove old device symlinks and logs.\n'
-  printf -- '[LOG] Sunshine sometimes has a problem cleaning these up and refuses to start...\n\n'
+  _log '[LOG] We remove old device symlinks and logs.'
+  _log '[LOG] Sunshine sometimes has a problem cleaning these up and refuses to start...\n'
 
   # Bad symlinks
   _stale_unlink "${HOME}/.config/sunshine/sunshine_keyboard" || return 1
@@ -28,11 +33,11 @@ _unlock_linux() {
   _s="$1"
 
   loginctl unlock-session "${_s}" || {
-    printf -- '[ERROR] Failed unlocking session: %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+    _elog '[ERROR] Failed unlocking session: %s (%s)' "${_s}" "${_uid}:${_username}"
     return 1
   }
 
-  printf -- '[LOG] Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+  _log '[LOG] Unlocked user session %s (%s)' "${_s}" "${_uid}:${_username}"
   unset _s
   return 0
 }
@@ -41,13 +46,13 @@ _unlock_macos() {
   _s="$1"
 
   # How do we unlock MacOS? Do we need to?
-  if command -v unlocker >/dev/null 2>&1; then
+  if _has_function unlocker; then
     unlocker unlock || {
-      printf -- '[ERROR] Failed unlocking session: %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+      _elog '[ERROR] Failed unlocking session: %s (%s)' "${_s}" "${_uid}:${_username}"
       return 1
     }
 
-    printf -- '[LOG] Unlocked user session %s (%s)\n' "${_s}" "$(id -u):$(id -un)"
+    _log '[LOG] Unlocked user session %s (%s)' "${_s}" "${_uid}:${_username}"
   fi
 
   unset _s
@@ -57,7 +62,7 @@ _unlock_macos() {
 _unlock_session() {
   _session_to_unlock="$1"
 
-  if [ "$(uname)" = "Darwin" ]; then
+  if _is_macos; then
     _unlock_macos "${_session_to_unlock}" || return 1
   else
     _unlock_linux "${_session_to_unlock}" || return 1
@@ -84,10 +89,10 @@ _list_sessions_macos() {
 }
 
 _unlock_sessions() {
-  printf -- '[LOG] We unlock all user-sessions\n'
-  printf -- '[LOG] Sunshine will not be able to claim the CPU and GPU for rendering otherwise.\n\n'
+  _log '[LOG] We unlock all user-sessions'
+  _log '[LOG] Sunshine will not be able to claim the CPU and GPU for rendering otherwise.\n'
 
-  if [ "$(uname)" = "Darwin" ]; then
+  if _is_macos; then
     _user_sessions="$(_list_sessions_macos)"
   else
     _user_sessions="$(_list_sessions_linux)"
@@ -125,7 +130,7 @@ _start_sunshine_macos() {
 }
 
 _stop_sunshine() {
-  if [ "$(uname)" = "Darwin" ]; then
+  if _is_macos; then
     _stop_sunshine_macos || return 1
   else
     _stop_sunshine_linux || return 1
@@ -135,7 +140,7 @@ _stop_sunshine() {
 }
 
 _start_sunshine() {
-  if [ "$(uname)" = "Darwin" ]; then
+  if _is_macos; then
     _start_sunshine_macos || return 1
   else
     _start_sunshine_linux || return 1
@@ -145,7 +150,7 @@ _start_sunshine() {
 }
 
 _restart() {
-  printf -- '[LOG] Stopping old sunshine service...\n\n'
+  _log '[LOG] Stopping old sunshine service...\n'
 
   _stop_sunshine || return 1
 
@@ -155,7 +160,7 @@ _restart() {
   # Unlock all sessions (if a session is locked, it causes sunshine to be unable to claim the display and GPU/CPU)
   _unlock_sessions || return 1
 
-  printf -- '[LOG] Starting new sunshine service...\n\n'
+  _log '[LOG] Starting new sunshine service...\n'
 
   _start_sunshine || return 1
 
@@ -163,22 +168,22 @@ _restart() {
 }
 
 _restart_sunshine() {
-  printf -- '[LOG] Restarting Sunshine gamestream...\n'
+  _log '[LOG] Restarting Sunshine gamestream...'
 
   # If we can, we should poke the monitor first just to be safe
-  if command -v poke-monitor >/dev/null 2>&1; then
-    printf -- '[LOG] Poking the monitor first before doing Sunshine things, just in case...\n'
+  if _has_function poke-monitor >/dev/null 2>&1; then
+    _log -- '[LOG] Poking the monitor first before doing Sunshine things, just in case...'
 
     # Just give it our best shot.
     poke-monitor auto || {
-      printf -- '[WARN] Poking the monitor failed, continue with Sunshine things anyway.\n'
+      _elog '[WARN] Poking the monitor failed, continue with Sunshine things anyway.'
     }
   fi
 
   if _restart; then
-    printf -- '[LOG] Restarted sunshine service!\n'
+    _log '[LOG] Restarted sunshine service!'
   else
-    printf -- '[ERROR] Failed to restart sunshine\n'
+    _log '[ERROR] Failed to restart sunshine'
     return 1
   fi
 
@@ -186,12 +191,12 @@ _restart_sunshine() {
 }
 
 main() {
-  if command -v sunshine >/dev/null 2>&1; then
+  if _has_function sunshine >/dev/null 2>&1; then
     _restart_sunshine || return 1
     return 0
   else
     # On MacOS sometimes we are not on the PATH
-    if [ "$(uname)" = "Darwin" ]; then
+    if _is_macos; then
       # Use the beta branch for now on MacOS
       if [ -e /opt/homebrew/bin/sunshine-beta ]; then
         _restart_sunshine || return 1
@@ -199,7 +204,7 @@ main() {
       fi
     fi
 
-    printf -- '[ERROR] sunshine is not installed.\n'
+    _log '[ERROR] sunshine is not installed.'
     exit 1
   fi
 }

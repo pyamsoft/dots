@@ -12,6 +12,11 @@
 #
 # You can still pass options into the --shell, it will replace the flatpak run entrypoint with /bin/sh
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 ##
 # Attempt to source the existing env var if it exists
 __source_existing_env() {
@@ -61,7 +66,7 @@ __compile_env() {
   __compile_env_default="$4"
 
   if [ -z "${__compile_env_var}" ]; then
-    printf -- 'Missing [%s] env var\n' "${__compile_env_flatpak}" 1>&2
+    _elog 'Missing [%s] env var' "${__compile_env_flatpak}"
 
     unset __compile_env_flatpak
     unset __compile_env_var
@@ -71,7 +76,7 @@ __compile_env() {
   fi
 
   if [ -z "${__compile_env_arg}" ]; then
-    printf -- 'Missing [%s] "%s" env argument\n' "${__compile_env_flatpak}" "${__compile_env_var}" 1>&2
+    _elog -- 'Missing [%s] "%s" env argument' "${__compile_env_flatpak}" "${__compile_env_var}"
 
     unset __compile_env_flatpak
     unset __compile_env_var
@@ -104,8 +109,8 @@ __compile_env() {
 ##
 # Main
 main() {
-  if ! command -v flatpak >/dev/null; then
-    printf -- 'You must install "flatpak"\n'
+  if ! _has_function flatpak >/dev/null; then
+    _elog 'You must install "flatpak"'
     return 1
   fi
 
@@ -113,7 +118,7 @@ main() {
   shift
 
   if [ -z "${__flatpak}" ]; then
-    printf -- 'Missing target flatpak\n'
+    _elog 'Missing target flatpak'
 
     unset __run_shell
     unset __flatpak
@@ -149,9 +154,9 @@ main() {
   _pass_through_proxy_env
 
   if [ -z "${__fp_env}" ]; then
-    printf -- 'Running flatpak [%s]\n' "${__flatpak}"
+    _log 'Running flatpak [%s]' "${__flatpak}"
   else
-    printf -- 'Running flatpak [%s] with "%s"\n' "${__flatpak}" "${__fp_env}"
+    _log 'Running flatpak [%s] with "%s"' "${__flatpak}" "${__fp_env}"
   fi
 
   # shellcheck disable=SC2086

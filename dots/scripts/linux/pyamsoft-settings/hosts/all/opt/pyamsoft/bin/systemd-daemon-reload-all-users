@@ -1,13 +1,18 @@
 #!/bin/sh
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 # Reload systemctl for system
 # And our current user
 # And all other container users
 
 _system() {
-  printf -- 'Reload systemd at SYSTEM level...\n'
+  _log 'Reload systemd at SYSTEM level...'
   sudo systemctl daemon-reload || {
-    printf -- 'Failed to reload at SYSTEM level\n'
+    _elog 'Failed to reload at SYSTEM level'
     return 1
   }
 
@@ -15,9 +20,9 @@ _system() {
 }
 
 _user() {
-  printf -- 'Reload systemd at USER level...\n'
+  _log 'Reload systemd at USER level...'
   systemctl --user daemon-reload || {
-    printf -- 'Failed to reload at USER level\n'
+    _elog 'Failed to reload at USER level'
     return 1
   }
 
@@ -25,9 +30,10 @@ _user() {
 }
 
 _containers() {
-  printf -- 'Reload systemd at CONTAINER level...\n'
+  _log 'Reload systemd at CONTAINER level...'
+
   container-all reload || {
-    printf -- 'Failed to reload at CONTAINER level\n'
+    _elog 'Failed to reload at CONTAINER level'
     return 1
   }
 
@@ -35,11 +41,11 @@ _containers() {
 }
 
 main() {
-  if command -v systemctl >/dev/null; then
+  if _has_function systemctl >/dev/null; then
     _system || return 1
     _user || return 1
 
-    if command -v container-all >/dev/null; then
+    if _has_function container-all >/dev/null; then
       _containers || return 1
     fi
   fi

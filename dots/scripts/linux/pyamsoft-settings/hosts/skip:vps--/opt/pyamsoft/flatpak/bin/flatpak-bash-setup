@@ -4,25 +4,30 @@
 #
 # Makes it easier to run a nice bash shell in a flatpak container
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 _require_bash_environment() {
   if [ ! -f "${HOME}/.bashrc" ]; then
-    printf -- 'Need a .bashrc at %s\n' "${HOME}/.bashrc"
+    _elog 'Need a .bashrc at %s' "${HOME}/.bashrc"
     return 1
   fi
 
   if [ ! -f "${HOME}/.bash_profile" ]; then
-    printf -- 'Need a .bash_profile at %s\n' "${HOME}/.bash_profile"
+    _elog 'Need a .bash_profile at %s' "${HOME}/.bash_profile"
     return 1
   fi
 
   if [ -n "${XDG_CONFIG_HOME}" ]; then
     if [ ! -d "${XDG_CONFIG_HOME}/bash" ]; then
-      printf -- 'Need bash configuration at %s\n' "${XDG_CONFIG_HOME}/bash"
+      _elog 'Need bash configuration at %s' "${XDG_CONFIG_HOME}/bash"
       return 1
     fi
   else
     if [ ! -d "${HOME}/.config/bash" ]; then
-      printf -- 'Need bash configuration at %s\n' "${HOME}/.config/bash"
+      _elog 'Need bash configuration at %s' "${HOME}/.config/bash"
       return 1
     fi
   fi
@@ -34,7 +39,7 @@ _install_bash_environment() {
   _install_flatpak_id="$1"
 
   mkdir -p "${_install_flatpak_id}/config/" || {
-    printf -- 'Failed to setup configuration directory %s\n' "${_install_flatpak_id}/config/"
+    _elog 'Failed to setup configuration directory %s' "${_install_flatpak_id}/config/"
 
     unset _install_flatpak_id
     return 1
@@ -42,7 +47,7 @@ _install_bash_environment() {
 
   if [ -n "${XDG_CONFIG_HOME}" ]; then
     cp -r "${XDG_CONFIG_HOME}/bash" "${_install_flatpak_id}/config/" || {
-      printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
+      _elog 'Failed to install bash configuration to %s' "${_install_flatpak_id}/config/"
 
       unset _install_flatpak_id
       return 1
@@ -51,7 +56,7 @@ _install_bash_environment() {
     # Optional starship install
     if [ -e "${XDG_CONFIG_HOME}/starship.toml" ]; then
       cp "${XDG_CONFIG_HOME}/starship.toml" "${_install_flatpak_id}/config/" || {
-        printf -- 'Failed to install starship configuration to %s\n' "${_install_flatpak_id}/config/"
+        _elog 'Failed to install starship configuration to %s' "${_install_flatpak_id}/config/"
 
         unset _install_flatpak_id
         return 1
@@ -59,7 +64,7 @@ _install_bash_environment() {
     fi
   else
     cp -r "${HOME}/.config/bash" "${_install_flatpak_id}/config/" || {
-      printf -- 'Failed to install bash configuration to %s\n' "${_install_flatpak_id}/config/"
+      _elog 'Failed to install bash configuration to %s' "${_install_flatpak_id}/config/"
 
       unset _install_flatpak_id
       return 1
@@ -68,7 +73,7 @@ _install_bash_environment() {
     # Optional starship install
     if [ -e "${HOME}/.config/starship.toml" ]; then
       cp "${HOME}/.config/starship.toml" "${_install_flatpak_id}/config/" || {
-        printf -- 'Failed to install starship configuration to %s\n' "${_install_flatpak_id}/config/"
+        _elog 'Failed to install starship configuration to %s' "${_install_flatpak_id}/config/"
 
         unset _install_flatpak_id
         return 1
@@ -77,14 +82,14 @@ _install_bash_environment() {
   fi
 
   cp -r "${HOME}/.bashrc" "${_install_flatpak_id}/.bashrc" || {
-    printf -- 'Failed to install .bashrc to %s\n' "${_install_flatpak_id}/.bashrc"
+    _elog 'Failed to install .bashrc to %s' "${_install_flatpak_id}/.bashrc"
 
     unset _install_flatpak_id
     return 1
   }
 
   cp -r "${HOME}/.bash_profile" "${_install_flatpak_id}/.bash_profile" || {
-    printf -- 'Failed to install .bash_profile to %s\n' "${_install_flatpak_id}/.bash_profile"
+    _elog 'Failed to install .bash_profile to %s' "${_install_flatpak_id}/.bash_profile"
 
     unset _install_flatpak_id
     return 1
@@ -98,14 +103,14 @@ _install_starship() {
   _starship_flatpak_id="$1"
 
   mkdir -p "${_starship_flatpak_id}/.local/bin/" || {
-    printf -- 'Failed to create bin directory %s\n' "${_starship_flatpak_id}/.local/bin"
+    _elog 'Failed to create bin directory %s' "${_starship_flatpak_id}/.local/bin"
 
     unset _starship_flatpak_id
     return 1
   }
 
   cp /usr/bin/starship "${_starship_flatpak_id}/.local/bin/starship" || {
-    printf -- 'Failed to install starship to %s\n' "${_starship_flatpak_id}/.local/bin/starship"
+    _elog 'Failed to install starship to %s' "${_starship_flatpak_id}/.local/bin/starship"
 
     unset _starship_flatpak_id
     return 1
@@ -122,7 +127,7 @@ main() {
   _flatpak_id="$1"
 
   if [ -z "${_flatpak_id}" ]; then
-    printf -- 'Must pass flatpak ID\n'
+    _elog 'Must pass flatpak ID'
 
     unset _flatpak_id
     return 1
@@ -130,7 +135,7 @@ main() {
 
   _flatpak_directory="${HOME}/.var/app/${_flatpak_id}"
   if [ ! -d "${_flatpak_directory}" ]; then
-    printf -- 'flatpak app directory must exist at %s\n' "${_flatpak_directory}"
+    _elog 'flatpak app directory must exist at %s' "${_flatpak_directory}"
 
     unset _flatpak_directory
     unset _flatpak_id

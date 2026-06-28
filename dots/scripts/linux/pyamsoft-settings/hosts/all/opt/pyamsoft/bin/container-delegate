@@ -25,7 +25,7 @@ _usage() {
   _log '%s' "$(
     cat <<EOF
 
-($(id -un)) ${NAME} <action>
+(${_username}) ${NAME} <action>
 
 <actions>
 
@@ -67,7 +67,7 @@ EOF
 _prep_container() {
   # Since the containers user lingers, we assume the XDG_RUNTIME_DIR exists, but it's not set in this sudo shell
   # So we manually set it and then call systemctl
-  XDG_RUNTIME_DIR="/run/user/$(id -u)"
+  XDG_RUNTIME_DIR="/run/user/${_uid}"
   export XDG_RUNTIME_DIR
 
   return 0

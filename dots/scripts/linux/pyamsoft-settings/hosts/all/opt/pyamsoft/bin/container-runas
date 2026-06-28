@@ -3,10 +3,15 @@
 # Execute a shell as a containers-* user, even if the user's shell is
 # set as /bin/nologin
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 _runas() {
   _who="$1"
 
-  if command -v run0 >/dev/null 2>&1; then
+  if _has_function run0 >/dev/null 2>&1; then
     # Use run0 if we have it
     # Run a bash login shell directly
     # Some users may have the shell set to /bin/nologin, explicitly use bash
@@ -28,7 +33,7 @@ main() {
   fi
 
   if ! id -un "${_user}" >/dev/null 2>&1; then
-    printf -- 'Target user %s does not exist\n' "${_user}"
+    _elog 'Target user %s does not exist' "${_user}"
     return 1
   fi
 

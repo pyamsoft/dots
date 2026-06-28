@@ -1,6 +1,8 @@
 #!/bin/sh
 
-NAME="${NAME:-}"
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
 IMAGE="${IMAGE:-}"
 TAG="${TAG:-}"
 
@@ -42,26 +44,6 @@ CONTAINER_CMD=""
 
 ## Defaults
 
-## Private variables
-__os_name="$(uname)"
-__os_arch="$(uname -m)"
-__uid="$(id -u)"
-
-## Check host user is root
-_is_root() {
-  [ "${__uid}" -eq 0 ]
-}
-
-## Check host is running Linux
-_is_linux() {
-  [ "${__os_name}" = "Linux" ]
-}
-
-## Check host is MacOS
-_is_macos() {
-  [ "${__os_name}" = "Darwin" ]
-}
-
 ## Check if container is "podman"
 _is_podman() {
   [ "${CONTAINER_CMD}" = "podman" ]
@@ -75,23 +57,6 @@ _is_docker() {
 ## Check if container is "container" (on MacOS)
 _is_macos_container() {
   _is_macos && [ "${CONTAINER_CMD}" = "container" ]
-}
-
-## Check machine architecture is x86_64
-_is_arch_x86() {
-  [ "${__os_arch}" = "x86_64" ]
-}
-
-## Check machine architecture is AARCH64
-_is_arch_arm() {
-  case "${__os_arch}" in
-  aarch64 | arm64)
-    return 0
-    ;;
-  *)
-    return 1
-    ;;
-  esac
 }
 
 ## Check if CMD is atleast version "$1"
@@ -428,31 +393,6 @@ _require_nonroot() {
 }
 
 ##
-# Logs a message with newline, formatting, and a name tag
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-##
-# Log a message to stderr
-_elog() {
-  _log "$@" 1>&2 || return 1
-  return 0
-}
-
-##
-# Ensure a function or command is defined
-_has_function() {
-  command -v "$1" >/dev/null 2>&1
-}
-
-##
 # Create a new isolated bridge network
 _network_isolate() {
   _network_name="${1:-${NAME}}"
@@ -725,8 +665,8 @@ _prep_rc() {
       _owner_uid="$(stat -c %u "${_runconf}")"
       _perm="$(stat -c %a "${_runconf}")"
     fi
-    if [ "${_owner_uid}" != "${__uid}" ]; then
-      _elog '%s must be owned by current user %s != %s' "${_runconf}" "${_owner_uid}" "${__uid}"
+    if [ "${_owner_uid}" != "${_uid}" ]; then
+      _elog '%s must be owned by current user %s != %s' "${_runconf}" "${_owner_uid}" "${_uid}"
       unset _owner_uid
       return 1
     fi

@@ -53,7 +53,7 @@ _get_latest_tags() {
     unset _skip_me
   fi
 
-  { if command -v crane >/dev/null 2>&1; then
+  { if _has_function crane >/dev/null 2>&1; then
     crane ls "${_container}"
   else
     skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | tr '"' ' ' | awk '{ print $1 }'
@@ -218,7 +218,7 @@ main() {
     _container_delegate_user="$(basename "${_container_delegate_user}")"
 
     # Check the delegated command exists
-    if command -v "${_container_delegate_user}" >/dev/null 2>&1; then
+    if _has_function "${_container_delegate_user}"; then
       _check_containers "${_container_delegate_user}" || {
         _log 'Failed checking containers for delegate-user %s' "${_container_delegate_user}"
         return 1

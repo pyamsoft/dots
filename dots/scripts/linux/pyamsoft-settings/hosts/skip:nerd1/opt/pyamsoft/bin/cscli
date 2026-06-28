@@ -1,18 +1,12 @@
 #!/bin/sh
 
-# Use podman, don't use docker
-if command -v podman >/dev/null; then
-  _cmd="podman"
-elif command -v docker >/dev/null; then
-  _cmd="docker"
-else
-  printf -- 'Requires either "podman" or "docker" ("podman" preferred)\n'
-  exit 1
-fi
-readonly _cmd
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/container-launch"
 
-if [ "$(id -u)" -eq 0 ]; then
-  exec "${_cmd}" exec -i -t crowdsec cscli "$@"
+NAME="$(basename "$0")"
+
+if [ "${_uid}" -eq 0 ]; then
+  exec "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
 else
-  exec sudo "${_cmd}" exec -i -t crowdsec cscli "$@"
+  exec sudo "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
 fi

@@ -1,6 +1,9 @@
 #!/bin/sh
 
-set -u
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
 
 # Argument parsing
 _all=0
@@ -11,8 +14,7 @@ readonly _NO_PROXY
 
 _help() {
   # We log to stderr to avoid polluting a shell in eval mode
-  printf -- '%s\n' "$(
-    cat <<EOF
+  cat 1>&2 <<EOF
 apply-http-proxy
 
 COMMAND
@@ -38,7 +40,6 @@ $ eval "\$(apply-http-proxy --all socks5h://192.168.49.1:8228)"
 $ apply-http-proxy systemd-apply
 $ apply-http-proxy systemd-clear
 EOF
-  )" 1>&2
 }
 
 _argparse() {
@@ -63,20 +64,20 @@ _clear_proxy() {
   printf -- 'export no_proxy=\nunset no_proxy\nexport NO_PROXY=\nunset NO_PROXY\n'
   printf -- 'export all_proxy=\nunset all_proxy\nexport ALL_PROXY=\nunset ALL_PROXY\n'
 
-  printf -- 'Proxy cleared\n' 1>&2
+  _elog 'Proxy cleared'
   return 0
 }
 
 _systemd_apply() {
   if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'Export proxy definition to systemd environment\n'
+    _elog 'Export proxy definition to systemd environment'
     if [ "${_all}" -eq 1 ]; then
       exec systemctl import-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
     else
       exec systemctl import-environment http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
     fi
   else
-    printf -- 'Export proxy definition to systemd environment\n'
+    _elog 'Export proxy definition to systemd environment'
     if [ "${_all}" -eq 1 ]; then
       exec sudo systemctl import-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
     else
@@ -89,10 +90,10 @@ _systemd_apply() {
 
 _systemd_clear() {
   if [ "$(id -u)" -eq 0 ]; then
-    printf -- 'Remove proxy definition from systemd environment\n'
+    _elog 'Remove proxy definition from systemd environment'
     exec systemctl unset-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
   else
-    printf -- 'Remove proxy definition from systemd environment\n'
+    _elog 'Remove proxy definition from systemd environment'
     exec sudo systemctl unset-environment http_proxy https_proxy no_proxy all_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY ALL_PROXY
   fi
 
@@ -127,7 +128,7 @@ _parse_proxy() {
   fi
 
   # We log to stderr to avoid polluting a shell in eval mode
-  printf -- 'Proxy set as %s\n' "${_proxy}" 1>&2
+  _elog 'Proxy set as %s' "${_proxy}"
 
   return 0
 }

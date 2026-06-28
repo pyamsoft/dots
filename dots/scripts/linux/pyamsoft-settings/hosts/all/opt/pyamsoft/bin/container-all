@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Source our common library
-. "${PYAMSOFT_PATH}/lib/container-launch"
+. "${PYAMSOFT_PATH}/lib/common"
 
 _prune() {
-  if command -v "$1" >/dev/null 2>&1; then
+  if _has_function "$1" >/dev/null 2>&1; then
     "$1" prune || {
       _elog 'Failed to prune for delegate: %s' "$1"
       return 1
@@ -15,7 +15,7 @@ _prune() {
 }
 
 _pull() {
-  if command -v "$1" >/dev/null 2>&1; then
+  if _has_function "$1" >/dev/null 2>&1; then
     "$1" pull || {
       _elog 'Failed to pull for delegate: %s' "$1"
       return 1
@@ -26,7 +26,7 @@ _pull() {
 }
 
 _reload() {
-  if command -v "$1" >/dev/null 2>&1; then
+  if _has_function "$1" >/dev/null 2>&1; then
     "$1" reload || {
       _elog 'Failed to reload for delegate: %s' "$1"
       return 1

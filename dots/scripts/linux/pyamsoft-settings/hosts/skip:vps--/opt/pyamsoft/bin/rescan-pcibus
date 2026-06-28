@@ -12,27 +12,10 @@
 # Or the more aggressive option
 #options pci=realloc=on,assign-busses
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
 NAME="$(basename "$0")"
-readonly NAME
-
-##
-# Logs a message with newline, formatting, and a name tag
-_log() {
-  _msg="$1"
-  shift
-
-  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
-
-  unset _msg
-  return 0
-}
-
-##
-# Log a message to stderr
-_elog() {
-  _log "$@" 1>&2 || return 1
-  return 0
-}
 
 _force_rescan() {
   _bus="$1"
@@ -64,7 +47,7 @@ _attempt_rescans() {
 }
 
 main() {
-  if [ "$(id -u)" -ne 0 ]; then
+  if ! _is_root; then
     _elog 'You must be root.\n'
     return 1
   fi

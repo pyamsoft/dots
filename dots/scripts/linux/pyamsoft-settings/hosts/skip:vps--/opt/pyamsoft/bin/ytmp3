@@ -2,8 +2,13 @@
 
 # Extracts youtube-dl contents into MP3 using best quality and ignoring errors
 
+# Source our common library
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
 dlp=""
-if command -v yt-dlp >/dev/null; then
+if _has_function yt-dlp >/dev/null; then
   dlp="yt-dlp"
 else
   dlp="youtube-dl"

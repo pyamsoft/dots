@@ -17,7 +17,7 @@ main() {
   _instance="$2"
 
   if [ -z "${_cmd}" ]; then
-    _elog '[%s] %s' "${PROG}" "${VERSION}"
+    _elog '[%s] %s' "${NAME}" "${VERSION}"
     _elog 'Missing command, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]"'
 
@@ -27,7 +27,7 @@ main() {
   fi
 
   if [ -z "${_instance}" ]; then
-    _elog '[%s] %s' "${PROG}" "${VERSION}"
+    _elog '[%s] %s' "${NAME}" "${VERSION}"
     _elog 'Missing instance, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]"'
 
@@ -40,7 +40,7 @@ main() {
   *:*)
     ;;
   *)
-    _elog '[%s] %s' "${PROG}" "${VERSION}"
+    _elog '[%s] %s' "${NAME}" "${VERSION}"
     _elog 'Invalid instance format, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]"'
     unset _cmd
@@ -70,7 +70,7 @@ main() {
   unset _rest
 
   if [ -z "${_user}" ] || [ -z "${_path}" ]; then
-    _elog '[%s] %s' "${PROG}" "${VERSION}"
+    _elog '[%s] %s' "${NAME}" "${VERSION}"
     _elog 'Invalid instance format, not forwarding to tmpfs-mounter %s' "${_instance}"
     _elog 'Expected format: "<user>:<escaped-path>[:escaped-options]"'
     unset _user
@@ -90,10 +90,10 @@ main() {
     # Fix the options
     _unescaped_options="$(/bin/systemd-escape --unescape -- "${_options}")"
     unset _options
-    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}" "${_unescaped_options}"
+    exec "${PYAMSOFT_PATH}/sbin/tmpfs-mounter" "${_cmd}" "${_unescaped_path}" "${_user}" "${_unescaped_options}"
   else
     unset _options
-    exec /opt/pyamsoft/sbin/tmpfs-mounter "${_cmd}" "${_unescaped_path}" "${_user}"
+    exec "${PYAMSOFT_PATH}/sbin/tmpfs-mounter" "${_cmd}" "${_unescaped_path}" "${_user}"
   fi
 }
 
