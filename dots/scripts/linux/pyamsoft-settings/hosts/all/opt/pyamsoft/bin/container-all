@@ -3,6 +3,8 @@
 # Source our common library
 . "${PYAMSOFT_PATH}/lib/common"
 
+NAME="$(basename "$0")"
+
 _prune() {
   if _has_function "$1" >/dev/null 2>&1; then
     "$1" prune || {
