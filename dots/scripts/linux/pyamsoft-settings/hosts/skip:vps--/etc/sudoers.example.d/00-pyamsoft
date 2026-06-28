@@ -27,6 +27,9 @@ Defaults secure_path="/opt/pyamsoft/sbin:/opt/pyamsoft/bin:/usr/local/sbin:/usr/
 # Keep defined proxies
 Defaults env_keep += "*_proxy *_PROXY"
 
+# Keep PYAMSOFT
+Defaults env_keep += "PYAMSOFT_*"
+
 # Preserve editor environment variables for visudo
 Defaults!/usr/bin/visudo env_keep += "SUDO_EDITOR EDITOR"
 
