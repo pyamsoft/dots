@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Source our common library
-. "/opt/pyamsoft/lib/container-launch"
+. "${PYAMSOFT_PATH}/lib/container-launch"
 
 NAME="openwakeword"
 IMAGE="docker.io/homeassistant/amd64-addon-openwakeword"
