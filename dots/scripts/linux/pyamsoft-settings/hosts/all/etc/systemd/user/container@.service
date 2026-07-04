@@ -9,6 +9,9 @@ Environment=PYAM_CONTAINER=/opt/pyamsoft/bin/%i
 
 ## Generally you should NOT need to change these
 
+# Log in journal as this name instead of "sh" or "bash"
+SyslogIdentifier=container@%i
+
 # We are in a pyamsoft service
 Environment=PYAM_SYSTEMD=1
 

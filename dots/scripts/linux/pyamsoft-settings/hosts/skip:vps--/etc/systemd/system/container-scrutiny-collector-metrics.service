@@ -5,6 +5,9 @@ Description=Container: Scrutiny Collector Metrics Runner
 After=network.target syslog.target local-fs.target docker.service podman.service container-scrutiny.service container@scrutiny.service scrutiny.service
 
 [Service]
+# Log in journal as this name instead of "sh" or "bash"
+SyslogIdentifier=container-scrutiny-collector-metrics
+
 # We are in a pyamsoft service
 Environment=PYAM_SYSTEMD=1
 

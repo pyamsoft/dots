@@ -4,6 +4,9 @@ Description=Update the smartmontools drive database
 After=network.target syslog.target local-fs.target
 
 [Service]
+# Log in journal as this name instead of "sh" or "bash"
+SyslogIdentifier=update-smart-drivedb
+
 # We are in a pyamsoft service
 Environment=PYAM_SYSTEMD=1
 

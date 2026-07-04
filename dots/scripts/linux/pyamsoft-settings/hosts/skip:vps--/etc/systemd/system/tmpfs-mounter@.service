@@ -13,6 +13,9 @@ Before=umount.target
 After=-.mount systemd-remount-fs.service
 
 [Service]
+# Log in journal as this name instead of "sh" or "bash"
+SyslogIdentifier=systemd-tmpfs-mounter@%i
+
 # Set the PYAMSOFT_PATH
 Environment=PYAMSOFT_PATH=/opt/pyamsoft
 
