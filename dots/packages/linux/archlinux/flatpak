@@ -13,7 +13,7 @@ org.DolphinEmu.dolphin-emu
 org.ferdium.Ferdium
 org.gimp.GIMP
 org.gnome.Firmware
-org.kde.skanpage
+org.gnome.SimpleScan
 org.keepassxc.KeePassXC
 org.libreoffice.LibreOffice
 org.localsend.localsend_app
@@ -21,3 +21,4 @@ org.mozilla.firefox
 org.musicbrainz.Picard
 org.remmina.Remmina
 org.videolan.VLC
+page.tesk.Refine
