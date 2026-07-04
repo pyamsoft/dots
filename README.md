@@ -97,6 +97,9 @@ The current device used requires the 2MB version
 - Gamescope may need cap_sys_nice `sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/sunshine`
   - Can be automatically handled by a pacman hook
 - See Arch wiki for enabling Wayland for Android Studio / Webstorm
+- When running on GNOME, iBus should either be tweaked to run with `--type wayland` OR
+  disabled entirely via `systemctl --user mask org.freedesktop.IBus.session.GNOME.service` or else it interrupts
+  inputs to rofi.
 
 ### Docker
 
