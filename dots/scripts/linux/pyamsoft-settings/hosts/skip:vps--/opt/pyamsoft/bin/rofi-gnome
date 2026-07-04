@@ -8,6 +8,8 @@
 # To avoid breaking behavior since I like rofi, we use this alias script to force rofi to run
 # using X11 backend, instead of Wayland
 #
+# We also must run with `normal-window` to receive keyboard input
+#
 # This script can be dropped-in to places like GNOME keyboard shortcuts
 
 _rofi_wayland_display="${WAYLAND_DISPLAY}"
@@ -39,7 +41,7 @@ _is_hidpi() {
 
 # If we are using a HiDPI display, set the DPI flag
 if _is_hidpi; then
-  WAYLAND_DISPLAY='' exec rofi -dpi 168 -run-command "env WAYLAND_DISPLAY=${_rofi_wayland_display} {cmd}" "$@"
+  WAYLAND_DISPLAY='' exec rofi -dpi 168 -normal-window -run-command "env WAYLAND_DISPLAY=${_rofi_wayland_display} {cmd}" "$@"
 else
-  WAYLAND_DISPLAY='' exec rofi -run-command "env WAYLAND_DISPLAY=${_rofi_wayland_display} {cmd}" "$@"
+  WAYLAND_DISPLAY='' exec rofi -normal-window -run-command "env WAYLAND_DISPLAY=${_rofi_wayland_display} {cmd}" "$@"
 fi
