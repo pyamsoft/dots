@@ -7,7 +7,16 @@ readonly pak="org.ferdium.Ferdium"
 #
 # --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
 #
+# Fine on GNOME
 # Crashes on KDE
-exec flatpak run -- "${pak}" \
-  "$@" || exit 1
+
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  exec flatpak run -- "${pak}" \
+    --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+    "$@" || exit 1
+else
+  exec flatpak run -- "${pak}" \
+    "$@" || exit 1
+fi
+
 exit 0
