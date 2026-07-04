@@ -133,10 +133,12 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
+readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+
 # GNOME supports wayland, but it crashes on KDE
 if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
   # shellcheck disable=SC2086
-  flatpak-env "${_pak}" \
+  "${FP_ENV}" "${_pak}" \
     --with-env PATH "${path}:" "${def_path}" \
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/android/app" \
@@ -150,7 +152,7 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
     "$@"
 else
   # shellcheck disable=SC2086
-  flatpak-env "${_pak}" \
+  "${FP_ENV}" "${_pak}" \
     --with-env PATH "${path}:" "${def_path}" \
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/android/app" \

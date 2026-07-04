@@ -126,10 +126,12 @@ readonly path
 
 _warn_outdated
 
+readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+
 # GNOME supports wayland, but it crashes on KDE
 if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
   # shellcheck disable=SC2086
-  exec flatpak-env "${_pak}" \
+  exec "${FP_ENV}" "${_pak}" \
     --with-env PATH "${path}:" "${def_path}" \
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/js" \
@@ -141,7 +143,7 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
     "$@" || exit 1
 else
   # shellcheck disable=SC2086
-  exec flatpak-env "${_pak}" \
+  exec "${FP_ENV}" "${_pak}" \
     --with-env PATH "${path}:" "${def_path}" \
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/js" \

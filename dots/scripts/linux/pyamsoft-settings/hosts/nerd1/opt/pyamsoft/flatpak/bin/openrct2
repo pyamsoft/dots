@@ -21,8 +21,10 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly cmd
 
+readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+
 # shellcheck disable=SC2086
-exec flatpak-env ${cmd} "${pak}" \
+exec "${FP_ENV}" ${cmd} "${pak}" \
   --with-env PATH "${path}:" "${def_path}" \
   --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
   --command="${HOME}/.local/bin/gametime-openrct2" \

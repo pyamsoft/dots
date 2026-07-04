@@ -32,12 +32,31 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-# shellcheck disable=SC2086
-exec flatpak-env "${pak}" \
-  --with-env PATH "${path}:" "${def_path}" \
-  --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  ${_args} \
-  -- \
-  --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
-  "$@" || exit 1
+readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+
+# Run with Wayland
+#
+# --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+#
+# Fine on GNOME
+# Crashes on KDE
+
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  # shellcheck disable=SC2086
+  exec "${FP_ENV}" "${pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+    ${_args} \
+    -- \
+    --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+    "$@" || exit 1
+else
+  # shellcheck disable=SC2086
+  exec "${FP_ENV}" "${pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+    ${_args} \
+    -- \
+    "$@" || exit 1
+fi
 exit 0
