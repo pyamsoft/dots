@@ -291,6 +291,9 @@ main() {
         */bin | */sbin)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
           ;;
+        */flatpak/lib)
+          _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+          ;;
         *)
           _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "644" || return 1
           ;;
