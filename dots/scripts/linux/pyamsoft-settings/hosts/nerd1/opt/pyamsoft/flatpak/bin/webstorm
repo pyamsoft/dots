@@ -137,6 +137,7 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
     --filesystem="${dev_root}/project/pyamsoft/js" \
     --filesystem="${dev_root}/project/pyamsoft/shell" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    --socket=wayland \
     ${_args} \
     -- \
     -Dawt.toolkit.name=WLToolkit \

@@ -46,9 +46,11 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
   exec "${FP_ENV}" "${pak}" \
     --with-env PATH "${path}:" "${def_path}" \
     --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+    --socket=wayland \
     ${_args} \
     -- \
-    --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+    --enable-features=UseOzonePlatform,WaylandWindowDecorations \
+    --ozone-platform-hint=auto \
     "$@" || exit 1
 else
   # shellcheck disable=SC2086
