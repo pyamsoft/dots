@@ -133,17 +133,34 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-# shellcheck disable=SC2086
-flatpak-env "${_pak}" \
-  --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="${dev_root}/project/pyamsoft/tools" \
-  --filesystem="${dev_root}/project/pyamsoft/android/app" \
-  --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
-  --filesystem="${android_root}" \
-  --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-  --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
-  ${_args} \
-  -- "$@"
+# GNOME supports wayland, but it crashes on KDE
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  # shellcheck disable=SC2086
+  flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/android/app" \
+    --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
+    --filesystem="${android_root}" \
+    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- \
+    -Dawt.toolkit.name=WLToolkit \
+    "$@"
+else
+  # shellcheck disable=SC2086
+  flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/android/app" \
+    --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
+    --filesystem="${android_root}" \
+    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- "$@"
+fi
 
 # Kill gradle-daemon after exiting
 if command -v kill-gradle >/dev/null; then

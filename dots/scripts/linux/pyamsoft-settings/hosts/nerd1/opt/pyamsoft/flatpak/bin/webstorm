@@ -126,13 +126,28 @@ readonly path
 
 _warn_outdated
 
-# shellcheck disable=SC2086
-exec flatpak-env "${_pak}" \
-  --with-env PATH "${path}:" "${def_path}" \
-  --filesystem="${dev_root}/project/pyamsoft/tools" \
-  --filesystem="${dev_root}/project/pyamsoft/js" \
-  --filesystem="${dev_root}/project/pyamsoft/shell" \
-  --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
-  ${_args} \
-  -- "$@" || exit 1
+# GNOME supports wayland, but it crashes on KDE
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  # shellcheck disable=SC2086
+  exec flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/js" \
+    --filesystem="${dev_root}/project/pyamsoft/shell" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- \
+    -Dawt.toolkit.name=WLToolkit \
+    "$@" || exit 1
+else
+  # shellcheck disable=SC2086
+  exec flatpak-env "${_pak}" \
+    --with-env PATH "${path}:" "${def_path}" \
+    --filesystem="${dev_root}/project/pyamsoft/tools" \
+    --filesystem="${dev_root}/project/pyamsoft/js" \
+    --filesystem="${dev_root}/project/pyamsoft/shell" \
+    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
+    ${_args} \
+    -- "$@" || exit 1
+fi
 exit 0
