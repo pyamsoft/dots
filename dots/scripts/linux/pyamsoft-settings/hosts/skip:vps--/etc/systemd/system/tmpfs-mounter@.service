@@ -13,6 +13,9 @@ Before=umount.target
 After=-.mount systemd-remount-fs.service
 
 [Service]
+# Set the PYAMSOFT_PATH
+Environment=PYAMSOFT_PATH=/opt/pyamsoft
+
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/opt/pyamsoft/sbin/systemd-tmpfs-mounter mount %i
