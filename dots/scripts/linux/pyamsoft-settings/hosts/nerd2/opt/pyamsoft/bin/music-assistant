@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/container-launch
+. "${PYAMSOFT_PATH}/lib/container-launch"
+
+NAME="music-assistant"
+IMAGE="ghcr.io/music-assistant/server"
+TAG="2.9.5"
+
+CONTAINER_REQUIRE_RUNCONF=0
+
+_prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
+
+  # Mount local media folders if needed
+
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_ports() {
+  _add_ports -p "127.0.0.1:8095:8095/tcp"
+
+  return 0
+}
+
+_prep_env() {
+  return 0
+}
+
+_prep_network() {
+  CONTAINER_NETWORK_HOST_ROUTE=0
+
+  # Piggyback onto the home-assistant network
+  _add_network --network "container:home-assistant"
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
