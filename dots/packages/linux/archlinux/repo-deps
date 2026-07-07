@@ -28,7 +28,6 @@ bluez-libs
 bluez-obex
 bolt
 boost-libs
-bpf
 brotli
 bubblewrap
 bzip2
@@ -270,7 +269,6 @@ jansson
 jbig2dec
 jbigkit
 jitterentropy
-jq
 js140
 json-c
 json-glib
@@ -462,7 +460,6 @@ libgudev
 libgusb
 libgweather-4
 libgxps
-libhandy
 libheif
 libhwasan
 libibus
@@ -886,7 +883,6 @@ rubberband
 rutabaga-ffi
 sane
 sbc
-scx-scheds
 sdl2-compat
 sdl2_image
 sdl3

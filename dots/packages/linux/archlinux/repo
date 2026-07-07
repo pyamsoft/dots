@@ -1,3 +1,4 @@
+adw-gtk-theme
 amd-ucode
 android-udev
 archlinux-keyring
@@ -9,7 +10,6 @@ bluez-utils
 btop
 cups-pdf
 dbus-broker
-dconf-editor
 edk2-shell
 flatpak
 fwupd
@@ -21,7 +21,6 @@ gnome-keyring
 gnome-shell
 gnome-shell-extension-appindicator
 gnome-shell-extension-caffeine
-gnome-themes-extra
 gst-libav
 gst-plugin-va
 guake
