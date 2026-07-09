@@ -1,2 +1,6 @@
 [Context]
 filesystems=!~/.icons;
+unset-environment=QT_STYLE_OVERRIDE;
+
+[Environment]
+QT_STYLE_OVERRIDE=
