@@ -1,6 +1,6 @@
 [Context]
-filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;!xdg-config/ssh;xdg-config/gtk-4.0:ro;!/media;!host;!xdg-config/kdeconnect;!~/.keepass;!xdg-config/git-ssh;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!xdg-documents;!~/devel;!host-etc;!xdg-data/flatpak/app;xdg-config/Trolltech.conf;!xdg-run/keyring;!/var/lib/flatpak;!/run/media;xdg-config/fontconfig;!/var/lib/flatpak/app;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-download;!xdg-config/sunshine;!xdg-data/flatpak;!xdg-music;!xdg-templates;!xdg-config;xdg-config/gtk-3.0:ro;!xdg-data/containers;!xdg-config/containers;!home;!xdg-run/gnupg;!xdg-data/gnupg;!xdg-run/gamescope-0.lock;!xdg-cache;!xdg-run/crun;xdg-config/xsettingsd;~/.fonts;!/tmp;!xdg-pictures;~/.themes;~/.icons;!/var/lib/flatpak/overrides;!xdg-config/gnupg;!~/.ssh;!~/.gnupg;
-unset-environment=SDL_AUDIODRIVER;SDL_VIDEODRIVER;SDL_VIDEO_DRIVER;PROMPT_COMMAND;PS1;SDL_AUDIO_DRIVER;
+filesystems=xdg-config/gtkrc-2.0:ro;!xdg-data/flatpak/overrides;!~/.wine;xdg-config/gtk-4.0:ro;!/var/lib/flatpak;!host;!~/.keepass;!xdg-config/kdeconnect;!xdg-config/gnupg;!xdg-config/environment.d;!~/.var;!xdg-run/containers;!host-os;xdg-config/kdeglobals:ro;xdg-run/pipewire-0;!xdg-config/systemd;!xdg-run/systemd;!~/games;!xdg-videos;!/mnt;!xdg-run/podman;!xdg-data;!~/devel;!xdg-documents;!host-etc;!xdg-data/flatpak/app;!xdg-config/ssh;xdg-config/Trolltech.conf;!xdg-run/keyring;!/media;!/run/media;xdg-config/fontconfig;!/var/lib/flatpak/app;!xdg-run/gamescope-0;xdg-config/gtkrc:ro;!xdg-download;!xdg-config/sunshine;!xdg-data/flatpak;!xdg-music;!xdg-templates;!xdg-config;!xdg-config/git-ssh;!xdg-data/containers;!xdg-config/containers;xdg-config/gtk-3.0:ro;!xdg-run/gnupg;!xdg-data/gnupg;!xdg-run/gamescope-0.lock;!home;!xdg-run/crun;xdg-config/xsettingsd;!xdg-cache;!/tmp;!xdg-pictures;~/.themes;~/.icons;!/var/lib/flatpak/overrides;~/.fonts;!~/.gnupg;!~/.ssh;
+unset-environment=PROMPT_COMMAND;SDL_VIDEODRIVER;SDL_AUDIODRIVER;PS1;SDL_VIDEO_DRIVER;SDL_AUDIO_DRIVER;
 persistent=.;
 sockets=!gpg-agent;!pcsc;!ssh-auth;
 devices=!all;dri;!input;!kvm;!shm;!usb;
@@ -21,8 +21,8 @@ org.freedesktop.impl.portal.PermissionStore=none
 org.freedesktop.Flatpak=none
 org.freedesktop.login1=none
 org.gnome.Shell=none
-org.gnome.Software=none
 org.freedesktop.ScreenSaver=none
+org.gnome.Software=none
 
 [System Bus Policy]
 org.gnome.SessionManager=none
@@ -39,13 +39,13 @@ org.freedesktop.impl.portal.PermissionStore=none
 org.freedesktop.Flatpak=none
 org.freedesktop.login1=none
 org.gnome.Shell=none
-org.gnome.Software=none
 org.freedesktop.ScreenSaver=none
+org.gnome.Software=none
 
 [Environment]
-SDL_AUDIODRIVER=
-SDL_VIDEODRIVER=
-SDL_VIDEO_DRIVER=
 PROMPT_COMMAND=
+SDL_VIDEODRIVER=
+SDL_AUDIODRIVER=
 PS1=
+SDL_VIDEO_DRIVER=
 SDL_AUDIO_DRIVER=
