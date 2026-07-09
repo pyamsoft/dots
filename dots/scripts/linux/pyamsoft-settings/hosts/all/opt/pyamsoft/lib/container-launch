@@ -81,13 +81,19 @@ _is_cmd_version_atleast() {
     # Our current MAJOR is less than we expect, fail
     if [ "${_has_v_major}" -lt "${_exp_v_major}" ]; then
       _vcmp_ret=1
-    elif [ "${_has_v_major}" -ge "${_exp_v_major}" ]; then
+    elif [ "${_has_v_major}" -gt "${_exp_v_major}" ]; then
+      # MAJOR is a direct PASS
+      _vcmp_ret=0
+    elif [ "${_has_v_major}" -eq "${_exp_v_major}" ]; then
       # MAJOR passes, but we need to check minor
       if [ -n "${_has_v_minor}" ] && [ -n "${_exp_v_minor}" ]; then
         if [ "${_has_v_minor}" -lt "${_exp_v_minor}" ]; then
           # MAJOR passes but MINOR is less than we expect, fail
           _vcmp_ret=1
-        elif [ "${_has_v_minor}" -ge "${_exp_v_minor}" ]; then
+        elif [ "${_has_v_minor}" -gt "${_exp_v_minor}" ]; then
+          # MINOR is a direct PASS
+          _vcmp_ret=0
+        elif [ "${_has_v_minor}" -eq "${_exp_v_minor}" ]; then
           # MAJOR, MINOR passes, but we need to check patch
           if [ -n "${_has_v_patch}" ] && [ -n "${_exp_v_patch}" ]; then
             if [ "${_has_v_patch}" -lt "${_exp_v_patch}" ]; then
