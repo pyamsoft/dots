@@ -6,7 +6,7 @@
 
 NAME="blocky"
 IMAGE="docker.io/spx01/blocky"
-TAG="v0.32.1"
+TAG="v0.33.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_NETWORK_IP6=1
