@@ -6,7 +6,7 @@
 
 NAME="yt-dlp"
 IMAGE="ghcr.io/jauderho/yt-dlp"
-TAG="2026.06.09"
+TAG="2026.07.04"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
