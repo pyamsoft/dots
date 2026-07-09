@@ -6,7 +6,7 @@
 
 NAME="immich-machine-learning"
 IMAGE="ghcr.io/immich-app/immich-machine-learning"
-TAG="v2.7.5"
+TAG="v3.0.1"
 
 CONTAINER_REQUIRE_RUNCONF=0
 

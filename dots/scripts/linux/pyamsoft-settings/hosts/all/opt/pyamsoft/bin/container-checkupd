@@ -13,8 +13,10 @@ __all_already_seen_containers=""
 
 # rendercv - The image is not a "server" so we may not always have it, but still want to keep it up to date.
 # httpie - The image is not a "server" so we may not always have it, but still want to keep it up to date.
+# yt-dlp - The image is not a "server" so we may not always have it, but still want to keep it up to date.
 readonly ADDITIONAL_CONTAINER_LOOKUP="ghcr.io/rendercv/rendercv
 docker.io/alpine/httpie
+ghcr.io/jauderho/yt-dlp
 "
 
 # immich-machine-learning - Like every PR and commit is a build, it's too large so skip it
