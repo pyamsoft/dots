@@ -802,7 +802,6 @@ python-msgpack
 python-packaging
 python-pbr
 python-pillow
-python-pkg_resources
 python-platformdirs
 python-prettytable
 python-protobuf
@@ -819,7 +818,6 @@ python-requests
 python-setuptools
 python-sgmllib3k
 python-six
-python-typing_extensions
 python-urllib3
 python-wcwidth
 python-wheel
