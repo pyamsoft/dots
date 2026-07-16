@@ -150,7 +150,38 @@ main() {
     return 1
   }
 
-  for _target_host_or_skip_host in ./*/; do
+  # Iterate host folders in order
+  _ordered_hosts=""
+
+  for _d in ./all ./skip:*/; do
+    if [ -z "${_ordered_hosts}" ]; then
+      _ordered_hosts="${_d}"
+    else
+      _ordered_hosts="${_ordered_hosts} ${_d}"
+    fi
+    unset _d
+  done
+  unset _d
+
+  for _d in ./*/; do
+    case "${_d}" in
+    ./all/)
+      continue
+      ;;
+    ./skip:*/)
+      continue
+      ;;
+    esac
+    if [ -z "${_ordered_hosts}" ]; then
+      _ordered_hosts="${_d}"
+    else
+      _ordered_hosts="${_ordered_hosts} ${_d}"
+    fi
+    unset _d
+  done
+  unset _d
+
+  for _target_host_or_skip_host in ${_ordered_hosts}; do
     _target_host_or_skip_host="${_target_host_or_skip_host#\.\/}"
     _target_host_or_skip_host="${_target_host_or_skip_host%\/}"
 
@@ -398,6 +429,8 @@ main() {
     unset _skip_host
     unset _target_host
   done
+  unset _ordered_hosts
+
   unset _specific_tag
   unset _target_host_or_skip_host
   unset _skip_host
