@@ -59,14 +59,6 @@ options lockdown=confidentiality
 # https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#Disable_UEFI_variable_access
 # options noefi
 
-# Possibly avoids the WiFi card constantly disconnect/reconnect cycling
-# https://www.reddit.com/r/linux_gaming/comments/1506fr2/comment/js24tct
-#options pcie_aspm.policy=performance pcie_port_pm=off
-
-# Possibly avoids the monitor frame issues
-# https://www.reddit.com/r/linux_gaming/comments/1506fr2/comment/js24tct
-#options drm.vblankoffdelay=0
-
 # New Kernel complains (6.6.10)
 #
 # Jan 08 13:21:41 nerd1 kernel: pcieport 0000:00:02.1: PCIe Bus Error: severity=Corrected, type=Data Link Layer, (Receiver ID)
