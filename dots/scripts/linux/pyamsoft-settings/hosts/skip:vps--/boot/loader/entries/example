@@ -17,9 +17,6 @@ options root=/dev/mapper/root rw
 options rd.luks.name=e058d4c7-0c57-412f-bbad-b1e0e98cb8a9=root
 options rd.luks.options=e058d4c7-0c57-412f-bbad-b1e0e98cb8a9=allow-discards,no-read-workqueue,no-write-workqueue
 
-# ACPI
-options acpi_osi=Linux
-
 # Disable old deprecated vsyscalls
 options vsyscall=none
 
