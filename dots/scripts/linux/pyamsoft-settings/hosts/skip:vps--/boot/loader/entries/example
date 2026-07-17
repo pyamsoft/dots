@@ -5,13 +5,11 @@
 title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /amd-ucode.img
+initrd  /intel-ucode.img
 initrd  /initramfs-linux.img
 
 # Real root device
 options root=/dev/mapper/root rw
-
-# encrypted root (base mkinitcpio)
-# options cryptdevice=UUID=e058d4c7-0c57-412f-bbad-b1e0e98cb8a9:root:allow-discards,no-read-workqueue,no-write-workqueue
 
 # encrypted root (systemd mkinitcpio)
 options rd.luks.name=e058d4c7-0c57-412f-bbad-b1e0e98cb8a9=root
@@ -30,17 +28,6 @@ options libahci.ignore_sss=1
 # https://unix.stackexchange.com/questions/592538/what-are-the-implication-of-using-iommu-force-in-the-boot-kernel-options
 options iommu=soft,pt
 
-# white flickering with IO_PAGE_FAULT error in console
-# >= 64GB of RAM and a recently changed default from 0 => -1 seem to cause issues
-#
-# https://www.kernel.org/doc/html/latest/gpu/amdgpu/module-parameters.html
-# https://community.frame.work/t/tracking-graphical-corruption-in-fedora-39-amd-3-03-bios/39073/52
-# https://www.reddit.com/r/framework/comments/17sr0ba/white_screen_after_sleep_wakeup_nixos/
-options amdgpu.sg_display=0
-
-# GPU overclocking and voltage control
-options amdgpu.ppfeaturemask=0xffffffff
-
 # Lower latency for desktop systems
 # https://discourse.ubuntu.com/t/fine-tuning-the-ubuntu-24-04-kernel-for-low-latency-throughput-and-power-efficiency/44834
 options preempt=full rcu_nocbs=all threadirqs
@@ -54,24 +41,16 @@ options rcutree.enable_rcu_lazy=1
 # like "cfs-zen-tweaks"
 options lockdown=confidentiality
 
-# New Kernel complains (6.6.10)
+# white flickering with IO_PAGE_FAULT error in console
+# >= 64GB of RAM and a recently changed default from 0 => -1 seem to cause issues
 #
-# Jan 08 13:21:41 nerd1 kernel: pcieport 0000:00:02.1: PCIe Bus Error: severity=Corrected, type=Data Link Layer, (Receiver ID)
-# Jan 08 13:21:41 nerd1 kernel: pcieport 0000:00:02.1:   device [1022:14ee] error status/mask=00000040/00006000
-# Jan 08 13:21:41 nerd1 kernel: pcieport 0000:00:02.1:    [ 6] BadTLP
-#
-# This PCIE error gets spit out in console, and maybe this fixes it?
-# https://unix.stackexchange.com/questions/327730/what-causes-this-pcieport-00000003-0-pcie-bus-error-aer-bad-tlp
-# options pci=nommconf
+# https://www.kernel.org/doc/html/latest/gpu/amdgpu/module-parameters.html
+# https://community.frame.work/t/tracking-graphical-corruption-in-fedora-39-amd-3-03-bios/39073/52
+# https://www.reddit.com/r/framework/comments/17sr0ba/white_screen_after_sleep_wakeup_nixos/
+options amdgpu.sg_display=0
 
-# Avoid BadDLLP error storm on PCI bus when plugging in an eGPU
-#
-# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0: PCIe Bus Error: severity=Correctable, type=Data Link Layer, (Receiver ID)
-# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0:   device [1002:1478] error status/mask=00000080/00002000
-# Jun 26 16:59:30 nerd1 kernel: pcieport 0000:67:00.0:    [ 7] BadDLLP
-#options pcie_aspm=off
-#options pcie_port_pm=off # More aggressive
-#options pci=noaer # just silence the logs
+# GPU overclocking and voltage control
+options amdgpu.ppfeaturemask=0xffffffff
 
 # Tell Linux to allocate it's own PCI instead of listening to BIOS
 #
