@@ -54,11 +54,6 @@ options rcutree.enable_rcu_lazy=1
 # like "cfs-zen-tweaks"
 options lockdown=confidentiality
 
-# Disable access to UEFI variables
-# (remove this if you need to work with the UEFI)
-# https://wiki.archlinux.org/title/Unified_Extensible_Firmware_Interface#Disable_UEFI_variable_access
-# options noefi
-
 # New Kernel complains (6.6.10)
 #
 # Jan 08 13:21:41 nerd1 kernel: pcieport 0000:00:02.1: PCIe Bus Error: severity=Corrected, type=Data Link Layer, (Receiver ID)
