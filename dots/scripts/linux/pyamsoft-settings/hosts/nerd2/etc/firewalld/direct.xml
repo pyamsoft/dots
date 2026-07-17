@@ -8,5 +8,12 @@
     REDIRECT --to-port 5335</rule>
   <rule ipv="ipv4" table="nat" chain="OUTPUT" priority="0">-p udp -d 127.0.0.1 --dport 53 -j
     REDIRECT --to-port 5335</rule>
+  <rule ipv="ipv4" table="nat" chain="PREROUTING" priority="0">-p tcp --dport 80 -j REDIRECT
+    --to-ports 3080</rule>
+  <rule ipv="ipv4" table="nat" chain="PREROUTING" priority="0">-p tcp --dport 443 -j REDIRECT
+    --to-ports 3443</rule>
+  <rule ipv="ipv6" table="nat" chain="PREROUTING" priority="0">-p tcp --dport 80 -j REDIRECT
+    --to-ports 3080</rule>
+  <rule ipv="ipv6" table="nat" chain="PREROUTING" priority="0">-p tcp --dport 443 -j REDIRECT
+    --to-ports 3443</rule>
 </direct>
-

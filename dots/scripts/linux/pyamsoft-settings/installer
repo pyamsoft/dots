@@ -293,6 +293,10 @@ main() {
             # Apperantly the "rules" need to be owned by root:polkitd
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "750" "644" || return 1
             ;;
+          */firewalld)
+            # direct.xml should not be read by others
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "600" || return 1
+            ;;
           *)
             # Copy file permissions but allow read access to all
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" || return 1
