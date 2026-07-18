@@ -22,22 +22,19 @@ _prep_mounts() {
 
   _caddy="/etc/caddy"
 
+  # Mount instances in the "root" caddy dir BEFORE shared snippets
+
+  _instances="${_caddy}/instances/${NAME}"
+  if [ -d "${_instances}" ]; then
+    _mount_bind "${_instances}" "/etc/caddy" || return 1
+  fi
+  unset _instances
+
   _snippets="${_caddy}/snippets"
   if [ -d "${_snippets}" ]; then
     _mount_bind "${_snippets}" "/etc/caddy/snippets"
   fi
   unset _snippets
-
-  # If this is a specific caddy instance, use it's specific folder
-  _instances="${_caddy}/instances"
-  if [ "${NAME}" != "${BASE_NAME}" ]; then
-    _instances="${_instances}/${NAME}"
-  fi
-
-  if [ -d "${_instances}" ]; then
-    _mount_bind "${_instances}" "/etc/caddy/instances" || return 1
-  fi
-  unset _instances
 
   unset _caddy
 
