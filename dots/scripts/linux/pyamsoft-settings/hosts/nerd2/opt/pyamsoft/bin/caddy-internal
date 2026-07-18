@@ -1,0 +1,6 @@
+#!/bin/sh
+
+NAME="caddy-internal"
+export NAME
+
+exec "${PYAMSOFT_PATH}/bin/caddy" "$@"
