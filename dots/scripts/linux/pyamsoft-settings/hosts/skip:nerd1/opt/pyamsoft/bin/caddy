@@ -4,10 +4,12 @@
 # shellcheck source=/opt/pyamsoft/lib/container-launch
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
+readonly BASE_NAME="caddy"
+
 # Since this container is more of a "library", we could potentially have many instances
 # as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
 # themselves when invoking this script.
-NAME="${NAME:-caddy}"
+NAME="${NAME:-"${BASE_NAME}"}"
 
 IMAGE="docker.io/encg/caddy-cloudflare-crowdsec"
 TAG="2.11.4"
@@ -19,6 +21,12 @@ _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/var/log/caddy" || return 1
 
   _caddy="/etc/caddy"
+
+  # If this is a specific caddy instance, use it's specific folder
+  if [ "${NAME}" != "${BASE_NAME}" ]; then
+    _caddy="${_caddy}/${NAME}"
+  fi
+
   if [ -d "${_caddy}" ]; then
     _mount_bind "${_caddy}" "/etc/caddy" || return 1
   fi
