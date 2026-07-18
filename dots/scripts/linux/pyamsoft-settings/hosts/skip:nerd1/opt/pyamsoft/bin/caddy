@@ -62,8 +62,8 @@ _prep_caps() {
 
 _prep_ports() {
   # Bind to a non-priv port and force redirect via firewall DNAT
-  _add_ports -p "127.0.0.1:3080:80/tcp"
-  _add_ports -p "127.0.0.1:3443:443/tcp"
+  # _add_ports -p "127.0.0.1:3080:80/tcp"
+  # _add_ports -p "127.0.0.1:3443:443/tcp"
   return 0
 }
 
