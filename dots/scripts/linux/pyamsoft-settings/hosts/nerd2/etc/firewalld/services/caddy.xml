@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>caddy</short>
+  <description>Caddy in a Container</description>
+  <port port="3080" protocol="tcp" />
+  <port port="3443" protocol="tcp" />
+</service>

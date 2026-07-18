@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service version="1">
+  <short>caddy-internal</short>
+  <description>Caddy in a Container (Internal)</description>
+  <port port="4080" protocol="tcp" />
+  <port port="4443" protocol="tcp" />
+</service>
+
