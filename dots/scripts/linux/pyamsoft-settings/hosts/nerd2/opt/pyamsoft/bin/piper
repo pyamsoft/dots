@@ -10,7 +10,7 @@ if _is_arch_arm; then
 else
   IMAGE="docker.io/homeassistant/amd64-addon-piper"
 fi
-TAG="2.2.2"
+TAG="2.3.1"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=1

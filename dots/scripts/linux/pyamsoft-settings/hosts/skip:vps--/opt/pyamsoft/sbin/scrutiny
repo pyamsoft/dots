@@ -6,7 +6,7 @@
 
 NAME="scrutiny"
 IMAGE="ghcr.io/starosdev/scrutiny"
-TAG="1.66.0-omnibus"
+TAG="1.67.0-omnibus"
 
 CONTAINER_ENTRYPOINT="/entrypoints/init"
 
