@@ -5,8 +5,14 @@ Description=Crowdsec Heartbeat Report to %i
 After=network.target syslog.target local-fs.target docker.service podman.service container-crowdsec.service container@crowdsec.service crowdsec.service
 
 [Service]
+
+## Generally you should NOT need to change these
+
 # We are in a pyamsoft service
 Environment=PYAM_SYSTEMD=1
+
+# Set the PYAMSOFT_PATH
+Environment=PYAMSOFT_PATH=/opt/pyamsoft
 
 # Need oneshot or timer does not restart
 Type=oneshot
