@@ -30,7 +30,7 @@ main() {
     _url="$(systemd-escape --unescape "${_url}")"
   fi
 
-  "${PYAMSOFT_PATH}/sbin/cscli" lapi status && {
+  "${PYAMSOFT_PATH}/bin/cscli" lapi status && {
     _log 'Crowdsec is still alive! Report: %s' "${_url}"
     _post "${_url}" "true" || {
       _elog 'Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"' "${_url}"
