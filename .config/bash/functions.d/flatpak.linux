@@ -4,9 +4,11 @@
 # Unexport all flatpak documents
 flatpak__clear_exported_documents() {
   # Don't use sudo for flatpak document-unexport
-  for d in $(flatpak documents); do
-    flatpak document-unexport --doc-id "${d}" || return 1
-  done
+  if [ "$(flatpak documents)" != "No documents found" ]; then
+    for d in $(flatpak documents); do
+      flatpak document-unexport --doc-id "${d}" || return 1
+    done
+  fi
 
   return 0
 }
