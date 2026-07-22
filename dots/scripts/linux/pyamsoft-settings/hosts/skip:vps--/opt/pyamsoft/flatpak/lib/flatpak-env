@@ -154,19 +154,10 @@ main() {
   # Capture proxy environment
   _pass_through_proxy_env
 
-  if [ -z "${__fp_env}" ]; then
-    _log 'Running flatpak [%s]' "${__flatpak}"
-  else
-    _log 'Running flatpak [%s] with "%s"' "${__flatpak}" "${__fp_env}"
-  fi
+  set -x
 
   # shellcheck disable=SC2086
-  exec flatpak run ${__fp_env} "${__flatpak}" "$@" || return 1
-
-  unset __run_shell
-  unset __flatpak
-  unset __fp_env
-  return 0
+  exec flatpak run ${__fp_env} "${__flatpak}" "$@"
 }
 
 main "$@" || exit 1

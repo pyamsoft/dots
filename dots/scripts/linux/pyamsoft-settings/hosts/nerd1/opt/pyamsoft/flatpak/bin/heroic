@@ -32,7 +32,8 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+# shellcheck source=/opt/pyamsoft/lib/common
+readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
 
 # Run with Wayland
 #

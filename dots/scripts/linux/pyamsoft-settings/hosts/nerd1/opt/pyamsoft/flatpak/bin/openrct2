@@ -21,7 +21,8 @@ if [ "$1" = "--shell" ]; then
 fi
 readonly cmd
 
-readonly FP_ENV="${PYAMSOFT_PATH:-/opt/pyamsoft}/flatpak/lib/flatpak-env"
+# shellcheck source=/opt/pyamsoft/lib/common
+readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
 
 # shellcheck disable=SC2086
 exec "${FP_ENV}" ${cmd} "${pak}" \
