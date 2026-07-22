@@ -98,7 +98,13 @@ readonly _nodejs="node24"
 # Local scripts
 path="${HOME}/.local/bin"
 
+readonly path
+
+_warn_outdated
+
+_java_wayland=1
 _args=""
+_after_args=""
 while [ -n "$1" ]; do
   case "$1" in
   --shell)
@@ -110,6 +116,9 @@ while [ -n "$1" ]; do
     path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/cargo/bin"
     path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/python/bin"
     shift
+
+    # Do not pass java wayland
+    _java_wayland=0
     ;;
   --offline)
     _args="${_args} --unshare=network"
@@ -122,9 +131,13 @@ while [ -n "$1" ]; do
 done
 readonly _args
 
-readonly path
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  if [ "${_java_wayland}" -eq 1 ]; then
+    _after_args="-Dawt.toolkit.name=WLToolkit"
+  fi
+fi
 
-_warn_outdated
+readonly _after_args
 
 # shellcheck source=/opt/pyamsoft/lib/common
 readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
@@ -141,7 +154,7 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
     --socket=wayland \
     ${_args} \
     -- \
-    -Dawt.toolkit.name=WLToolkit \
+    ${_after_args} \
     "$@" || exit 1
 else
   # shellcheck disable=SC2086
@@ -152,6 +165,8 @@ else
     --filesystem="${dev_root}/project/pyamsoft/shell" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     ${_args} \
-    -- "$@" || exit 1
+    -- \
+    ${_after_args} \
+    "$@" || exit 1
 fi
 exit 0

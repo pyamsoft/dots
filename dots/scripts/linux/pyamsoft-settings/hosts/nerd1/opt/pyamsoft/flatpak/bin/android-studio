@@ -115,12 +115,24 @@ readonly path
 # Warn abound outdated builds
 _warn_outdated
 
+_java_wayland=1
 _args=""
+_after_args=""
 while [ -n "$1" ]; do
   case "$1" in
   --shell)
     _args="${_args} --command=/bin/bash"
     shift
+
+    # In shell mode, add the other path bits
+    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
+    shift
+
+    # Do not pass java wayland
+    _java_wayland=0
     ;;
   --offline)
     _args="${_args} --unshare=network"
@@ -132,6 +144,14 @@ while [ -n "$1" ]; do
   esac
 done
 readonly _args
+
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+  if [ "${_java_wayland}" -eq 1 ]; then
+    _after_args="-Dawt.toolkit.name=WLToolkit"
+  fi
+fi
+
+readonly _after_args
 
 # shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
@@ -151,7 +171,7 @@ if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
     --socket=wayland \
     ${_args} \
     -- \
-    -Dawt.toolkit.name=WLToolkit \
+    ${_after_args} \
     "$@"
 else
   # shellcheck disable=SC2086
@@ -164,7 +184,9 @@ else
     --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     ${_args} \
-    -- "$@"
+    -- \
+    ${_after_args} \
+    "$@"
 fi
 
 # Kill gradle-daemon after exiting
