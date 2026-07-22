@@ -110,8 +110,6 @@ readonly _nodejs="node24"
 # https://github.com/flathub/com.google.AndroidStudio/commit/727e7e027f6b089f5d2d8d604833f639904531ce
 path="${path}:/usr/lib/sdk/${_nodejs}/bin"
 
-readonly path
-
 # Warn abound outdated builds
 _warn_outdated
 
@@ -144,6 +142,7 @@ while [ -n "$1" ]; do
   esac
 done
 readonly _args
+readonly path
 
 if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
   if [ "${_java_wayland}" -eq 1 ]; then

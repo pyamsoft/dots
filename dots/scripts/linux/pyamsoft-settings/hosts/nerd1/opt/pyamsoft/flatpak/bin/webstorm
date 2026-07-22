@@ -98,8 +98,6 @@ readonly _nodejs="node24"
 # Local scripts
 path="${HOME}/.local/bin"
 
-readonly path
-
 _warn_outdated
 
 _java_wayland=1
@@ -130,6 +128,7 @@ while [ -n "$1" ]; do
   esac
 done
 readonly _args
+readonly path
 
 if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
   if [ "${_java_wayland}" -eq 1 ]; then
