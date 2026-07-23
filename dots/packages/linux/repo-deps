@@ -77,7 +77,6 @@ e2fsprogs
 edk2-ovmf
 egl-wayland
 eglexternalplatform
-electron39
 elfutils
 ell
 enchant
@@ -675,7 +674,6 @@ make
 md4c
 mdadm
 mesa
-minizip
 mkinitcpio
 mkinitcpio-busybox
 mobile-broadband-provider-info
@@ -684,7 +682,6 @@ mpfr
 mpg123
 msgpack-c
 mtdev
-mullvad-vpn-daemon
 mutter
 nautilus
 ncurses
