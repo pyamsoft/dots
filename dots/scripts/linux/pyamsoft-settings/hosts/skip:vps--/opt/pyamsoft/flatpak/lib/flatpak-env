@@ -129,7 +129,8 @@ main() {
   __fp_env=""
   while [ -n "$1" ]; do
     if [ "$1" = "--" ]; then
-      # Stop processing, but do not eat, pass the -- directly to flatpak option processing
+      # Eat the -- and stop processing flatpak arguemnts. Everything else is passed to command
+      shift
       break
     elif [ "$1" = "--with-env" ]; then
       # This is an env command
