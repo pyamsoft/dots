@@ -6,7 +6,7 @@
 
 NAME="crowdsec-blocklist-import"
 IMAGE="ghcr.io/wolffcatskyy/crowdsec-blocklist-import"
-TAG="3.6.0"
+TAG="3.7.1"
 
 _prep_mounts() {
   return 0
