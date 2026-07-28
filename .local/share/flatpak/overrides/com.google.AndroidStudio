@@ -2,4 +2,7 @@
 features=devel;multiarch;
 filesystems=!xdg-run/keyring;
 devices=all;
-sockets=x11;!wayland;
+sockets=!wayland;x11;
+
+[System Bus Policy]
+org.freedesktop.Avahi=talk
