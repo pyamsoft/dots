@@ -38,4 +38,16 @@ flatpak__remove_background_permissions() {
   return 0
 }
 
+##
+# Remove realtime permission from all flatpak apps
+flatpak__remove_realtime_permissions() {
+  for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
+    flatpak permission-set realtime realtime "${_app}" no || return 1
+    unset _app
+  done
+  unset _app
+
+  return 0
+}
+
 # vim: set filetype=sh :
