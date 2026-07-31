@@ -28,8 +28,10 @@ baloo
 baloo-widgets
 binutils
 bison
+blas
 bluez
 bluez-libs
+bluez-qt
 bolt
 boost-libs
 breeze
@@ -45,6 +47,7 @@ ca-certificates-utils
 cairo
 capstone
 catatonit
+cblas
 cdparanoia
 cifs-utils
 composefs
@@ -234,6 +237,7 @@ iana-etc
 icu
 iio-sensor-proxy
 ijs
+imath
 imlib2
 iniparser
 iproute2
@@ -242,11 +246,13 @@ iputils
 iso-codes
 iw
 jansson
+jasper
 jbig2dec
 jbigkit
 jitterentropy
 json-c
 json-glib
+kaccounts-integration
 kactivitymanagerd
 karchive
 kauth
@@ -299,6 +305,7 @@ kparts
 kpipewire
 kpty
 kquickcharts
+kquickimageeditor
 krb5
 krunner
 kscreenlocker
@@ -318,10 +325,12 @@ kwindowsystem
 kxmlgui
 l-smash
 lame
+lapack
 layer-shell-qt
 lcms2
 ldb
 leancrypto
+leptonica
 less
 lib32-alsa-lib
 lib32-alsa-plugins
@@ -413,6 +422,8 @@ lib32-xcb-util-keysyms
 lib32-xz
 lib32-zlib
 lib32-zstd
+libaccounts-glib
+libaccounts-qt
 libadwaita
 libaemu
 libaio
@@ -458,6 +469,7 @@ libdaemon
 libdatrie
 libdbusmenu-glib
 libdbusmenu-gtk3
+libdc1394
 libde265
 libdecor
 libdeflate
@@ -524,6 +536,7 @@ libmbim
 libmd
 libmicrohttpd
 libmm-glib
+libmng
 libmnl
 libmodplug
 libmpc
@@ -702,6 +715,7 @@ mdadm
 media-player-info
 mesa
 milou
+minizip
 mkinitcpio
 mkinitcpio-busybox
 mobile-broadband-provider-info
@@ -734,8 +748,11 @@ ocl-icd
 onetbb
 oniguruma
 opencore-amr
+opencv
+openexr
 openh264
 openjpeg2
+openjph
 openssh
 openssl
 opus
@@ -806,6 +823,7 @@ protobuf-c
 proxytunnel
 psmisc
 pulseaudio-qt
+purpose
 python
 python-brotli
 python-brotlicffi
@@ -901,6 +919,7 @@ qrencode
 qt6-5compat
 qt6-base
 qt6-declarative
+qt6-imageformats
 qt6-location
 qt6-multimedia
 qt6-multimedia-ffmpeg
@@ -911,10 +930,13 @@ qt6-svg
 qt6-tools
 qt6-translations
 qt6-virtualkeyboard
+qt6-webchannel
+qt6-webengine
 qt6-websockets
 qtkeychain-qt6
 rav1e
 rdma-core
+re2
 readline
 realtime-privileges
 ripgrep
@@ -941,6 +963,10 @@ serd
 shaderc
 shadow
 shared-mime-info
+signon-kwallet-extension
+signon-plugin-oauth2
+signon-ui
+signond
 simdjson
 slang
 smbclient
@@ -977,6 +1003,9 @@ taglib
 talloc
 tar
 tdb
+tesseract
+tesseract-data-eng
+tesseract-data-osd
 tevent
 texinfo
 tinysparql
@@ -1004,6 +1033,7 @@ util-linux-libs
 v4l-utils
 vapoursynth
 vde2
+verdict
 vid.stab
 virglrenderer
 virt-install
