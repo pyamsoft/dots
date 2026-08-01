@@ -132,7 +132,7 @@ done
 readonly _args
 readonly path
 
-if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
   if [ "${_java_wayland}" -eq 1 ]; then
     _after_args="-Dawt.toolkit.name=WLToolkit"
   fi
@@ -143,9 +143,7 @@ readonly _after_args
 # shellcheck source=/opt/pyamsoft/lib/common
 readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
 
-# GNOME supports wayland
-# Crashes on KDE (maybe not anymore with 6.7?)
-if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ] || [ "${PYAMSOFT_WAYLAND:-0}" -eq 1 ]; then
+if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
   # shellcheck disable=SC2086
   exec "${FP_ENV}" "${_pak}" \
     --with-env PATH "${path}:" "${def_path}" \

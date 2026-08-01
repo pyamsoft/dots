@@ -6,10 +6,8 @@ main() {
   # (We copy flags used to launch Ferdium)
   # https://github.com/ferdium/ferdium-app/issues/1539
   #
-  # Fine on GNOME
-  # Crashes on KDE (maybe not anymore with 6.7?)
-
-  if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ] || [ "${PYAMSOFT_WAYLAND:-0}" -eq 1 ]; then
+  # --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
+  if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
     exec /usr/bin/mullvad-vpn --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto "$@"
   else
     exec /usr/bin/mullvad-vpn "$@"
