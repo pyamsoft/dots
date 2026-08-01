@@ -40,9 +40,9 @@ readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
 # --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
 #
 # Fine on GNOME
-# Crashes on KDE
+# Crashes on KDE (maybe not anymore with 6.7?)
 
-if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ]; then
+if [ "${XDG_CURRENT_DESKTOP}" = "GNOME" ] || [ "${PYAMSOFT_WAYLAND:-0}" -eq 1 ]; then
   # shellcheck disable=SC2086
   exec "${FP_ENV}" "${pak}" \
     --with-env PATH "${path}:" "${def_path}" \
