@@ -106,7 +106,6 @@ foomatic-db-engine
 foomatic-db-ppds
 frameworkintegration
 freeglut
-freerdp
 freetype2
 fribidi
 fuse-common
@@ -490,7 +489,6 @@ libevent
 libexif
 libfdk-aac
 libffi
-libfido2
 libfontenc
 libfreeaptx
 libfyaml
@@ -954,7 +952,6 @@ sbc
 sdl2-compat
 sdl2_image
 sdl3
-sdl3_ttf
 seabios
 seatd
 sed
