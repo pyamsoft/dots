@@ -9,7 +9,7 @@ IMAGE="docker.io/spx01/blocky"
 TAG="v0.34.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
-CONTAINER_NETWORK_IP6=1
+CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-1}"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/logs" "/logs" || return 1
@@ -49,6 +49,11 @@ _prep_network() {
   # We are the DNS for this container
   _add_network --dns "127.0.0.1"
 
+  # Add internal support for IPv6
+  if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+    _add_network --dns "::1"
+  fi
+
   return 0
 }
 
@@ -57,6 +62,12 @@ _prep_ports() {
   # Setup iptables forwarding to still use port 53 on the host
   _add_ports -p "127.0.0.1:5335:53/tcp"
   _add_ports -p "127.0.0.1:5335:53/udp"
+
+  # Add internal support for IPv6
+  if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+    _add_ports -p "[::1]:5335:53/tcp"
+    _add_ports -p "[::1]:5335:53/udp"
+  fi
 
   return 0
 }
