@@ -1,36 +1,35 @@
 # shellcheck shell=bash
 
-# SSH socket defined, do nothing
-if [ -n "${SSH_AUTH_SOCK}" ]; then
-  return 0
-fi
-
 # And now mark the SSH directory per user
 _ssh_home="${PYAMSOFT_RUNTIME_DIR}/ssh"
 
 # Expected paths
 _agent_env_path="${_ssh_home}/ssh-agent.env"
 
-# If old agent does not exist
-if [ -n "${_agent_env_path}" ]; then
-  if [ ! -f "${_agent_env_path}" ]; then
-    # Make a new directory
-    if mkdir "${_ssh_home}" >/dev/null 2>&1; then
-      # Launch a new agent and save the details
-      # in this runtime file
-      _agent_sock_path="${_ssh_home}/ssh-agent.sock"
-      ssh-agent -s -a "${_agent_sock_path}" >"${_agent_env_path}"
-      unset _agent_sock_path
-    fi
-  fi
-
-  # Either we have a new agent at this point, or we re-use existing one
+# Make a new directory
+if mkdir -p "${_ssh_home}" >/dev/null 2>&1; then
+  # Source the SSH agent configuration
+  # if a running agent exists
   if [ -f "${_agent_env_path}" ]; then
-    # Source the SSH agent configuration
-
     # shellcheck disable=SC1090
     . "${_agent_env_path}" >/dev/null 2>&1
   fi
+
+  # Either the socket does not exist, or the env var is defined but the file itself is gone
+  if [ -z "${SSH_AUTH_SOCK}" ] || [ ! -S "${SSH_AUTH_SOCK}" ]; then
+    # Launch a new agent and save the details
+    # in this runtime file
+    _agent_sock_path="${_ssh_home}/ssh-agent.sock"
+    ssh-agent -s -a "${_agent_sock_path}" >"${_agent_env_path}"
+    unset _agent_sock_path
+
+    # And source the environment information
+    if [ -f "${_agent_env_path}" ]; then
+      # shellcheck disable=SC1090
+      . "${_agent_env_path}" >/dev/null 2>&1
+    fi
+  fi
+
 fi
 
 unset _ssh_home
