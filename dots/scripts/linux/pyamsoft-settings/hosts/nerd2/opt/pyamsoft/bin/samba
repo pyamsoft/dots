@@ -6,7 +6,7 @@
 
 NAME="samba"
 IMAGE="docker.io/dockurr/samba"
-TAG="4.23.8"
+TAG="4.23.10"
 
 _prep_mounts() {
   # Share folders are optionally symlinks to another mass storage drive

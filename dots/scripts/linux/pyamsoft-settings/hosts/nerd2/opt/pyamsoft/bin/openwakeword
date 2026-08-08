@@ -6,7 +6,7 @@
 
 NAME="openwakeword"
 IMAGE="docker.io/homeassistant/amd64-addon-openwakeword"
-TAG="2.1.0"
+TAG="2.1.1"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=1
