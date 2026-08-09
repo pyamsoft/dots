@@ -9,6 +9,7 @@ IMAGE="ghcr.io/jauderho/yt-dlp"
 TAG="2026.07.04"
 
 CONTAINER_REQUIRE_RUNCONF=0
+CONTAINER_UNIQUE_NAME=1
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/downloads" "/downloads" || return 1
