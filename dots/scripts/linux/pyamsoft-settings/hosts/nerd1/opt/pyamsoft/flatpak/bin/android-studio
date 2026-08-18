@@ -136,7 +136,7 @@ while [ -n "$1" ]; do
     ;;
   --release)
     # Prepare for release builds
-    _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android-assets"
+    _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android/android-assets"
     shift
     ;;
   --offline)
