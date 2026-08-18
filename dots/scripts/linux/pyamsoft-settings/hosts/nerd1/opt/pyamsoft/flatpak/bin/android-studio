@@ -129,7 +129,6 @@ while [ -n "$1" ]; do
     path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
     path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
     path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
-    shift
 
     # Do not pass java wayland
     _java_wayland=0
@@ -138,6 +137,18 @@ while [ -n "$1" ]; do
     # Prepare for release builds
     _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android/android-assets"
     shift
+
+    # And apply shell arguments
+    _args="${_args} --command=/bin/bash"
+
+    # In shell mode, add the other path bits
+    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
+    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
+
+    # Do not pass java wayland
+    _java_wayland=0
     ;;
   --offline)
     _args="${_args} --unshare=network"
