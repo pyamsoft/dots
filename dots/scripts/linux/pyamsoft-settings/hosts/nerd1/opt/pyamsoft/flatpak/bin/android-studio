@@ -134,6 +134,11 @@ while [ -n "$1" ]; do
     # Do not pass java wayland
     _java_wayland=0
     ;;
+  --release)
+    # Prepare for release builds
+    _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android-assets"
+    shift
+    ;;
   --offline)
     _args="${_args} --unshare=network"
     shift
