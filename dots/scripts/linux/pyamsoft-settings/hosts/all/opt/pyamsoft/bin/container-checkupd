@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Source our common library
-# shellcheck source=/opt/pyamsoft/lib/common
-. "${PYAMSOFT_PATH}/lib/common"
+# shellcheck source=/opt/pyamsoft/lib/container-launch
+. "${PYAMSOFT_PATH}/lib/container-launch"
 
 NAME="container-checkupd"
 
