@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # Source our common library
-# shellcheck source=/opt/pyamsoft/lib/common
+# shellcheck source=/opt/pyamsoft/lib/container-launch
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
 # Define a basename here, which will be re-evaluated later once a MODE is defined
 BASENAME="beszel"
 NAME="${BASENAME}"
-TAG="0.18.7"
+TAG="0.18.8"
 
 # The SSH key used by hub and agents to auth each other
 BESZEL_KEY=""
