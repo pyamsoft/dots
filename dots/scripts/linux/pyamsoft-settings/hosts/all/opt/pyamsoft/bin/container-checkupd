@@ -97,7 +97,7 @@ _get_latest_tags() {
         grep -v '.sig' | grep -v 'stable'
         ;;
       */esphome)
-        grep -v 'b' | grep -v 'stable' | grep -v 'cache-release'
+        grep -v 'b' | grep -v 'stable' | grep -v 'cache-release' | grep "^$(date '+%Y')"
         ;;
       */omada-controller)
         grep -v 'chromium' | grep -v 'openj' | grep -v 'test'

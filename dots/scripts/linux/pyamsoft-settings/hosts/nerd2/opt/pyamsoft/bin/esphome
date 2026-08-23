@@ -6,7 +6,7 @@
 
 NAME="esphome"
 IMAGE="ghcr.io/esphome/esphome"
-TAG="2026.7.4"
+TAG="2026.8.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
