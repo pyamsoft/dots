@@ -6,7 +6,7 @@
 
 NAME="music-assistant"
 IMAGE="ghcr.io/music-assistant/server"
-TAG="2.9.11"
+TAG="2.9.13"
 
 CONTAINER_REQUIRE_RUNCONF=0
 
