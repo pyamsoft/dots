@@ -35,27 +35,12 @@ readonly _args
 # shellcheck source=/opt/pyamsoft/lib/common
 readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
 
-# Run with Wayland
-#
-# --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto \
-if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
-  # shellcheck disable=SC2086
-  exec "${FP_ENV}" "${pak}" \
-    --with-env PATH "${path}:" "${def_path}" \
-    --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-    --socket=wayland \
-    ${_args} \
-    -- \
-    --enable-features=UseOzonePlatform,WaylandWindowDecorations \
-    --ozone-platform-hint=auto \
-    "$@" || exit 1
-else
-  # shellcheck disable=SC2086
-  exec "${FP_ENV}" "${pak}" \
-    --with-env PATH "${path}:" "${def_path}" \
-    --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-    ${_args} \
-    -- \
-    "$@" || exit 1
-fi
+# shellcheck disable=SC2086
+exec "${FP_ENV}" "${pak}" \
+  --with-env PATH "${path}:" "${def_path}" \
+  --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
+  ${_args} \
+  -- \
+  "$@" || exit 1
+
 exit 0
