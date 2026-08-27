@@ -30,7 +30,14 @@ __upall_macos_macports() {
 
 # Update everything
 upall() {
-  umask 0022 && __upall_macos_homebrew && __upall_macos_macports && umask 0077
+  local _status
+
+  umask 0022
+  __upall_macos_homebrew && __upall_macos_macports
+  _status=$?
+  umask 0077
+
+  return "${_status}"
 }
 
 # vim: set filetype=sh :

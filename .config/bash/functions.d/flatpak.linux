@@ -17,7 +17,7 @@ flatpak__clear_exported_documents() {
 # Unpin all flatpak pins
 flatpak__clear_pins() {
   # Don't use sudo for flatpak pin
-  if [ "$(flatpak in -u)" != "No pinned patterns" ]; then
+  if [ "$(flatpak pin -u)" != "No pinned patterns" ]; then
     for p in $(flatpak pin -u | tail -n +1); do
       flatpak pin -u --remove "${p}" || return 1
     done
