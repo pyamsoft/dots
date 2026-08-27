@@ -22,6 +22,14 @@ _os="$2"
 
 _all_func=""
 for _func in "${HOME}"/.bash_functions.d/* "${_cfg}"/bash/functions.d/* "${_cfg}"/bash/functions.local.d/*; do
+  # Skip .<dotfiles> files
+  case "$(basename -- "${_func}")" in
+  .*)
+    unset _func
+    continue
+    ;;
+  esac
+
   if [ -r "${_func}" ]; then
     if [ -z "${_all_func}" ]; then
       _all_func="${_func}"
@@ -47,6 +55,7 @@ for _func in $(printf -- '%s' "${_all_func}" | awk '{ base=$0; sub(".*/", "", ba
       # shellcheck disable=SC1090
       . "${_func}" || {
         printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+        unset _func
       }
     fi
     ;;
@@ -55,6 +64,7 @@ for _func in $(printf -- '%s' "${_all_func}" | awk '{ base=$0; sub(".*/", "", ba
       # shellcheck disable=SC1090
       . "${_func}" || {
         printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+        unset _func
       }
     fi
     ;;
@@ -62,6 +72,7 @@ for _func in $(printf -- '%s' "${_all_func}" | awk '{ base=$0; sub(".*/", "", ba
     # shellcheck disable=SC1090
     . "${_func}" || {
       printf -- 'bash/rc setup script failed: %s args=%s\n' "${_func}" "$*"
+      unset _func
     }
     ;;
   esac

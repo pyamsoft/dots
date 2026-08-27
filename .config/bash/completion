@@ -9,8 +9,19 @@ if [ -z "${_os}" ]; then
   _os="$(uname)"
 fi
 
+# bash-completion package looks at this file and completions/ (no .d)
+#
+# We then place our own into completions.d (tracked) and completions.local.d (untracked)
 _all_bcomp=""
 for _bcomp in "${_self_directory}"/completions.d/* "${_self_directory}"/completions.local.d/*; do
+  # Skip .<dotfiles> files
+  case "$(basename -- "${_bcomp}")" in
+  .*)
+    unset _bcomp
+    continue
+    ;;
+  esac
+
   if [ -r "${_bcomp}" ]; then
     if [ -z "${_all_bcomp}" ]; then
       _all_bcomp="${_bcomp}"
@@ -36,6 +47,7 @@ for _bcomp in $(printf -- '%s' "${_all_bcomp}" | awk '{ base=$0; sub(".*/", "", 
       # shellcheck disable=SC1090
       . "${_bcomp}" || {
         printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+        unset _bcomp
       }
     fi
     ;;
@@ -44,6 +56,7 @@ for _bcomp in $(printf -- '%s' "${_all_bcomp}" | awk '{ base=$0; sub(".*/", "", 
       # shellcheck disable=SC1090
       . "${_bcomp}" || {
         printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+        unset _bcomp
       }
     fi
     ;;
@@ -51,6 +64,7 @@ for _bcomp in $(printf -- '%s' "${_all_bcomp}" | awk '{ base=$0; sub(".*/", "", 
     # shellcheck disable=SC1090
     . "${_bcomp}" || {
       printf -- 'bash/rc setup script failed: %s args=%s\n' "${_bcomp}" "$*"
+      unset _bcomp
     }
     ;;
   esac

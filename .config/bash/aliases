@@ -22,6 +22,14 @@ _os="$2"
 
 _all_alias=""
 for _alias in "${HOME}"/.bash_aliases.d/* "${_cfg}"/bash/aliases.d/* "${_cfg}"/bash/aliases.local.d/*; do
+  # Skip .<dotfiles> files
+  case "$(basename -- "${_alias}")" in
+  .*)
+    unset _alias
+    continue
+    ;;
+  esac
+
   if [ -r "${_alias}" ]; then
     if [ -z "${_all_alias}" ]; then
       _all_alias="${_alias}"
@@ -47,6 +55,7 @@ for _alias in $(printf -- '%s' "${_all_alias}" | awk '{ base=$0; sub(".*/", "", 
       # shellcheck disable=SC1090
       . "${_alias}" || {
         printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_alias}" "$*"
+        unset _alias
       }
     fi
     ;;
@@ -55,6 +64,7 @@ for _alias in $(printf -- '%s' "${_all_alias}" | awk '{ base=$0; sub(".*/", "", 
       # shellcheck disable=SC1090
       . "${_alias}" || {
         printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_alias}" "$*"
+        unset _alias
       }
     fi
     ;;
@@ -62,6 +72,7 @@ for _alias in $(printf -- '%s' "${_all_alias}" | awk '{ base=$0; sub(".*/", "", 
     # shellcheck disable=SC1090
     . "${_alias}" || {
       printf -- 'bash/rc setup script failed: %s args=%s\n' "${_alias}" "$*"
+      unset _alias
     }
     ;;
   esac

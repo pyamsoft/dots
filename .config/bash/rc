@@ -32,6 +32,14 @@ _os="$2"
 
 _all_rc=""
 for _rc in "${HOME}"/.bashrc.d/* "${_cfg}"/bash/rc.d/* "${_cfg}"/bash/rc.local.d/*; do
+  # Skip .<dotfiles> files
+  case "$(basename -- "${_rc}")" in
+  .*)
+    unset _rc
+    continue
+    ;;
+  esac
+
   if [ -r "${_rc}" ]; then
     if [ -z "${_all_rc}" ]; then
       _all_rc="${_rc}"

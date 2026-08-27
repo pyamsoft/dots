@@ -22,6 +22,7 @@ _os="$2"
 
 # Append "$1" to $PATH when not already in.
 # This function API is accessible to scripts in profile.d
+# shellcheck disable=SC2329
 append_path() {
   case ":${PATH}:" in
   *:"$1":*)
@@ -34,6 +35,7 @@ append_path() {
 
 # Prepend "$1" to $PATH when not already in.
 # This function API is accessible to scripts in profile.d
+# shellcheck disable=SC2329
 prepend_path() {
   case ":${PATH}:" in
   *:"$1":*)
@@ -46,6 +48,14 @@ prepend_path() {
 
 _all_profile=""
 for _profile in "${HOME}"/.bash_profile.d/* "${_cfg}"/bash/profile.d/* "${_cfg}"/bash/profile.local.d/*; do
+  # Skip .<dotfiles> files
+  case "$(basename -- "${_profile}")" in
+  .*)
+    unset _profile
+    continue
+    ;;
+  esac
+
   if [ -r "${_profile}" ]; then
     if [ -z "${_all_profile}" ]; then
       _all_profile="${_profile}"
@@ -71,6 +81,7 @@ for _profile in $(printf -- '%s' "${_all_profile}" | awk '{ base=$0; sub(".*/", 
       # shellcheck disable=SC1090
       . "${_profile}" || {
         printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+        unset _profile
       }
     fi
     ;;
@@ -79,6 +90,7 @@ for _profile in $(printf -- '%s' "${_all_profile}" | awk '{ base=$0; sub(".*/", 
       # shellcheck disable=SC1090
       . "${_profile}" || {
         printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+        unset _profile
       }
     fi
     ;;
@@ -86,6 +98,7 @@ for _profile in $(printf -- '%s' "${_all_profile}" | awk '{ base=$0; sub(".*/", 
     # shellcheck disable=SC1090
     . "${_profile}" || {
       printf -- 'bash/rc setup script failed: %s args=%s\n' "${_profile}" "$*"
+      unset _profile
     }
     ;;
   esac
