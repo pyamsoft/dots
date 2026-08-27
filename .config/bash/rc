@@ -94,7 +94,7 @@ unset _all_rc
 IFS="${_old_ifs}"
 
 # Source aliases and functions here while we have _cfg and _os defined instead of as part of rc.d
-for _qol in "${_cfg}/aliases" "${_cfg}/functions"; do
+for _qol in "${_cfg}/bash/aliases" "${_cfg}/bash/functions"; do
   [ -r "${_qol}" ] && {
     # shellcheck disable=SC1090
     . "${_qol}" "${_cfg}" "${_os}" || {
