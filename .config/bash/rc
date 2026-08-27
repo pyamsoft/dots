@@ -57,6 +57,7 @@ for _rc in $(printf -- '%s' "${_all_rc}" | awk '{ base=$0; sub(".*/", "", base);
       # shellcheck disable=SC1090
       . "${_rc}" || {
         printf -- 'Linux bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+        unset _rc
       }
     fi
     ;;
@@ -65,6 +66,7 @@ for _rc in $(printf -- '%s' "${_all_rc}" | awk '{ base=$0; sub(".*/", "", base);
       # shellcheck disable=SC1090
       . "${_rc}" || {
         printf -- 'MacOS bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+        unset _rc
       }
     fi
     ;;
@@ -72,6 +74,7 @@ for _rc in $(printf -- '%s' "${_all_rc}" | awk '{ base=$0; sub(".*/", "", base);
     # shellcheck disable=SC1090
     . "${_rc}" || {
       printf -- 'bash/rc setup script failed: %s args=%s\n' "${_rc}" "$*"
+      unset _rc
     }
     ;;
   esac
@@ -81,6 +84,19 @@ done
 unset _rc
 unset _all_rc
 IFS="${_old_ifs}"
+
+# Source aliases and functions here while we have _cfg and _os defined instead of as part of rc.d
+for _qol in "${_cfg}/aliases" "${_cfg}/functions"; do
+  [ -r "${_qol}" ] && {
+    # shellcheck disable=SC1090
+    . "${_qol}" "${_cfg}" "${_os}" || {
+      printf -- 'Failed to source shell QOL script: %s\n' "${_qol}"
+      unset _qol
+    }
+  }
+  unset _qol
+done
+unset _qol
 
 return 0
 
