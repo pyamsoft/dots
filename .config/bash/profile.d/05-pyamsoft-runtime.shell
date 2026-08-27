@@ -25,10 +25,9 @@ fi
 # Export out
 unset _runtime_home
 
-# Create only if it does not already exist
-if mkdir "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1; then
-  export PYAMSOFT_RUNTIME_DIR
-fi
+# Create and set the runtime dir
+mkdir "${PYAMSOFT_RUNTIME_DIR}" >/dev/null 2>&1
+export PYAMSOFT_RUNTIME_DIR
 
 return 0
 
