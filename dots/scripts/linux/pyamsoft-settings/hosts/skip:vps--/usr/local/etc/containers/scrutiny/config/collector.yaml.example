@@ -2,4 +2,4 @@
 
 log:
   file: '/opt/scrutiny/logs/collector.log'
-  level: INFO
+  level: WARN

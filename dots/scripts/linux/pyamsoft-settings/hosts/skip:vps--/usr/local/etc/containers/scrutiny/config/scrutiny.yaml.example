@@ -3,7 +3,7 @@
 # Enable logging to a file
 log:
   file: '/opt/scrutiny/logs/web.log'
-  level: INFO
+  level: WARN
 
 # Notification "urls" look like the following. For more information about service specific configuration see
 # Shoutrrr's documentation: https://containrrr.dev/shoutrrr/services/overview/
