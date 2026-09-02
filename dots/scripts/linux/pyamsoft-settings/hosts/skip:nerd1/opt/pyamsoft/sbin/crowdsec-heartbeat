@@ -26,12 +26,10 @@ main() {
   shift
 
   if [ "${_unescape}" -eq 1 ]; then
-    _log 'Unescape URL: %s' "${_url}"
     _url="$(systemd-escape --unescape "${_url}")"
   fi
 
-  "${PYAMSOFT_PATH}/bin/cscli" lapi status && {
-    _log 'Crowdsec is still alive! Report: %s' "${_url}"
+  "${PYAMSOFT_PATH}/bin/cscli" lapi status >/dev/null 2>&1 && {
     _post "${_url}" "true" || {
       _elog 'Failed to ping Heartbeat URL, but Crowdsec is alive: "%s"' "${_url}"
       return 1
