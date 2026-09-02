@@ -637,7 +637,7 @@ _prep_log() {
   # As such our services set a special PYAM_SYSTEMD variable and we sniff that
   if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
     if _is_podman; then
-      _add_logs --log-driver json-file
+      _add_logs --log-driver journald
     fi
   fi
 
@@ -784,8 +784,14 @@ _containerize() {
     fi
   fi
 
-  # If we are running directly
-  if [ -z "${PYAM_SYSTEMD}" ]; then
+  # If we are running in systemd
+  if [ -n "${PYAM_SYSTEMD}" ]; then
+    # We always daemonize and setup a notify signal
+    _add_rc --detach
+    _add_rc --sdnotify=conmon
+  else
+    # Running directly
+
     # Daemonize
     if [ -n "${CONTAINER_DAEMON}" ] && [ "${CONTAINER_DAEMON}" -eq 1 ]; then
       _add_rc --detach
