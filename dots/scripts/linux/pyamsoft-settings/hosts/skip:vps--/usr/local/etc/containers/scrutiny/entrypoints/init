@@ -17,7 +17,8 @@ chmod +X -R /opt/scrutiny/web
 chmod go= -R /opt/scrutiny/web
 
 # Make the reports directory
-mkdir --mode=755 /opt/scrutiny/reports
+mkdir -p /opt/scrutiny/reports
+chmod -R 700 /opt/scrutiny/reports
 
 # Update the smart database before we get started
 # Use no-verify since we do not have GPG installed in the container
@@ -29,4 +30,4 @@ update-smart-drivedb --no-verify && {
 }
 
 # Now go!
-exec /init
+exec /init "$@"
