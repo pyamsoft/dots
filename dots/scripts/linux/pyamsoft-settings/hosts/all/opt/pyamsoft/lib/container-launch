@@ -23,6 +23,8 @@ CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
 CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
 # Use the "unique" name instead of adopting $NAME
 CONTAINER_UNIQUE_NAME="${CONTAINER_UNIQUE_NAME:-0}"
+# Allow healthchecks (noisy disk write spam when going to journal)
+CONTAINER_HEALTHCHECK_ALLOWED="${CONTAINER_HEALTHCHECK_ALLOWED:-0}"
 # Run as daemon
 CONTAINER_DAEMON="${CONTAINER_DAEMON:-0}"
 
@@ -636,6 +638,13 @@ _prep_log() {
   if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
     if _is_podman; then
       _add_logs --log-driver json-file
+    fi
+  fi
+
+  # Disable healthchecks
+  if [ "${CONTAINER_HEALTHCHECK_ALLOWED}" -eq 0 ]; then
+    if _is_podman; then
+      _add_logs --no-healthcheck
     fi
   fi
 
