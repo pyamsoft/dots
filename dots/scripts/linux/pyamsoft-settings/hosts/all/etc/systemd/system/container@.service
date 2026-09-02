@@ -25,6 +25,8 @@ ExecStartPre=/bin/test -x $PYAM_CONTAINER
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
 
 # Start the container and tear it down after
+Type=notify
+NotifyAccess=all
 ExecStart=/bin/sh -c '$PYAM_CONTAINER'
 ExecStop=/opt/pyamsoft/bin/container-teardown %i
 Restart=on-failure
