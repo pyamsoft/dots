@@ -32,6 +32,7 @@ _prep_mounts() {
 
 _prep_env() {
   _add_env -e GATUS_CONFIG_PATH="/config"
+  _add_env -e GATUS_LOG_LEVEL="WARN"
   return 0
 }
 
