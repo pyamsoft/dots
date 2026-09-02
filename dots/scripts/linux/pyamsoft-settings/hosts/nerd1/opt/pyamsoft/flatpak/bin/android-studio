@@ -95,6 +95,9 @@ readonly def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
 readonly dev_root="${HOME}/devel"
 readonly android_root="${dev_root}/sdk/android"
 
+# Extensions
+readonly _nodejs="node24"
+
 # Local scripts
 path="${HOME}/.local/bin"
 
@@ -104,13 +107,15 @@ path="${path}:${android_root}/emulator"
 path="${path}:${android_root}/cdmline-tools/latest/bin"
 path="${path}:${android_root}/platform-tools"
 
-# Extensions
-readonly _nodejs="node24"
-
 # Since android-studio does not use ide-flatpak-wrapper anymore
 # we must manually pull in our extensions
 # https://github.com/flathub/com.google.AndroidStudio/commit/727e7e027f6b089f5d2d8d604833f639904531ce
+#
+# Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
 path="${path}:/usr/lib/sdk/${_nodejs}/bin"
+path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
+path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
+path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
 
 # Warn abound outdated builds
 _warn_outdated
@@ -125,10 +130,6 @@ while [ -n "$1" ]; do
     shift
 
     # In shell mode, add the other path bits
-    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
 
     # Do not pass java wayland
     _java_wayland=0
@@ -140,12 +141,6 @@ while [ -n "$1" ]; do
 
     # And apply shell arguments
     _args="${_args} --command=/bin/bash"
-
-    # In shell mode, add the other path bits
-    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
-    path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
 
     # Do not pass java wayland
     _java_wayland=0

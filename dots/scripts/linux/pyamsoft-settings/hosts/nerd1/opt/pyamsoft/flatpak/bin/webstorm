@@ -100,6 +100,12 @@ readonly _nodejs="node24"
 # Local scripts
 path="${HOME}/.local/bin"
 
+# Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
+path="${path}:/usr/lib/sdk/${_nodejs}/bin"
+path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/node/bin"
+path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/cargo/bin"
+path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/python/bin"
+
 _warn_outdated
 
 _java_wayland=1
@@ -109,12 +115,6 @@ while [ -n "$1" ]; do
   case "$1" in
   --shell)
     _args="${_args} --command=/bin/bash"
-
-    # In shell mode, add the other path bits
-    path="${path}:/usr/lib/sdk/${_nodejs}/bin"
-    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/node/bin"
-    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/cargo/bin"
-    path="${path}:${HOME}/.var/app/com.jetbrains.WebStorm/data/python/bin"
     shift
 
     # Do not pass java wayland
