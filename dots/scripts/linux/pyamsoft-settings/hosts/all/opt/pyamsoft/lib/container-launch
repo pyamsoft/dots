@@ -643,9 +643,7 @@ _prep_log() {
 
   # Disable healthchecks
   if [ "${CONTAINER_HEALTHCHECK_ALLOWED}" -eq 0 ]; then
-    if _is_podman; then
-      _add_logs --no-healthcheck
-    fi
+    _add_logs --no-healthcheck
   fi
 
   return 0
