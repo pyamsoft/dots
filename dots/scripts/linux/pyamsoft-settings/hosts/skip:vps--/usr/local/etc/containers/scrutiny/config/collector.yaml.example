@@ -1,5 +1,7 @@
 # https://raw.githubusercontent.com/AnalogJ/scrutiny/master/example.collector.yaml
 
+version: 1
+
 log:
   file: '/opt/scrutiny/logs/collector.log'
   level: WARN

@@ -39,6 +39,7 @@ _prep_env() {
   _add_env -e SCRUTINY_LOG_LEVEL=WARN
   _add_env -e COLLECTOR_LOG_LEVEL=WARN
   _add_env -e SCRUTINY_NO_LOGO=true
+  _add_env -e SCRUTINY_WEB_METRICS_ENABLED=false
   return 0
 }
 

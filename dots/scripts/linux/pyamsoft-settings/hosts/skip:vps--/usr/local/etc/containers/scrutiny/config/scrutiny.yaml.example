@@ -1,9 +1,13 @@
 # https://raw.githubusercontent.com/AnalogJ/scrutiny/master/example.scrutiny.yaml
 
-# Enable logging to a file
-log:
-  file: '/opt/scrutiny/logs/web.log'
-  level: WARN
+version: 1
+
+web:
+  log:
+    file: '/opt/scrutiny/logs/web.log'
+    level: WARN
+  metrics:
+    enabled: false
 
 # Notification "urls" look like the following. For more information about service specific configuration see
 # Shoutrrr's documentation: https://containrrr.dev/shoutrrr/services/overview/
