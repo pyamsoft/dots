@@ -5,8 +5,8 @@
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
 NAME="matter"
-IMAGE="ghcr.io/matter-js/python-matter-server"
-TAG="8.1.2"
+IMAGE="homeassistant/amd64-addon-matter-server"
+TAG="9.2.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=0
