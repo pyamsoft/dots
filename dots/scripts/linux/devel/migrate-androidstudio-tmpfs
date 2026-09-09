@@ -11,6 +11,11 @@ _systemctl() {
 
   _esc_d="$(systemd-escape "${_d}")"
 
+  # Make the directory
+  if [ "${_enable_or_disable}" = "enable" ]; then
+    mkdir -p "${HOME}/.var/app/com.google.AndroidStudio/cache/Google/AndroidStudio${_version}/${_d}"
+  fi
+
   if [ -n "${_noexec}" ] && [ "${_noexec}" -eq 1 ]; then
     printf -- '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
     sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
