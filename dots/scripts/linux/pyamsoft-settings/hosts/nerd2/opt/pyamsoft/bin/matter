@@ -49,6 +49,11 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
+  if _is_podman; then
+    # User uid in container is 1000
+    _add_userns --userns keep-id:uid=1000
+  fi
+
   return 0
 }
 
