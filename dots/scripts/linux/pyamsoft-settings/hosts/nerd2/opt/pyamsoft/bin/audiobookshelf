@@ -54,21 +54,15 @@ _prep_network() {
 
     # We have optional support for a wireguard VPN container
     _add_network --network "container:wireguard"
-  else
-    # Require a VPN
-    if [ -n "${REQUIRE_VPN}" ] && [ "${REQUIRE_VPN}" -eq 1 ]; then
-      _elog 'You MUST use a VPN connection to run %s' "${NAME}"
-      return 1
-    fi
-
-    # We continue using the DEFAULT network instead of creating our own.
-    # The default network uses the a special setup of the bridge driver
-    # which preserves source IP addresses
-    #
-    # We need to preserve source IP address so that Crowdsec can operate on bad actors
-    #
-    # However as a trade off, since this runs on the default bridge this decreases network isolation.
   fi
+
+  # We continue using the DEFAULT network instead of creating our own.
+  # The default network uses the a special setup of the bridge driver
+  # which preserves source IP addresses
+  #
+  # We need to preserve source IP address so that Crowdsec can operate on bad actors
+  #
+  # However as a trade off, since this runs on the default bridge this decreases network isolation.
 
   return 0
 }
