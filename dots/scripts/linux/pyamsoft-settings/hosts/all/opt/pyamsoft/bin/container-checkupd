@@ -102,6 +102,9 @@ _get_latest_tags() {
       */music-assistant/server)
         grep -v 'b'
         ;;
+      */linuxserver/homeassistant)
+        grep -v 'ls'
+        ;;
       */esphome)
         grep -v 'b' | grep -v 'stable' | grep -v 'cache-release' | grep "^$(date '+%Y')"
         ;;
