@@ -25,6 +25,7 @@ ghcr.io/jauderho/yt-dlp
 readonly SKIP_CONTAINER_LOOKUP="ghcr.io/immich-app/immich-machine-learning
 ghcr.io/immich-app/immich-postgres
 docker.io/valkey/valkey
+ghcri.io/techno-tim/littlelink-server
 "
 
 _get_latest_tags() {
@@ -60,100 +61,105 @@ _get_latest_tags() {
     crane ls "${_container}"
   else
     skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | tr '"' ' ' | awk '{ print $1 }'
-  fi; } | grep -v 'stable' | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' | case "${_container}" in
-  */littlelink-server)
-    # Don't remove latest from littlelink, it only publishes latest
-    cat
-    ;;
-  *)
+  fi; } | grep -v 'stable' | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' |
     # Otherwise remove latest and let's keep going
     # And only accept things that have a `.`
     # We don't want 14, or 14.0 or d519d20f
     # We want X.Y or X.Y.Z
     grep -v 'latest' | grep '\.' |
-      case "${_container}" in
-      */rendercv)
-        grep -v 'sha'
-        ;;
-      */matterjs-server)
-        grep -v '\-alpha\.'
-        ;;
-      */unbound)
-        grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
-        ;;
-      */navidrome)
-        grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
-        ;;
-      */beets)
-        grep -v '2021.' | grep -v '\-ls'
-        ;;
-      */httpie)
-        grep -v '3.5-0.9.9'
-        ;;
-      */jellyseerr)
-        grep -v 'preview'
-        ;;
-      */jellyfin)
-        grep -v '202.' | grep -v 'master'
-        ;;
-      */caddy)
-        grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
-        ;;
-      */music-assistant/server)
-        grep -v 'b'
-        ;;
-      */linuxserver/homeassistant)
-        grep -v 'ls'
-        ;;
-      */esphome)
-        grep -v 'b' | grep -v 'stable' | grep -v 'cache-release' | grep "^$(date '+%Y')"
-        ;;
-      */omada-controller)
-        grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
-        ;;
-      */cloudflare-ddns)
-        grep -v '.sig' | grep -v 'artifacthub'
-        ;;
-      */uptime-kuma)
-        grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test' | grep -v 'debian'
-        ;;
-      */crowdsec)
-        grep -v 'slim' | grep 'debian'
-        ;;
-      */scrutiny)
-        # Only full omni images
-        # Exclude a "buggy" v1.53.1 release tag
-        grep 'omnibus' | grep -v 'collector' | grep -v 'v1'
-        ;;
-      */bazarr | */radarr | */prowlarr)
-        grep -v 'ls' | grep -v 'libtorrent'
-        ;;
-      */sonarr)
-        # Buggy 5.14 release
-        grep -v 'ls' | grep -v 'libtorrent' | grep v 5.14
-        ;;
-      */qbittorrent)
-        # Buggy releases
-        grep -v 'ls' | grep -v 'libtorrent' | grep -v 20.04.1 | grep -v 14.3.9
-        ;;
-      */readarr)
-        grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
-        ;;
-      */byparr)
-        grep -v '.sig' | grep -v 'main'
-        ;;
-      */eclipse-mosquitto)
-        grep -v 'openssl'
-        ;;
-      */zigbee2mqtt)
-        grep -v 'v1.35' | grep -v 'v1.31'
-        ;;
-      *)
-        cat
-        ;;
-      esac
-    ;;
-  esac | sort -r -V | head || {
+    case "${_container}" in
+    */rendercv)
+      grep -v 'sha'
+      ;;
+    */matterjs-server)
+      grep -v '\-alpha\.' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */unbound)
+      grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
+      ;;
+    */navidrome)
+      grep -v 'sha' | grep -v 'pr-' | grep -v 'v0'
+      ;;
+    */beets)
+      grep -v '2021.' | grep -v '\-ls'
+      ;;
+    */httpie)
+      grep -v '3.5-0.9.9'
+      ;;
+    */jellyseerr)
+      grep -v 'preview'
+      ;;
+    */jellyfin)
+      grep -v '202.' | grep -v 'master' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */caddy)
+      grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
+      ;;
+    */music-assistant/server)
+      grep -v 'b' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */linuxserver/homeassistant)
+      grep -v 'ls'
+      ;;
+    */esphome)
+      grep -v 'b' | grep -v 'stable' | grep -v 'cache-release' | grep "^$(date '+%Y')" | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */omada-controller)
+      grep -v 'chromium' | grep -v 'openj' | grep -v 'test'
+      ;;
+    */cloudflare-ddns)
+      grep -v '.sig' | grep -v 'artifacthub'
+      ;;
+    */uptime-kuma)
+      grep -v 'base' | grep -v 'push' | grep -v 'migrat' | grep -v 'builder' | grep -v 'alpine' | grep -v 'test' | grep -v 'debian'
+      ;;
+    */crowdsec)
+      grep -v 'slim' | grep 'debian'
+      ;;
+    */scrutiny)
+      # Only full omni images
+      # Only "full" tags
+      # Exclude a "buggy" v1.53.1 release tag
+      grep 'omnibus' | grep -v 'collector' | grep -v '^v' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */beszel)
+      # Only "full" tags
+      grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */beszel-agent)
+      # Alpine, full images
+      grep 'alpine' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */bazarr | */radarr | */prowlarr)
+      grep -v 'ls' | grep -v 'libtorrent'
+      ;;
+    */sonarr)
+      # Buggy 5.14 release
+      grep -v 'ls' | grep -v 'libtorrent' | grep -v 5.14
+      ;;
+    */qbittorrent)
+      # Buggy releases
+      grep -v 'ls' | grep -v 'libtorrent' | grep -v 20.04.1 | grep -v 14.3.9
+      ;;
+    */readarr)
+      grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
+      ;;
+    */byparr)
+      grep -v '.sig' | grep -v 'main'
+      ;;
+    */eclipse-mosquitto)
+      grep -v 'openssl'
+      ;;
+    */zigbee2mqtt)
+      grep -v '^v' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    */samba)
+      grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      ;;
+    *)
+      cat
+      ;;
+    esac | sort -r -V | head || {
     _log 'Failed to list most recent tags for: %s' "${_container}"
     unset _container
     return 1
