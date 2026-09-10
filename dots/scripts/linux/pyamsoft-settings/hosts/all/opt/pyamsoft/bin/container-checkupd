@@ -26,6 +26,7 @@ readonly SKIP_CONTAINER_LOOKUP="ghcr.io/immich-app/immich-machine-learning
 ghcr.io/immich-app/immich-postgres
 docker.io/valkey/valkey
 ghcr.io/techno-tim/littlelink-server
+ghcr.io/immich-app/postgres
 "
 
 _get_latest_tags() {
