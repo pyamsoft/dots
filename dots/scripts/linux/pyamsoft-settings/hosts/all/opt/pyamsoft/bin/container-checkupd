@@ -90,7 +90,7 @@ _get_latest_tags() {
       grep -v 'preview'
       ;;
     */jellyfin)
-      grep -v '202.' | grep -v 'master' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
+      grep -v '202.' | grep -v 'master'
       ;;
     */caddy)
       grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
