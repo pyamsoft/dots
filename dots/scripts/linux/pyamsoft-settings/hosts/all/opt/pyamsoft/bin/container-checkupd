@@ -25,7 +25,7 @@ ghcr.io/jauderho/yt-dlp
 readonly SKIP_CONTAINER_LOOKUP="ghcr.io/immich-app/immich-machine-learning
 ghcr.io/immich-app/immich-postgres
 docker.io/valkey/valkey
-ghcri.io/techno-tim/littlelink-server
+ghcr.io/techno-tim/littlelink-server
 "
 
 _get_latest_tags() {
