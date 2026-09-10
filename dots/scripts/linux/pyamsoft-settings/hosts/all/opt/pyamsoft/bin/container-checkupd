@@ -60,17 +60,23 @@ _get_latest_tags() {
     crane ls "${_container}"
   else
     skopeo list-tags "docker://${_container}" | tail -n +4 | head -n -2 | tr '"' ' ' | awk '{ print $1 }'
-  fi; } | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' | case "${_container}" in
+  fi; } | grep -v 'stable' | grep -v 'unstable' | grep -v 'beta' | grep -v 'staging' | grep -v 'nightly' | grep -v 'edge' | grep -v 'dev' | grep -v 'rc' | grep -v 'version' | grep -v 'arm64' | grep -v 'preview' | grep -v 'arm' | grep -v 'amd' | case "${_container}" in
   */littlelink-server)
     # Don't remove latest from littlelink, it only publishes latest
     cat
     ;;
   *)
     # Otherwise remove latest and let's keep going
-    grep -v 'latest' |
+    # And only accept things that have a `.`
+    # We don't want 14, or 14.0 or d519d20f
+    # We want X.Y or X.Y.Z
+    grep -v 'latest' | grep '\.' |
       case "${_container}" in
       */rendercv)
         grep -v 'sha'
+        ;;
+      */matterjs-server)
+        grep -v '\-alpha\.'
         ;;
       */unbound)
         grep -v 'openssl' | grep -v 'libevent' | grep -v 'canary'
