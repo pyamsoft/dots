@@ -121,9 +121,9 @@ _get_latest_tags() {
         grep -v 'slim' | grep 'debian'
         ;;
       */scrutiny)
-        # Only omni images
+        # Only full omni images
         # Exclude a "buggy" v1.53.1 release tag
-        grep 'omnibus' | grep -v 'v1'
+        grep 'omnibus' | grep -v 'collector' | grep -v 'v1'
         ;;
       */bazarr | */radarr | */prowlarr)
         grep -v 'ls' | grep -v 'libtorrent'
