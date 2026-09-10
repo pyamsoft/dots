@@ -99,8 +99,8 @@ _get_latest_tags() {
       */caddy)
         grep -v 'windows' | grep -v 'alpine' | grep -v 'builder'
         ;;
-      */home-assistant)
-        grep -v '.sig' | grep -v 'stable'
+      */music-assistant/server)
+        grep -v 'b'
         ;;
       */esphome)
         grep -v 'b' | grep -v 'stable' | grep -v 'cache-release' | grep "^$(date '+%Y')"
@@ -118,10 +118,20 @@ _get_latest_tags() {
         grep -v 'slim' | grep 'debian'
         ;;
       */scrutiny)
-        grep 'omnibus'
+        # Only omni images
+        # Exclude a "buggy" v1.53.1 release tag
+        grep 'omnibus' | grep -v 'v1'
         ;;
-      */sonarr | */bazarr | */radarr | */prowlarr | */homeassistant | */qbittorrent)
+      */bazarr | */radarr | */prowlarr)
         grep -v 'ls' | grep -v 'libtorrent'
+        ;;
+      */sonarr)
+        # Buggy 5.14 release
+        grep -v 'ls' | grep -v 'libtorrent' | grep v 5.14
+        ;;
+      */qbittorrent)
+        # Buggy releases
+        grep -v 'ls' | grep -v 'libtorrent' | grep -v 20.04.1 | grep -v 14.3.9
         ;;
       */readarr)
         grep -v 'nightly' | grep -v 'amd64' | grep -v 'arm64'
