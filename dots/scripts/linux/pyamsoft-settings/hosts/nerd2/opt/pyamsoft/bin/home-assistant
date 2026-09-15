@@ -8,6 +8,9 @@ NAME="home-assistant"
 IMAGE="ghcr.io/linuxserver/homeassistant"
 TAG="2026.9.2"
 
+# Runs with host networking, so do not use DNS resolver
+CONTAINER_DNS_RESOLVER=0
+
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
   _host_chmod "g+rwX" "${CONTAINER_RUNTIME_DIR}/${NAME}/config" || return 1

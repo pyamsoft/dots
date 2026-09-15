@@ -9,6 +9,9 @@ IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
 TAG="v1.8.1-debian"
 
+# Runs with host networking, so do not use DNS resolver
+CONTAINER_DNS_RESOLVER=0
+
 ##
 # lapi - Crowdsec LAPI central instance
 # agent - Agent instance, no LAPI

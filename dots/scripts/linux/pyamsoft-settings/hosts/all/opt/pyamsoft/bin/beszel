@@ -32,8 +32,12 @@ if [ "${BESZEL_MODE}" = "hub" ]; then
   IMAGE="docker.io/henrygd/beszel"
 else
   IMAGE="docker.io/henrygd/beszel-agent"
+
   # -alpine supports SMART data
   TAG="${TAG}-alpine"
+
+  # Agent runs with host networking, so do not use DNS resolver
+  CONTAINER_DNS_RESOLVER=0
 fi
 
 _prep_ssh_key() {

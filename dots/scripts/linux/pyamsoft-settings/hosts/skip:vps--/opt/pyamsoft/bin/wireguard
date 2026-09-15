@@ -13,6 +13,7 @@ IMAGE="docker.io/jordanpotter/wireguard"
 TAG="2026-03-31"
 
 CONTAINER_NETWORK_HOST_ROUTE=0
+CONTAINER_DNS_RESOLVER=0
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/wg" "/etc/wireguard" || return 1

@@ -19,6 +19,13 @@ CONTAINER_ENTRYPOINT="python3"
 # Allow model customization via variable or fallback to "Lessac Medium"
 MODEL="${MODEL:-en_US-lessac-medium}"
 
+if ! _is_linux; then
+  if ! _is_macos_container; then
+    # Runs with host networking, so do not use DNS resolver
+    CONTAINER_DNS_RESOLVER=0
+  fi
+fi
+
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/tmp" "/tmp" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1
