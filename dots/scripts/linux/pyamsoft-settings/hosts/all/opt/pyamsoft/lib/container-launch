@@ -367,8 +367,10 @@ _has_network() {
   _has_cn=0
   _has_previous_network_arg=0
   for _net_arg in ${CONTAINER_NETWORK}; do
+    # We want the glob to evaluate for things like 'container:*'
+    # shellcheck disable=SC2254
     case "${_net_arg}" in
-    "--network=$1")
+    --network=$1)
       # We have container networking, do NOT add hostname
       _has_previous_network_arg=0
       _has_cn=1
@@ -377,7 +379,7 @@ _has_network() {
     --network)
       _has_previous_network_arg=1
       ;;
-    "$1")
+    $1)
       if [ "${_has_previous_network_arg}" -eq 1 ]; then
         # We have container networking, do NOT add hostname
         _has_cn=1
