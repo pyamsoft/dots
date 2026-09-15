@@ -27,6 +27,8 @@ CONTAINER_UNIQUE_NAME="${CONTAINER_UNIQUE_NAME:-0}"
 CONTAINER_HEALTHCHECK_ALLOWED="${CONTAINER_HEALTHCHECK_ALLOWED:-0}"
 # Run as daemon
 CONTAINER_DAEMON="${CONTAINER_DAEMON:-0}"
+# Include busybox for container debugging
+CONTAINER_DEBUG="${CONTAINER_DEBUG:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -532,6 +534,7 @@ __require_function() {
 
   return 0
 }
+readonly __require_function
 
 ##
 # Private
@@ -550,6 +553,7 @@ __setup_network() {
 
   return 0
 }
+readonly __setup_network
 
 ##
 # Private
@@ -583,6 +587,24 @@ __await_directory() {
   unset _awaiting
   return 0
 }
+readonly __await_directory
+
+__do_prep_mounts() {
+  _prep_mounts || return 1
+
+  # Mount host busybox into container
+  if [ "${CONTAINER_DEBUG}" ] && [ "${CONTAINER_DEBUG}" -ne 0 ]; then
+    if command busybox >/dev/null 2>&1; then
+      _busybox_target="/run/busybox"
+      _log 'Attach busybox for container debugging at %s' "${_busybox_target}"
+      _add_mounts --mount "type=bind,source=$(command -v busybox),target=${_busybox_target}"
+      unset _busybox_target
+    else
+      _elog 'Container debugging requested but busybox not available'
+    fi
+  fi
+}
+readonly __do_prep_mounts
 
 ##
 # Overridable
@@ -886,7 +908,7 @@ main() {
   _check_user || return 1
 
   __require_function _prep_mounts || return 1
-  _prep_mounts || return 1
+  __do_prep_mounts || return 1
 
   __require_function _prep_ports || return 1
   _prep_ports || return 1
