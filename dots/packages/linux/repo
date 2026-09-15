@@ -9,6 +9,7 @@ bluedevil
 bluez-utils
 breeze-gtk
 btop
+busybox
 cups-pdf
 dbus-broker
 dolphin
@@ -22,8 +23,10 @@ gst-libav
 gst-plugin-va
 hplip
 hunspell-en_us
+informant
 intel-ucode
 inter-font
+iotop
 iperf3
 iwd
 kde-gtk-config
@@ -84,6 +87,7 @@ traceroute
 ttf-gentium
 ttf-liberation
 unrar
+unzip
 util-linux
 virt-manager
 vulkan-intel
