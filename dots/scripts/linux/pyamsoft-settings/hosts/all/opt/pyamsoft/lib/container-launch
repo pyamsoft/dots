@@ -360,21 +360,39 @@ ${_arg}"
 ##
 # Various arguments may NOT be available if the container is setup to use inter-container networking
 # --network="container:<something>"
-_has_container_networking() {
+# --network="host"
+#
+# $1 the filter, like "host" or "container:*"
+_has_network() {
   _has_cn=0
+  _has_previous_network_arg=0
   for _net_arg in ${CONTAINER_NETWORK}; do
     case "${_net_arg}" in
-    --network=container:*)
+    "--network=$1")
       # We have container networking, do NOT add hostname
+      _has_previous_network_arg=0
       _has_cn=1
       break
       ;;
+    --network)
+      _has_previous_network_arg=1
+      ;;
+    "$1")
+      if [ "${_has_previous_network_arg}" -eq 1 ]; then
+        # We have container networking, do NOT add hostname
+        _has_cn=1
+        break
+      fi
+      _has_previous_network_arg=0
+      ;;
     *)
+      _has_previous_network_arg=0
       ;;
     esac
     unset _net_arg
   done
   unset _net_arg
+  unset _has_previous_network_arg
 
   if [ "${_has_cn}" -eq 0 ]; then
     unset _has_cn
@@ -617,8 +635,8 @@ readonly __do_prep_mounts
 __do_finalize() {
   _finalize "$@" || return 1
 
+  # Use our own recursive DNS (point containers to host 127.0.0.1:53)
   if [ -n "${CONTAINER_DNS_RESOLVER}" ] && [ "${CONTAINER_DNS_RESOLVER}" -eq 1 ]; then
-    # Use our own recursive DNS (point containers to host 127.0.0.1:53)
     _has_dns=0
     for _net_arg in ${CONTAINER_NETWORK}; do
       case "${_net_arg}" in
@@ -634,7 +652,11 @@ __do_finalize() {
     done
     unset _net_arg
 
-    if [ "${_has_dns}" -eq 0 ]; then
+    if _has_network host; then
+      _log 'Ignoring local DNS resolver - host networking already set'
+    elif _has_network 'container:*'; then
+      _log 'Ignoring local DNS resolver - container networking already set'
+    elif [ "${_has_dns}" -eq 0 ]; then
       # Add the "container local DNS"
       # Many images hardcode Google which is lame.
       # Avoid the Google upstream by strictly opting into one DNS
@@ -842,7 +864,7 @@ _containerize() {
       _add_rc --hostname="${NAME}"
     else
       # Docker must be sure we are not in a container network namespace
-      if ! _has_container_networking; then
+      if ! _has_network 'container:*'; then
         _add_rc --hostname="${NAME}"
       fi
     fi
