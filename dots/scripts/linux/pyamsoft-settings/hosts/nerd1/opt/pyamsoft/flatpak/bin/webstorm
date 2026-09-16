@@ -152,6 +152,7 @@ if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/js" \
     --filesystem="${dev_root}/project/pyamsoft/shell" \
+    --env="PYAMSOFT_USE_FOOJAY=1" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     --socket=wayland \
     ${_args} \
@@ -165,6 +166,7 @@ else
     --filesystem="${dev_root}/project/pyamsoft/tools" \
     --filesystem="${dev_root}/project/pyamsoft/js" \
     --filesystem="${dev_root}/project/pyamsoft/shell" \
+    --env="PYAMSOFT_USE_FOOJAY=1" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     ${_args} \
     -- \

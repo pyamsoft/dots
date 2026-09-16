@@ -177,6 +177,7 @@ if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
     --filesystem="${dev_root}/project/pyamsoft/android/app" \
     --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
     --filesystem="${android_root}" \
+    --env="PYAMSOFT_USE_FOOJAY=1" \
     --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     --socket=wayland \
@@ -192,6 +193,7 @@ else
     --filesystem="${dev_root}/project/pyamsoft/android/app" \
     --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
     --filesystem="${android_root}" \
+    --env="PYAMSOFT_USE_FOOJAY=1" \
     --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
     --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     ${_args} \
