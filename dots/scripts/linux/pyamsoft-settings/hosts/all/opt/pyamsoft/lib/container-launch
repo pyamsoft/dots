@@ -663,10 +663,10 @@ __do_finalize() {
       # Many images hardcode Google which is lame.
       # Avoid the Google upstream by strictly opting into one DNS
       _local_dns=""
+
+      # Only guaranteed for podman `pasta` ?
       if _is_podman; then
         _local_dns="169.254.1.1"
-      elif _is_docker; then
-        _local_dns="192.168.5.7"
       fi
 
       if [ -n "${_local_dns}" ]; then
