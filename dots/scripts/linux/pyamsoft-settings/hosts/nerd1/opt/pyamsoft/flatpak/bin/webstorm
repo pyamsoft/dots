@@ -94,14 +94,8 @@ _warn_outdated() {
 readonly def_path="/app/bin:/usr/bin"
 readonly dev_root="${HOME}/devel"
 
-# Extensions
-readonly _nodejs="node24"
-
 # Local scripts
 path="${HOME}/.local/bin"
-
-# Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
-path="${path}:/usr/lib/sdk/${_nodejs}/bin"
 
 _warn_outdated
 
@@ -153,7 +147,6 @@ if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
     --filesystem="${dev_root}/project/pyamsoft/js" \
     --filesystem="${dev_root}/project/pyamsoft/shell" \
     --env="PYAMSOFT_USE_FOOJAY=1" \
-    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     --socket=wayland \
     ${_args} \
     -- \
@@ -167,7 +160,6 @@ else
     --filesystem="${dev_root}/project/pyamsoft/js" \
     --filesystem="${dev_root}/project/pyamsoft/shell" \
     --env="PYAMSOFT_USE_FOOJAY=1" \
-    --env="FLATPAK_ENABLE_SDK_EXT=${_nodejs}" \
     ${_args} \
     -- \
     ${_after_args} \
