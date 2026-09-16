@@ -662,9 +662,19 @@ __do_finalize() {
       # Add the "container local DNS"
       # Many images hardcode Google which is lame.
       # Avoid the Google upstream by strictly opting into one DNS
-      _local_dns="169.254.1.1"
-      _log 'Using local DNS resolver at %s' "${_local_dns}"
-      _add_network --dns "${_local_dns}"
+      _local_dns=""
+      if _is_podman; then
+        _local_dns="169.254.1.1"
+      elif _is_docker; then
+        _local_dns="192.168.5.7"
+      fi
+
+      if [ -n "${_local_dns}" ]; then
+        _log 'Using local DNS resolver at %s' "${_local_dns}"
+        _add_network --dns "${_local_dns}"
+      else
+        _elog 'Unable to discover the "container DNS resolver". Using image defaults'
+      fi
       unset _local_dns
     else
       _log 'Ignoring local DNS resolver - custom DNS already set'
