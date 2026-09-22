@@ -21,8 +21,10 @@ Defaults umask_override
 
 # Define secure path
 # Add pyamsoft directories to PATH
+# /containers/sbin, /containers/bin
+# /sbin, /bin
 # Defaults secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Defaults secure_path="/opt/pyamsoft/sbin:/opt/pyamsoft/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Defaults secure_path="/opt/pyamsoft/containers/sbin:/opt/pyamsoft/containers/bin:/opt/pyamsoft/sbin:/opt/pyamsoft/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Keep defined proxies
 Defaults env_keep += "*_proxy *_PROXY"
