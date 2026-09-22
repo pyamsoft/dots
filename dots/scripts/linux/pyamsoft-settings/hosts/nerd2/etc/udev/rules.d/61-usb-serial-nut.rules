@@ -1,0 +1,14 @@
+ACTION=="remove", GOTO="containers-nut-usbups_rules_end"
+SUBSYSTEM=="usb_device", GOTO="containers-nut-usbups_rules_real"
+SUBSYSTEM=="usb", GOTO="containers-nut-usbups_rules_real"
+GOTO="containers-nut-usbups_rules_end"
+
+LABEL="containers-nut-usbups_rules_real"
+
+# Add support for your UPS over usb here
+# Find via `lsusb`
+
+# Goldenmate 800W Pro
+ATTR{idVendor}=="06da", ATTR{idProduct}=="ffff", MODE="0660", GROUP="containers-nut"
+
+LABEL="containers-nut-usbups_rules_end"

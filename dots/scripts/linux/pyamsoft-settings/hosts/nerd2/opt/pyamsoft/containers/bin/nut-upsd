@@ -1,0 +1,62 @@
+#!/bin/sh
+
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/container-launch
+. "${PYAMSOFT_PATH}/lib/container-launch"
+
+NAME="nut-upsd"
+IMAGE="docker.io/instantlinux/nut-upsd"
+TAG="2.8.5-r1"
+
+_prep_mounts() {
+  # Writeable destinations so we can use readonly
+  _add_mounts --tmpfs "/etc/nut" || return 1
+  _add_mounts --tmpfs "/var/run" || return 1
+
+  # Make runconfig directory
+  _host_mkdir "${CONTAINER_RUNTIME_DIR}/${NAME}"
+
+  # Needs access to usb/bus
+  if [ -d /dev/bus ]; then
+    _add_mounts --device /dev/bus:/dev/bus || return 1
+  fi
+
+  return 0
+}
+
+_prep_caps() {
+  # To chdir and change user from container root to nut
+  _add_caps --cap-add SETGID
+  _add_caps --cap-add SETUID
+  _add_caps --cap-add CHOWN
+  _add_caps --cap-add DAC_OVERRIDE
+
+  return 0
+}
+
+_prep_env() {
+  _add_env -e NUT_DEBUG_LEVEL="0"
+  _add_env -e DRIVER="usbhid-ups"
+  _add_env -e PORT="auto"
+  return 0
+}
+
+_prep_network() {
+  _network_isolate || return 1
+  return 0
+}
+
+_prep_ports() {
+  _add_ports -p "127.0.0.1:3493:3493/tcp"
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
