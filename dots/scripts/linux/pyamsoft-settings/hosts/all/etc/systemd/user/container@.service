@@ -4,11 +4,6 @@ Description=On %u login, start container %i
 After=network.target syslog.target local-fs.target docker.service podman.service
 
 [Service]
-# The path to the container script
-Environment=PYAM_CONTAINER=/opt/pyamsoft/bin/%i
-
-## Generally you should NOT need to change these
-
 # Log in journal as this name instead of "sh" or "bash"
 SyslogIdentifier=container@%i
 
@@ -27,7 +22,7 @@ ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
 # Start the container and tear it down after
 Type=notify
 NotifyAccess=all
-ExecStart=/bin/sh -c '$PYAM_CONTAINER'
+ExecStart=/opt/pyamsoft/containers/bin/%i
 ExecStop=/opt/pyamsoft/bin/container-teardown %i
 Restart=on-failure
 RestartSec=10
