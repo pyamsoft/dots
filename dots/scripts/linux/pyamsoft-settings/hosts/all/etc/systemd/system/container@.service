@@ -14,7 +14,7 @@ Environment=PYAM_SYSTEMD=1
 Environment=PYAMSOFT_PATH=/opt/pyamsoft
 
 # Check the file exists, do not attempt to start otherwise
-ExecStartPre=/bin/test -x $PYAM_CONTAINER
+ExecStartPre=/bin/test -x /opt/pyamsoft/containers/sbin/%i
 
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
