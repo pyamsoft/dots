@@ -6,7 +6,7 @@
 
 NAME="home-assistant"
 IMAGE="ghcr.io/linuxserver/homeassistant"
-TAG="2026.9.2"
+TAG="2026.9.3"
 
 # Runs with host networking, so do not use DNS resolver
 CONTAINER_DNS_RESOLVER=0

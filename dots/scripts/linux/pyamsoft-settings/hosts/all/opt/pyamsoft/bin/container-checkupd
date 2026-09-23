@@ -74,6 +74,10 @@ _get_latest_tags() {
       # We want X.Y or X.Y.Z
       grep '\.' |
         case "${_container}" in
+        */nut-upsd)
+          # Weird old format
+          grep -v '19\.' | grep -v '18\.' | grep -v '17\.'
+          ;;
         */rendercv)
           grep -v 'sha'
           ;;
