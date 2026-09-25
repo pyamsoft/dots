@@ -17,8 +17,9 @@ if ! _is_linux; then
   CONTAINER_DNS_RESOLVER=0
 fi
 
-# Allow model customization via variable or fallback to base-int8
-MODEL="${MODEL:-base-int8}"
+# Customization
+MODEL="${MODEL:-small-int8}"
+STT_LIBRARY="${STT_LIBRARY:-faster-whisper}"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/tmp" "/tmp" || return 1
@@ -68,12 +69,19 @@ _finalize() {
   # Wake word command
   _add_args -m "wyoming_faster_whisper"
   _add_args --uri "tcp://0.0.0.0:10300"
-  _add_args --model "${MODEL}"
   _add_args --beam-size 1
   _add_args --compute-type "int8"
   _add_args --language "en"
   _add_args --data-dir "/data"
   _add_args --download-dir "/download"
+
+  # Customization
+  _add_args --model "${MODEL}"
+  _add_args --stt-library "${STT_LIBRARY}"
+
+  if [ -n "${CPU_THREADS}" ]; then
+    _add_args --cpu-threads "${CPU_THREADS}"
+  fi
 
   # Can run as read-only root
   _add_rc --read-only
