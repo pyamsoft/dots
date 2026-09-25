@@ -69,8 +69,6 @@ _finalize() {
   # Wake word command
   _add_args -m "wyoming_faster_whisper"
   _add_args --uri "tcp://0.0.0.0:10300"
-  _add_args --beam-size 1
-  _add_args --compute-type "int8"
   _add_args --language "en"
   _add_args --data-dir "/data"
   _add_args --download-dir "/download"
