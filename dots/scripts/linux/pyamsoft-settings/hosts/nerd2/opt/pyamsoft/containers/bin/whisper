@@ -83,6 +83,10 @@ _finalize() {
     _add_args --cpu-threads "${CPU_THREADS}"
   fi
 
+  if [ -n "${VAD_CLIP}" ] && [ "${VAD_CLIP}" -eq 1 ]; then
+    _add_args --vad-clip
+  fi
+
   # Can run as read-only root
   _add_rc --read-only
 
