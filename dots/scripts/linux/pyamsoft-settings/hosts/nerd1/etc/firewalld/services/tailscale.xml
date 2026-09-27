@@ -2,5 +2,5 @@
 <service version="1">
   <short>tailscale</short>
   <description>TailScale</description>
-  <port port="41643" protocol="udp" />
+  <port port="31642" protocol="udp" />
 </service>
