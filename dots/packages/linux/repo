@@ -24,6 +24,8 @@ gst-plugin-va
 hplip
 hunspell-en_us
 informant
+intel-lpmd
+intel-media-driver
 intel-ucode
 inter-font
 iotop
@@ -90,6 +92,7 @@ unrar
 unzip
 util-linux
 virt-manager
+vpl-gpu-rt
 vulkan-intel
 vulkan-radeon
 wakeonlan
