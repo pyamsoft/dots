@@ -3,7 +3,6 @@ aardvark-dns
 abseil-cpp
 accountsservice
 acl
-ada
 adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
@@ -40,7 +39,6 @@ breeze-icons
 brotli
 bubblewrap
 bzip2
-c-ares
 ca-certificates
 ca-certificates-mozilla
 ca-certificates-utils
@@ -742,9 +740,6 @@ nettle
 networkmanager
 networkmanager-qt
 nftables
-node-gyp
-nodejs
-nodejs-nopt
 noto-fonts
 noto-fonts-cjk
 npth
@@ -965,7 +960,6 @@ sdl3
 seabios
 seatd
 sed
-semver
 serd
 shaderc
 shadow
@@ -974,7 +968,6 @@ signon-kwallet-extension
 signon-plugin-oauth2
 signon-ui
 signond
-simdjson
 slang
 smbclient
 snappy
