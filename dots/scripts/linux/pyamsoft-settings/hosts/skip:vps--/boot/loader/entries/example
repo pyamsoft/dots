@@ -24,10 +24,6 @@ options module.sig_enforce=1
 # Ignore staggered spin up
 options libahci.ignore_sss=1
 
-# Use software IOMMU, and enable passthrough
-# https://unix.stackexchange.com/questions/592538/what-are-the-implication-of-using-iommu-force-in-the-boot-kernel-options
-options iommu=soft,pt
-
 # Lower latency for desktop systems
 # https://discourse.ubuntu.com/t/fine-tuning-the-ubuntu-24-04-kernel-for-low-latency-throughput-and-power-efficiency/44834
 options preempt=full rcu_nocbs=all threadirqs
@@ -52,10 +48,20 @@ options amdgpu.sg_display=0
 # GPU overclocking and voltage control
 options amdgpu.ppfeaturemask=0xffffffff
 
+# IOMMU options
+#
+# - Turns DMA remapping on
+# - Never fallback to swiotlb only
+# - Isolate internal devices
+# - Blocks DMA before iommu starts and increases pool size from 64M to 128M
+#
 # Tell Linux to allocate it's own PCI instead of listening to BIOS
 #
 # Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
 # Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: can't assign; no space
 # Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
-#options pci=realloc=on
-#options pci=realloc=on,assign-busses # More aggressive
+options iommu=force
+options intel_iommu=on amd_iommu=force_isolation
+options iommu.passthrough=0 iommu.strict=1
+options efi=disable_early_pci_dma swiotlb=65536
+options pci=realloc
