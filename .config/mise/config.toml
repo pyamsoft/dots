@@ -1,0 +1,5 @@
+[settings]
+activate_shims = false
+no_hooks = true
+color_theme = "catppuccin"
+not_found_auto_install = false
