@@ -73,4 +73,4 @@ options slab_nomerge
 options page_alloc.shuffle=1
 
 # Turn off /sys/kernel/debug
-option debugfs=off
+options debugfs=off
