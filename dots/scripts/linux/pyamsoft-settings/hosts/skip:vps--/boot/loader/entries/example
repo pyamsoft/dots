@@ -65,3 +65,12 @@ options intel_iommu=on amd_iommu=force_isolation
 options iommu.passthrough=0 iommu.strict=1
 options efi=disable_early_pci_dma swiotlb=65536
 options pci=realloc
+
+# Stop merging slab memory caches
+options slab_nomerge
+
+# Randomize page allocator
+options page_alloc.shuffle=1
+
+# Turn off /sys/kernel/debug
+option debugfs=off
