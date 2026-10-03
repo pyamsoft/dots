@@ -27,8 +27,8 @@ flatpak__clear_pins() {
 }
 
 ##
-# Remove background permission from all flatpak apps
-flatpak__remove_background_permissions() {
+# Remove background permission from all flatpak apps except those that benefit
+flatpak__apply_background_permissions() {
   for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
     flatpak permission-set background background "${_app}" no || return 1
     unset _app
@@ -39,10 +39,18 @@ flatpak__remove_background_permissions() {
 }
 
 ##
-# Remove realtime permission from all flatpak apps
-flatpak__remove_realtime_permissions() {
+# Remove realtime permission from all flatpak apps except those that benefit
+flatpak__apply_realtime_permissions() {
   for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
-    flatpak permission-set realtime realtime "${_app}" no || return 1
+    case "${_app}" in
+    org.DolphinEmu.dolphin-emu | dev.eden_emu.eden)
+      printf -- 'Granting realtime permission for flatpak: %s\n' "${_app}"
+      flatpak permission-set realtime realtime "${_app}" yes || return 1
+      ;;
+    *)
+      flatpak permission-set realtime realtime "${_app}" no || return 1
+      ;;
+    esac
     unset _app
   done
   unset _app
