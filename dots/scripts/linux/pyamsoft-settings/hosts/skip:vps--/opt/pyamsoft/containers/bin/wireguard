@@ -9,14 +9,14 @@
 # themselves when invoking this script.
 NAME="${NAME:-wireguard}"
 
-IMAGE="docker.io/jordanpotter/wireguard"
-TAG="2026-03-31"
+IMAGE="ghcr.io/linuxserver/wireguard"
+TAG="1.0.20260223"
 
 CONTAINER_NETWORK_HOST_ROUTE=0
 CONTAINER_DNS_RESOLVER=0
 
 _prep_mounts() {
-  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/wg" "/etc/wireguard" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/wg" "/config/wg_confs" || return 1
 
   # Bind kernel modules
   _mount_bind "/lib/modules" "/lib/modules" || return 1
@@ -66,6 +66,9 @@ _check_user() {
 
 _finalize() {
   _add_rc --sysctl="net.ipv4.conf.all.src_valid_mark=1"
+
+  # No read-only in CLIENT mode
+  #_add_rc --read-only
 
   return 0
 }
