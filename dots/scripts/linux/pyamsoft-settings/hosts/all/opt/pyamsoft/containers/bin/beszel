@@ -152,7 +152,12 @@ _finalize() {
   fi
 
   _add_env -e KEY="${BESZEL_KEY}"
+
+  # No SSH communication
   _add_env -e DISABLE_SSH=true
+
+  # Don't check images
+  _add_env -e DOCKER_IMAGE_CHECK=false
 
   if [ "${BESZEL_MODE}" != "hub" ]; then
     _add_env -e SKIP_SYSTEMD=true
