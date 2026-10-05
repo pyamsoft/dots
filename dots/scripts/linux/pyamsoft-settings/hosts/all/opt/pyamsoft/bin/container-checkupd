@@ -90,7 +90,7 @@ _get_latest_tags() {
           grep -v '2021.' | grep -v '\-ls'
           ;;
         */wireguard)
-          grep -v '\-ls'
+          grep -v '\-ls' | grep -v legacy | grep -v alpine
           ;;
         */httpie)
           grep -v '3.5-0.9.9'
