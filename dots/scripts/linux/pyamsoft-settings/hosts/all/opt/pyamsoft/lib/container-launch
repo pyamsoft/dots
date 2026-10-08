@@ -87,7 +87,7 @@ _is_cmd_version_atleast() {
   # - split the the EXPECT by . -> e
   # - if h (X.Y.Z) >= e (X.Y.Z) we are good
   __VCMP_HAS="${__container_version}" __VCMP_EXP=${_expect_v} awk 'BEGIN {
-    if (!match(ENVIRON["__VCMP_HAS"], /[0-9+(\.[0-9]+)+/)) {
+    if (!match(ENVIRON["__VCMP_HAS"], /[0-9]+(\.[0-9]+)+/)) {
       exit 0;
     }
 
@@ -102,7 +102,7 @@ _is_cmd_version_atleast() {
         exit 0;
       }
 
-      if (h[i] + 0 > e[i] + 0) {
+      if (h[i] + 0 < e[i] + 0) {
         exit 1;
       }
     }
@@ -590,6 +590,8 @@ __await_directory() {
         unset _awaiting
         return 1
       fi
+
+      _await_tries="$((_await_tries + 1))"
 
       sleep 1 || {
         _elog 'Cancelled while waiting for container runtime to stand up at %s' "${_awaiting}"

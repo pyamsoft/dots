@@ -6,8 +6,15 @@
 
 NAME="$(basename "$0")"
 
-if [ "${_uid}" -eq 0 ]; then
-  exec "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
-else
-  exec sudo "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
-fi
+main() {
+  _load_containers || return 1
+
+  if [ "${_uid}" -eq 0 ]; then
+    exec "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
+  else
+    exec sudo "${CONTAINER_CMD}" exec -i -t crowdsec cscli "$@"
+  fi
+}
+
+main "$@"
+exit "$?"
