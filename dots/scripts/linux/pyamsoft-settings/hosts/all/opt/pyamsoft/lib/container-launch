@@ -50,7 +50,7 @@ CONTAINER_CPU=""
 CONTAINER_ARGS=""
 
 # The container runtime command
-CONTAINER_CMD="${CONTAINER_CMD}:-"
+CONTAINER_CMD="${CONTAINER_CMD:-}"
 
 ### Private
 __container_version=""
