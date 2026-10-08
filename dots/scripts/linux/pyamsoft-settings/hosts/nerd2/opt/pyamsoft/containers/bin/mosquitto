@@ -25,8 +25,11 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  _add_ports -p "127.0.0.1:1883:1883/tcp"
-  _add_ports -p "127.0.0.1:9001:9001/tcp"
+  # Only podman does not care if you do --network AND ports
+  if _is_podman; then
+    _add_ports -p "127.0.0.1:1883:1883/tcp"
+    _add_ports -p "127.0.0.1:9001:9001/tcp"
+  fi
   return 0
 }
 
@@ -35,8 +38,6 @@ _prep_env() {
 }
 
 _prep_network() {
-  CONTAINER_NETWORK_HOST_ROUTE=0
-
   # Piggyback onto the home-assistant network
   _add_network --network="container:home-assistant"
   return 0

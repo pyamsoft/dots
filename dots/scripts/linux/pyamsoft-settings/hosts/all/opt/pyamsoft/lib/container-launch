@@ -4,6 +4,9 @@
 # shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
+# Disable file path expansion
+set -f
+
 IMAGE="${IMAGE:-}"
 TAG="${TAG:-}"
 
@@ -47,7 +50,10 @@ CONTAINER_CPU=""
 CONTAINER_ARGS=""
 
 # The container runtime command
-CONTAINER_CMD=""
+CONTAINER_CMD="${CONTAINER_CMD}:-"
+
+### Private
+__container_version=""
 
 ## Defaults
 
@@ -70,60 +76,41 @@ _is_macos_container() {
 _is_cmd_version_atleast() {
   _expect_v="$1"
 
-  _has_v_array="$("${CONTAINER_CMD}" --version | grep -o '[0-9][0-9]*\(\.[0-9][0-9]*\)\{1,2\}' | tr '.' ' ')"
-  _exp_v_array="$(printf -- '%s' "${_expect_v}" | tr '.' ' ')"
-
-  _has_v_major="$(printf -- '%s' "${_has_v_array}" | awk '{ print $1 }')"
-  _has_v_minor="$(printf -- '%s' "${_has_v_array}" | awk '{ print $2 }')"
-  _has_v_patch="$(printf -- '%s' "${_has_v_array}" | awk '{ print $3 }')"
-
-  _exp_v_major="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $1 }')"
-  _exp_v_minor="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $2 }')"
-  _exp_v_patch="$(printf -- '%s' "${_exp_v_array}" | awk '{ print $3 }')"
-
-  _vcmp_ret=0
-
-  if [ -n "${_has_v_major}" ] && [ -n "${_exp_v_major}" ]; then
-    # Our current MAJOR is less than we expect, fail
-    if [ "${_has_v_major}" -lt "${_exp_v_major}" ]; then
-      _vcmp_ret=1
-    elif [ "${_has_v_major}" -gt "${_exp_v_major}" ]; then
-      # MAJOR is a direct PASS
-      _vcmp_ret=0
-    elif [ "${_has_v_major}" -eq "${_exp_v_major}" ]; then
-      # MAJOR passes, but we need to check minor
-      if [ -n "${_has_v_minor}" ] && [ -n "${_exp_v_minor}" ]; then
-        if [ "${_has_v_minor}" -lt "${_exp_v_minor}" ]; then
-          # MAJOR passes but MINOR is less than we expect, fail
-          _vcmp_ret=1
-        elif [ "${_has_v_minor}" -gt "${_exp_v_minor}" ]; then
-          # MINOR is a direct PASS
-          _vcmp_ret=0
-        elif [ "${_has_v_minor}" -eq "${_exp_v_minor}" ]; then
-          # MAJOR, MINOR passes, but we need to check patch
-          if [ -n "${_has_v_patch}" ] && [ -n "${_exp_v_patch}" ]; then
-            if [ "${_has_v_patch}" -lt "${_exp_v_patch}" ]; then
-              # PATCH fails. Reallyyyyy??
-              _vcmp_ret=1
-            fi
-          fi
-        fi
-      fi
-    fi
+  if [ -z "${__container_version}" ]; then
+    __container_version="$("${CONTAINER_CMD}" --version 2>/dev/null)"
   fi
 
-  unset _exp_v_major
-  unset _exp_v_minor
-  unset _exp_v_patch
-  unset _exp_v_array
+  # Fun with awk :)
+  #
+  # - make sure the version string is numbers and dots
+  # - split the the HAS by . -> h
+  # - split the the EXPECT by . -> e
+  # - if h (X.Y.Z) >= e (X.Y.Z) we are good
+  __VCMP_HAS="${__container_version}" __VCMP_EXP=${_expect_v} awk 'BEGIN {
+    if (!match(ENVIRON["__VCMP_HAS"], /[0-9+(\.[0-9]+)+/)) {
+      exit 0;
+    }
 
-  unset _has_v_major
-  unset _has_v_minor
-  unset _has_v_patch
-  unset _has_v_array
+    split(substr(ENVIRON["__VCMP_HAS"], RSTART, RLENGTH), h, ".");
+    split(ENVIRON["__VCMP_EXP"], e, ".");
+    for (i = 1; i <= 3; ++i) {
+      if (h[i] == "" || e[i] == "") {
+        exit 0;
+      }
 
-  unset _expect_v
-  return "${_vcmp_ret}"
+      if (h[i] + 0 > e[i] + 0) {
+        exit 0;
+      }
+
+      if (h[i] + 0 > e[i] + 0) {
+        exit 1;
+      }
+    }
+
+    exit 0;
+  }'
+
+  return "$?"
 }
 
 ##
@@ -556,7 +543,6 @@ __require_function() {
 
   return 0
 }
-readonly __require_function
 
 ##
 # Private
@@ -566,7 +552,9 @@ __setup_network() {
   # Evaluate this AFTER so that just incase the script
   # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
   if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
-    if ! _is_macos_container; then
+    if _has_network 'container:*'; then
+      _log 'Ignoring host routes. Container networking is already set.'
+    elif ! _is_macos_container; then
       _add_network --add-host "localhost:127.0.0.1"
       _add_network --add-host "host.containers.internal:host-gateway"
       _add_network --add-host "host.docker.internal:host-gateway"
@@ -575,7 +563,6 @@ __setup_network() {
 
   return 0
 }
-readonly __setup_network
 
 ##
 # Private
@@ -587,7 +574,7 @@ __await_directory() {
   fi
 
   # Run a simple version command which should "start" the podman container runtime directory
-  "${CONTAINER_CMD}" --version >/dev/null 2>&1 || {
+  __container_version="$("${CONTAINER_CMD}" --version 2>/dev/null)" || {
     _elog 'Unable to check %s version.' "${CONTAINER_CMD}"
     return 1
   }
@@ -595,21 +582,31 @@ __await_directory() {
   if _is_linux && _is_podman; then
     # Wait for the podman folder to be available before launching
     # This folder is created "at some point" in response to podman commands being run
+    _await_tries=0
     while [ ! -d "${_awaiting}" ]; do
+      if [ "${_await_tries}" -ge 30 ]; then
+        _elog 'Timed out after waiting for container runtime at %s' "${_awaiting}"
+        unset _await_tries
+        unset _awaiting
+        return 1
+      fi
+
       sleep 1 || {
         _elog 'Cancelled while waiting for container runtime to stand up at %s' "${_awaiting}"
 
+        unset _await_tries
         unset _awaiting
         return 1
       }
     done
+    unset _await_tries
+
     _log 'Container runtime is ready at %s: start %s' "${_awaiting}" "${NAME}"
   fi
 
   unset _awaiting
   return 0
 }
-readonly __await_directory
 
 ##
 # Private
@@ -618,7 +615,7 @@ __do_prep_mounts() {
 
   # Mount host busybox into container
   if [ "${CONTAINER_DEBUG}" ] && [ "${CONTAINER_DEBUG}" -ne 0 ]; then
-    if command busybox >/dev/null 2>&1; then
+    if _has_function busybox; then
       _busybox_target="/run/busybox"
       _log 'Attach busybox for container debugging at %s' "${_busybox_target}"
       _add_mounts --mount "type=bind,source=$(command -v busybox),target=${_busybox_target}"
@@ -628,7 +625,6 @@ __do_prep_mounts() {
     fi
   fi
 }
-readonly __do_prep_mounts
 
 ##
 # Overridable
@@ -682,7 +678,6 @@ __do_finalize() {
   fi
   unset _has_dns
 }
-readonly __do_finalize
 
 ##
 # Overridable
@@ -690,14 +685,16 @@ readonly __do_finalize
 # Default function for setting up Memory usage
 _prep_memory() {
   if _is_linux; then
-    # Grab the total amount of RAM available to the system
-    _total_ram_mb="$(free -m | grep '^Mem:' | awk '{ print $2 }')"
-    _leave_free="$((_total_ram_mb * 2 / 10))"
+    # 80% of total ram
+    _allow_ram_mb="$(awk '/^MemTotal:/ { print int($2 / 1024 * 8 / 10) }' /proc/meminfo)"
 
-    _add_memory --memory "$((_total_ram_mb - _leave_free))M"
+    if [ -n "${_allow_ram_mb}" ] && [ "${_allow_ram_mb}" -gt 0 ]; then
+      _add_memory --memory "${_allow_ram_mb}M"
+    else
+      _elog 'Unable to read total RAM from /proc/meminfo. No memory limits.'
+    fi
 
-    unset _total_ram_mb
-    unset _leave_free
+    unset _allow_ram_mb
   fi
 
   return 0
@@ -709,7 +706,7 @@ _prep_memory() {
 # Default function for setting up CPU usage
 _prep_cpu() {
   if _is_linux; then
-    _cpu_number="$(grep -c "processor" /proc/cpuinfo)"
+    _cpu_number="$(getconf _NPROCESSORS_ONLN)"
 
     if [ -n "${_cpu_number}" ] && [ "${_cpu_number}" -gt 2 ]; then
       # If we have more than 2 cores, allow a container to use most
@@ -738,12 +735,16 @@ _prep_log() {
   if _is_linux && [ -n "${PYAM_SYSTEMD}" ]; then
     if _is_podman; then
       _add_logs --log-driver journald
+    elif _is_docker; then
+      _add_logs --log-driver local
     fi
   fi
 
   # Disable healthchecks
   if [ "${CONTAINER_HEALTHCHECK_ALLOWED}" -eq 0 ]; then
-    _add_logs --no-healthcheck
+    if ! _is_macos_container; then
+      _add_logs --no-healthcheck
+    fi
   fi
 
   return 0
@@ -768,6 +769,13 @@ _prep_rc() {
   fi
 
   if [ -e "${_runconf}" ]; then
+    # Don't follow symlinks
+    if [ -L "${_runconf}" ]; then
+      _elog '%s must be a regular file.' "${_runconf}"
+      unset _runconf
+      return 1
+    fi
+
     # Must be owned by current user
     if _is_macos; then
       _owner_uid="$(stat -f %u "${_runconf}")"
@@ -822,13 +830,6 @@ _finalize() {
 # Default execution function
 # Restricts capabilities, privileges, and ensures the container is named and removed after execution
 _containerize() {
-  # Parse the args in a way we expect
-  for _arg in "$@"; do
-    _add_args "${_arg}"
-    unset _arg
-  done
-  unset _arg
-
   if [ -n "${CONTAINER_REQUIRE_INIT}" ] && [ "${CONTAINER_REQUIRE_INIT}" -ne 0 ]; then
     _add_rc --init
   fi
@@ -885,8 +886,18 @@ _containerize() {
   # If we are running in systemd
   if [ -n "${PYAM_SYSTEMD}" ]; then
     # We always daemonize and setup a notify signal
-    _add_rc --detach
-    _add_rc --sdnotify=conmon
+    if _is_podman; then
+      _add_rc --detach
+      _add_rc --sdnotify=conmon
+    else
+      # Docker has no --sdnotify
+      #
+      # This is not perfect since the container is not technically live yet.
+      systemd-notify --ready || {
+        _elog 'Failed to notify systemd of container launch'
+        return 1
+      }
+    fi
   else
     # Running directly
 
@@ -927,7 +938,52 @@ _containerize() {
     ${CONTAINER_CAPS} \
     ${CONTAINER_USERNS} \
     "${IMAGE}:${TAG}" \
-    ${CONTAINER_ARGS}
+    ${CONTAINER_ARGS} \
+    "$@"
+}
+
+_load_container() {
+  if [ -z "${CONTAINER_CMD}" ]; then
+    # Use podman, don't use docker
+    if _has_function podman; then
+      CONTAINER_CMD="podman"
+    elif _has_function docker; then
+      CONTAINER_CMD="docker"
+    else
+      if _is_macos; then
+        if _has_function container; then
+          CONTAINER_CMD="container"
+        fi
+      fi
+    fi
+  fi
+
+  readonly CONTAINER_CMD
+
+  _supported=0
+  if [ -n "${CONTAINER_CMD}" ]; then
+    if _is_podman || _is_docker; then
+      _supported=1
+    else
+      if _is_macos; then
+        if _is_macos_container; then
+          _supported=1
+        fi
+      fi
+    fi
+  fi
+
+  if [ "${_supported}" -ne 1 ]; then
+    if _is_macos; then
+      _elog 'Requires either "podman" "docker", or "container" (MacOS specific) ("podman" preferred)'
+    else
+      _elog 'Requires either "podman" or "docker" ("podman" preferred)'
+    fi
+    unset _supported
+    return 1
+  fi
+
+  unset _supported
 }
 
 main() {
@@ -944,6 +1000,8 @@ main() {
   CONTAINER_MEMORY=""
   CONTAINER_CPU=""
   CONTAINER_ARGS=""
+
+  _load_container || return 1
 
   if [ -z "${NAME}" ]; then
     # shellcheck disable=SC2016
@@ -973,7 +1031,7 @@ main() {
       return 1
     }
   else
-    _watch="${XDG_RUNTIME_DIR}/containers"
+    _watch="${XDG_RUNTIME_DIR:-"/run/user/${_uid}"}/containers"
     CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
 
     cd "${HOME}" || {
@@ -1013,24 +1071,3 @@ main() {
   _containerize "$@" || return 1
   return 0
 }
-
-# Use podman, don't use docker
-if _has_function podman; then
-  CONTAINER_CMD="podman"
-elif _has_function docker; then
-  CONTAINER_CMD="docker"
-else
-  if _is_macos; then
-    if _has_function container; then
-      CONTAINER_CMD="container"
-    else
-      _elog 'Requires either "podman" "docker", or "container" (MacOS specific) ("podman" preferred)'
-      exit 1
-    fi
-  else
-    _elog 'Requires either "podman" or "docker" ("podman" preferred)'
-    exit 1
-  fi
-fi
-
-readonly CONTAINER_CMD

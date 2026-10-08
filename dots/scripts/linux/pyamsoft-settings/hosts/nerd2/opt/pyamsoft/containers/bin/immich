@@ -43,8 +43,6 @@ _prep_env() {
 }
 
 _prep_network() {
-  CONTAINER_NETWORK_HOST_ROUTE=0
-
   # Piggyback onto the immich-postgres network
   _add_network --network="container:immich-postgres"
   return 0
@@ -55,8 +53,10 @@ _prep_caps() {
 }
 
 _prep_ports() {
-  # Immich
-  _add_ports -p "127.0.0.1:2283:2283/tcp"
+  # Only podman does not care if you do --network AND ports
+  if _is_podman; then
+    _add_ports -p "127.0.0.1:2283:2283/tcp"
+  fi
   return 0
 }
 

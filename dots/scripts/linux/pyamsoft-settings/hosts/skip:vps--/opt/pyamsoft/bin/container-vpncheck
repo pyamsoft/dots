@@ -52,6 +52,8 @@ _check_airvpn() {
 }
 
 main() {
+  _load_containers || return 1
+
   _vpn="$1"
   case "${_vpn}" in
   --mullvad | --airvpn)

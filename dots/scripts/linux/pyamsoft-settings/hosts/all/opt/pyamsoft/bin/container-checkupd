@@ -246,6 +246,8 @@ _check_containers() {
 }
 
 main() {
+  _load_containers || return 1
+
   # Our user
   _check_containers "${CONTAINER_CMD}" || {
     _log 'Failed checking containers for user'
@@ -253,7 +255,10 @@ main() {
   }
 
   # Any containers delegates
-  for _container_delegate_user in /home/containers-*; do
+  set +f
+  _container_delegate_homes="$(printf -- '%s\n' /home/containers-*)"
+  set -f
+  for _container_delegate_user in ${_container_delegate_homes}; do
     _container_delegate_user="$(basename "${_container_delegate_user}")"
 
     # Check the delegated command exists
@@ -267,6 +272,7 @@ main() {
     unset _container_delegate_user
   done
   unset _container_delegate_user
+  unset _container_delegate_homes
 
   # Check again for root containers
   # We don't do this on MacOS since it runs a VM as root

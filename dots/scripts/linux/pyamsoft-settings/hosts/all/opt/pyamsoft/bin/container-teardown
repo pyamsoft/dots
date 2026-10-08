@@ -121,6 +121,8 @@ _teardown_compose() {
 }
 
 main() {
+  _load_containers || return 1
+
   # Podman expects us to be in a accessible CWD
   _sanity="${HOME:-/}"
   cd "${_sanity}" || {
@@ -207,8 +209,6 @@ main() {
         _log 'Attempting teardown of compose %s (%ss)' "${_c}" "${_time}"
         _teardown_compose "${_c}" "${_time}" || return 1
       fi
-      _log 'Attempting teardown of compose %s (%ss)' "${_c}" "${_time}"
-      _teardown_compose "${_c}" "${_time}" || return 1
     else
       _log 'Attempting teardown of container %s (%ss)' "${_c}" "${_time}"
       _teardown_container "${_c}" "${_time}" || return 1

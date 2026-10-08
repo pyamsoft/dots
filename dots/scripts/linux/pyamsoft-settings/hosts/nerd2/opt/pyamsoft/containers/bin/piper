@@ -44,8 +44,6 @@ _prep_env() {
 _prep_network() {
   # On linux, we attach to the HASS container
   if _is_linux; then
-    CONTAINER_NETWORK_HOST_ROUTE=0
-
     # Piggyback onto the home-assistant network
     _add_network --network="container:home-assistant"
   else
@@ -69,7 +67,10 @@ _prep_ports() {
     # MacOS can't bind same port on other interfaces
     _add_ports -p "10200:10200/tcp"
   else
-    _add_ports -p "127.0.0.1:10200:10200/tcp"
+    # Only podman does not care if you do --network AND ports
+    if _is_podman; then
+      _add_ports -p "127.0.0.1:10200:10200/tcp"
+    fi
   fi
   return 0
 }

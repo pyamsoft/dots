@@ -21,8 +21,6 @@ _prep_env() {
 }
 
 _prep_network() {
-  CONTAINER_NETWORK_HOST_ROUTE=0
-
   # Piggyback onto the crowdsec network
   _add_network --network="container:crowdsec"
 

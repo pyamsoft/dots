@@ -126,6 +126,8 @@ _collect_containers() {
 }
 
 main() {
+  _load_containers || return 1
+
   if [ -z "$1" ]; then
     _usage || return 1
     return 1
