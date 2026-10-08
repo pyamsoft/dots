@@ -942,7 +942,7 @@ _containerize() {
     "$@"
 }
 
-_load_container() {
+_load_containers() {
   if [ -z "${CONTAINER_CMD}" ]; then
     # Use podman, don't use docker
     if _has_function podman; then
@@ -1001,7 +1001,7 @@ main() {
   CONTAINER_CPU=""
   CONTAINER_ARGS=""
 
-  _load_container || return 1
+  _load_containers || return 1
 
   if [ -z "${NAME}" ]; then
     # shellcheck disable=SC2016
