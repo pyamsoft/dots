@@ -6,7 +6,7 @@
 
 NAME="crowdsec-blocklist-import"
 IMAGE="ghcr.io/wolffcatskyy/crowdsec-blocklist-import"
-TAG="3.7.1"
+TAG="3.8.0"
 
 _prep_mounts() {
   return 0
@@ -16,6 +16,9 @@ _prep_env() {
   # Ban for 24 hours, check every 5 for updates
   _add_env -e DECISION_DURATION=24h
   _add_env -e INTERVAL=$((5 * 60 * 60))
+
+  # Preset blocklists
+  _add_env -e PRESET=server
 
   return 0
 }
