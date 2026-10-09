@@ -3,4 +3,4 @@
 NAME="caddy-internal"
 export NAME
 
-exec "${PYAMSOFT_PATH}/bin/caddy" "$@"
+exec "${PYAMSOFT_PATH}/containers/bin/caddy" "$@"
