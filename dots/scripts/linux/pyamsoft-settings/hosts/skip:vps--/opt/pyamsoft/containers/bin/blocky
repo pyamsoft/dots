@@ -58,15 +58,21 @@ _prep_network() {
 }
 
 _prep_ports() {
-  # Bind a non-priv port on the host machine and forward the traffic into the container
-  # Setup iptables forwarding to still use port 53 on the host
-  _add_ports -p "127.0.0.1:5335:53/tcp"
-  _add_ports -p "127.0.0.1:5335:53/udp"
+  if _is_macos; then
+    # Something about MacOS does not like when I bind to 127.0.0.1 -> 53 but is perfectly fine
+    # binding 0 -> 53
+    _add_ports -p "5335:53/tcp"
+  else
+    # Bind a non-priv port on the host machine and forward the traffic into the container
+    # Setup iptables forwarding to still use port 53 on the host
+    _add_ports -p "127.0.0.1:5335:53/tcp"
+    _add_ports -p "127.0.0.1:5335:53/udp"
 
-  # Add internal support for IPv6
-  if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-    _add_ports -p "[::1]:5335:53/tcp"
-    _add_ports -p "[::1]:5335:53/udp"
+    # Add internal support for IPv6
+    if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+      _add_ports -p "[::1]:5335:53/tcp"
+      _add_ports -p "[::1]:5335:53/udp"
+    fi
   fi
 
   return 0
