@@ -62,6 +62,7 @@ _prep_ports() {
     # Something about MacOS does not like when I bind to 127.0.0.1 -> 53 but is perfectly fine
     # binding 0 -> 53
     _add_ports -p "5335:53/tcp"
+    _add_ports -p "5335:53/udp"
   else
     # Bind a non-priv port on the host machine and forward the traffic into the container
     # Setup iptables forwarding to still use port 53 on the host
