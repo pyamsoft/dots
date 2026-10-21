@@ -51,7 +51,10 @@ _prep_network() {
 
 _prep_ports() {
   _add_ports -p "127.0.0.1:8081:8080/tcp"
-  _add_ports -p "127.0.0.1:8086:8086/tcp"
+
+  # This is the internal influxdb
+  # _add_ports -p "127.0.0.1:8086:8086/tcp"
+
   return 0
 }
 
