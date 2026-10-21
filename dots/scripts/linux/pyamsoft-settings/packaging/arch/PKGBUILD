@@ -15,7 +15,7 @@ arch=('any')
 # shellcheck disable=SC2034
 makedepends=('git')
 # shellcheck disable=SC2034
-depends=('udev' 'polkit' 'sudo' 'firewalld' 'networkmanager' 'openssh' 'systemd')
+depends=('udev' 'polkit' 'sudo' 'firewalld' 'networkmanager' 'openssh' 'systemd' 'unzip')
 # shellcheck disable=SC2034
 optdepends=(
   'crane: Checking container updates'
