@@ -6,7 +6,7 @@
 
 NAME="matter"
 IMAGE="ghcr.io/matter-js/matterjs-server"
-TAG="1.4.0"
+TAG="1.5.0"
 
 CONTAINER_REQUIRE_RUNCONF=0
 CONTAINER_REQUIRE_INIT=0

@@ -12,7 +12,7 @@ readonly BASE_NAME="caddy"
 NAME="${NAME:-"${BASE_NAME}"}"
 
 IMAGE="docker.io/encg/caddy-cloudflare-crowdsec"
-TAG="2.11.4"
+TAG="2.11.7"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/data" || return 1

@@ -22,7 +22,7 @@ readonly BASE_NAME="postgres"
 NAME="${NAME:-"${BASE_NAME}"}"
 
 IMAGE="docker.io/postgres"
-TAG="18.3"
+TAG="18.6"
 
 _prep_mounts() {
   # Updated location for postgres 18
