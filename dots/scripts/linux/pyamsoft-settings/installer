@@ -17,6 +17,44 @@ _package_hostname() {
   return 0
 }
 
+_package_host_matches() {
+  _package_host_matches__condition="$1"
+  _package_host_matches__result=1
+
+  if [ "${_my_hostname}" = "${_package_host_matches__condition}" ]; then
+    _package_host_matches__result=0
+  fi
+
+  case "${_package_host_matches__condition}" in
+  *%NAME%*)
+    _package_host_matches__glob="${_package_host_matches__condition//"%NAME%"/*}"
+    case "${_my_hostname}" in
+    ${_package_host_matches__glob})
+      _package_host_matches__result=0
+      ;;
+    esac
+    unset _package_host_matches__glob
+    ;;
+  *-)
+    case "${_my_hostname}" in
+    "${_package_host_matches__condition}"*)
+      _package_host_matches__result=0
+      ;;
+    esac
+    ;;
+  -*)
+    case "${_my_hostname}" in
+    *"${_package_host_matches__condition}")
+      _package_host_matches__result=0
+      ;;
+    esac
+    ;;
+  esac
+
+  unset _package_host_matches__condition
+  return "${_package_host_matches__result}"
+}
+
 _package_install() {
   _package_install__tag="$1"
   _package_install__src_dir="$2"
@@ -195,70 +233,25 @@ main() {
     if [ "${_target_host_or_skip_host}" = "all" ]; then
       _specific_tag=""
     else
-      case "${_target_host_or_skip_host}" in
-      skip:*)
-        _skip_host="$(printf -- '%s' "${_target_host_or_skip_host}" | tr ':' ' ' | awk '{ print $2 }')"
-        ;;
-      *)
-        _target_host="${_target_host_or_skip_host}"
-        ;;
-      esac
-
-      # Check if we are skipping EXACT, or skipping 'like it'
-      if [ -n "${_skip_host}" ]; then
-        if [ "${_my_hostname}" = "${_skip_host}" ]; then
-          _dig=0
-        fi
-
-        case "${_skip_host}" in
-        *-)
-          case "${_my_hostname}" in
-          "${_skip_host}"*)
+      _old_ifs="${IFS}"
+      IFS='+'
+      for _condition in ${_target_host_or_skip_host}; do
+        case "${_condition}" in
+        skip:*)
+          if _package_host_matches "${_condition#skip:}"; then
             _dig=0
-            ;;
-          esac
+          fi
           ;;
-        -*)
-          case "${_my_hostname}" in
-          *"${_skip_host}")
+        *)
+          if ! _package_host_matches "${_condition}"; then
             _dig=0
-            ;;
-          esac
+          fi
           ;;
         esac
-      fi
-
-      # Check if we are targeting EXACT, or targeting 'like it'
-      if [ -n "${_target_host}" ]; then
-        _keep_going=0
-        if [ "${_my_hostname}" = "${_target_host}" ]; then
-          _keep_going=1
-        fi
-
-        case "${_target_host}" in
-        *-)
-          case "${_my_hostname}" in
-          "${_target_host}"*)
-            _keep_going=1
-            ;;
-          *) ;;
-          esac
-          ;;
-        -*)
-          case "${_my_hostname}" in
-          *"${_target_host}")
-            _keep_going=1
-            ;;
-          *) ;;
-          esac
-          ;;
-        esac
-
-        if [ "${_keep_going}" -eq 0 ]; then
-          _dig=0
-        fi
-        unset _keep_going
-      fi
+      done
+      IFS="${_old_ifs}"
+      unset _old_ifs
+      unset _condition
 
       _specific_tag="(${_target_host_or_skip_host})"
     fi
@@ -433,15 +426,11 @@ main() {
     unset _dig
     unset _specific_tag
     unset _target_host_or_skip_host
-    unset _skip_host
-    unset _target_host
   done
   unset _ordered_hosts
 
   unset _specific_tag
   unset _target_host_or_skip_host
-  unset _skip_host
-  unset _target_host
 
   unset _my_username
   unset _my_hostname

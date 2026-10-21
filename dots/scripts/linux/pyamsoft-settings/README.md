@@ -33,6 +33,19 @@ the files will be installed
   `skip:helloworld` and `skip:123-` but will NOT install files
   from `skip:nerd1`, or `nerd2`
 
+### Wildcards
+
+The literal `%NAME%` in a condition matches anything
+
+- Ex: hostname `nerd3` will match a folder named `nerd%NAME%`
+- Ex: hostname `vps--aws-1` will match a folder named `%NAME%-aws-%NAME%`
+
+### Combining conditions
+
+Multiple conditions can be joined with `+`. Files are only installed when ALL conditions are met.
+
+- Ex: `nerd%NAME%+skip:nerd1` installs on `nerd2` and `nerd3`, but NOT on `nerd1` or `vps--aws-1`
+
 ## After Install
 
 - Create a system group called `ssh-users` and add your user to it
