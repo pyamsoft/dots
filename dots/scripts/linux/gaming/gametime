@@ -205,14 +205,19 @@ _prepare_gamescope() {
     fi
   fi
   if [ -z "${GAME_NESTED}" ]; then
-    if _has_egpu; then
-      # FSR1 "Quality" 1920x1080 66%
-      # But FSR1 is so bad generally that even this looks rough.
-      GAME_NESTED="1920x1200"
+    # If the game has it's own scaling, render exactly.
+    if [ -n "${GAME_HAS_SCALING}" ] && [ "${GAME_HAS_SCALING}" -ne 0 ]; then
+      GAME_NESTED="${GAME_OUTPUT}"
     else
-      # FSR1 "Quality" 1280x720 66%
-      # But FSR1 is so bad generally that even this looks rough.
-      GAME_NESTED="1440x900"
+      if _has_egpu; then
+        # FSR1 "Quality" 1920x1080 66%
+        # But FSR1 is so bad generally that even this looks rough.
+        GAME_NESTED="1920x1200"
+      else
+        # FSR1 "Quality" 1280x720 66%
+        # But FSR1 is so bad generally that even this looks rough.
+        GAME_NESTED="1440x900"
+      fi
     fi
   fi
 
