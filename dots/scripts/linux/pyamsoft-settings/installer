@@ -3,7 +3,10 @@
 # Need to run with bash instead of /bin/sh to use glob options
 
 _package_hostname() {
-  if command -v hostnamectl >/dev/null; then
+  # If you have PKG_HOSTNAME defined, it overrides your hostname
+  if [ -n "${PKG_HOSTNAME}" ]; then
+    printf -- '%s' "${PKG_HOSTNAME}"
+  elif command -v hostnamectl >/dev/null; then
     hostnamectl hostname || return 1
   elif command -v hostname >/dev/null; then
     hostname || return 1
