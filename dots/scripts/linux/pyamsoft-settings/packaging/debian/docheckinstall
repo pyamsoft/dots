@@ -19,6 +19,8 @@ main() {
   }
 
   # Run from the root dir with the Makefile
+  #
+  # Recommend `crane` over skopeo, but no `crane` package on Debian
   sudo checkinstall \
     --pkgname 'pyamsoft-settings' \
     --pkgversion "${_version}" \
@@ -27,7 +29,7 @@ main() {
     --maintainer "pyamsoft" \
     --provides "pyamsoft-settings" \
     --requires "udev,sudo,openssh-server,systemd,unzip" \
-    --recommends "skopeo,crane" \
+    --recommends "skopeo" \
     ./installer '*#*#CHECKINSTALL*#*#' "$(id -u)"
 
   unset _version
