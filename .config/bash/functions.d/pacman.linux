@@ -23,7 +23,7 @@ __up_linux_arch() {
 
 __up_linux_debian() {
   if command -v apt >/dev/null; then
-    sudo sh -c "apt update && apt upgrade $@" || return 1
+    sudo sh -c "apt update && apt upgrade $*" || return 1
   fi
 
   return 0
