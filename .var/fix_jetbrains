@@ -59,7 +59,7 @@ _remove_lock() {
 
 main() {
   if [ -z "$1" ]; then
-    printf -- 'Really remove all locks? (y/N)'
+    printf -- 'Really remove all locks? (y/N) '
     read -r response
     case "${response}" in
     y | Y | yes | YES)

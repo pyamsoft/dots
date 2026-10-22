@@ -17,6 +17,7 @@ dosfstools
 edk2-shell
 flatpak
 flatpak-kcm
+framework-system
 fwupd
 gamescope
 git-delta
@@ -64,7 +65,6 @@ plasma-pa
 plasma-thunderbolt
 podman
 podman-compose
-power-profiles-daemon
 print-manager
 rebuild-detector
 reflector
@@ -73,7 +73,6 @@ rofi
 rsync
 sane-airscan
 sbctl
-shellcheck
 smartmontools
 sof-firmware
 spectacle
@@ -84,12 +83,12 @@ strace
 system-config-printer
 tailscale
 tcpdump
+tlp
 tmux
 traceroute
 ttf-gentium
 ttf-liberation
 unrar
-unzip
 util-linux
 virt-manager
 vpl-gpu-rt
