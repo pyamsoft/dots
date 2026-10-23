@@ -2,71 +2,53 @@
 
 # bash completion support for containers script
 if ! declare -f __containers >/dev/null 2>&1; then
+  __containers_names() {
+    local cmd="$1"
+    local name word used
+    local available=()
+
+    for name in $("${cmd}" ps --noheading --format '{{ .Names }}'); do
+      used=0
+      for word in "${COMP_WORDS[@]:2:COMP_CWORD-2}"; do
+        if [ "${word}" = "${name}" ]; then
+          used=1
+          break
+        fi
+      done
+
+      if [ "${used}" -eq 0 ]; then
+        available+=("${name}")
+      fi
+    done
+
+    printf -- '%s\n' "${available[@]}"
+  }
+
   __containers() {
     COMPREPLY=()
-    local prev="${COMP_WORDS[COMP_CWORD - 1]}"
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local commands="ps logs images inspect reload disable restart status stop checkup pid prune pull teardown exec shell stats networks"
 
-    _reply() {
-      # shellcheck disable=SC2207
-      COMPREPLY=($(compgen -W "$1" -- "$2"))
-    }
-
-    _select() {
-      local cmd="$1"
-
-      case "$2" in
-      ps | pull | checkup | prune | reload | networks)
-        # No further arguments
-        COMPREPLY=()
-        ;;
-      logs | images | inspect | pid | exec | teardown | disable | restart | status | stop | stats)
-        # Offer contains
-        _reply "$("${cmd}" ps --noheading --format '{{ .Names }}')" "$4"
-        ;;
-      *)
-        # Nothing, fill with suggestions
-        _reply "$3" "$4"
-        ;;
-      esac
-
-      unset cmd
-      return 0
-    }
-
-    _strip() {
-      printf -- '%s' "$1" | tr -d '[:space:]'
-    }
-
     if [ "${COMP_CWORD}" -le 1 ]; then
-      # Not enough commands, default
-      _reply "${commands}" "${cur}"
-      return
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "${commands}" -- "${cur}"))
+      return 0
     fi
 
-    if [ -n "${prev}" ]; then
-      local _previous
-      _previous="$(_strip "${prev}")"
-
-      if [ -n "${_previous}" ]; then
-        _select "$1" "${_previous}" "${commands}" "${cur}"
-        return
+    case "${COMP_WORDS[1]}" in
+    images | inspect | disable | restart | status | stop | stats | teardown)
+      # shellcheck disable=SC2207
+      COMPREPLY=($(compgen -W "$(__containers_names "$1")" -- "${cur}"))
+      ;;
+    logs | pid | exec)
+      if [ "${COMP_CWORD}" -eq 2 ]; then
+        # shellcheck disable=SC2207
+        COMPREPLY=($(compgen -W "$(__containers_names "$1")" -- "${cur}"))
       fi
-    fi
+      ;;
+    esac
 
-    if [ -n "${cur}" ]; then
-      local _current
-      _current="$(_strip "${cur}")"
-
-      if [ -n "${_current}" ]; then
-        _select "$1" "${_current}" "${commands}" "${cur}"
-        return
-      fi
-    fi
-
-    # Nothing at all, fill with suggestions
-    _reply "${commands}" "${cur}"
+    return 0
   }
 fi
 
