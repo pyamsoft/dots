@@ -566,52 +566,6 @@ __setup_network() {
 
 ##
 # Private
-__await_directory() {
-  _awaiting="$1"
-  if [ -z "${_awaiting}" ]; then
-    _elog 'Must provide directory to await'
-    return 1
-  fi
-
-  # Run a simple version command which should "start" the podman container runtime directory
-  __container_version="$("${CONTAINER_CMD}" --version 2>/dev/null)" || {
-    _elog 'Unable to check %s version.' "${CONTAINER_CMD}"
-    return 1
-  }
-
-  if _is_linux && _is_podman; then
-    # Wait for the podman folder to be available before launching
-    # This folder is created "at some point" in response to podman commands being run
-    _await_tries=0
-    while [ ! -d "${_awaiting}" ]; do
-      if [ "${_await_tries}" -ge 30 ]; then
-        _elog 'Timed out after waiting for container runtime at %s' "${_awaiting}"
-        unset _await_tries
-        unset _awaiting
-        return 1
-      fi
-
-      _await_tries="$((_await_tries + 1))"
-
-      sleep 1 || {
-        _elog 'Cancelled while waiting for container runtime to stand up at %s' "${_awaiting}"
-
-        unset _await_tries
-        unset _awaiting
-        return 1
-      }
-    done
-    unset _await_tries
-
-    _log 'Container runtime is ready at %s: start %s' "${_awaiting}" "${NAME}"
-  fi
-
-  unset _awaiting
-  return 0
-}
-
-##
-# Private
 __do_prep_mounts() {
   _prep_mounts || return 1
 
@@ -1025,17 +979,13 @@ main() {
 
   # Move to accessible directory
   if _is_root; then
-    _watch="/run/containers"
     CONTAINER_RUNTIME_DIR="/usr/local/etc/containers"
-
     cd / || {
       _elog 'Unable to move into / directory'
       return 1
     }
   else
-    _watch="${XDG_RUNTIME_DIR:-"/run/user/${_uid}"}/containers"
     CONTAINER_RUNTIME_DIR="${HOME}/.local/etc/containers"
-
     cd "${HOME}" || {
       _elog 'Unable to move into HOME directory'
       return 1
@@ -1067,7 +1017,6 @@ main() {
   _prep_log || return 1
   _prep_rc || return 1
 
-  __await_directory "${_watch}" || return 1
   __do_finalize "$@" || return 1
 
   _containerize "$@" || return 1
