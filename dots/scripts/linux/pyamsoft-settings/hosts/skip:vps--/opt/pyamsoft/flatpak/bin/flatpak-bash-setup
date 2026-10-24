@@ -100,28 +100,6 @@ _install_bash_environment() {
   return 0
 }
 
-_install_starship() {
-  _starship_flatpak_id="$1"
-
-  mkdir -p "${_starship_flatpak_id}/.local/bin/" || {
-    _elog 'Failed to create bin directory %s' "${_starship_flatpak_id}/.local/bin"
-
-    unset _starship_flatpak_id
-    return 1
-  }
-
-  cp /usr/bin/starship "${_starship_flatpak_id}/.local/bin/starship" || {
-    _elog 'Failed to install starship to %s' "${_starship_flatpak_id}/.local/bin/starship"
-
-    unset _starship_flatpak_id
-    return 1
-  }
-
-  unset _starship_flatpak_id
-
-  return 0
-}
-
 main() {
   _require_bash_environment || return 1
 
@@ -144,7 +122,6 @@ main() {
   fi
 
   _install_bash_environment "${_flatpak_directory}" || return 1
-  _install_starship "${_flatpak_directory}" || return 1
 
   unset _flatpak_directory
   unset _flatpak_id
