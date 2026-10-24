@@ -7,6 +7,7 @@ adwaita-cursors
 adwaita-fonts
 adwaita-icon-theme
 adwaita-icon-theme-legacy
+aha
 alsa-card-profiles
 alsa-lib
 alsa-plugins
@@ -47,6 +48,7 @@ catatonit
 cdparanoia
 cfitsio
 cifs-utils
+clinfo
 composefs
 conmon
 containers-common
@@ -73,6 +75,7 @@ default-cursors
 desktop-file-utils
 device-mapper
 diffutils
+dmidecode
 dnsmasq
 dnssec-anchors
 double-conversion
@@ -199,6 +202,7 @@ jbigkit
 jitterentropy
 json-c
 json-glib
+jsoncpp
 kaccounts-integration
 kactivitymanagerd
 karchive
@@ -577,6 +581,7 @@ libutempter
 libutf8proc
 libuv
 libva
+libva-utils
 libvdpau
 libvdpau-va-gl
 libverto
@@ -703,6 +708,7 @@ openjpeg2
 openjph
 openssh
 openssl
+openxr
 opus
 orc
 osinfo-db
@@ -868,11 +874,14 @@ qrencode
 qt6-5compat
 qt6-base
 qt6-declarative
+qt6-graphs
 qt6-imageformats
 qt6-location
 qt6-multimedia
 qt6-multimedia-ffmpeg
 qt6-positioning
+qt6-quick3d
+qt6-quicktimeline
 qt6-shadertools
 qt6-speech
 qt6-svg
@@ -1024,6 +1033,7 @@ xkeyboard-config
 xorg-fonts-encodings
 xorg-server-common
 xorg-setxkbmap
+xorg-xdpyinfo
 xorg-xhost
 xorg-xkbcomp
 xorg-xmessage
