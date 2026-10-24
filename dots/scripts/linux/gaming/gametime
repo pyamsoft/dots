@@ -186,10 +186,10 @@ _prepare_gamescope() {
         GAME_OUTPUT="${GAME_OUTPUT_EGPU}"
         unset GAME_OUTPUT_EGPU
       else
-        GAME_OUTPUT="2560x1600"
+        GAME_OUTPUT="2560x1440"
       fi
     else
-      GAME_OUTPUT="1680x1050"
+      GAME_OUTPUT="1920x1080"
     fi
   fi
   output_width="${GAME_OUTPUT%%x*}"
@@ -212,11 +212,11 @@ _prepare_gamescope() {
       if _has_egpu; then
         # FSR1 "Quality" 1920x1080 66%
         # But FSR1 is so bad generally that even this looks rough.
-        GAME_NESTED="1920x1200"
+        GAME_NESTED="1920x1080"
       else
         # FSR1 "Quality" 1280x720 66%
         # But FSR1 is so bad generally that even this looks rough.
-        GAME_NESTED="1440x900"
+        GAME_NESTED="1600x900"
       fi
     fi
   fi
