@@ -757,6 +757,7 @@ pixman
 pkgconf
 plasma-activities
 plasma-activities-stats
+plasma-disks
 plasma-integration
 plasma-workspace
 plasma5support
