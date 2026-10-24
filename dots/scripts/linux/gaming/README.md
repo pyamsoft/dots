@@ -52,3 +52,8 @@ may be able to force the system via
 ```
 I have no idea what this does, and it takes a little while, but after doing it
 the eGPU reappeared in lspci
+
+## eDPI screen tearing
+
+Sometimes weird screen tearing behavior is observed on FW13pro laptop screen.
+If you notice this, disable Adaptive Refresh Rate (KDE 6.8)
