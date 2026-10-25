@@ -36,6 +36,7 @@ iwd
 kde-gtk-config
 kernel-modules-hook
 kinfocenter
+kitty
 kscreen
 lact
 ldns
@@ -99,5 +100,4 @@ wakeonlan
 wayland-utils
 wev
 wget
-yakuake
 zip

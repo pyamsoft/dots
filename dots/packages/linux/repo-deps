@@ -243,6 +243,8 @@ kirigami
 kirigami-addons
 kitemmodels
 kitemviews
+kitty-shell-integration
+kitty-terminfo
 kjobwidgets
 kmenuedit
 kmod
@@ -250,7 +252,6 @@ knewstuff
 knighttime
 knotifications
 knotifyconfig
-konsole
 kpackage
 kparts
 kpipewire
@@ -540,6 +541,7 @@ libraqm
 libraw
 libraw1394
 librsvg
+librsync
 libsamplerate
 libsasl
 libseccomp
