@@ -282,6 +282,10 @@ main() {
             # sudoers requires readonly for everyone
             _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "700" "400" || return 1
             ;;
+          */system-sleep/*)
+            # These are scripts
+            _package_install "${_specific_tag}" "${_file_dir}" "${_install_dir}" "${_file_name}" "755" "755" || return 1
+            ;;
           */polkit-1/rules.d)
             # polkit rules should not be read by others
             # Apperantly the "rules" need to be owned by root:polkitd
