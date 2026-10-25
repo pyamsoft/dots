@@ -28,6 +28,8 @@ _package_host_matches() {
   case "${_package_host_matches__condition}" in
   *%NAME%*)
     _package_host_matches__glob="${_package_host_matches__condition//"%NAME%"/*}"
+
+    # shellcheck disable=SC2254
     case "${_my_hostname}" in
     ${_package_host_matches__glob})
       _package_host_matches__result=0
@@ -230,31 +232,27 @@ main() {
     _dig=1
 
     # We always work with the special "all" host
-    if [ "${_target_host_or_skip_host}" = "all" ]; then
-      _specific_tag=""
-    else
-      _old_ifs="${IFS}"
-      IFS='+'
-      for _condition in ${_target_host_or_skip_host}; do
-        case "${_condition}" in
-        skip:*)
-          if _package_host_matches "${_condition#skip:}"; then
-            _dig=0
-          fi
-          ;;
-        *)
-          if ! _package_host_matches "${_condition}"; then
-            _dig=0
-          fi
-          ;;
-        esac
-      done
-      IFS="${_old_ifs}"
-      unset _old_ifs
-      unset _condition
+    _old_ifs="${IFS}"
+    IFS='+'
+    for _condition in ${_target_host_or_skip_host}; do
+      case "${_condition}" in
+      skip:*)
+        if _package_host_matches "${_condition#skip:}"; then
+          _dig=0
+        fi
+        ;;
+      *)
+        if ! _package_host_matches "${_condition}"; then
+          _dig=0
+        fi
+        ;;
+      esac
+    done
+    IFS="${_old_ifs}"
+    unset _old_ifs
+    unset _condition
 
-      _specific_tag="(${_target_host_or_skip_host})"
-    fi
+    _specific_tag="(${_target_host_or_skip_host})"
 
     if [ "${_dig}" -eq 1 ]; then
       cd "${_target_host_or_skip_host}" || {
