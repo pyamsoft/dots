@@ -50,7 +50,7 @@ IFS="${_new_ifs}"
 for _alias in $(printf -- '%s' "${_all_alias}" | awk '{ base=$0; sub(".*/", "", base); printf "%s\t%s\n", base, $0; }' | LC_COLLATE=C sort -t $'\t' -k 1,1 -k 2,2 | cut -f2-); do
   IFS="${_old_ifs}"
   case "${_alias}" in
-  *.linux)
+  *.linux | *.linux.local)
     if [ "${_os}" = "Linux" ]; then
       # shellcheck disable=SC1090
       . "${_alias}" || {
@@ -59,7 +59,7 @@ for _alias in $(printf -- '%s' "${_all_alias}" | awk '{ base=$0; sub(".*/", "", 
       }
     fi
     ;;
-  *.macos)
+  *.macos | *.macos.local)
     if [ "${_os}" = "Darwin" ]; then
       # shellcheck disable=SC1090
       . "${_alias}" || {
