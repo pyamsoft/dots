@@ -170,6 +170,11 @@ and then run picard with `DISPLAY=:0 picard` where picard may be the jailed scri
 
 After running, be sure to revoke xhost access with `xhost -SI:localuser:containers-media`
 
+### Firmware updates
+
+Running `fwupdmgr upgrade` may lead to errors like "read-only filesystem" even though efivars is rw
+This is because fwupdmgr runs in a namespace, use `fwupdtool` to run directly as your user.
+
 ## Tweaks
 
 ### FS performance
