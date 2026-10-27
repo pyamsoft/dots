@@ -6,7 +6,7 @@
 
 NAME="jellyfin"
 IMAGE="docker.io/jellyfin/jellyfin"
-TAG="12.2"
+TAG="12.4"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/cache" || return 1
