@@ -55,7 +55,16 @@ Multiple conditions can be joined with `+`. Files are only installed when ALL co
 # useradd tailscaled --user-group --no-create-home
 ```
 
-- Create a user called `unbound` to run unbound
+### Framework 13 Pro Laptop
+
+By default, the Framework 13 Pro laptop has some behaviors that I personally find annoying.
+ - Opening the lid wakes the laptop immediately
+ - Inserting/Removing a USB charging cable wakes the machine
+That's lame.
+
+Some udev rules in the nerd1/etc/udev directory disable these wakeup sources so now:
+ - Changing the charging cable while sleeping does not cause a wakeup
+ - Opening the lid won't wake the laptop until you press a key, click the mouse, or power button
 
 ### License
 
