@@ -806,7 +806,6 @@ python-gobject
 python-greenlet
 python-html2text
 python-idna
-python-lockfile
 python-msgpack
 python-packaging
 python-pillow
