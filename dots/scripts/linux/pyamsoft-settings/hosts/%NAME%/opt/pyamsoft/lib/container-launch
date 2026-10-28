@@ -414,57 +414,69 @@ _require_nonroot() {
 
 ##
 # Create a new isolated bridge network
-_network_isolate() {
-  _network_name="${1:-${NAME}}"
+_create_isolated_network() {
+  _create_network_name="${1:-${NAME}}"
 
   # Create our own network
   if _is_podman; then
     # Podman can "ignore" networks with the same name
     if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns --ipv6 -- "${_network_name}" >/dev/null || {
-        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
-        unset _network_name
+      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns --ipv6 -- "${_create_network_name}" >/dev/null || {
+        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
+        unset _create_network_name
         return 1
       }
     else
-      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_network_name}" >/dev/null || {
-        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+      "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_create_network_name}" >/dev/null || {
+        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
 
-        unset _network_name
+        unset _create_network_name
         return 1
       }
     fi
   elif _is_macos_container; then
-    if ! "${CONTAINER_CMD}" network ls --format 'table' | awk '{ print $1 }' | grep -q "^${_network_name}$"; then
+    if ! "${CONTAINER_CMD}" network ls --format 'table' | awk '{ print $1 }' | grep -q "^${_create_network_name}$"; then
       # MacOS has no driver configuration or isolation or anything really.
       # Also no IPv6 specifics
-      "${CONTAINER_CMD}" network create "${_network_name}" >/dev/null || {
-        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+      "${CONTAINER_CMD}" network create "${_create_network_name}" >/dev/null || {
+        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
 
-        unset _network_name
+        unset _create_network_name
         return 1
       }
     fi
   else
     # Docker must make sure the network doesn't already exist
-    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -qx "^${_network_name}$"; then
+    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -qx "^${_create_network_name}$"; then
       if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_network_name}" >/dev/null || {
-          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_create_network_name}" >/dev/null || {
+          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
 
-          unset _network_name
+          unset _create_network_name
           return 1
         }
       else
-        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_network_name}" >/dev/null || {
-          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_network_name}"
+        "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_create_network_name}" >/dev/null || {
+          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
 
-          unset _network_name
+          unset _create_network_name
           return 1
         }
       fi
     fi
   fi
+
+  unset _create_network_name
+  return 0
+}
+
+##
+# Create and attach a new isolated bridge network
+_network_isolate() {
+  _network_name="${1:-${NAME}}"
+
+  # Create the isolated network
+  _create_isolated_network "$@" || return 1
 
   # Attach our isolated network
   _add_network --network="${_network_name}"
