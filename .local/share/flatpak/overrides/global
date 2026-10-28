@@ -23,6 +23,10 @@ org.freedesktop.login1=none
 org.gnome.Shell=none
 org.freedesktop.ScreenSaver=none
 org.gnome.Software=none
+org.kde.StatusNotifierWatcher=none
+com.canonical.Unity=none
+org.kde.kwalletd5=none
+org.kde.kwalletd6=none
 
 [System Bus Policy]
 org.gnome.SessionManager=none
