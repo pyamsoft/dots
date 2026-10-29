@@ -16,8 +16,6 @@ CONTAINER_REQUIRE_RUNCONF="${CONTAINER_REQUIRE_RUNCONF:-1}"
 CONTAINER_REQUIRE_INIT="${CONTAINER_REQUIRE_INIT:-0}"
 # Add host gateway, disable if custom networking
 CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
-# Run the container network with IPv6 if using a custom isolated network
-CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 # Pull policy
 CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 # Custom Entrypoint
@@ -34,6 +32,10 @@ CONTAINER_DAEMON="${CONTAINER_DAEMON:-0}"
 CONTAINER_DEBUG="${CONTAINER_DEBUG:-0}"
 # Use our own machine is the DNS resolver
 CONTAINER_DNS_RESOLVER="${CONTAINER_DNS_RESOLVER:-1}"
+
+## DEPRECATED (just pass --ipv6 directly to network creation)
+# Run the container network with IPv6 if using a custom isolated network
+CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -415,142 +417,107 @@ _require_nonroot() {
 ##
 # Create a new isolated bridge network
 #
+# Defaults to isolated containers with no inter-container DNS
+#
 # $1 name (optional defaults to container)
-# $2 use an internal network for container<->container communication
-_create_isolated_network() {
-  _create_network_name="${1:-${NAME}}"
-  _create_network_internal="${2:-0}"
+# $@ other options to pass to network create (for the CONTAINER_CMD)
+_create_bridge_network() {
+  _create_bridge_name="$1"
+
+  if [ -z "${_create_bridge_name}" ]; then
+    _elog 'Must call _create_bridge_network with at least network name'
+
+    unset _create_bridge_name
+    return 1
+  fi
+
+  # Rest are options directly
+  shift
+
+  # Warn deprecation
+  if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+    _log "CONTAINER_NETWORK_IP6 is deprecated, please pass --ipv6 directly to _network_isolate | _create_bridge_network"
+  fi
 
   ## There must be a better way to do this :)
 
   # Create our own network
   if _is_podman; then
-    # Podman can "ignore" networks with the same name
-    if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-      # Dual stack networking for podman
-      if [ -n "${_create_network_internal}" ] && [ "${_create_network_internal}" -eq 1 ]; then
-        if "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --ipv6 --internal -- "${_create_network_name}" >/dev/null; then
-          _log "Created isolated internal IPv6 network with DNS: %s" "${_create_network_name}"
-        else
-          _elog "Failed to create internal network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-          unset _create_network_name
-          unset _create_network_internal
-          return 1
-        fi
+    # Default podman options if nothing else is specified
+    if [ "$#" -eq 0 ]; then
+      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+        set -- --opt isolate=true --disable-dns --ipv6
       else
-        if "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns --ipv6 -- "${_create_network_name}" >/dev/null; then
-          _log "Created isolated IPv6 network with no DNS: %s" "${_create_network_name}"
-        else
-          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
+        set -- --opt isolate=true --disable-dns
+      fi
+    fi
 
-          unset _create_network_name
-          unset _create_network_internal
-          return 1
-        fi
+    # Podman can "ignore" networks with the same name
+    if "${CONTAINER_CMD}" network create --ignore --driver bridge "$@" -- "${_create_bridge_name}" >/dev/null; then
+      if [ "$#" -ne 0 ]; then
+        _log "Created isolated network with options: %s (%s)" "${_create_bridge_name}" "$*"
+      else
+        _log "Created isolated network with options: %s" "${_create_bridge_name}"
       fi
     else
-      # IPv4 only for podman
-      if [ -n "${_create_network_internal}" ] && [ "${_create_network_internal}" -eq 1 ]; then
-        if "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --internal -- "${_create_network_name}" >/dev/null; then
-          _log "Created isolated internal IPv4 network with DNS: %s" "${_create_network_name}"
-        else
-          _elog "Failed to create internal network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-          unset _create_network_name
-          unset _create_network_internal
-          return 1
-        fi
+      if [ "$#" -ne 0 ]; then
+        _elog "Failed to create isolated network using %s -> %s (%s)" "${CONTAINER_CMD}" "${_create_bridge_name}" "$*"
       else
-        if "${CONTAINER_CMD}" network create --ignore --driver bridge --opt isolate=true --disable-dns -- "${_create_network_name}" >/dev/null; then
-          _log "Created isolated IPv4 network with no DNS: %s" "${_create_network_name}"
-        else
-          _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-          unset _create_network_name
-          unset _create_network_internal
-          return 1
-        fi
+        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_bridge_name}"
       fi
-    fi
-  elif _is_macos_container; then
-    # Internal network (no support)
-    # Instead of letting you continue, stop because this is not defined.
-    if [ -n "${_create_network_internal}" ] && [ "${_create_network_internal}" -eq 1 ]; then
-      _elog "%s does not support internal networks: %s" "${CONTAINER_CMD}" "${_create_network_name}"
 
-      unset _create_network_name
-      unset _create_network_internal
+      unset _create_bridge_name
       return 1
     fi
-
-    if ! "${CONTAINER_CMD}" network ls --format 'table' | awk '{ print $1 }' | grep -q "^${_create_network_name}$"; then
-      # MacOS has no driver configuration or isolation or anything really.
-      # Also no IPv6 specifics
-      _log "Created IPv4 network: %s" "${_create_network_name}"
-      "${CONTAINER_CMD}" network create "${_create_network_name}" >/dev/null || {
-        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-        unset _create_network_name
-        unset _create_network_internal
-        return 1
-      }
-    fi
-  else
-    # Docker must make sure the network doesn't already exist
-    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -qx "^${_create_network_name}$"; then
-      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-        # Dual stack networking for docker
-        if [ -n "${_create_network_internal}" ] && [ "${_create_network_internal}" -eq 1 ]; then
-          if "${CONTAINER_CMD}" network create --driver bridge --ipv6 --internal -- "${_create_network_name}" >/dev/null; then
-            _log "Created internal IPv6 network with ICC: %s" "${_create_network_name}"
-          else
-            _elog "Failed to create internal network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-            unset _create_network_name
-            unset _create_network_internal
-            return 1
-          fi
+  elif _is_macos_container; then
+    # MacOS has no driver configuration or isolation or anything really.
+    # Also no IPv6 specifics
+    if ! "${CONTAINER_CMD}" network ls --format 'table' | awk '{ print $1 }' | grep -q "^${_create_bridge_name}$"; then
+      if "${CONTAINER_CMD}" network create "$@" "${_create_bridge_name}" >/dev/null; then
+        if [ "$#" -ne 0 ]; then
+          _log "Created IPv4 network with options: %s (%s)" "${_create_bridge_name}" "$*"
         else
-          if "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false --ipv6 -- "${_create_network_name}" >/dev/null; then
-            _log "Created isolated IPv6 network with no ICC: %s" "${_create_network_name}"
-          else
-            _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-            unset _create_network_name
-            unset _create_network_internal
-            return 1
-          fi
+          _log "Created IPv4 network with options: %s" "${_create_bridge_name}"
         fi
       else
-        # IPv4 only for Docker
-        if [ -n "${_create_network_internal}" ] && [ "${_create_network_internal}" -eq 1 ]; then
-          if "${CONTAINER_CMD}" network create --driver bridge --internal -- "${_create_network_name}" >/dev/null; then
-            _log "Created internal IPv4 network with ICC: %s" "${_create_network_name}"
-          else
-            _elog "Failed to create internal network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-            unset _create_network_name
-            unset _create_network_internal
-            return 1
-          fi
+        if [ "$#" -ne 0 ]; then
+          _elog "Failed to create IPv4 network using %s -> %s (%s)" "${CONTAINER_CMD}" "${_create_bridge_name}" "$*"
         else
-          if "${CONTAINER_CMD}" network create --driver bridge --opt com.docker.network.bridge.enable_icc=false -- "${_create_network_name}" >/dev/null; then
-            _log "Created isolated IPv4 network with no ICC: %s" "${_create_network_name}"
-          else
-            _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_network_name}"
-
-            unset _create_network_name
-            unset _create_network_internal
-            return 1
-          fi
+          _elog "Failed to create IPv4 network using %s -> %s" "${CONTAINER_CMD}" "${_create_bridge_name}"
         fi
+
+        unset _create_bridge_name
+        return 1
+      fi
+    fi
+  else
+    # Default podman options if nothing else is specified
+    if [ "$#" -eq 0 ]; then
+      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+        set -- --opt com.docker.network.bridge.enable_icc=false --ipv6
+      else
+        set -- --opt com.docker.network.bridge.enable_icc=false
+      fi
+    fi
+
+    # Docker must make sure the network doesn't already exist
+    if ! "${CONTAINER_CMD}" network ls --format '{{.Name}}' | grep -qx "^${_create_bridge_name}$"; then
+      if "${CONTAINER_CMD}" network create --driver bridge "$@" -- "${_create_bridge_name}" >/dev/null; then
+        if [ "$#" -ne 0 ]; then
+          _log "Created isolated network with options: %s (%s)" "${_create_bridge_name}" "$*"
+        else
+          _log "Created isolated network with options: %s" "${_create_bridge_name}"
+        fi
+      else
+        _elog "Failed to create isolated network using %s -> %s" "${CONTAINER_CMD}" "${_create_bridge_name}"
+
+        unset _create_bridge_name
+        return 1
       fi
     fi
   fi
 
-  unset _create_network_name
-  unset _create_network_internal
+  unset _create_bridge_name
   return 0
 }
 
@@ -559,9 +526,14 @@ _create_isolated_network() {
 _network_isolate() {
   _network_name="${1:-${NAME}}"
 
+  # If called with a name, eat it
+  if [ -n "$1" ]; then
+    shift
+  fi
+
   # Create the isolated network
-  # Do not pass internal here as this is meant to be "the main" network in the container
-  _create_isolated_network "${_network_name}" "0" || return 1
+  # Do not pass --internal here as this is meant to be "the main" network in the container
+  _create_bridge_network "${_network_name}" "$@" || return 1
 
   # Attach our isolated network
   _add_network --network="${_network_name}"
