@@ -196,7 +196,7 @@ main() {
   # Iterate host folders in order
   _ordered_hosts=""
 
-  for _d in ./all ./skip:*/; do
+  for _d in *%NAME%*/ ./skip:*/; do
     if [ -z "${_ordered_hosts}" ]; then
       _ordered_hosts="${_d}"
     else
@@ -208,7 +208,7 @@ main() {
 
   for _d in ./*/; do
     case "${_d}" in
-    ./all/)
+    *%NAME%*)
       continue
       ;;
     ./skip:*/)
