@@ -436,13 +436,12 @@ _create_bridge_network() {
 
   # Create our own network
   if _is_podman; then
-    # Default podman options if nothing else is specified
-    if [ "$#" -eq 0 ]; then
-      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-        set -- --opt isolate=true --disable-dns --ipv6
-      else
-        set -- --opt isolate=true --disable-dns
-      fi
+    # We always want strict isolation
+    # We always want to disable DNS
+    if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
+      set -- "$@" --opt isolate=strict --disable-dns --ipv6
+    else
+      set -- "$@" --opt isolate=strict --disable-dns
     fi
 
     # Podman can "ignore" networks with the same name
@@ -484,13 +483,11 @@ _create_bridge_network() {
       fi
     fi
   else
-    # Default podman options if nothing else is specified
+    # We always want to disable ECC
     if [ "$#" -eq 0 ]; then
-      if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-        set -- --opt com.docker.network.bridge.enable_icc=false --ipv6
-      else
-        set -- --opt com.docker.network.bridge.enable_icc=false
-      fi
+      set -- "$@" --opt com.docker.network.bridge.enable_icc=false --ipv6
+    else
+      set -- "$@" --opt com.docker.network.bridge.enable_icc=false
     fi
 
     # Docker must make sure the network doesn't already exist
