@@ -419,7 +419,7 @@ _require_nonroot() {
 # $2 use an internal network for container<->container communication
 _create_isolated_network() {
   _create_network_name="${1:-${NAME}}"
-  _create_network_internal="$2"
+  _create_network_internal="${2:-0}"
 
   ## There must be a better way to do this :)
 
@@ -545,7 +545,7 @@ _network_isolate() {
 
   # Create the isolated network
   # Do not pass internal here as this is meant to be "the main" network in the container
-  _create_isolated_network "${_network_name}" || return 1
+  _create_isolated_network "${_network_name}" "0" || return 1
 
   # Attach our isolated network
   _add_network --network="${_network_name}"
