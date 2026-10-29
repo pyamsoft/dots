@@ -6,26 +6,19 @@ After=network.target syslog.target local-fs.target docker.service podman.service
 [Service]
 # Log in journal as this name instead of "sh" or "bash"
 SyslogIdentifier=container@%i
-
 # We are in a pyamsoft service
 Environment=PYAM_SYSTEMD=1
-
 # Set the PYAMSOFT_PATH
 Environment=PYAMSOFT_PATH=/opt/pyamsoft
-
 # Check the file exists, do not attempt to start otherwise
 ExecStartPre=/bin/test -x /opt/pyamsoft/containers/sbin/%i
-
 # Teardown before starting, if this 'fails' because nothing else is running, we don't mind
 ExecStartPre=-/opt/pyamsoft/bin/container-teardown %i
-
 # Start the container and tear it down after
 Type=notify
 NotifyAccess=all
 ExecStart=/opt/pyamsoft/containers/sbin/%i
 ExecStop=/opt/pyamsoft/bin/container-teardown %i
-Restart=on-failure
-RestartSec=10
 
 [Install]
 WantedBy=default.target
