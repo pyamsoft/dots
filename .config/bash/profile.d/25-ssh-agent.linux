@@ -5,6 +5,11 @@ if [ -n "${SSH_AUTH_SOCK}" ]; then
   return 0
 fi
 
+# If we are in a container, skip
+if [ -n "${container}" ]; then
+  return 0
+fi
+
 # Systemd has set us a runtime dir
 if [ -n "${XDG_RUNTIME_DIR}" ]; then
   # Pick the GCR first, and then the old keyring

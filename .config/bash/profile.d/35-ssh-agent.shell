@@ -1,5 +1,10 @@
 # shellcheck shell=bash
 
+# If we are in a container, skip
+if [ -n "${container}" ]; then
+  return 0
+fi
+
 # And now mark the SSH directory per user
 _ssh_home="${PYAMSOFT_RUNTIME_DIR}/ssh"
 
