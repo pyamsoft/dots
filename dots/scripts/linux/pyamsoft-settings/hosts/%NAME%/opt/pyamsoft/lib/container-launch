@@ -20,6 +20,8 @@ CONTAINER_NETWORK_HOST_ROUTE="${CONTAINER_NETWORK_HOST_ROUTE:-1}"
 CONTAINER_PULL_POLICY="${CONTAINER_PULL_POLICY:-}"
 # Custom Entrypoint
 CONTAINER_ENTRYPOINT="${CONTAINER_ENTRYPOINT:-}"
+# Run the container network with IPv6 if using a custom isolated network
+CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 # Read only root filesystem
 CONTAINER_READONLY="${CONTAINER_READONLY:-0}"
 # Use the "unique" name instead of adopting $NAME
@@ -32,10 +34,6 @@ CONTAINER_DAEMON="${CONTAINER_DAEMON:-0}"
 CONTAINER_DEBUG="${CONTAINER_DEBUG:-0}"
 # Use our own machine is the DNS resolver
 CONTAINER_DNS_RESOLVER="${CONTAINER_DNS_RESOLVER:-1}"
-
-## DEPRECATED (just pass --ipv6 directly to network creation)
-# Run the container network with IPv6 if using a custom isolated network
-CONTAINER_NETWORK_IP6="${CONTAINER_NETWORK_IP6:-0}"
 
 # Will be evaluated once main() is ran
 CONTAINER_RUNTIME_DIR=""
@@ -433,11 +431,6 @@ _create_bridge_network() {
 
   # Rest are options directly
   shift
-
-  # Warn deprecation
-  if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-    _log "CONTAINER_NETWORK_IP6 is deprecated, please pass --ipv6 directly to _network_isolate | _create_bridge_network"
-  fi
 
   ## There must be a better way to do this :)
 
