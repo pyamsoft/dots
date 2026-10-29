@@ -1,0 +1,111 @@
+#!/bin/sh
+
+# Send a notify message or log to the console when migration is needed
+__notify_migrate() {
+  _migrate_pak="$1"
+  _migrate_from="$2"
+  _migrate_to="$3"
+
+  _msg="You should migrate your tmpfs-mounter from ${_migrate_from} => ${_migrate_to}"
+
+  if _has_function notify-send; then
+    notify-send "${_migrate_pak} Migration Recommended" "${_msg}"
+  fi
+
+  _log "${_migrate_pak}: ${_msg}"
+
+  unset _msg
+
+  unset _migrate_pak
+  unset _migrate_from
+  unset _migrate_to
+
+  return 0
+}
+
+_is_flatpak_running() {
+  flatpak ps | grep -q "$1"
+}
+
+# Warn if we are out of date
+_warn_outdated() {
+  _warn_pak="$1"
+  _warn_path="$2"
+
+  _dir="$(printf -- '%s' "/etc/systemd/system/local-fs.target.wants/tmpfs-mounter@${_warn_path}"*"-caches:mode\x3d0700\x2cnoexec.service")"
+
+  case "${_dir}" in
+  *\**)
+    # No directory, nothing to warn about
+    unset _dir
+
+    return 0
+    ;;
+  *) ;;
+  esac
+
+  # Version like 2025.2.2
+  _cache_version="$(printf -- '%s' "${_dir}" | grep -oE 'AndroidStudio[0-9]+(\.[0-9]+)+' | sed 's/AndroidStudio//')"
+
+  # Full version with rel, 2025.2.3.4. We don't care about rel
+  # split by spaces per code
+  _current_version_str="$(flatpak info "${_warn_pak}" | grep 'Version: ' | grep -oE '[0-9]+(\.[0-9]+)+' | tr '.' ' ')"
+
+  _current_version_maj="$(printf -- '%s' "${_current_version_str}" | awk '{ print $1 }')"
+  _current_version_min="$(printf -- '%s' "${_current_version_str}" | awk '{ print $2 }')"
+  _current_version_patch="$(printf -- '%s' "${_current_version_str}" | awk '{ print $3 }')"
+  _current_version="${_current_version_maj}.${_current_version_min}.${_current_version_patch}"
+
+  # Make sure our current version starts with the cached one
+  case "${_current_version}" in
+  "${_cache_version}" | "${_cache_version}".*) ;;
+  *)
+    __notify_migrate "${_warn_pak}" "${_cache_version}" "${_current_version}" || {
+      unset _current_version
+
+      unset _current_version_patch
+      unset _current_version_min
+      unset _current_version_maj
+      unset _current_version_str
+
+      unset _cache_version
+
+      return 1
+    }
+    ;;
+  esac
+
+  unset _current_version
+
+  unset _current_version_patch
+  unset _current_version_min
+  unset _current_version_maj
+  unset _current_version_str
+
+  unset _cache_version
+
+  unset _warn_pak
+  unset _warn_path
+  return 0
+}
+
+# When entering HOME, XDG_* are not set
+_enter_existing_flatpak() {
+  _enter_pak="$1"
+  _enter_args="$2"
+
+  shift
+  shift
+
+  # shellcheck disable=SC2086
+  flatpak enter \
+    ${_enter_args} \
+    -- \
+    "${_enter_pak}" \
+    env \
+    HOME="${HOME}" \
+    XDG_CONFIG_HOME="${HOME}/config" \
+    XDG_CACHE_HOME="${HOME}/cache" \
+    XDG_DATA_HOME="${HOME}/data" \
+    /bin/bash -i -l "$@"
+}

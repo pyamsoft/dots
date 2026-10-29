@@ -5,198 +5,121 @@ NAME="android-studio"
 # Source our common library
 # shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
+# shellcheck source=/opt/pyamsoft/flatpak/lib/common
+. "${PYAMSOFT_PATH}/flatpak/lib/common"
 
 readonly _pak="com.google.AndroidStudio"
 
-# Send a notify message or log to the console when migration is needed
-_notify_migrate() {
-  _migrate_from="$1"
-  _migrate_to="$2"
+main() {
+  def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
+  dev_root="${HOME}/devel"
+  android_root="${dev_root}/sdk/android"
 
-  _msg="You should migrate your tmpfs-mounter from ${_migrate_from} => ${_migrate_to}"
+  # Extensions
 
-  if _has_function notify-send; then
-    notify-send "${_pak} Migration Recommended" "${_msg}"
-  fi
+  # Local scripts
+  path="${HOME}/.local/bin"
 
-  _log "${_pak}: ${_msg}"
+  # Android SDK
+  path="${path}:/app/extra/jbr/bin"
+  path="${path}:${android_root}/emulator"
+  path="${path}:${android_root}/cdmline-tools/latest/bin"
+  path="${path}:${android_root}/platform-tools"
 
-  unset _msg
-  unset _migrate_from
-  unset _migrate_to
+  # Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
+  path="${path}:${HOME}/.var/app/${_pak}/data/node/bin"
+  path="${path}:${HOME}/.var/app/${_pak}/data/cargo/bin"
+  path="${path}:${HOME}/.var/app/${_pak}/data/python/bin"
 
-  return 0
-}
-
-_warn_outdated() {
+  # Warn abound outdated builds
   _my_user_home="$(systemd-escape "${HOME}")"
-
-  _dir="$(printf -- '%s' "/etc/systemd/system/local-fs.target.wants/tmpfs-mounter@${_username}:${_my_user_home}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio"*"-caches:mode\x3d0700\x2cnoexec.service")"
-
-  case "${_dir}" in
-  *\**)
-    # No directory, nothing to warn about
-    unset _dir
-
-    unset _my_user_home
-
-    return 0
-    ;;
-  *) ;;
-  esac
-
-  # Version like 2025.2.2
-  _cache_version="$(printf -- '%s' "${_dir}" | grep -oE 'AndroidStudio[0-9]+(\.[0-9]+)+' | sed 's/AndroidStudio//')"
-
-  # Full version with rel, 2025.2.3.4. We don't care about rel
-  # split by spaces per code
-  _current_version_str="$(flatpak info "${_pak}" | grep 'Version: ' | grep -oE '[0-9]+(\.[0-9]+)+' | tr '.' ' ')"
-
-  _current_version_maj="$(printf -- '%s' "${_current_version_str}" | awk '{ print $1 }')"
-  _current_version_min="$(printf -- '%s' "${_current_version_str}" | awk '{ print $2 }')"
-  _current_version_patch="$(printf -- '%s' "${_current_version_str}" | awk '{ print $3 }')"
-  _current_version="${_current_version_maj}.${_current_version_min}.${_current_version_patch}"
-
-  # Make sure our current version starts with the cached one
-  case "${_current_version}" in
-  "${_cache_version}" | "${_cache_version}".*) ;;
-  *)
-    _notify_migrate "${_cache_version}" "${_current_version}" || {
-      unset _my_user_home
-
-      unset _current_version
-
-      unset _current_version_patch
-      unset _current_version_min
-      unset _current_version_maj
-      unset _current_version_str
-
-      unset _cache_version
-
-      return 1
-    }
-    ;;
-  esac
-
+  _path="${_username}:${_my_user_home}-.var-app-com.google.AndroidStudio-cache-Google-AndroidStudio"
+  _warn_outdated "${_pak}" "${_path}"
   unset _my_user_home
+  unset _path
 
-  unset _current_version
+  _java_wayland=1
+  _enter_existing=0
+  _args=""
+  _jvm_args=""
+  while [ -n "$1" ]; do
+    case "$1" in
+    --shell)
+      shift
 
-  unset _current_version_patch
-  unset _current_version_min
-  unset _current_version_maj
-  unset _current_version_str
+      if _is_flatpak_running "${_pak}"; then
+        # Enter the existing instance
+        _enter_existing=1
 
-  unset _cache_version
-  return 0
+        _log "Enter existing %s instance" "${_pak}"
+      else
+        # Launch a new instance but with bash
+        _args="${_args} --command=/bin/bash"
+
+        _log "Launching shell %s instance" "${_pak}"
+      fi
+
+      # Do not pass java wayland
+      _java_wayland=0
+      ;;
+    --release)
+      shift
+
+      # Prepare for release builds
+      _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android/android-assets"
+
+      # And apply shell arguments
+      _args="${_args} --command=/bin/bash"
+
+      # Do not pass java wayland
+      _java_wayland=0
+      ;;
+    --offline)
+      shift
+
+      _args="${_args} --unshare=network"
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  if [ "${_enter_existing}" -eq 1 ]; then
+    # shellcheck disable=SC2086
+    _enter_existing_flatpak "${_pak}" "${_args}"
+    return "$?"
+  else
+    if [ "${_java_wayland}" -eq 1 ]; then
+      _jvm_args="-Dawt.toolkit.name=WLToolkit"
+    fi
+
+    readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
+
+    # shellcheck disable=SC2086
+    "${FP_ENV}" "${_pak}" \
+      --with-env PATH "${path}:" "${def_path}" \
+      --filesystem="${dev_root}/project/pyamsoft/tools" \
+      --filesystem="${dev_root}/project/pyamsoft/android/app" \
+      --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
+      --filesystem="${android_root}" \
+      --env="PYAMSOFT_USE_FOOJAY=1" \
+      --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
+      --socket=wayland \
+      ${_args} \
+      -- \
+      ${_jvm_args} \
+      "$@"
+    _ret="$?"
+
+    # Kill gradle-daemon after exiting
+    if command -v kill-gradle >/dev/null; then
+      kill-gradle
+    fi
+
+    return "${_ret}"
+  fi
 }
 
-readonly def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
-readonly dev_root="${HOME}/devel"
-readonly android_root="${dev_root}/sdk/android"
-
-# Extensions
-
-# Local scripts
-path="${HOME}/.local/bin"
-
-# Android SDK
-path="${path}:/app/extra/jbr/bin"
-path="${path}:${android_root}/emulator"
-path="${path}:${android_root}/cdmline-tools/latest/bin"
-path="${path}:${android_root}/platform-tools"
-
-# Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
-path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/node/bin"
-path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/cargo/bin"
-path="${path}:${HOME}/.var/app/com.google.AndroidStudio/data/python/bin"
-
-# Warn abound outdated builds
-_warn_outdated
-
-_java_wayland=1
-_args=""
-_after_args=""
-while [ -n "$1" ]; do
-  case "$1" in
-  --shell)
-    _args="${_args} --command=/bin/bash"
-    shift
-
-    # In shell mode, add the other path bits
-
-    # Do not pass java wayland
-    _java_wayland=0
-    ;;
-  --release)
-    # Prepare for release builds
-    _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android/android-assets"
-    shift
-
-    # And apply shell arguments
-    _args="${_args} --command=/bin/bash"
-
-    # Do not pass java wayland
-    _java_wayland=0
-    ;;
-  --offline)
-    _args="${_args} --unshare=network"
-    shift
-    ;;
-  *)
-    break
-    ;;
-  esac
-done
-readonly _args
-readonly path
-
-if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
-  if [ "${_java_wayland}" -eq 1 ]; then
-    _after_args="-Dawt.toolkit.name=WLToolkit"
-  fi
-fi
-
-readonly _after_args
-
-# shellcheck source=/opt/pyamsoft/lib/common
-. "${PYAMSOFT_PATH}/lib/common"
-readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
-
-if [ "${PYAMSOFT_NO_WAYLAND:-0}" -eq 0 ]; then
-  # shellcheck disable=SC2086
-  "${FP_ENV}" "${_pak}" \
-    --with-env PATH "${path}:" "${def_path}" \
-    --filesystem="${dev_root}/project/pyamsoft/tools" \
-    --filesystem="${dev_root}/project/pyamsoft/android/app" \
-    --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
-    --filesystem="${android_root}" \
-    --env="PYAMSOFT_USE_FOOJAY=1" \
-    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-    --socket=wayland \
-    ${_args} \
-    -- \
-    ${_after_args} \
-    "$@"
-else
-  # shellcheck disable=SC2086
-  "${FP_ENV}" "${_pak}" \
-    --with-env PATH "${path}:" "${def_path}" \
-    --filesystem="${dev_root}/project/pyamsoft/tools" \
-    --filesystem="${dev_root}/project/pyamsoft/android/app" \
-    --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
-    --filesystem="${android_root}" \
-    --env="PYAMSOFT_USE_FOOJAY=1" \
-    --env="ANDROID_EMULATOR_USE_SYSTEM_LIBS=1" \
-    ${_args} \
-    -- \
-    ${_after_args} \
-    "$@"
-fi
-
-# Kill gradle-daemon after exiting
-if command -v kill-gradle >/dev/null; then
-  kill-gradle
-fi
-
-exit 0
+main "$@"
+exit "$?"
