@@ -24,7 +24,7 @@ main() {
 
   _my_user_home="$(systemd-escape "${HOME}")"
   _path="${_username}:${_my_user_home}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm"
-  _warn_outdated "${_pak}" "${_path}"
+  _warn_outdated "${_pak}" "WebStorm" "${_path}"
   unset _my_user_home
   unset _path
 
