@@ -1,4 +1,3 @@
-amd-ucode
 android-udev
 archlinux-keyring
 base
@@ -12,6 +11,7 @@ btop
 busybox
 cups-pdf
 dbus-broker
+difftastic
 dolphin
 dosfstools
 edk2-shell
@@ -20,7 +20,6 @@ flatpak-kcm
 framework-system
 fwupd
 gamescope
-git-delta
 gst-libav
 gst-plugin-va
 hplip
