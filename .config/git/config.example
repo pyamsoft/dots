@@ -5,32 +5,37 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[submodule]
+	recurse = true
+[log]
+	follow = true
 [init]
 	defaultBranch = main
 [commit]
 	verbose = true
 [core]
 	compression = 4
-	pager = delta
 [rebase]
 	autoSquash = true
+	updateRefs = true
 [rerere]
 	enabled = true
-[diff]
-	algorithm = histogram
 [push]
+	default = current
 	autoSetupRemote = true
+[pull]
+	rebase = true
+[diff]
+	external = difft --display inline
+	noprefix = true
+	algorithm = patience
+[pager]
+	difftool = true
 [commit]
 	gpgsign = true
 [gpg]
 	format = ssh
 [gpg "ssh"]
 	allowedSignersFile = ~/.config/ssh/allowed_git_signers
-[interactive]
-	diffFilter = delta --color-only
-[delta]
-	navigate = true
-	line-numbers = true
-	side-by-side = false
 
 # vim: set filetype=gitconfig :
