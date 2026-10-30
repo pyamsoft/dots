@@ -1,0 +1,53 @@
+#!/bin/sh
+
+# When using raw "flatpak enter <pak>" almost no variables are set.
+# Fix this by setting up a "normal" environment with HOME and XDG_ variables
+
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/common
+. "${PYAMSOFT_PATH}/lib/common"
+
+NAME="$(basename "$0")"
+
+# When entering HOME, XDG_* are not set
+_enter_existing_flatpak() {
+  _enter_pak="$1"
+
+  shift
+
+  if [ -z "$1" ]; then
+    _log 'Entering flatpak %s' "${_enter_pak}"
+  else
+    _log 'Entering flatpak %s (command options: %s)' "${_enter_pak}" "$*"
+  fi
+
+  # shellcheck disable=SC2086
+  flatpak enter \
+    "${_enter_pak}" \
+    env \
+    HOME="${HOME}" \
+    XDG_CONFIG_HOME="${HOME}/config" \
+    XDG_CACHE_HOME="${HOME}/cache" \
+    XDG_DATA_HOME="${HOME}/data" \
+    /bin/bash -i -l "$@"
+}
+
+main() {
+  if [ -z "$1" ]; then
+    _elog 'Must provide running flatpak ID or PID'
+    return 1
+  fi
+
+  _pak="$1"
+  shift
+
+  # Send the rest of the arguments directly
+  _enter_existing_flatpak "${_pak}" "$@"
+  _ret="$?"
+
+  unset _pak
+  return "${_ret}"
+}
+
+main "$@"
+exit "$?"

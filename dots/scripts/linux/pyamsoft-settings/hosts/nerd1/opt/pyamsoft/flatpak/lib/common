@@ -90,24 +90,3 @@ _warn_outdated() {
   unset _warn_path
   return 0
 }
-
-# When entering HOME, XDG_* are not set
-_enter_existing_flatpak() {
-  _enter_pak="$1"
-  _enter_args="$2"
-
-  shift
-  shift
-
-  # shellcheck disable=SC2086
-  flatpak enter \
-    ${_enter_args} \
-    -- \
-    "${_enter_pak}" \
-    env \
-    HOME="${HOME}" \
-    XDG_CONFIG_HOME="${HOME}/config" \
-    XDG_CACHE_HOME="${HOME}/cache" \
-    XDG_DATA_HOME="${HOME}/data" \
-    /bin/bash -i -l "$@"
-}

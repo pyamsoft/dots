@@ -86,8 +86,8 @@ main() {
   done
 
   if [ "${_enter_existing}" -eq 1 ]; then
-    # shellcheck disable=SC2086
-    _enter_existing_flatpak "${_pak}" "${_args}"
+    readonly FP_ENTER="${PYAMSOFT_PATH}/flatpak/bin/flatpak-enter"
+    "${FP_ENTER}" "${_pak}" "$@"
     return "$?"
   else
     if [ "${_java_wayland}" -eq 1 ]; then
