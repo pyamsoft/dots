@@ -1,0 +1,14 @@
+# shellcheck shell=bash
+
+##
+# git show with external diff tool
+dotfiles() {
+  if [ "$1" = "show" ]; then
+    shift
+    command git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" show --ext-diff "$@"
+  else
+    command git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+  fi
+}
+
+# vim: set filetype=sh :

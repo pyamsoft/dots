@@ -11,4 +11,15 @@ gitacp() {
   return 0
 }
 
+##
+# git show with external diff tool
+git() {
+  if [ "$1" = "show" ]; then
+    shift
+    command git show --ext-diff "$@"
+  else
+    command git "$@"
+  fi
+}
+
 # vim: set filetype=sh :
