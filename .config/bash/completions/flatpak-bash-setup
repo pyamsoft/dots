@@ -12,7 +12,7 @@ if command -v flatpak >/dev/null 2>&1; then
       fi
 
       local candidates
-      candidates="$(flatpak ps --columns=application 2>/dev/null | head -n -1 | awk '{ print $1; }' | sort -u)"
+      candidates="$(flatpak list --app --columns=application 2>/dev/null | head -n -1 | awk '{ print $1; }' | sort -u)"
 
       mapfile -t COMPREPLY < <(compgen -W "${candidates}" -- "${cur}")
       return 0
