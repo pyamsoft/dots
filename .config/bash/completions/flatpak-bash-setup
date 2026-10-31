@@ -1,0 +1,19 @@
+# shellcheck shell=bash
+
+_flatpak_bash_setup() {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+
+  if [ "${COMP_CWORD}" -ne 1 ]; then
+    compopt -o default
+    COMPREPLY=()
+    return 0
+  fi
+
+  local candidates
+  candidates="$(flatpak ps --columns=application 2>/dev/null | awk '$1 != 'Instance' { print $1; }' | sort -u)"
+
+  mapfile -t COMPREPLY < <(compgen -W "${candidates}" -- "${cur}")
+  return 0
+}
+
+complete -F _flatpak_bash_setup flatpak-bash-setup
