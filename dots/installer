@@ -4,8 +4,10 @@
 # https://www.atlassian.com/git/tutorials/dotfiles
 # https://stackoverflow.com/questions/10637378/how-do-i-convert-a-bare-git-repository-into-a-normal-one-in-place
 
-# The dotfiles alias
-alias dotfiles='git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}"'
+# dotfiles alias function
+dotfiles() {
+  command git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+}
 
 _dot_config() {
   dotfiles config --local "$@" || {
