@@ -1,21 +1,25 @@
 # shellcheck shell=bash
 
-_flatpak_enter() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
+if command -v flatpak >/dev/null 2>&1; then
+  if ! declare -f __flatpak_enter >/dev/null 2>&1; then
+    __flatpak_enter() {
+      local cur="${COMP_WORDS[COMP_CWORD]}"
 
-  if [ "${COMP_CWORD}" -ne 1 ]; then
-    compopt -o default
-    COMPREPLY=()
-    return 0
+      if [ "${COMP_CWORD}" -ne 1 ]; then
+        compopt -o default
+        COMPREPLY=()
+        return 0
+      fi
+
+      local candidates
+      candidates="$(flatpak ps --columns=instance,pid,application 2>/dev/null | head -n -1 | awk '{ print $1; print $2; print $3 }' | sort -u)"
+
+      mapfile -t COMPREPLY < <(compgen -W "${candidates}" -- "${cur}")
+      return 0
+    }
+
+    complete -F _flatpak_enter flatpak-enter
   fi
-
-  local candidates
-  candidates="$(flatpak ps --columns=instance,pid,application 2>/dev/null | head -n -1 | awk '{ print $1; print $2; print $3 }' | sort -u)"
-
-  mapfile -t COMPREPLY < <(compgen -W "${candidates}" -- "${cur}")
-  return 0
-}
-
-complete -F _flatpak_enter flatpak-enter
+fi
 
 # vim: set filetype=sh :
