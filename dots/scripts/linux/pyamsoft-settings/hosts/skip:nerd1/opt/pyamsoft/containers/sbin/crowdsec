@@ -7,7 +7,7 @@
 NAME="crowdsec"
 IMAGE="docker.io/crowdsecurity/crowdsec"
 # -debian images support journalctl
-TAG="v1.8.1-debian"
+TAG="v1.8.2-debian"
 
 # Runs with host networking, so do not use DNS resolver
 CONTAINER_DNS_RESOLVER=0
