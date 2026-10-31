@@ -1,61 +1,63 @@
 # shellcheck shell=bash
 
-##
-# Unexport all flatpak documents
-flatpak__clear_exported_documents() {
-  # Don't use sudo for flatpak document-unexport
-  if [ "$(flatpak documents)" != "No documents found" ]; then
-    for d in $(flatpak documents); do
-      flatpak document-unexport --doc-id "${d}" || return 1
+if command -v flatpak >/dev/null 2>&1; then
+  ##
+  # Unexport all flatpak documents
+  flatpak__clear_exported_documents() {
+    # Don't use sudo for flatpak document-unexport
+    if [ "$(flatpak documents)" != "No documents found" ]; then
+      for d in $(flatpak documents); do
+        flatpak document-unexport --doc-id "${d}" || return 1
+      done
+    fi
+
+    return 0
+  }
+
+  ##
+  # Unpin all flatpak pins
+  flatpak__clear_pins() {
+    # Don't use sudo for flatpak pin
+    if [ "$(flatpak pin -u)" != "No pinned patterns" ]; then
+      for p in $(flatpak pin -u | tail -n +1); do
+        flatpak pin -u --remove "${p}" || return 1
+      done
+    fi
+
+    return 0
+  }
+
+  ##
+  # Remove background permission from all flatpak apps except those that benefit
+  flatpak__apply_background_permissions() {
+    for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
+      flatpak permission-set background background "${_app}" no || return 1
+      unset _app
     done
-  fi
+    unset _app
 
-  return 0
-}
+    return 0
+  }
 
-##
-# Unpin all flatpak pins
-flatpak__clear_pins() {
-  # Don't use sudo for flatpak pin
-  if [ "$(flatpak pin -u)" != "No pinned patterns" ]; then
-    for p in $(flatpak pin -u | tail -n +1); do
-      flatpak pin -u --remove "${p}" || return 1
+  ##
+  # Remove realtime permission from all flatpak apps except those that benefit
+  flatpak__apply_realtime_permissions() {
+    for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
+      case "${_app}" in
+      org.DolphinEmu.dolphin-emu | dev.eden_emu.eden)
+        printf -- 'Granting realtime permission for flatpak: %s\n' "${_app}"
+        flatpak permission-set realtime realtime "${_app}" yes || return 1
+        ;;
+      *)
+        flatpak permission-set realtime realtime "${_app}" no || return 1
+        ;;
+      esac
+      unset _app
     done
-  fi
-
-  return 0
-}
-
-##
-# Remove background permission from all flatpak apps except those that benefit
-flatpak__apply_background_permissions() {
-  for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
-    flatpak permission-set background background "${_app}" no || return 1
     unset _app
-  done
-  unset _app
 
-  return 0
-}
-
-##
-# Remove realtime permission from all flatpak apps except those that benefit
-flatpak__apply_realtime_permissions() {
-  for _app in $(flatpak list --user --app --columns=application | tail -n +1); do
-    case "${_app}" in
-    org.DolphinEmu.dolphin-emu | dev.eden_emu.eden)
-      printf -- 'Granting realtime permission for flatpak: %s\n' "${_app}"
-      flatpak permission-set realtime realtime "${_app}" yes || return 1
-      ;;
-    *)
-      flatpak permission-set realtime realtime "${_app}" no || return 1
-      ;;
-    esac
-    unset _app
-  done
-  unset _app
-
-  return 0
-}
+    return 0
+  }
+fi
 
 # vim: set filetype=sh :

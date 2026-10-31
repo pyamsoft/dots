@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
-# Allow sudo calls to receive alias support as well.
-alias sudo="sudo "
+if command -v sudo >/dev/null; then
+  # Allow sudo calls to receive alias support as well.
+  alias sudo="sudo "
+fi
 
 # vim: set filetype=sh :

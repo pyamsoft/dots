@@ -1,10 +1,12 @@
 # shellcheck shell=bash
 
-# SSH using our custom config location
-if [ -z "${XDG_CONFIG_HOME}" ]; then
-  alias ssh='ssh -F "${HOME}/.config/ssh/config" '
-else
-  alias ssh='ssh -F "${XDG_CONFIG_HOME}/ssh/config" '
+if command -v ssh >/dev/null; then
+  # SSH using our custom config location
+  if [ -z "${XDG_CONFIG_HOME}" ]; then
+    alias ssh='ssh -F "${HOME}/.config/ssh/config" '
+  else
+    alias ssh='ssh -F "${XDG_CONFIG_HOME}/ssh/config" '
+  fi
 fi
 
 # vim: set filetype=sh :

@@ -1,43 +1,21 @@
 # shellcheck shell=bash
 
-__upall_macos_homebrew() {
-  brew update && brew upgrade && brew upgrade --greedy && brew autoremove && brew cleanup
-}
+if command -v brew >/dev/null 2>&1; then
+  __upall_macos_homebrew() {
+    brew update && brew upgrade && brew upgrade --greedy && brew autoremove && brew cleanup
+  }
 
-__upall_macos_macports() {
-  if [ -e /opt/local/bin/port ]; then
-    if [ -n "$1" ] && [ "$1" = "--shell" ]; then
-      printf -- 'Entering macports shell environment...\n'
+  # Update everything
+  upall() {
+    local _status
 
-      export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
-      export MANPATH="/opt/local/share/man:${MANPATH}"
+    umask 0022
+    __upall_macos_homebrew
+    _status=$?
+    umask 0077
 
-      # Normal user shell
-      exec bash
-    elif [ -n "$1" ] && [ "$1" = "--root-shell" ]; then
-      printf -- 'Entering macports root-shell environment...\n'
-
-      # Root user shell
-      exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; bash'
-    else
-      printf -- 'Using sudo to update the MacPorts installation...\n'
-
-      # Root user run upgrades
-      exec sudo sh -c 'export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"; export MANPATH="/opt/local/share/man:${MANPATH}"; port selfupdate && port upgrade outdated && port uninstall inactive'
-    fi
-  fi
-}
-
-# Update everything
-upall() {
-  local _status
-
-  umask 0022
-  __upall_macos_homebrew && __upall_macos_macports
-  _status=$?
-  umask 0077
-
-  return "${_status}"
-}
+    return "${_status}"
+  }
+fi
 
 # vim: set filetype=sh :

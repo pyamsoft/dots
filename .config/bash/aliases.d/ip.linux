@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
-# Ip with colored output
-alias ip="ip --color=auto "
+if command -v ip >/dev/null 2>&1; then
+  # Ip with colored output
+  alias ip="ip --color=auto "
+fi
 
 # vim: set filetype=sh :

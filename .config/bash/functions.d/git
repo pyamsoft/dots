@@ -1,48 +1,50 @@
 # shellcheck shell=bash
 
-##
-# Git add all files, commit with message and options, and push
-#
-# This assumes a push remote is already setup
-gitacp() {
-  git add . || return 1
-  git commit "$@" || return 1
-  git push || return 1
-  return 0
-}
+if command -v git >/dev/null 2>&1; then
+  ##
+  # Git add all files, commit with message and options, and push
+  #
+  # This assumes a push remote is already setup
+  gitacp() {
+    git add . || return 1
+    git commit "$@" || return 1
+    git push || return 1
+    return 0
+  }
 
-##
-# git show with external diff tool
-git() {
-  local -a pre=()
-  while [ $# -gt 0 ]; do
-    # All commands with some kind of argument expected
-    case "$1" in
-    -C | -c | --git-dir | --work-tree | --namespace | --super-prefix | --config-env)
-      if [ $# -ge 2 ]; then
-        pre+=("$1" "$2")
+  ##
+  # git show with external diff tool
+  git() {
+    local -a pre=()
+    while [ $# -gt 0 ]; do
+      # All commands with some kind of argument expected
+      case "$1" in
+      -C | -c | --git-dir | --work-tree | --namespace | --super-prefix | --config-env)
+        if [ $# -ge 2 ]; then
+          pre+=("$1" "$2")
+          shift
+          shift
+        else
+          break
+        fi
+        ;;
+      -*)
+        pre+=("$1")
         shift
-        shift
-      else
+        ;;
+      *)
         break
-      fi
-      ;;
-    -*)
-      pre+=("$1")
-      shift
-      ;;
-    *)
-      break
-      ;;
-    esac
-  done
+        ;;
+      esac
+    done
 
-  if [ "$1" = "show" ]; then
-    shift
-    command git "${pre[@]}" show --ext-diff "$@"
-  else
-    command git "${pre[@]}" "$@"
-  fi
-}
+    if [ "$1" = "show" ]; then
+      shift
+      command git "${pre[@]}" show --ext-diff "$@"
+    else
+      command git "${pre[@]}" "$@"
+    fi
+  }
+fi
 
 # vim: set filetype=sh :

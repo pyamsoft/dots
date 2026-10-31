@@ -1,9 +1,11 @@
 # shellcheck shell=bash
 
-##
-# dotfiles
-dotfiles() {
-  git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
-}
+if [ -d "${HOME}/.dotfiles" ]; then
+  ##
+  # dotfiles
+  dotfiles() {
+    git --git-dir "${HOME}"/.dotfiles --work-tree "${HOME}" "$@"
+  }
+fi
 
 # vim: set filetype=sh :

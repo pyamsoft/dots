@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
-# Allow for alias expansion
-alias paccache="paccache -v "
+if command -v paccache >/dev/null; then
+  # Allow for alias expansion
+  alias paccache="paccache -v "
+fi
 
 # vim: set filetype=sh :

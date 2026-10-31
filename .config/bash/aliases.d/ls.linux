@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
-# ls, arrow room for aliases
-alias ls="ls -CHh --color=auto "
+if command -v ls >/dev/null 2>&1; then
+  # ls, arrow room for aliases
+  alias ls="ls -CHh --color=auto "
+fi
 
 # vim: set filetype=sh :

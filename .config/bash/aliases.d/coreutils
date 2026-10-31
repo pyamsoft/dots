@@ -1,22 +1,38 @@
 # shellcheck shell=bash
 
-# Grep with colors
-alias grep="grep -E --color=auto "
+if command -v grep >/dev/null 2>&1; then
+  # Grep with colors
+  alias grep="grep -E --color=auto "
+fi
 
-# Quick ls
-alias ll="ls -l"
-alias la="ls -A"
-alias lla="ls -Al"
-alias lal="ls -Al"
+if command -v ls >/dev/null 2>&1; then
+  # Quick ls
+  alias ll="ls -l"
+  alias la="ls -A"
+  alias lla="ls -Al"
+  alias lal="ls -Al"
+fi
 
 # Verbose
-alias rm="rm -iv"
-alias cp="cp -iv"
-alias mv="mv -iv"
-alias mkdir="mkdir -vp"
+if command -v rm >/dev/null 2>&1; then
+  alias rm="rm -iv"
+fi
+if command -v cp >/dev/null 2>&1; then
+  alias cp="cp -iv"
+fi
+if command -v mv >/dev/null 2>&1; then
+  alias mv="mv -iv"
+fi
+if command -v mkdir >/dev/null 2>&1; then
+  alias mkdir="mkdir -vp"
+fi
 
 # Cleaner human output
-alias df="df -H"
-alias du="du -ch"
+if command -v df >/dev/null 2>&1; then
+  alias df="df -H"
+fi
+if command -v du >/dev/null 2>&1; then
+  alias du="du -ch"
+fi
 
 # vim: set filetype=sh :

@@ -3,7 +3,7 @@
 # ls, allow room for aliases
 if command -v gls >/dev/null; then
   alias ls="gls -CHh --color=auto "
-else
+elif command -v ls >/dev/null 2>&1; then
   alias ls="ls -CHh -G "
 fi
 

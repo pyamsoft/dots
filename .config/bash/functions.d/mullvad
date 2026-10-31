@@ -1,14 +1,16 @@
 # shellcheck shell=bash
 
-amimullvad() {
-  _arg="connected"
-  if [ -n "$1" ]; then
-    _arg="$1"
-    shift
-  fi
+if command -v curl >/dev/null 2>&1; then
+  amimullvad() {
+    _arg="connected"
+    if [ -n "$1" ]; then
+      _arg="$1"
+      shift
+    fi
 
-  curl "https://am.i.mullvad.net/${_arg}" "$@" || return 1
-  return 0
-}
+    curl "https://am.i.mullvad.net/${_arg}" "$@" || return 1
+    return 0
+  }
+fi
 
 # vim: set filetype=sh :

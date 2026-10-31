@@ -1,5 +1,7 @@
 # shellcheck shell=bash
 
-alias act="act --container-architecture linux/amd64"
+if command -v act >/dev/null 2>&1; then
+  alias act="act --container-architecture linux/amd64"
+fi
 
 # vim: set filetype=sh :

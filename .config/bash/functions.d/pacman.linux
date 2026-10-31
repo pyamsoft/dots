@@ -1,13 +1,15 @@
 # shellcheck shell=bash
 
-##
-# Sometimes the archlinux-keyring upgrades and causes pacman PGP errors.
-#
-# This is a very specific problem with a very specific fix.
-# Do not -Sy anywhere else, always -Syu
-pacman__fix_keyring() {
-  sudo pacman -Sy archlinux-keyring && sudo pacman -Syu "$@"
-}
+if command -v pacman >/dev/null 2>&1; then
+  ##
+  # Sometimes the archlinux-keyring upgrades and causes pacman PGP errors.
+  #
+  # This is a very specific problem with a very specific fix.
+  # Do not -Sy anywhere else, always -Syu
+  pacman__fix_keyring() {
+    sudo pacman -Sy archlinux-keyring && sudo pacman -Syu "$@"
+  }
+fi
 
 __up_linux_arch() {
   if command -v paru >/dev/null; then

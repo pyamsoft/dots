@@ -1,6 +1,8 @@
 # shellcheck shell=bash
 
-# List ports in use
-alias ports="ss -tulanp"
+if command -v ss >/dev/null; then
+  # List ports in use
+  alias ports="ss -tulanp"
+fi
 
 # vim: set filetype=sh :
