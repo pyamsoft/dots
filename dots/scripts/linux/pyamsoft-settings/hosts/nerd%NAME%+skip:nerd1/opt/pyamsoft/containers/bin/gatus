@@ -7,7 +7,7 @@
 # Define a basename here, which will be re-evaluated later once a MODE is defined
 NAME="gatus"
 IMAGE="docker.io/twinproduction/gatus"
-TAG="v5.37.0"
+TAG="v5.38.0"
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
