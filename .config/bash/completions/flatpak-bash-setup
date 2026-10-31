@@ -10,10 +10,12 @@ _flatpak_bash_setup() {
   fi
 
   local candidates
-  candidates="$(flatpak ps --columns=application 2>/dev/null | awk '$1 != 'Instance' { print $1; }' | sort -u)"
+  candidates="$(flatpak ps --columns=application 2>/dev/null | head -n -1 | awk '{ print $1; }' | sort -u)"
 
   mapfile -t COMPREPLY < <(compgen -W "${candidates}" -- "${cur}")
   return 0
 }
 
 complete -F _flatpak_bash_setup flatpak-bash-setup
+
+# vim: set filetype=sh :
