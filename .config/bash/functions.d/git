@@ -14,11 +14,34 @@ gitacp() {
 ##
 # git show with external diff tool
 git() {
+  local -a pre=()
+  while [ $# -gt 0 ]; do
+    # All commands with some kind of argument expected
+    case "$1" in
+    -C | -c | --git-dir | --work-tree | --namespace | --super-prefix | --config-env)
+      if [ $# -ge 2 ]; then
+        pre+=("$1" "$2")
+        shift
+        shift
+      else
+        break
+      fi
+      ;;
+    -*)
+      pre+=("$1")
+      shift
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
   if [ "$1" = "show" ]; then
     shift
-    command git show --ext-diff "$@"
+    command git "${pre[@]}" show --ext-diff "$@"
   else
-    command git "$@"
+    command git "${pre[@]}" "$@"
   fi
 }
 
