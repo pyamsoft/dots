@@ -25,7 +25,9 @@ _enter_existing_flatpak() {
   flatpak enter \
     "${_enter_pak}" \
     env \
+    container=flatpak \
     HOME="${HOME}" \
+    XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR}" \
     XDG_CONFIG_HOME="${HOME}/config" \
     XDG_CACHE_HOME="${HOME}/cache" \
     XDG_DATA_HOME="${HOME}/data" \
