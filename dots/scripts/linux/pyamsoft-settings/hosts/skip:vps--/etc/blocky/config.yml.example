@@ -35,6 +35,16 @@ blocking:
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/multi.txt"
       # Hagezi Thread Intelligence Feeds
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/tif.txt"
+      # Hagezi "Fake" Websites
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/fake.txt"
+      # Hagezi Popup Ads
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/popupads.txt"
+      # Hagezi Native Blocking
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.amazon.txt"
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.apple.txt"
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.winoffice.txt"
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.samsung.txt"
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.tiktok.txt"
   clientGroupsBlock:
     default:
       - "default"
