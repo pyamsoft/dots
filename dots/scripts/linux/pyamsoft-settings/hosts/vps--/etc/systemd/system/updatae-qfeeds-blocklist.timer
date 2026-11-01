@@ -1,0 +1,10 @@
+# Update QFeeds Blocklist
+[Unit]
+Description=Update QFeeds Blocklist
+
+[Timer]
+# Every hour
+OnCalendar=hourly
+
+[Install]
+WantedBy=timers.target

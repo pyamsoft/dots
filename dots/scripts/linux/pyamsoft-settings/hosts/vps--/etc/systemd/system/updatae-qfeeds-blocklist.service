@@ -1,0 +1,9 @@
+# Update QFeeds Blocklist
+[Unit]
+Description=Update QFeeds Blocklist
+After=network.target syslog.target local-fs.target docker.service podman.service container-crowdsec.service container@crowdsec.service crowdsec.service
+
+[Service]
+# Need oneshot or timer does not restart
+Type=oneshot
+ExecStart=/usr/local/bin/update_qfeeds_blocklist.sh
