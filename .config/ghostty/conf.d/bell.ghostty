@@ -1,0 +1,6 @@
+# This is a configuration file for Ghostty.
+
+bell-features = attention,title,no-system,no-audio,no-border
+bell-audio-volume = 0
+
+config-file = ?bell.ghostty.local

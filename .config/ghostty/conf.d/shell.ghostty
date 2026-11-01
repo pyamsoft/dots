@@ -1,0 +1,6 @@
+# This is a configuration file for Ghostty.
+
+shell-integration = detect
+shell-integration-features = cursor,title,no-sudo,no-ssh-env,no-ssh-terminfo,no-path
+
+config-file = ?shell.ghostty.local

@@ -1,0 +1,7 @@
+# This is a configuration file for Ghostty.
+
+linux-cgroup = always
+
+gtk-opengl-debug = false
+
+config-file = ?linux.ghostty.local

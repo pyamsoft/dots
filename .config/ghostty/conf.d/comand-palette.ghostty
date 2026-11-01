@@ -1,0 +1,6 @@
+# This is a configuration file for Ghostty.
+
+# Reset command palette
+command-palette-entry =
+
+config-file = ?command-palette.ghostty.local

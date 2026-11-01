@@ -1,0 +1,9 @@
+# This is a configuration file for Ghostty.
+
+quick-terminal-position = center
+quick-terminal-size = 99%,96%
+quick-terminal-autohide = false
+quick-terminal-space-behavior = move
+quick-terminal-keyboard-interactivity = on-demand
+
+config-file = ?quick-terminal.ghostty.local

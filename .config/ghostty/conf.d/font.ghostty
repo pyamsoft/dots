@@ -1,0 +1,6 @@
+# This is a configuration file for Ghostty.
+
+font-family = monospace
+font-size = 11
+
+config-file = ?font.ghostty.local

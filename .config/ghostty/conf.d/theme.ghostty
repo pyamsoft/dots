@@ -1,0 +1,11 @@
+# This is a configuration file for Ghostty.
+
+theme = light:Catppuccin Latte,dark:Catppuccin Macchiato
+
+palette-generate = false
+palette-harmonious = false
+
+background-opacity = 1
+cursor-opacity = 1
+
+config-file = ?theme.ghostty.local

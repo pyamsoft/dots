@@ -1,0 +1,6 @@
+# This is a configuration file for Ghostty.
+
+mouse-hide-while-typing = false
+mouse-reporting = true
+
+config-file = ?mouse.ghostty.local

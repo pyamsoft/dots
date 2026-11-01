@@ -1,0 +1,9 @@
+# This is a configuration file for Ghostty.
+
+macos-auto-secure-input = false
+macos-secure-input-indication = false
+macos-applescript = false
+macos-shortcuts = deny
+macos-hidden = always
+
+config-file = ?macos.ghostty.local
