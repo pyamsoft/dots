@@ -2,7 +2,7 @@
 
 quick-terminal-position = center
 quick-terminal-size = 99%,96%
-quick-terminal-autohide = false
+quick-terminal-autohide = true
 quick-terminal-space-behavior = move
 quick-terminal-keyboard-interactivity = on-demand
 
