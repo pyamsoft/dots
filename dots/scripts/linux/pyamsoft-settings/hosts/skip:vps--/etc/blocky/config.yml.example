@@ -39,6 +39,8 @@ blocking:
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/fake.txt"
       # Hagezi Popup Ads
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/popupads.txt"
+      # Hagezi Dynamic DNS
+      - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/dyndns.txt"
       # Hagezi Native Blocking
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.amazon.txt"
       - "https://gitlab.com/hagezi/mirror/-/raw/main/dns-blocklists/wildcard/native.apple.txt"
