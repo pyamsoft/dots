@@ -127,6 +127,8 @@ gettext
 gflags
 gfxstream
 ghostscript
+ghostty-shell-integration
+ghostty-terminfo
 giflib
 git
 glib-networking
@@ -165,6 +167,7 @@ gtk-update-icon-cache
 gtk-vnc
 gtk3
 gtk4
+gtk4-layer-shell
 gtksourceview4
 guile
 gumbo-parser
@@ -243,8 +246,6 @@ kirigami
 kirigami-addons
 kitemmodels
 kitemviews
-kitty-shell-integration
-kitty-terminfo
 kjobwidgets
 kmenuedit
 kmod
@@ -540,7 +541,6 @@ libraqm
 libraw
 libraw1394
 librsvg
-librsync
 libsamplerate
 libsasl
 libseccomp
@@ -700,6 +700,7 @@ numactl
 ocean-sound-theme
 ocl-icd
 onetbb
+oniguruma
 opencore-amr
 openexr
 openh264

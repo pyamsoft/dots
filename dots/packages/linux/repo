@@ -20,6 +20,7 @@ flatpak-kcm
 framework-system
 fwupd
 gamescope
+ghostty
 gst-libav
 gst-plugin-va
 hplip
@@ -35,7 +36,6 @@ iwd
 kde-gtk-config
 kernel-modules-hook
 kinfocenter
-kitty
 kscreen
 lact
 ldns
