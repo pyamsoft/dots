@@ -75,7 +75,7 @@ theme = Catppuccin Macchiato
 
 ## Quick Terminal
 quick-terminal-position = center
-quick-terminal-size = 99%,97%
+quick-terminal-size = 99%,96%
 quick-terminal-autohide = false
 quick-terminal-space-behavior = move
 quick-terminal-keyboard-interactivity = on-demand
@@ -91,7 +91,7 @@ keybind = global:cmd+\=toggle_quick_terminal
 
 ## Clipboard
 keybind = ctrl+shift+c=copy_to_clipboard:mixed
-keybind = ctrl+shift+v=paste_from_clipboard:mixed
+keybind = ctrl+shift+v=paste_from_clipboard
 
 ## Font Size
 keybind = ctrl+shift+equal=increase_font_size:1
@@ -101,3 +101,4 @@ keybind = ctrl+0=reset_font_size
 
 ## Settings
 keybind = ctrl+shift+f5=reload_config
+keybind = ctrl+shift+q=quit
