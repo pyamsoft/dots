@@ -66,6 +66,14 @@ Some udev rules in the nerd1/etc/udev directory disable these wakeup sources so 
  - Changing the charging cable while sleeping does not cause a wakeup
  - Opening the lid won't wake the laptop until you press a key, click the mouse, or power button
 
+## Host Specific
+`vps--`: VPS use QFeeds, which requires external setup and an API key.
+To run the [iptables/nftables installer](https://github.com/Q-Feeds/NFtables-IPtables-integration-script)
+You will need to disable the `crontab` setup if your system only has systemd timers
+```
+$ sudo env QFEEDS_SKIP_CRON=1 ./qfeeds-installer.sh
+```
+
 ### License
 
 Parts of this configuration are taking from
