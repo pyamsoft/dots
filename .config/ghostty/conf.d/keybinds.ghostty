@@ -4,7 +4,7 @@
 keybind = clear
 
 ## Quick terminal
-keybind = global:cmd+\=toggle_quick_terminal
+keybind = global:cmd+backslash=toggle_quick_terminal
 
 ## Clipboard
 keybind = ctrl+shift+c=copy_to_clipboard:mixed

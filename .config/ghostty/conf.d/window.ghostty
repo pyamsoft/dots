@@ -9,4 +9,4 @@ window-padding-color = extend
 
 quit-after-last-window-closed = false
 
-config-file = ?scroll.ghostty.local
+config-file = ?window.ghostty.local
