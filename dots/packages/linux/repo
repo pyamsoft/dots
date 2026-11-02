@@ -40,7 +40,6 @@ kscreen
 lact
 ldns
 lib32-vulkan-intel
-libvirt
 linux
 linux-firmware
 linux-lts
@@ -91,7 +90,6 @@ ttf-gentium
 ttf-liberation
 unrar
 util-linux
-virt-manager
 vpl-gpu-rt
 vulkan-intel
 vulkan-radeon
