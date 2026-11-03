@@ -23,10 +23,13 @@
 [push]
 	default = current
 	autoSetupRemote = true
+[fetch]
+	prune = true
+	all = true
 [pull]
 	rebase = true
 [diff]
-	external = difft --display inline
+	external = difft --display side-by-side-show-both --context 7
 	noprefix = true
 	algorithm = patience
 [pager]
