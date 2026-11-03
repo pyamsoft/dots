@@ -11,16 +11,7 @@ NAME="webstorm"
 readonly _pak="com.jetbrains.WebStorm"
 
 main() {
-  def_path="/app/bin:/usr/bin"
   dev_root="${HOME}/devel"
-
-  # Local scripts
-  path="${HOME}/.local/bin"
-
-  # Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
-  path="${path}:${HOME}/.var/app/${_pak}/data/node/bin"
-  path="${path}:${HOME}/.var/app/${_pak}/data/cargo/bin"
-  path="${path}:${HOME}/.var/app/${_pak}/data/python/bin"
 
   _my_user_home="$(systemd-escape "${HOME}")"
   _path="${_username}:${_my_user_home}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm"
@@ -67,7 +58,6 @@ main() {
     readonly FP_ENTER="${PYAMSOFT_PATH}/flatpak/bin/flatpak-enter"
     "${FP_ENTER}" "${_pak}" \
       env \
-      PATH="${path}:${def_path}" \
       PYAMSOFT_USE_FOOJAY=1 \
       /bin/bash -i -l \
       "$@"
@@ -81,7 +71,6 @@ main() {
 
     # shellcheck disable=SC2086
     "${FP_ENV}" "${_pak}" \
-      --with-env PATH "${path}:" "${def_path}" \
       --filesystem="${dev_root}/project/pyamsoft/tools" \
       --filesystem="${dev_root}/project/pyamsoft/js" \
       --filesystem="${dev_root}/project/pyamsoft/shell" \

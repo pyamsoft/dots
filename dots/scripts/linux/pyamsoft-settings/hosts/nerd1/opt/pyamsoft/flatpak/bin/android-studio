@@ -11,25 +11,8 @@ NAME="android-studio"
 readonly _pak="com.google.AndroidStudio"
 
 main() {
-  def_path="/app/bin:/usr/bin:/usr/lib/sdk/llvm20/bin"
   dev_root="${HOME}/devel"
   android_root="${dev_root}/sdk/android"
-
-  # Extensions
-
-  # Local scripts
-  path="${HOME}/.local/bin"
-
-  # Android SDK
-  path="${path}:/app/extra/jbr/bin"
-  path="${path}:${android_root}/emulator"
-  path="${path}:${android_root}/cdmline-tools/latest/bin"
-  path="${path}:${android_root}/platform-tools"
-
-  # Add other path bits regardless of "shell" mode, otherwise Terminal in IDE does not have node extension
-  path="${path}:${HOME}/.var/app/${_pak}/data/node/bin"
-  path="${path}:${HOME}/.var/app/${_pak}/data/cargo/bin"
-  path="${path}:${HOME}/.var/app/${_pak}/data/python/bin"
 
   # Warn abound outdated builds
   _my_user_home="$(systemd-escape "${HOME}")"
@@ -90,7 +73,6 @@ main() {
 
     "${FP_ENTER}" "${_pak}" \
       env \
-      PATH="${path}:${def_path}" \
       PYAMSOFT_USE_FOOJAY=1 \
       ANDROID_EMULATOR_USE_SYSTEM_LIBS=1 \
       /bin/bash -i -l \
@@ -105,7 +87,6 @@ main() {
 
     # shellcheck disable=SC2086
     "${FP_ENV}" "${_pak}" \
-      --with-env PATH "${path}:" "${def_path}" \
       --filesystem="${dev_root}/project/pyamsoft/tools" \
       --filesystem="${dev_root}/project/pyamsoft/android/app" \
       --filesystem="${dev_root}/project/pyamsoft/android/libraries" \
