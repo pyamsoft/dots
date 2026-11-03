@@ -1,0 +1,14 @@
+#!/bin/sh
+
+main() {
+  apt-mark showmanual >./repo
+
+  if command -v flatpak >/dev/null; then
+    flatpak list -u --app --columns=application >./flatpak
+  fi
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
