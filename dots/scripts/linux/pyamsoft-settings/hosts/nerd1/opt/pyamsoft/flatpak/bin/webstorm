@@ -67,7 +67,7 @@ main() {
     fi
 
     # shellcheck disable=SC2086
-    flatpak run "${_pak}" \
+    flatpak run \
       --filesystem="${dev_root}/project/pyamsoft/tools" \
       --filesystem="${dev_root}/project/pyamsoft/js" \
       --filesystem="${dev_root}/project/pyamsoft/shell" \
@@ -75,6 +75,7 @@ main() {
       --socket=wayland \
       ${_args} \
       -- \
+      "${_pak}" \
       ${_jvm_args} \
       "$@"
     return "$?"

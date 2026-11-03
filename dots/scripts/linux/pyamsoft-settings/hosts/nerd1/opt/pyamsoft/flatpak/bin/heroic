@@ -51,10 +51,11 @@ main() {
     return "$?"
   else
     # shellcheck disable=SC2086
-    flatpak run "${_pak}" \
+    flatpak run \
       --env="PATH=${_path}" \
       ${_args} \
       -- \
+      "${_pak}" \
       "$@"
     return "$?"
   fi
