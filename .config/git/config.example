@@ -25,7 +25,6 @@
 	autoSetupRemote = true
 [fetch]
 	prune = true
-	all = true
 [pull]
 	rebase = true
 [diff]
