@@ -55,8 +55,7 @@ main() {
   done
 
   if [ "${_enter_existing}" -eq 1 ]; then
-    readonly FP_ENTER="${PYAMSOFT_PATH}/flatpak/bin/flatpak-enter"
-    "${FP_ENTER}" "${_pak}" \
+    flatpak-enter "${_pak}" \
       env \
       PYAMSOFT_USE_FOOJAY=1 \
       /bin/bash -i -l \
@@ -67,10 +66,8 @@ main() {
       _jvm_args="-Dawt.toolkit.name=WLToolkit"
     fi
 
-    readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
-
     # shellcheck disable=SC2086
-    "${FP_ENV}" "${_pak}" \
+    flatpak run "${_pak}" \
       --filesystem="${dev_root}/project/pyamsoft/tools" \
       --filesystem="${dev_root}/project/pyamsoft/js" \
       --filesystem="${dev_root}/project/pyamsoft/shell" \

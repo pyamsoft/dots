@@ -1,35 +1,68 @@
 #!/bin/sh
 
-readonly pak="io.openrct2.OpenRCT2"
-readonly def_path="/app/bin:/usr/bin"
-readonly path="${HOME}/.local/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
+NAME="openrct2"
 
-# Gamescope LD_LIBRARY_PATH fix
-readonly _gamescope_ld_path="/usr/lib/extensions/vulkan/gamescope/lib:/usr/lib/extensions/vulkan/MangoHud/lib:/usr/lib/extensions/vulkan/OBSVkCapture/lib"
-_def_ld_path=""
-if [ -n "${LD_LIBRARY_PATH}" ]; then
-  _def_ld_path=":${LD_LIBRARY_PATH}"
-else
-  _def_ld_path=""
-fi
-readonly _def_ld_path
-
-cmd=""
-if [ "$1" = "--shell" ]; then
-  cmd="${cmd} --shell"
-  shift
-fi
-readonly cmd
-
+# Source our common library
 # shellcheck source=/opt/pyamsoft/lib/common
-readonly FP_ENV="${PYAMSOFT_PATH}/flatpak/lib/flatpak-env"
+. "${PYAMSOFT_PATH}/lib/common"
+# shellcheck source=/opt/pyamsoft/flatpak/lib/common
+. "${PYAMSOFT_PATH}/flatpak/lib/common"
 
-# shellcheck disable=SC2086
-exec "${FP_ENV}" ${cmd} "${pak}" \
-  --with-env PATH "${path}:" "${def_path}" \
-  --with-env LD_LIBRARY_PATH "${_gamescope_ld_path}" "${_def_ld_path}" \
-  --command="${HOME}/.local/bin/gametime-openrct2" \
-  --filesystem="${HOME}/games/steam" \
-  -- \
-  "$@" || exit 1
-exit 0
+readonly _pak="io.openrct2.OpenRCT2"
+
+main() {
+  _enter_existing=0
+  _args=""
+  while [ -n "$1" ]; do
+    case "$1" in
+    --shell)
+      shift
+
+      if _is_flatpak_running "${_pak}"; then
+        # Enter the existing instance
+        _enter_existing=1
+
+        _log "Enter existing %s instance" "${_pak}"
+      else
+        # Launch a new instance but with bash
+        _args="${_args} --command=/bin/bash"
+
+        _log "Launching shell %s instance" "${_pak}"
+      fi
+      ;;
+    --offline)
+      shift
+
+      _args="${_args} --unshare=network"
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  _path="${HOME}/.local/bin:/app/bin:/usr/bin:/usr/lib/extensions/vulkan/MangoHud/bin:/usr/lib/extensions/vulkan/gamescope/bin:/usr/lib/extensions/vulkan/OBSVkCapture/bin"
+  _ld_path="/usr//lib/extensions/vulkan/gamescope/lib"
+  if [ "${_enter_existing}" -eq 1 ]; then
+    flatpak enter "${_pak}" \
+      env \
+      PATH="${_path}" \
+      /bin/bash -i -l \
+      "$@"
+    return "$?"
+  else
+    # shellcheck disable=SC2086
+    flatpak run "${_pak}" \
+      --env="PATH=${_path}" \
+      --env="LD_LIBRARY_PATH=${_ld_path}" \
+      --command="${HOME}/.local/bin/gametime-openrct2" \
+      --filesystem="${HOME}/games/steam" \
+      ${_args} \
+      -- \
+      "$@"
+    return "$?"
+  fi
+}
+
+main "$@"
+exit "$?"
