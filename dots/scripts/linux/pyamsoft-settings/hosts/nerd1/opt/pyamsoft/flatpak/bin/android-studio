@@ -87,7 +87,14 @@ main() {
 
   if [ "${_enter_existing}" -eq 1 ]; then
     readonly FP_ENTER="${PYAMSOFT_PATH}/flatpak/bin/flatpak-enter"
-    "${FP_ENTER}" "${_pak}" "$@"
+
+    "${FP_ENTER}" "${_pak}" \
+      env \
+      PATH="${path}:${def_path}" \
+      PYAMSOFT_USE_FOOJAY=1 \
+      ANDROID_EMULATOR_USE_SYSTEM_LIBS=1 \
+      /bin/bash -i -l \
+      "$@"
     return "$?"
   else
     if [ "${_java_wayland}" -eq 1 ]; then
