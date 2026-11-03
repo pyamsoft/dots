@@ -12,9 +12,8 @@ keybind = ctrl+shift+v=paste_from_clipboard
 
 ## Font Size
 keybind = ctrl+shift+equal=increase_font_size:1
-keybind = ctrl+equal=increase_font_size:1
-keybind = ctrl+-=decrease_font_size:1
-keybind = ctrl+0=reset_font_size
+keybind = ctrl+shift+-=decrease_font_size:1
+keybind = ctrl+shift+0=reset_font_size
 
 ## Settings
 keybind = ctrl+shift+f3=toggle_command_palette
