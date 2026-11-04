@@ -3,12 +3,31 @@
 # A simple $HOME only sandbox that re-writes all environment variables to a directory of choice
 #
 # This is NOT a security sandbox. This has one simple goal which is to $HOME sandbox gaming apps
-readonly _SCRIPT_NAME="gamer"
+NAME="gamer"
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
 
 _check_user() {
   _check_me="$1"
   if ! id -u "${_check_me}" >/dev/null 2>&1; then
-    printf -- '[gamer] Target user %s does not exist!\n' "${_check_me}"
+    _elog 'Target user %s does not exist!' "${_check_me}"
 
     unset _check_me
     return 1
@@ -30,15 +49,22 @@ main() {
   if [ -z "${_cmd}" ]; then
     _cur_name=$(basename "$0")
     readonly _cur_name
-    if [ "${_cur_name}" != "${_SCRIPT_NAME}" ]; then
+    if [ "${_cur_name}" != "${NAME}" ]; then
       _cmd="${_cur_name}"
     else
-      printf -- '[gamer] Must specify a command to run as!\n'
+      _elog 'Must specify a command to run as!'
       return 1
     fi
   else
     shift
   fi
+
+  case "${_cmd}" in
+  *[!a-z0-9-]*)
+    _elog 'Invalid command name: %s' "${_cmd}"
+    return 1
+    ;;
+  esac
 
   _target_user="gaming-${_cmd}"
   if ! _check_user "${_target_user}"; then
@@ -51,7 +77,7 @@ main() {
   # the _target_user
   #
   # See gamelaunch script in /opt/pyamsoft/sbin
-  exec sudo /opt/pyamsoft/sbin/gamelaunch "$(id -un)" "${_target_user}" "${_cmd}" "$@"
+  exec sudo /opt/pyamsoft/sbin/gamelaunch "${_target_user}" "$@"
 }
 
 main "$@" || exit 1
