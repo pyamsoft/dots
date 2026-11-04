@@ -1,5 +1,26 @@
 #!/bin/sh
 
+NAME="gamer::installer"
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
 ##
 # Installer
 #
@@ -14,48 +35,48 @@ _installer() {
   current_directory="$(pwd)"
 
   if [ ! -e "${script}" ]; then
-    printf -- 'Target script does not exist, skipping install: %s => %s\n' "${script}" "${app_name}"
+    _elog 'Target script does not exist, skipping install: %s => %s' "${script}" "${app_name}"
     return 0
   fi
 
-  printf -- 'Attempt install script %s into flatpak app %s\n' "${script}" "${app_name}"
+  _log 'Attempt install script %s into flatpak app %s' "${script}" "${app_name}"
 
   if [ -d "${HOME}/.var/app/${app_name}" ]; then
     cd "${HOME}/.var/app/${app_name}" || {
-      printf -- 'Failed to cd into flatpak app directory: %s\n.' "${app_name}"
+      _elog 'Failed to cd into flatpak app directory: %s' "${app_name}"
       return 1
     }
 
     mkdir -p "${target}" || {
-      printf -- 'Failed to create %s directory for app: %s\n' "${target}" "${app_name}"
+      _elog 'Failed to create %s directory for app: %s' "${target}" "${app_name}"
       return 2
     }
 
     t="${target}/$(basename "${script}")"
 
     cp -f "${current_directory}/${script}" "$t" || {
-      printf -- 'Failed to copy script %s into %s directory for app: %s\n' "${script}" "${target}" "${app_name}"
+      _elog 'Failed to copy script %s into %s directory for app: %s' "${script}" "${target}" "${app_name}"
       return 3
     }
 
     if [ "${mark}" -eq 1 ]; then
       chmod +x "$t" || {
-        printf -- 'Failed to mark script %s executable for app: %s\n' "${script}" "${app_name}"
+        _elog 'Failed to mark script %s executable for app: %s' "${script}" "${app_name}"
         return 4
       }
     else
       chmod -x "$t" || {
-        printf -- 'Failed to mark script %s unexecutable for app: %s\n' "${script}" "${app_name}"
+        _elog 'Failed to mark script %s unexecutable for app: %s' "${script}" "${app_name}"
         return 4
       }
     fi
 
     cd "${current_directory}" || {
-      printf -- 'Failed to cd out of flatpak app directory: %s back to %s\n.' "${app_name}" "${current_directory}"
+      _elog 'Failed to cd out of flatpak app directory: %s back to %s' "${app_name}" "${current_directory}"
       return 5
     }
 
-    printf -- '    %s installed for flatpak app %s\n' "${script}" "${app_name}"
+    _log '    %s installed for flatpak app %s' "${script}" "${app_name}"
 
     unset t
     unset app_name
@@ -73,26 +94,26 @@ _local_install() {
   target="$2"
   current_directory="$(pwd)"
 
-  printf -- 'SUDO: Attempt local install script %s into target %s/bin\n' "${script}" "${target}"
+  _log 'SUDO: Attempt local install script %s into target %s/bin' "${script}" "${target}"
 
   t="${target}/bin/$(basename "${script}")"
 
   sudo cp -f "${current_directory}/${script}" "$t" || {
-    printf -- 'Failed to copy script %s into host %s\n' "${script}" "${target}"
+    _elog 'Failed to copy script %s into host %s' "${script}" "${target}"
     return 1
   }
 
   sudo chown "$(basename "${target}"):$(basename "${target}")" "$t" || {
-    printf -- 'Failed to own script %s as target user %s\n' "${script}" "$(basename "${target}")"
+    _elog 'Failed to own script %s as target user %s' "${script}" "$(basename "${target}")"
     return 1
   }
 
   sudo chmod 700 "$t" || {
-    printf -- 'Failed to mark script %s executable for host %s\n' "${script}" "${target}"
+    _elog 'Failed to mark script %s executable for host %s' "${script}" "${target}"
     return 2
   }
 
-  printf -- 'SUDO:    %s installed for %s\n' "${script}" "$t"
+  _log 'SUDO:    %s installed for %s' "${script}" "$t"
 
   unset t
   unset target
@@ -106,34 +127,34 @@ _jail_install() {
   target="$2"
   current_directory="$(pwd)"
 
-  printf -- 'Attempt local install script %s into jail %s/bin\n' "${script}" "${target}"
+  _log 'Attempt local install script %s into jail %s/bin' "${script}" "${target}"
 
   jail="${HOME}/.local/etc/jails/${target}"
   jail_bindir="${jail}/home/.local/bin"
 
   if [ ! -d "${jail}" ]; then
-    printf -- 'Ignore local install of %s into jail %s, does not exist.\n' "${script}" "${target}"
+    _elog 'Ignore local install of %s into jail %s, does not exist' "${script}" "${target}"
     return 0
   fi
 
   t="${jail_bindir}/$(basename "${script}")"
 
   mkdir -p "${jail_bindir}" || {
-    printf -- 'Failed to make jail directory %s\n' "${jail_bindir}"
+    _elog 'Failed to make jail directory %s' "${jail_bindir}"
     return 1
   }
 
   cp -f "${current_directory}/${script}" "$t" || {
-    printf -- 'Failed to copy script %s into jail %s\n' "${script}" "${target}"
+    _elog 'Failed to copy script %s into jail %s' "${script}" "${target}"
     return 2
   }
 
   chmod 700 "$t" || {
-    printf -- 'Failed to mark script %s executable for jail %s\n' "${script}" "${target}"
+    _elog 'Failed to mark script %s executable for jail %s' "${script}" "${target}"
     return 2
   }
 
-  printf -- '    %s installed for %s\n' "${script}" "$t"
+  _log '    %s installed for %s' "${script}" "$t"
 
   unset t
   unset jail
@@ -163,11 +184,11 @@ _installer "com.pokemmo.PokeMMO" ".local/bin" "pokemmo/gametime-pokemmo" 1 || ex
 _installer "org.DolphinEmu.dolphin-emu" ".local/bin" "dolphin-emu/gametime-dolphin-emu" 1 || exit 1
 
 # If we have gamescope locally, maybe we want this script too
-if command -v gamescope >/dev/null; then
+if command -v gamescope >/dev/null 2>&1; then
   # Gaming as another user
   for _u in /home/gaming-*; do
     case "${_u}" in
-    gaming-\*) ;;
+    "/home/gaming-*") ;;
     *)
       _local_install "gametime" "${_u}" || exit 1
       ;;
