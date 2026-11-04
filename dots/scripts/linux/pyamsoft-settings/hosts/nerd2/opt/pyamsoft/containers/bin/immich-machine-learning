@@ -20,6 +20,9 @@ _prep_env() {
   # https://github.com/immich-app/immich/releases/tag/v3.3.0
   _add_env -e MACHINE_LEARNING_MODEL_REVISION=v2
 
+  # https://www.reddit.com/r/selfhosted/comments/1xnbujt/psa_immich_machine_learning_has_microsoft/
+  _add_env -e ORT_DISABLE_TELEMETRY=1
+
   return 0
 }
 
