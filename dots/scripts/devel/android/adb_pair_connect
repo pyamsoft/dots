@@ -22,7 +22,7 @@ _elog() {
 }
 
 _usage() {
-  _log cat <<EOF
+  cat <<EOF
 adb_pair_connect <IP> <CONNECT-PORT> <PAIR-PORT>
 
 <IP> is your device IP address on the Wireless Debugging page.
