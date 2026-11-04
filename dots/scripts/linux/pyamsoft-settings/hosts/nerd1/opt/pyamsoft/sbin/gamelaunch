@@ -6,7 +6,7 @@
 # shellcheck source=/opt/pyamsoft/lib/common
 . "${PYAMSOFT_PATH}/lib/common"
 
-readonly _NAME="gamelaunch"
+NAME="$(basename "$0")"
 
 __grant_candidates=""
 
