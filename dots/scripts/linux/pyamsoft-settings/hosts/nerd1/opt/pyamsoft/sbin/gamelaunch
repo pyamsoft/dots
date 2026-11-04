@@ -121,12 +121,13 @@ main() {
     return 1
   fi
 
-  _from_user="$1"
-  if [ -z "${_from_user}" ]; then
-    _elog 'Requires a FROM user as the first argument.'
+  # XAUTHORITY is caller controlled and read by root, only accept the invoking user's own file
+  if [ ! -f "${XAUTHORITY}" ] || [ "$(stat -c '%u' -- "${XAUTHORITY}")" != "${SUDO_UID}" ]; then
+    _elog 'XAUTHORITY must be a file owned by %s: %s' "${SUDO_USER}" "${XAUTHORITY}"
     return 1
   fi
-  shift
+
+  _from_user="${SUDO_USER}"
 
   _to_user="$1"
   if [ -z "${_to_user}" ]; then
@@ -151,7 +152,7 @@ main() {
     shift
     ;;
   --gamescope=*)
-    _split="$(printf -- '%s\n' "$1" | tr '=' ' ' | awk '{ print $2 }')"
+    _split="${1#--gamescope=}"
     if [ -z "${_split}" ]; then
       _elog 'Missing required --gamescope= argument value!'
       return 1
@@ -168,10 +169,6 @@ main() {
   esac
 
   if ! _check_user "${_to_user}"; then
-    return 1
-  fi
-
-  if ! _check_user "${_from_user}"; then
     return 1
   fi
 
