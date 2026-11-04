@@ -42,40 +42,40 @@ main() {
   _pair_port="$3"
 
   if ! command -v adb >/dev/null 2>&1; then
-    _elog 'adb not in PATH\n'
+    _elog 'adb not in PATH'
     return 1
   fi
 
   if [ -z "${_ip}" ]; then
-    _elog 'Must provide IP address as first argument.\n'
+    _elog 'Must provide IP address as first argument.'
     _usage || return 1
     return 1
   fi
 
   if [ -z "${_connect_port}" ]; then
-    _elog 'Must provide connect port as second argument.\n'
+    _elog 'Must provide connect port as second argument.'
     _usage || return 1
     return 1
   fi
 
   if [ -z "${_pair_port}" ]; then
-    _elog 'Must provide pairing port as third argument.\n'
+    _elog 'Must provide pairing port as third argument.'
     _usage || return 1
     return 1
   fi
 
   adb pair "${_ip}":"${_pair_port}" || {
-    _elog 'Failed to pair device to ADB %s:%s\n' "${_ip}" "${_pair_port}"
+    _elog 'Failed to pair device to ADB %s:%s' "${_ip}" "${_pair_port}"
     return 1
   }
 
   adb connect "${_ip}":"${_connect_port}" || {
-    _elog 'Failed to connect device to ADB %s:%s\n' "${_ip}" "${_connect_port}"
+    _elog 'Failed to connect device to ADB %s:%s' "${_ip}" "${_connect_port}"
     return 1
   }
 
   adb devices || {
-    _elog 'Failed to list ADB connected devices to ADB\n'
+    _elog 'Failed to list ADB connected devices to ADB'
     return 1
   }
 
