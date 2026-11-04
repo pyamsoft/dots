@@ -1,14 +1,56 @@
 #!/bin/sh
 
-# Delete the gaming user entirely
-_user="$1"
-if [ -z "${_user}" ]; then
-  printf -- '[delete] Need target user to delete\n'
-  exit 1
-fi
+NAME="gamer::delete"
 
-_user="gaming-${_user}"
-readonly _user
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
 
-printf -- '[delete] Completely remove gaming user: %s\n' "${_user}"
-exec sudo sh -c 'loginctl kill-user "$1" ; sleep 1 && loginctl disable-linger "$1" ; sleep 1 && userdel -r "$1" && sleep 1 && groupdel "$1"' -- "${_user}"
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
+main() {
+  # Delete the gaming user entirely
+  _user="$1"
+  if [ -z "${_user}" ]; then
+    _elog 'Need target user to delete'
+    unset _user
+    return 1
+  fi
+
+  case "${_user}" in
+  *[!a-z0-9-]*)
+    _elog 'Invalid target user name: %s' "${_user}"
+    unset _user
+    return 1
+    ;;
+  esac
+
+  _user="gaming-${_user}"
+  readonly _user
+
+  _log 'Completely removing gaming user: %s...' "${_user}"
+  if sudo sh -c 'loginctl kill-user "$1" ; sleep 1 && loginctl disable-linger "$1" ; sleep 1 && userdel -r "$1" && { ! getent group "$1" >/dev/null || groupdel "$1"; }' -- "${_user}"; then
+    _log 'Removed gaming user: %s' "${_user}"
+  else
+    _elog 'Failed to remove gaming user: %s' "${_user}"
+  fi
+
+  unset _user
+  return 0
+}
+
+main "$@"
+exit "$?"
