@@ -1,24 +1,27 @@
 #!/bin/sh
 
+NAME="gametime"
+
 # Variables
 __gamescope_options=""
 __game_environment=""
 __game_tools=""
 __env_tools=""
+__has_egpu=""
 
 # 05/23/2025
 # Enabling --steam causes no gamescope window to show up
 _ENABLE_STEAM_INTEGRATION=0
 
+##
+# Logs a message with newline, formatting, and a name tag
 _log() {
   _msg="$1"
+  shift
 
-  if [ -n "${_msg}" ]; then
-    shift
-  fi
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
 
-  # shellcheck disable=SC2059
-  printf -- "[gametime]: ${_msg}\n" "$@"
+  unset _msg
   return 0
 }
 
@@ -138,11 +141,15 @@ _prepare_env() {
 ##
 # Sometimes our eGPU is connected, sometimes it's not
 _has_egpu() {
-  if command -v lspci >/dev/null && lspci | grep -q "RX 6800"; then
-    return 0
-  else
-    return 1
+  if [ -z "${__has_egpu}" ]; then
+    if command -v lspci >/dev/null && lspci | grep -q "RX 6800"; then
+      __has_egpu=1
+    else
+      __has_egpu=0
+    fi
   fi
+
+  [ "${__has_egpu}" -eq 1 ]
 }
 
 ##
