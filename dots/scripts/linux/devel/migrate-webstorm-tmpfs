@@ -1,5 +1,19 @@
 #!/bin/sh
 
+NAME="$(basename "$0")"
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
 _my_user="$(id -u -n)"
 _my_home_path="$(systemd-escape "${HOME}")"
 
@@ -17,10 +31,10 @@ _systemctl() {
   fi
 
   if [ -n "${_noexec}" ] && [ "${_noexec}" -eq 1 ]; then
-    printf -- '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
+    _log '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
     sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700\x2cnoexec.service"
   else
-    printf -- '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700.service"
+    _log '%s service %s\n' "${_enable_or_disable}" "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700.service"
     sudo systemctl "${_enable_or_disable}" --now "tmpfs-mounter@${_my_user}:${_my_home_path}-.var-app-com.jetbrains.WebStorm-cache-JetBrains-WebStorm${_version}-${_esc_d}:mode\x3d0700.service"
   fi
 

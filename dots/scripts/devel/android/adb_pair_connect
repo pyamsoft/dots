@@ -1,8 +1,28 @@
 #!/bin/sh
 
+NAME="adb_pair_connect"
+
+##
+# Logs a message with newline, formatting, and a name tag
+_log() {
+  _msg="$1"
+  shift
+
+  printf -- "[%s]: ${_msg}\n" "${NAME}" "$@" || return 1
+
+  unset _msg
+  return 0
+}
+
+##
+# Log a message to stderr
+_elog() {
+  _log "$@" 1>&2 || return 1
+  return 0
+}
+
 _usage() {
-  printf -- '%s\n' "$(
-    cat <<EOF
+  _log cat <<EOF
 adb_pair_connect <IP> <CONNECT-PORT> <PAIR-PORT>
 
 <IP> is your device IP address on the Wireless Debugging page.
@@ -14,7 +34,6 @@ Example:
   $ adb_pair_connect 192.168.1.2 1337 42069
 
 EOF
-  )"
 }
 
 main() {
@@ -22,43 +41,45 @@ main() {
   _connect_port="$2"
   _pair_port="$3"
 
-  if ! command -v adb >/dev/null; then
-    printf -- 'E: adb not in PATH\n'
+  if ! command -v adb >/dev/null 2>&1; then
+    _elog 'adb not in PATH\n'
     return 1
   fi
 
   if [ -z "${_ip}" ]; then
-    printf -- 'E: Must provide IP address as first argument.\n'
+    _elog 'Must provide IP address as first argument.\n'
     _usage || return 1
     return 1
   fi
 
   if [ -z "${_connect_port}" ]; then
-    printf -- 'E: Must provide connect port as second argument.\n'
+    _elog 'Must provide connect port as second argument.\n'
     _usage || return 1
     return 1
   fi
 
   if [ -z "${_pair_port}" ]; then
-    printf -- 'E: Must provide pairing port as third argument.\n'
+    _elog 'Must provide pairing port as third argument.\n'
     _usage || return 1
     return 1
   fi
 
   adb pair "${_ip}":"${_pair_port}" || {
-    printf -- 'E: Failed to pair device to ADB %s:%s\n' "${_ip}" "${_pair_port}"
+    _elog 'Failed to pair device to ADB %s:%s\n' "${_ip}" "${_pair_port}"
     return 1
   }
 
   adb connect "${_ip}":"${_connect_port}" || {
-    printf -- 'E: Failed to connect device to ADB %s:%s\n' "${_ip}" "${_connect_port}"
+    _elog 'Failed to connect device to ADB %s:%s\n' "${_ip}" "${_connect_port}"
     return 1
   }
 
   adb devices || {
-    printf -- 'E: Failed to list ADB connected devices to ADB\n'
+    _elog 'Failed to list ADB connected devices to ADB\n'
     return 1
   }
+
+  return 0
 }
 
 main "$@" || exit 1
