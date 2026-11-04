@@ -83,9 +83,6 @@ _setup_extra() {
   # If systemd assumes we have 256 colors, it displays a weird yellow for example.
   # Our terminal color scheme only handles 16
   export SYSTEMD_COLORS=16
-
-  # Help with Pulse audio crackling in some programs
-  export PULSE_LATENCY_MSEC=60
   
   # Hardware Accel
   #
