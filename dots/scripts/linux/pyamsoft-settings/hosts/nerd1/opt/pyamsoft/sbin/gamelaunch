@@ -121,12 +121,6 @@ main() {
     return 1
   fi
 
-  # XAUTHORITY is caller controlled and read by root, only accept the invoking user's own file
-  if [ ! -f "${XAUTHORITY}" ] || [ "$(stat -c '%u' -- "${XAUTHORITY}")" != "${SUDO_UID}" ]; then
-    _elog 'XAUTHORITY must be a file owned by %s: %s' "${SUDO_USER}" "${XAUTHORITY}"
-    return 1
-  fi
-
   _from_user="${SUDO_USER}"
 
   _to_user="$1"
