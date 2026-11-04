@@ -24,6 +24,8 @@ optdepends=(
   'proxytunnel: Possible SSH proxy command'
   'skopeo: Checking container updates'
   'socat: Preferred SSH proxy command'
+  'flatpak: flatpak scripts and runners'
+  'tailscale: The mesh VPN provider of choice'
 )
 # shellcheck disable=SC2034
 provides=('pyamsoft-settings')
