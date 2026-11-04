@@ -12,6 +12,20 @@ __grant_candidates=""
 
 _check_user() {
   _check_me="$1"
+  case "${_check_me}" in
+  gaming-*[!a-z0-9-]* | gaming-)
+    _elog 'Invalid gaming user name: %s' "${_check_me}"
+    unset _check_me
+    return 1
+    ;;
+  gaming-*) ;;
+  *)
+    _elog 'Target must be a gaming-* user: %s' "${_check_me}"
+    unset _check_me
+    return 1
+    ;;
+  esac
+
   if ! id -u "${_check_me}" >/dev/null 2>&1; then
     _elog 'User %s does not exist!' "${_check_me}"
 
@@ -78,7 +92,7 @@ _execute() {
     --property="SupplementaryGroups=${_extra_groups}" \
     --setenv="GAMER_GAMESCOPE=${GAMER_GAMESCOPE:-0}" \
     --setenv="GAMER=1" \
-    /bin/bash -l -c '~/bin/launcher' "$@" || return 1
+    /bin/bash -l -c '~/bin/launcher "$@"' launcher "$@" || return 1
 }
 
 main() {
