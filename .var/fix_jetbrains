@@ -73,11 +73,21 @@ main() {
   else
     while [ -n "$1" ]; do
       pak="$1"
-      shift
-      config="$1"
+
+      if [ -z "${pak}" ]; then
+        printf -- 'Must provide a flatpak ID and the name of the folder in config/\n'
+        return 1
+      fi
       shift
 
-      _remove_lock "$pak" "$config" 1
+      config="$1"
+      if [ -z "${config}" ]; then
+        printf -- 'Must provide a flatpak ID and the name of the folder in config/\n'
+        return 1
+      fi
+      shift
+
+      _remove_lock "$pak" "$config" 0
 
       unset pak
       unset config
