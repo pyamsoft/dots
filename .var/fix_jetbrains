@@ -30,15 +30,22 @@ _remove_lock() {
     return 1
   }
 
-  if [ "${_ask}" -eq 1 ]; then
-    rm -v -i ./*/.lock || {
-      printf -- 'Failed to remove lock file in target: %s\n' "${_target}"
-    }
-  else
-    rm -v -f ./*/.lock || {
-      printf -- 'Failed to remove lock file in target: %s\n' "${_target}"
-    }
-  fi
+  for f in ./*/.lock; do
+    # Make sure we have actually found a lock file
+    if [ "$f" != "./*/.lock" ] && [ -e "$f" ]; then
+      if [ "${_ask}" -eq 1 ]; then
+        rm -v -i ./*/.lock || {
+          printf -- 'Failed to remove lock file in target: %s\n' "${_target}"
+        }
+      else
+        rm -v -f ./*/.lock || {
+          printf -- 'Failed to remove lock file in target: %s\n' "${_target}"
+        }
+      fi
+    fi
+    unset f
+  done
+  unset f
 
   cd "${_old}" || {
     printf -- 'Failed to cd out of target: %s\n' "${_target}"
@@ -59,17 +66,9 @@ _remove_lock() {
 
 main() {
   if [ -z "$1" ]; then
-    printf -- 'Really remove all locks? (y/N) '
-    read -r response
-    case "${response}" in
-    y | Y | yes | YES)
-      _remove_lock "com.jetbrains.WebStorm" "JetBrains" 0
-      _remove_lock "com.jetbrains.PyCharm-Community" "JetBrains" 0
-      _remove_lock "com.google.AndroidStudio" "Google" 0
-      ;;
-    *)
-      ;;
-    esac
+    _remove_lock "com.jetbrains.WebStorm" "JetBrains" 1
+    _remove_lock "com.jetbrains.PyCharm-Community" "JetBrains" 1
+    _remove_lock "com.google.AndroidStudio" "Google" 1
   else
     while [ -n "$1" ]; do
       pak="$1"
@@ -87,7 +86,7 @@ main() {
       fi
       shift
 
-      _remove_lock "$pak" "$config" 0
+      _remove_lock "${pak}" "${config}" 1
 
       unset pak
       unset config

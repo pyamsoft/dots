@@ -63,8 +63,8 @@ _do() {
 }
 
 main() {
-  _do "disable" "2026.1"
-  _do "enable" "2026.2"
+  _do "disable" "2026.2"
+  _do "enable" "2026.3"
   return 0
 }
 main "$@" || exit 0
