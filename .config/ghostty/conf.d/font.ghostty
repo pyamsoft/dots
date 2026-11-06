@@ -3,4 +3,7 @@
 font-family = monospace
 font-size = 12
 
+# Disable ligatures
+font-feature = -calt, -liga, -dlig
+
 config-file = ?font.ghostty.local
