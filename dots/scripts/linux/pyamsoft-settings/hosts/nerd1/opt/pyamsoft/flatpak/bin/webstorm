@@ -78,7 +78,14 @@ main() {
       "${_pak}" \
       ${_jvm_args} \
       "$@"
-    return "$?"
+    _ret="$?"
+
+    # Kill jetbrainsd after exiting
+    if command -v pkill >/dev/null 2>&1; then
+      pkill jetbrainsd
+    fi
+
+    return "${_ret}"
   fi
 }
 
