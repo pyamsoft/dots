@@ -53,7 +53,7 @@ instead of whatever the remote RDP server at `myhost` would usually be.
 
 I code with a monospace Comic Sans like font. Yes, I am serious.  
 Currently I'm using a fork of "Comic Shanns", found here on github:  
-[you have been warned](https://github.com/jesusmgg/comic-shanns-mono)
+[you have been warned](https://github.com/ryanoasis/nerd-fonts/tree/master/src/unpatched-fonts/ComicShannsMono)
 
 ### USBGuard
 
