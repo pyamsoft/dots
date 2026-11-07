@@ -74,6 +74,7 @@ rsync
 sane-airscan
 sbctl
 smartmontools
+socat
 sof-firmware
 spectacle
 sshpass
