@@ -22,7 +22,6 @@ _os="$2"
 
 # Remove every occurrence of "$1" from $PATH.
 # This function API is accessible to scripts in profile.d
-# shellcheck disable=SC2329
 remove_path() {
   # Add "edges" to the path
   PATH=":${PATH}:"
