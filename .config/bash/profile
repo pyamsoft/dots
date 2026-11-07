@@ -1,4 +1,4 @@
-# shellcheck shell=bash
+shellcheck shell=bash
 
 # Arguments always provided as:
 #
@@ -20,30 +20,44 @@ fi
 _cfg="$1"
 _os="$2"
 
-# Append "$1" to $PATH when not already in.
+# Remove every occurrence of "$1" from $PATH.
+# This function API is accessible to scripts in profile.d
+# shellcheck disable=SC2329
+remove_path() {
+  # Add "edges" to the path
+  PATH=":${PATH}:"
+
+  while true; do
+    # If PATH includes our path item previously, remove it
+    case "${PATH}" in
+    *:"$1":*)
+      PATH="${PATH%%:"$1":*}:${PATH#*:"$1":}"
+      ;;
+    *)
+      break
+      ;;
+    esac
+  done
+
+  # Re-fix the path
+  PATH="${PATH#:}"
+  PATH="${PATH%:}"
+}
+
+# Append "$1" to $PATH, moving it to the end if already present.
 # This function API is accessible to scripts in profile.d
 # shellcheck disable=SC2329
 append_path() {
-  case ":${PATH}:" in
-  *:"$1":*)
-    ;;
-  *)
-    PATH="${PATH:+${PATH}:}$1"
-    ;;
-  esac
+  remove_path "$1"
+  PATH="${PATH:+${PATH}:}$1"
 }
 
-# Prepend "$1" to $PATH when not already in.
+# Prepend "$1" to $PATH, moving it to the front if already present.
 # This function API is accessible to scripts in profile.d
 # shellcheck disable=SC2329
 prepend_path() {
-  case ":${PATH}:" in
-  *:"$1":*)
-    ;;
-  *)
-    PATH="$1${PATH:+:${PATH}}"
-    ;;
-  esac
+  remove_path "$1"
+  PATH="$1${PATH:+:${PATH}}"
 }
 
 _all_profile=""
