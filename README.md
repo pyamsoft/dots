@@ -90,14 +90,6 @@ https://github.com/nightcomdev/opnsense/tree/main/i226-firmware-upgrade
 
 The current device used requires the 2MB version
 
-### Wayland
-
-- Sunshine needs cap_sys_admin `sudo setcap 'CAP_SYS_ADMIN+p' /usr/bin/sunshine`
-  - Can be automatically handled by a pacman hook
-- Gamescope may need cap_sys_nice `sudo setcap 'CAP_SYS_NICE=eip' /usr/bin/sunshine`
-  - Can be automatically handled by a pacman hook
-- See Arch wiki for enabling Wayland for Android Studio / Webstorm
-
 ### Docker
 
 For video acceleration in docker, make sure you
