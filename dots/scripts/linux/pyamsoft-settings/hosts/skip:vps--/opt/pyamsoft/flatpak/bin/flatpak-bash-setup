@@ -124,6 +124,7 @@ _install_bash_environment() {
 
   # Optional starship install
   if [ -e "${CONFIG_HOME}/starship.toml" ]; then
+    _log 'Copy starship configuration: %s -> %s' "${CONFIG_HOME}/starship.toml" "${_install_dir}/config/starship.toml"
     cp "${CONFIG_HOME}/starship.toml" "${_install_dir}/config/" || {
       _elog 'Failed to install starship configuration to %s' "${_install_dir}/config/"
 
@@ -133,6 +134,7 @@ _install_bash_environment() {
   fi
 
   for _install_file in .bashrc .bash_profile; do
+    _log 'Copy bash file: %s -> %s' "${HOME}/${_install_file}" "${_install_dir}/${_install_file}"
     cp "${HOME}/${_install_file}" "${_install_dir}/${_install_file}" || {
       _elog 'Failed to install %s to %s' "${_install_file}" "${_install_dir}"
 
