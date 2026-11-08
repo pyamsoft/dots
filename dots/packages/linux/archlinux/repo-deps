@@ -636,6 +636,7 @@ lmdb
 lsb-release
 lsof
 lua
+lua51
 lua51-lpeg
 lua54
 luajit
@@ -958,6 +959,7 @@ unibilium
 union
 unzip
 upower
+usage
 usbredir
 usbutils
 util-linux-libs
