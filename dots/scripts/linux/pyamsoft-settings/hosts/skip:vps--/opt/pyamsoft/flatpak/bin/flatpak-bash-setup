@@ -10,99 +10,144 @@
 
 NAME="$(basename "$0")"
 
+CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+
 _require_bash_environment() {
-  if [ ! -f "${HOME}/.bashrc" ]; then
-    _elog 'Need a .bashrc at %s' "${HOME}/.bashrc"
+  for _require_file in "${HOME}/.bashrc" "${HOME}/.bash_profile"; do
+    if [ ! -f "${_require_file}" ]; then
+      _elog 'Need a file at %s' "${_require_file}"
+
+      unset _require_file
+      return 1
+    fi
+  done
+  unset _require_file
+
+  if [ ! -d "${CONFIG_HOME}/bash" ]; then
+    _elog 'Need bash configuration at %s' "${CONFIG_HOME}/bash"
     return 1
   fi
 
-  if [ ! -f "${HOME}/.bash_profile" ]; then
-    _elog 'Need a .bash_profile at %s' "${HOME}/.bash_profile"
+  return 0
+}
+
+_clean_bash_config() {
+  _clean_dir="$1"
+
+  # Remove everything that is not a .local file
+  #
+  # Find files
+  # That are not .local
+  # And do not live in a fullpath named .local.d
+  # And remove them
+  find "${_clean_dir}" \
+    -mindepth 1 \
+    -type f \
+    ! -name '*.local' \
+    ! -wholename '*.local.d/*' \
+    -prune \
+    -exec rm -f {} + || {
+    unset _clean_dir
     return 1
-  fi
+  }
 
-  if [ -n "${XDG_CONFIG_HOME}" ]; then
-    if [ ! -d "${XDG_CONFIG_HOME}/bash" ]; then
-      _elog 'Need bash configuration at %s' "${XDG_CONFIG_HOME}/bash"
-      return 1
-    fi
-  else
-    if [ ! -d "${HOME}/.config/bash" ]; then
-      _elog 'Need bash configuration at %s' "${HOME}/.config/bash"
-      return 1
-    fi
-  fi
+  unset _clean_dir
+  return 0
+}
 
+_copy_bash_config() {
+  _copy_src="$1"
+  _copy_dst="$2"
+
+  find "${_copy_src}" -type f | while IFS= read -r _f; do
+    # Already exists, ignore
+    if [ -e "${_copy_dst}/${_f}" ] || [ -L "${_copy_dst}/${_f}" ]; then
+      continue
+    fi
+
+    case "${_f}" in
+    */completions/* | */*.d/*)
+      # Make directory and then move files
+      _ff="${_f#"${_copy_src}/"}"
+      mkdir -p "${_copy_dst}/${_ff%/*}" || return 1
+      cp -P "${_f}" "${_copy_dst}/${_ff}" || return 1
+      unset _ff
+      ;;
+    completions)
+      # "completions" is a special bash directory
+      _ff="${_f#"${_copy_src}/"}"
+      mkdir -p "${_copy_dst}/${_ff%/*}" || return 1
+      unset _ff
+      ;;
+    *)
+      # This is an "install target" file
+      _ff="${_f#"${_copy_src}/"}"
+      cp -P "${_f}" "${_copy_dst}/${_ff}" || return 1
+      unset _ff
+      ;;
+    esac
+    unset _f
+  done
+  unset _f
+
+  unset _copy_src
+  unset _copy_dst
   return 0
 }
 
 _install_bash_environment() {
-  _install_flatpak_id="$1"
+  _install_dir="$1"
 
-  mkdir -p "${_install_flatpak_id}/config/" || {
-    _elog 'Failed to setup configuration directory %s' "${_install_flatpak_id}/config/"
+  _log 'Create install directory: %s' "${_install_dir}/config/bash"
+  mkdir -p "${_install_dir}/config/bash" || {
+    _elog 'Failed to setup configuration directory %s' "${_install_dir}/config/bash"
 
-    unset _install_flatpak_id
+    unset _install_dir
     return 1
   }
 
-  if [ -n "${XDG_CONFIG_HOME}" ]; then
-    cp -r "${XDG_CONFIG_HOME}/bash" "${_install_flatpak_id}/config/" || {
-      _elog 'Failed to install bash configuration to %s' "${_install_flatpak_id}/config/"
+  _log 'Clean old configuration: %s' "${_install_dir}/config/bash"
+  _clean_bash_config "${_install_dir}/config/bash" || {
+    _elog 'Failed to remove old bash configuration from %s' "${_install_dir}/config/bash"
 
-      unset _install_flatpak_id
+    unset _install_dir
+    return 1
+  }
+
+  _log 'Copy host configuration: %s -> %s' "${CONFIG_HOME}/bash" "${_install_dir}/config/bash"
+  _copy_bash_config "${CONFIG_HOME}/bash" "${_install_dir}/config/bash" || {
+    _elog 'Failed to install bash configuration to %s' "${_install_dir}/config/bash"
+
+    unset _install_dir
+    return 1
+  }
+
+  # Optional starship install
+  if [ -e "${CONFIG_HOME}/starship.toml" ]; then
+    cp "${CONFIG_HOME}/starship.toml" "${_install_dir}/config/" || {
+      _elog 'Failed to install starship configuration to %s' "${_install_dir}/config/"
+
+      unset _install_dir
       return 1
     }
-
-    # Optional starship install
-    if [ -e "${XDG_CONFIG_HOME}/starship.toml" ]; then
-      cp "${XDG_CONFIG_HOME}/starship.toml" "${_install_flatpak_id}/config/" || {
-        _elog 'Failed to install starship configuration to %s' "${_install_flatpak_id}/config/"
-
-        unset _install_flatpak_id
-        return 1
-      }
-    fi
-  else
-    cp -r "${HOME}/.config/bash" "${_install_flatpak_id}/config/" || {
-      _elog 'Failed to install bash configuration to %s' "${_install_flatpak_id}/config/"
-
-      unset _install_flatpak_id
-      return 1
-    }
-
-    # Optional starship install
-    if [ -e "${HOME}/.config/starship.toml" ]; then
-      cp "${HOME}/.config/starship.toml" "${_install_flatpak_id}/config/" || {
-        _elog 'Failed to install starship configuration to %s' "${_install_flatpak_id}/config/"
-
-        unset _install_flatpak_id
-        return 1
-      }
-    fi
   fi
 
-  cp -r "${HOME}/.bashrc" "${_install_flatpak_id}/.bashrc" || {
-    _elog 'Failed to install .bashrc to %s' "${_install_flatpak_id}/.bashrc"
+  for _install_file in .bashrc .bash_profile; do
+    cp "${HOME}/${_install_file}" "${_install_dir}/${_install_file}" || {
+      _elog 'Failed to install %s to %s' "${_install_file}" "${_install_dir}"
 
-    unset _install_flatpak_id
-    return 1
-  }
+      unset _install_file
+      unset _install_dir
+      return 1
+    }
+  done
+  unset _install_file
 
-  cp -r "${HOME}/.bash_profile" "${_install_flatpak_id}/.bash_profile" || {
-    _elog 'Failed to install .bash_profile to %s' "${_install_flatpak_id}/.bash_profile"
-
-    unset _install_flatpak_id
-    return 1
-  }
-
-  unset _install_flatpak_id
+  unset _install_dir
   return 0
 }
 
 main() {
-  _require_bash_environment || return 1
-
   _flatpak_id="$1"
 
   if [ -z "${_flatpak_id}" ]; then
@@ -112,22 +157,29 @@ main() {
     return 1
   fi
 
+  _require_bash_environment || {
+    unset _flatpak_id
+    return 1
+  }
+
   _flatpak_directory="${HOME}/.var/app/${_flatpak_id}"
+  unset _flatpak_id
+
   if [ ! -d "${_flatpak_directory}" ]; then
     _elog 'flatpak app directory must exist at %s' "${_flatpak_directory}"
 
     unset _flatpak_directory
-    unset _flatpak_id
     return 1
   fi
 
-  _install_bash_environment "${_flatpak_directory}" || return 1
+  _install_bash_environment "${_flatpak_directory}" || {
+    unset _flatpak_directory
+    return 1
+  }
 
   unset _flatpak_directory
-  unset _flatpak_id
-
   return 0
 }
 
-main "$@" || exit 1
-exit 0
+main "$@"
+exit "$?"
