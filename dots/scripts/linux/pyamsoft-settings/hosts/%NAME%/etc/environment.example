@@ -1,7 +1,11 @@
+# /etc/environment
+#
+# The only file sourced by ROOT and all users
+
 # Disable ONNX runtime telemetry
 #
 # Since random projects upstream may make use of onnx internally but not be
 # aware about it's built in telemetry, we disable it at a system environment level
 #
 # https://github.com/immich-app/immich/issues/30729
-DefaultEnvironment="ORT_DISABLE_TELEMETRY=1"
+ORT_DISABLE_TELEMETRY="1"
