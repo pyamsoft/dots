@@ -146,7 +146,7 @@ this is the fixed file, F6_M204_T25
 	<States>
 		<CPUFamily> 6 </CPUFamily>
 		<CPUModel> 204 </CPUModel>
-		<CPUConfig> 4P8E4L-25W </CPUConfig>
+		<CPUConfig> * </CPUConfig>
 		<State>
 			<ID> 1 </ID>
 			<Name> UTIL_IDLE </Name>
