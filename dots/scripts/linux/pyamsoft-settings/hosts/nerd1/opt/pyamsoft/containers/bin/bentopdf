@@ -5,7 +5,7 @@
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
 NAME="bentopdf"
-IMAGE="ghcr.io/alam00000/bentopdf"
+IMAGE="ghcr.io/alam00000/bentopdf-simple"
 TAG="v2.8.11"
 
 CONTAINER_REQUIRE_RUNCONF=0
@@ -35,9 +35,9 @@ _prep_ports() {
 _check_user() {
   _require_nonroot || return 1
 
-  if _is_podman; then
-    _add_userns --userns keep-id
-  fi
+  # if _is_podman; then
+  #   _add_userns --userns keep-id
+  # fi
 
   return 0
 }
