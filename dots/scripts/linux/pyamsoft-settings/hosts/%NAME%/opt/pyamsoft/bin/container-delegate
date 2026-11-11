@@ -211,7 +211,7 @@ main() {
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user "${_action}" --now ${__args} ${__containers}
+    exec systemctl --no-block --user "${_action}" --now ${__args} ${__containers}
     ;;
   restart | status | stop)
     _prep_container || return 1
@@ -221,11 +221,11 @@ main() {
       if [ "$#" -le 0 ]; then
         # Run as the user
         # shellcheck disable=SC2086
-        exec systemctl --user status
+        exec systemctl --no-block --user status
       else
         case "$1" in
         --failed)
-          exec systemctl --user status --failed
+          exec systemctl ---no-block -user status --failed
           ;;
         *) ;;
         esac
@@ -244,14 +244,14 @@ main() {
     #
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user "${_action}" ${__args} ${__containers}
+    exec systemctl --no-block --user "${_action}" ${__args} ${__containers}
     ;;
   reload)
     _prep_container || return 1
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --user daemon-reload
+    exec systemctl --no-block --user daemon-reload
     ;;
   teardown)
     if [ -z "$1" ]; then
