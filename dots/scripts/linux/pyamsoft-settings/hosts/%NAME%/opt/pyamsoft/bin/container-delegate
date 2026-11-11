@@ -225,7 +225,7 @@ main() {
       else
         case "$1" in
         --failed)
-          exec systemctl ---no-block -user status --failed
+          exec systemctl --no-block --user status --failed
           ;;
         *) ;;
         esac
