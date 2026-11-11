@@ -21,10 +21,9 @@ main() {
   unset _my_user_home
   unset _path
 
-  _java_wayland=1
   _enter_existing=0
   _args=""
-  _jvm_args=""
+
   while [ -n "$1" ]; do
     case "$1" in
     --shell)
@@ -36,10 +35,10 @@ main() {
 
         _log "Enter existing %s instance" "${_pak}"
       else
-        # Launch a new instance but with bash
-        _args="${_args} --command=/bin/bash"
-
-        _log "Launching shell %s instance" "${_pak}"
+        # You should really ONLY join existing GUI sessions
+        # or else you won't have a fully setup environment
+        _elog 'You should launch the GUI for %s first' "${NAME}"
+        return 1
       fi
 
       # Do not pass java wayland
@@ -50,17 +49,6 @@ main() {
 
       # Prepare for release builds
       _args="${_args} --filesystem=${dev_root}/project/pyamsoft/android/android-assets"
-
-      # And apply shell arguments
-      _args="${_args} --command=/bin/bash"
-
-      # Do not pass java wayland
-      _java_wayland=0
-      ;;
-    --offline)
-      shift
-
-      _args="${_args} --unshare=network"
       ;;
     *)
       break
@@ -77,10 +65,6 @@ main() {
       "$@"
     return "$?"
   else
-    if [ "${_java_wayland}" -eq 1 ]; then
-      _jvm_args="-Dawt.toolkit.name=WLToolkit"
-    fi
-
     # shellcheck disable=SC2086
     flatpak run \
       --filesystem="${dev_root}/project/pyamsoft/tools" \
@@ -93,7 +77,7 @@ main() {
       ${_args} \
       -- \
       "${_pak}" \
-      ${_jvm_args} \
+      -Dawt.toolkit.name=WLToolkit \
       "$@"
     _ret="$?"
 
