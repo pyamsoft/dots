@@ -1,0 +1,8 @@
+# intel-lpmd 0.1.0
+#
+# - lpmd only rewrites power-balance sliders when it enters a new state. States are "steady" so staying in the same one never re-applies its values.
+# - On a power_supply change, lpmd applies the global defaults which may NOT reflect the real state of the lpmd config
+# - If the workload doesn't change state, it stays at the defaults for that whole time.
+#
+# Force lpmd to "restart" on a power_supply change, which will force it to re-read config
+ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="/usr/bin/systemctl restart --no-block intel_lpmd.service"

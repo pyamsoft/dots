@@ -74,7 +74,7 @@ this is the fixed file, F6_M204_T25
 		0 : No
 		1 : Yes
 	-->
-	<WLTHintPollEnable>0</WLTHintPollEnable>
+	<WLTHintPollEnable>1</WLTHintPollEnable>
 
 	<!--
 		Use WLT hint Mask
@@ -151,43 +151,152 @@ this is the fixed file, F6_M204_T25
 			<ID> 1 </ID>
 			<Name> UTIL_IDLE </Name>
 			<WLTType> 1 </WLTType>
+			<EnterGFXLoadThres>20</EnterGFXLoadThres>
 			<ActiveCPUs>12-15</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>3</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>3</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 2000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 4000 </MaxPollInterval>
 		</State>
 		<State>
 			<ID> 2 </ID>
-			<Name> UTIL_IDLE_SUSTAIN </Name>
-			<WLTType> 2 </WLTType>
-			<ActiveCPUs>0-15</ActiveCPUs>
-		</State>
-		<State>
-			<ID> 3 </ID>
-			<Name> UTIL_IDLE_BURSTY </Name>
-			<WLTType> 3 </WLTType>
-			<ActiveCPUs>0-15</ActiveCPUs>
-		</State>
-	</States>
-
-	<States>
-		<CPUFamily> 6 </CPUFamily>
-		<CPUModel> 204 </CPUModel>
-		<CPUConfig> 4P4E4L-25W </CPUConfig>
-		<State>
-			<ID> 1 </ID>
-			<Name> UTIL_IDLE </Name>
+			<Name> UTIL_IDLE_GFX_BUSY </Name>
 			<WLTType> 1 </WLTType>
-			<ActiveCPUs>8-11</ActiveCPUs>
-		</State>
-		<State>
-			<ID> 2 </ID>
-			<Name> UTIL_IDLE_SUSTAIN </Name>
-			<WLTType> 2 </WLTType>
-			<ActiveCPUs>0-11</ActiveCPUs>
+			<ActiveCPUs>4-15</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>3</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>0</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
 		</State>
 		<State>
 			<ID> 3 </ID>
-			<Name> UTIL_IDLE_BURSTY </Name>
+			<Name> UTIL_NON_IDLE </Name>
+			<WLTType> 2 </WLTType>
+			<EnterGFXLoadThres>20</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>1</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>0</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 4 </ID>
+			<Name> UTIL_NON_IDLE </Name>
 			<WLTType> 3 </WLTType>
-			<ActiveCPUs>0-11</ActiveCPUs>
+			<EnterGFXLoadThres>20</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>1</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>0</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 5 </ID>
+			<Name> UTIL_NON_IDLE_LT_GFX </Name>
+			<WLTType> 2 </WLTType>
+			<EnterGFXLoadThres>50</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>3</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 6 </ID>
+			<Name> UTIL_NON_IDLE_LT_GFX </Name>
+			<WLTType> 3 </WLTType>
+			<EnterGFXLoadThres>50</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>3</BalanceSliderAC>
+			<BalanceSliderDC>3</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>3</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 7 </ID>
+			<Name> UTIL_BUSY_GFX_BUSY </Name>
+			<WLTType> 2 </WLTType>
+			<EnterGFXLoadThres>95</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>4</BalanceSliderAC>
+			<BalanceSliderDC>4</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>2</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 8 </ID>
+			<Name> UTIL_BUSY_GFX_BUSY </Name>
+			<WLTType> 3 </WLTType>
+			<EnterGFXLoadThres>95</EnterGFXLoadThres>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>4</BalanceSliderAC>
+			<BalanceSliderDC>4</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>2</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 9 </ID>
+			<Name> UTIL_NON_IDLE_LOW_SYS </Name>
+			<WLTType> 2 </WLTType>
+			<EntrySystemLoadThres>30</EntrySystemLoadThres>
+			<ExitSystemLoadhysteresis>500</ExitSystemLoadhysteresis>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>4</BalanceSliderAC>
+			<BalanceSliderDC>4</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>2</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
+		</State>
+		<State>
+			<ID> 10 </ID>
+			<Name> UTIL_NON_IDLE_LOW_SYS </Name>
+			<WLTType> 3 </WLTType>
+			<EntrySystemLoadThres>30</EntrySystemLoadThres>
+			<ExitSystemLoadhysteresis>500</ExitSystemLoadhysteresis>
+			<ActiveCPUs>all</ActiveCPUs>
+			<IRQMigrate> -1 </IRQMigrate>
+			<BalanceSliderAC>4</BalanceSliderAC>
+			<BalanceSliderDC>4</BalanceSliderDC>
+			<SliderOffsetAC>2</SliderOffsetAC>
+			<SliderOffsetDC>2</SliderOffsetDC>
+			<MinPollInterval> 1000 </MinPollInterval>
+			<PollIntervalIncrement> 500 </PollIntervalIncrement>
+			<MaxPollInterval> 2000 </MaxPollInterval>
 		</State>
 	</States>
 
