@@ -5,4 +5,4 @@
 # - If the workload doesn't change state, it stays at the defaults for that whole time.
 #
 # Tell lpmd via control socket to switch mode to OFF and then back to AUTO to "reload"
-ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="/usr/bin/systemctl start --no-block intel_lpmb_mains_reloader.service"
+ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="/usr/bin/systemctl start --no-block intel_lpmd_mains_reloader.service"
