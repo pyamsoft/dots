@@ -4,5 +4,6 @@
 # - On a power_supply change, lpmd applies the global defaults which may NOT reflect the real state of the lpmd config
 # - If the workload doesn't change state, it stays at the defaults for that whole time.
 #
-# Force lpmd to "restart" on a power_supply change, which will force it to re-read config
-ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="/usr/bin/systemctl restart --no-block intel_lpmd.service"
+# Tell lpmd via control socket to switch mode to OFF and then back to AUTO to "reload"
+# Wait 3 seconds to avoid udev CHANGE spam
+ACTION=="change", SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="/usr/bin/systemd-run --no-block --on-active=3 /bin/sh -c '/usr/bin/intel_lpmd_control OFF && /usr/bin/sleep 1 && /usr/bin/intel_lpmd_control AUTO'"
