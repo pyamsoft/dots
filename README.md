@@ -27,7 +27,7 @@ For proxy usage
 
 - You can use RDP over the proxy by creating an SSH tunnel on the machine and then forwarding client to that
   - Do not use the SSH tunnel settings your RDP client (remmina/krdc)
-  - Make sure UDP is OFF
+  - Make sure you have "codecs-extra" installed, or else black screen
 
 #### Setup the SSH tunnel outside of the flatpak
 
