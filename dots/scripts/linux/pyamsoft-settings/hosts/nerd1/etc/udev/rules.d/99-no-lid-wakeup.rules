@@ -1,2 +1,2 @@
 # Do not wake up the FW13Pro laptop when opening the lid
-ACTION=="add", SUBSYSTEM=="platform", KERNEL=="PNP0C0D:00", ATTR{power/wakeup}="disabled"
+ACTION=="add|bind", SUBSYSTEM=="platform", KERNEL=="PNP0C0D:00", ATTR{power/wakeup}="disabled"

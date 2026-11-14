@@ -1,3 +1,3 @@
 # Do not wake the machine from suspend if the touchpad is pressed because this happens
 # all the damn time
-ACTION=="bind", SUBSYSTEM=="i2c", KERNEL=="i2c-PIXA3854:00", ATTR{power/wakeup}="disabled"
+ACTION=="add|bind", SUBSYSTEM=="i2c", KERNEL=="i2c-PIXA3854:00", ATTR{power/wakeup}="disabled"

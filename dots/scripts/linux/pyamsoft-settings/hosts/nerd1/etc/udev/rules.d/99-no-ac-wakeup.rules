@@ -1,3 +1,3 @@
 # Do not wake the machine from suspend just because the charger is plugged in
-ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="ACAD", ATTR{power/wakeup}="disabled"
-ACTION=="add", SUBSYSTEM=="power_supply", KERNEL=="ucsi-source-psy-*", ATTR{power/wakeup}="disabled"
+ACTION=="add|bind", SUBSYSTEM=="power_supply", KERNEL=="ACAD", ATTR{power/wakeup}="disabled"
+ACTION=="add|bind", SUBSYSTEM=="power_supply", KERNEL=="ucsi-source-psy-*", ATTR{power/wakeup}="disabled"
