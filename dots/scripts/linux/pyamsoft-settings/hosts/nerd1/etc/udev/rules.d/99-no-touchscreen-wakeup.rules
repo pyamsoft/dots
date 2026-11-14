@@ -1,0 +1,2 @@
+# Do not wake the machine from suspend if the touchscreen is pressed
+ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="i2c-CSW1322:00", ATTR{power/wakeup}="disabled"
