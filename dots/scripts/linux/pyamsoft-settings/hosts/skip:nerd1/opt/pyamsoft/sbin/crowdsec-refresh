@@ -38,13 +38,13 @@ main() {
     }
   fi
 
-  systemctl restart container@crowdsec || {
+  systemctl --no-block restart container@crowdsec || {
     _elog 'Failed to restart crowdsec container'
     return 1
   }
 
   if [ "${_restart_blocklist}" -eq 1 ]; then
-    systemctl restart container@crowdsec-blocklist-import || {
+    systemctl --no-block restart container@crowdsec-blocklist-import || {
       _elog 'Failed to restart crowdsec-blocklist-import container'
       return 1
     }
