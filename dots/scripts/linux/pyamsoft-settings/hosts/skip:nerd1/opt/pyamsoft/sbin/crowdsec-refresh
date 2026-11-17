@@ -12,6 +12,11 @@ _cscli() {
 }
 
 main() {
+  if ! _is_root; then
+    _elog 'You must be root.'
+    return 1
+  fi
+
   _cscli hub update || {
     _elog 'Failed to update crowdsec hub.'
     return 1

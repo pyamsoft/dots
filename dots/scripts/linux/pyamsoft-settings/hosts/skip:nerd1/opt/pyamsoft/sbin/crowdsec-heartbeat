@@ -11,6 +11,11 @@ _post() {
 }
 
 main() {
+  if ! _is_root; then
+    _elog 'You must be root.'
+    return 1
+  fi
+
   _unescape=0
   if [ "$1" = "--unescape" ]; then
     _unescape=1
