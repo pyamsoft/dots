@@ -832,6 +832,21 @@ _prep_rc() {
 }
 
 ##
+# Overrideable
+#
+# Get the host GID for a group name
+_get_gid_for_group() {
+  _grp="$1"
+  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
+
+  printf -- '%s' "${_gid}"
+
+  unset _grp
+  unset _gid
+  return 0
+}
+
+##
 # Overridable
 #
 # Last minute changes

@@ -66,17 +66,6 @@ _check_user() {
   return 0
 }
 
-_get_gid_for_group() {
-  _grp="$1"
-  _gid="$(getent group "${_grp}" | cut -d : -f 3)"
-
-  printf -- '%s' "${_gid}"
-
-  unset _grp
-  unset _gid
-  return 0
-}
-
 _finalize() {
   if [ -n "${USE_VPN}" ] && [ "${USE_VPN}" -ne 0 ]; then
     # Make sure we have the wireguard VPN
