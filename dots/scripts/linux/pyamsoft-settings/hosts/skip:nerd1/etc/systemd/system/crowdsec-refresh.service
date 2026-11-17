@@ -1,0 +1,10 @@
+# Refresh Crowdsec Hub
+[Unit]
+Description=Crowdsec Hub Refresh
+After=network.target syslog.target local-fs.target docker.service podman.service container-crowdsec.service container@crowdsec.service crowdsec.service
+
+[Service]
+Type=oneshot
+Environment=PYAM_SYSTEMD=1
+Environment=PYAMSOFT_PATH=/opt/pyamsoft
+ExecStart=/opt/pyamsoft/sbin/crowdsec-refresh

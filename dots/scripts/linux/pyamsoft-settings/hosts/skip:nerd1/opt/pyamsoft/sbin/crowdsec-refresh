@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/container-launch
+. "${PYAMSOFT_PATH}/lib/container-launch"
+
+NAME="$(basename "$0")"
+
+_cscli() {
+  "${PYAMSOFT_PATH}/bin/cscli" "$@"
+  return "$?"
+}
+
+main() {
+  _cscli hub update || {
+    _elog 'Failed to update crowdsec hub.'
+    return 1
+  }
+
+  _cscli hub upgrade || {
+    _elog 'Failed to upgrade crowdsec hub.'
+    return 1
+  }
+
+  systemctl stop container@crowdsec-blocklist-import || {
+    _elog 'Failed to stop crowdsec-blocklist-import container'
+    return 1
+  }
+
+  systemctl restart container@crowdsec || {
+    _elog 'Failed to restart crowdsec container'
+    return 1
+  }
+  systemctl restart container@crowdsec-blocklist-import || {
+    _elog 'Failed to restart crowdsec-blocklist-import container'
+    return 1
+  }
+
+  return 0
+}
+
+main "$@"
+exit "$?"

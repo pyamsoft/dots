@@ -1,0 +1,9 @@
+# Refresh Crowdsec Hub
+[Unit]
+Description=Crowdsec Hub Refresh
+
+[Timer]
+OnCalendar=daily
+
+[Install]
+WantedBy=timers.target
