@@ -27,19 +27,28 @@ main() {
     return 1
   }
 
-  systemctl stop container@crowdsec-blocklist-import || {
-    _elog 'Failed to stop crowdsec-blocklist-import container'
-    return 1
-  }
+  # Must be the LAPI
+  _restart_blocklist=0
+  if _cscli machine list >/dev/null 2>&1; then
+    _restart_blocklist=1
+
+    systemctl stop container@crowdsec-blocklist-import || {
+      _elog 'Failed to stop crowdsec-blocklist-import container'
+      return 1
+    }
+  fi
 
   systemctl restart container@crowdsec || {
     _elog 'Failed to restart crowdsec container'
     return 1
   }
-  systemctl restart container@crowdsec-blocklist-import || {
-    _elog 'Failed to restart crowdsec-blocklist-import container'
-    return 1
-  }
+
+  if [ "${_restart_blocklist}" -eq 1 ]; then
+    systemctl restart container@crowdsec-blocklist-import || {
+      _elog 'Failed to restart crowdsec-blocklist-import container'
+      return 1
+    }
+  fi
 
   return 0
 }
