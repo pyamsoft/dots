@@ -687,6 +687,7 @@ openjpeg2
 openjph
 openssh
 openssl
+openssl-3
 openxr
 opus
 orc
@@ -790,7 +791,6 @@ python-psutil
 python-pyaml
 python-pycparser
 python-pycups
-python-pyelftools
 python-pynvim
 python-pyqt6
 python-pyqt6-sip
