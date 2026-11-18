@@ -54,6 +54,7 @@ options amdgpu.ppfeaturemask=0xffffffff
 # - Never fallback to swiotlb only
 # - Isolate internal devices
 # - Blocks DMA before iommu starts and increases pool size from 64M to 128M
+# - Keep strict=0 to avoid a speed hit
 #
 # Tell Linux to allocate it's own PCI instead of listening to BIOS
 #
@@ -62,7 +63,7 @@ options amdgpu.ppfeaturemask=0xffffffff
 # Jun 26 17:18:40 nerd1 kernel: pcieport 0000:68:00.0: bridge window [io  size 0x1000]: failed to assign
 options iommu=force
 options intel_iommu=on amd_iommu=force_isolation
-options iommu.passthrough=0 iommu.strict=1
+options iommu.passthrough=0 iommu.strict=0
 options efi=disable_early_pci_dma swiotlb=65536
 options pci=realloc
 
