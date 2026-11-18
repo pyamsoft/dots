@@ -211,7 +211,7 @@ main() {
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --no-block --user "${_action}" --now ${__args} ${__containers}
+    exec systemctl --user "${_action}" --now ${__args} ${__containers}
     ;;
   restart | status | stop)
     _prep_container || return 1
@@ -251,7 +251,7 @@ main() {
 
     # Run as the user
     # shellcheck disable=SC2086
-    exec systemctl --no-block --user daemon-reload
+    exec systemctl --user daemon-reload
     ;;
   teardown)
     if [ -z "$1" ]; then
