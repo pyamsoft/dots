@@ -6,7 +6,7 @@
 
 NAME="mosquitto"
 IMAGE="docker.io/library/eclipse-mosquitto"
-TAG="2.1.2-alpine"
+TAG="2.1.4-alpine"
 
 CONTAINER_REQUIRE_RUNCONF=0
 

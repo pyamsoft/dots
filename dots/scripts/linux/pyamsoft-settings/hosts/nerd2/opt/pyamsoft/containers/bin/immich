@@ -6,7 +6,7 @@
 
 NAME="immich"
 IMAGE="ghcr.io/immich-app/immich-server"
-TAG="v3.3.6"
+TAG="v3.4.1"
 
 readonly _localtime="/etc/localtime"
 
