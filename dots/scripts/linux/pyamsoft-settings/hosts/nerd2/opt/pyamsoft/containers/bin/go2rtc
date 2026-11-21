@@ -1,0 +1,71 @@
+#!/bin/sh
+
+# Source our common library
+# shellcheck source=/opt/pyamsoft/lib/container-launch
+. "${PYAMSOFT_PATH}/lib/container-launch"
+
+NAME="go2rtc"
+IMAGE="ghcr.io/alexxit/go2rtc"
+TAG="1.9.15-hardware"
+
+_prep_mounts() {
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/config" "/config" || return 1
+
+  return 0
+}
+
+_prep_env() {
+  return 0
+}
+
+_prep_network() {
+  # On linux, we attach to the HASS container
+  if _is_linux; then
+    # Piggyback onto the home-assistant network
+    _add_network --network="container:home-assistant"
+  else
+    # On MacOS we run standalone, just use host networking to keep things simple
+    _add_network --network="host"
+  fi
+  return 0
+}
+
+_prep_caps() {
+  return 0
+}
+
+_prep_ports() {
+  # Only podman does not care if you do --network AND ports
+  if _is_podman; then
+    # API
+    _add_ports -p "127.0.0.1:1984:1984/tcp"
+
+    # RTSP
+    _add_ports -p "127.0.0.1:8554:8554/tcp"
+    _add_ports -p "127.0.0.1:8554:8554/udp"
+
+    # WebRTC
+    _add_ports -p "127.0.0.1:8555:8555/tcp"
+    _add_ports -p "127.0.0.1:8555:8555/udp"
+  fi
+  return 0
+}
+
+_check_user() {
+  _require_nonroot || return 1
+
+  return 0
+}
+
+_finalize() {
+  # For FFMPEG hardware accel?
+  _add_rc --privileged
+
+  # Can run as read-only root
+  _add_rc --read-only
+
+  return 0
+}
+
+main "$@" || exit 1
+exit 0
