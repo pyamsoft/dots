@@ -131,6 +131,15 @@ _get_latest_tags() {
           # Exclude a "buggy" v1.53.1 release tag
           grep 'omnibus' | grep -v 'collector' | grep -v '^v' | grep -E '[0-9]+\.[0-9]+\.[0-9]+'
           ;;
+        */go2rtc)
+          # Only "hardware" tags
+          grep 'hardware'
+          ;;
+        */ollama)
+          # Only "rocm" tags
+          # Exclude old version
+          grep 'rocm' | grep -v 'v0.'
+          ;;
         */beszel)
           # Only "full" tags
           grep -E '[0-9]+\.[0-9]+\.[0-9]+'
