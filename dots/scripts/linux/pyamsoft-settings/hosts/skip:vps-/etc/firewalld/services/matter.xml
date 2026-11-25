@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Matter</short>
+  <description>Matter Protocol</description>
+  <port port="5540" protocol="udp" />
+</service>
