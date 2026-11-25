@@ -797,7 +797,6 @@ python-pyqt6-sip
 python-reportlab
 python-requests
 python-shtab
-python-six
 python-urllib3
 python-wcwidth
 python-yaml
@@ -900,6 +899,7 @@ signon-kwallet-extension
 signon-plugin-oauth2
 signon-ui
 signond
+simdutf
 slang
 smbclient
 snappy
