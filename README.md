@@ -30,6 +30,9 @@ Then add a static route to the NetworkManager IPv6 connection
 Assume a vlan of 69 and a "host" IP of 137
 `sudo nmcli con mod <name> ipv6.method auto +ipv6.addresses fd12:3456:789a:69::137/64`
 
+You will need to "reapply" device settings
+`sudo nmcli device reapply <interface>`
+
 ### Proxy
 
 For proxy usage
