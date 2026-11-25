@@ -13,6 +13,23 @@ For other files that are copied into place, see `dots/`
 
 ## Notes
 
+### Static IPv6
+
+Add a Virtual IP to the router with an easy to remember IPv6 like
+```md
+Virtual IPs:
+
+- Mode: IP Alias
+- Interface: <interface>
+- Address: fd12:3456:789a:<VLAN>::<HOST>/64
+```
+
+Then add a static route to the NetworkManager IPv6 connection
+`sudo nmcli con mod <name> ipv6.method auto +ipv6.addresses fd12:3456:789a:<VLAN>::<HOST>/64`
+
+Assume a vlan of 69 and a "host" IP of 137
+`sudo nmcli con mod <name> ipv6.method auto +ipv6.addresses fd12:3456:789a:69::137/64`
+
 ### Proxy
 
 For proxy usage
