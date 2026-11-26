@@ -4,11 +4,24 @@
 # shellcheck source=/opt/pyamsoft/lib/container-launch
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
-NAME="ollama"
 IMAGE="docker.io/ollama/ollama"
-TAG="0.9.6-rocm"
+
+# Since this container is more of a "library", we could potentially have many instances
+# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
+# themselves when invoking this script.
+NAME="${NAME:-ollama}"
+
+# Since this container is more of a "library", we could potentially have many instances
+# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
+# themselves when invoking this script.
+TAG="${TAG:-0.40.18}"
 
 CONTAINER_REQUIRE_RUNCONF=0
+
+# Setup network per your implementation
+# _prep_network() {
+#   return 0
+# }
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/root/.ollama" || return 1
@@ -17,18 +30,6 @@ _prep_mounts() {
 }
 
 _prep_env() {
-  return 0
-}
-
-_prep_network() {
-  # On linux, we attach to the HASS container
-  if _is_linux; then
-    # Piggyback onto the home-assistant network
-    _add_network --network="container:home-assistant"
-  else
-    # On MacOS we run standalone, just use host networking to keep things simple
-    _add_network --network="host"
-  fi
   return 0
 }
 
