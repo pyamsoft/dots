@@ -37,7 +37,6 @@ _prep_env() {
   _add_env -e OLLAMA_VULKAN=1
   _add_env -e OLLAMA_FLASH_ATTENTION=1
   _add_env -e OLLAMA_KV_CACHE_TYPE=q8_0
-  _add_env -e OLLAMA_CONTEXT_LENGTH=262144
   _add_env -e OLLAMA_KEEP_ALIVE=-1
 
   return 0
