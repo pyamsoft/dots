@@ -12,16 +12,14 @@ IMAGE="docker.io/ollama/ollama"
 NAME="${NAME:-ollama}"
 
 # Since this container is more of a "library", we could potentially have many instances
-# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
+# as such, we do NOT need to enforce a hard-set name. A caller could override this by passing TAG=
 # themselves when invoking this script.
 TAG="${TAG:-0.40.18}"
 
-CONTAINER_REQUIRE_RUNCONF=0
-
-# Setup network per your implementation
-# _prep_network() {
-#   return 0
-# }
+_prep_network() {
+  _log 'Setup your network specifics in the runconfig.env'
+  return 0
+}
 
 _prep_mounts() {
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/root/.ollama" || return 1
