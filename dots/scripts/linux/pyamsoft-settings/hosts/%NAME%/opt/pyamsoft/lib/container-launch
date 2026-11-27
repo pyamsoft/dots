@@ -608,18 +608,6 @@ __require_function() {
 __setup_network() {
   _prep_network || return 1
 
-  # Evaluate this AFTER so that just incase the script
-  # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
-  if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
-    if _has_network 'container:*'; then
-      _log 'Ignoring host routes. Container networking is already set.'
-    elif ! _is_macos_container; then
-      _add_network --add-host "localhost:127.0.0.1"
-      _add_network --add-host "host.containers.internal:host-gateway"
-      _add_network --add-host "host.docker.internal:host-gateway"
-    fi
-  fi
-
   return 0
 }
 
@@ -641,13 +629,23 @@ __do_prep_mounts() {
   fi
 }
 
-##
-# Overridable
-#
-# Last minute changes
-__do_finalize() {
-  _finalize "$@" || return 1
+__finalize_network_routes() {
+  # Evaluate this AFTER so that just incase the script
+  # has changed CONTAINER_NETWORK_HOST_ROUTE from _prep_network, we will pick it up
+  if [ "${CONTAINER_NETWORK_HOST_ROUTE}" ] && [ "${CONTAINER_NETWORK_HOST_ROUTE}" -ne 0 ]; then
+    if _has_network 'container:*'; then
+      _log 'Ignoring host routes. Container networking is already set.'
+    elif ! _is_macos_container; then
+      _add_network --add-host "localhost:127.0.0.1"
+      _add_network --add-host "host.containers.internal:host-gateway"
+      _add_network --add-host "host.docker.internal:host-gateway"
+    fi
+  fi
 
+  return 0
+}
+
+__finalize_container_dns() {
   # Use our own recursive DNS (point containers to host 127.0.0.1:53)
   if [ -n "${CONTAINER_DNS_RESOLVER}" ] && [ "${CONTAINER_DNS_RESOLVER}" -eq 1 ]; then
     _has_dns=0
@@ -692,6 +690,19 @@ __do_finalize() {
     fi
   fi
   unset _has_dns
+
+  return 0
+}
+
+##
+# Overridable
+#
+# Last minute changes
+__do_finalize() {
+  _finalize "$@" || return 1
+
+  __finalize_network_routes || return 1
+  __finalize_container_dns || return 1
 }
 
 ##
@@ -1079,7 +1090,7 @@ main() {
   _prep_caps || return 1
 
   __require_function _prep_network || return 1
-  __setup_network || return 1
+  _prep_network || return 1
 
   __require_function _prep_env || return 1
   _prep_env || return 1

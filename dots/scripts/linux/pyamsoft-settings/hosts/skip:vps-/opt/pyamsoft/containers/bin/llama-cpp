@@ -16,8 +16,6 @@ NAME="${NAME:-llama-cpp}"
 # themselves when invoking this script.
 TAG="${TAG:-server-vulkan-v1.1.0}"
 
-CONTAINER_ENTRYPOINT="/app/llama-server"
-
 _prep_network() {
   _log 'Setup your network specifics in the runconfig.env'
   return 0
