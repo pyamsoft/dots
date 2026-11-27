@@ -32,10 +32,12 @@ _prep_env() {
   # Tweaks
   #
   # Enable vulkan
+  # Warning level logs and up
   # Use int q8 instead of float for kv cache
   # Bump context length
   # Never shutdown a model
   _add_env -e OLLAMA_VULKAN=1
+  _add_env -e OLLAMA_DEBUG=warn
   _add_env -e OLLAMA_FLASH_ATTENTION=1
   _add_env -e OLLAMA_KV_CACHE_TYPE=q8_0
   _add_env -e OLLAMA_KEEP_ALIVE=-1
