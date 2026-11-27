@@ -4,17 +4,19 @@
 # shellcheck source=/opt/pyamsoft/lib/container-launch
 . "${PYAMSOFT_PATH}/lib/container-launch"
 
-IMAGE="docker.io/ollama/ollama"
+IMAGE="ghcr.io/ggml-org/llama.cpp"
 
 # Since this container is more of a "library", we could potentially have many instances
 # as such, we do NOT need to enforce a hard-set name. A caller could override this by passing NAME=
 # themselves when invoking this script.
-NAME="${NAME:-ollama}"
+NAME="${NAME:-llama-cpp}"
 
 # Since this container is more of a "library", we could potentially have many instances
 # as such, we do NOT need to enforce a hard-set name. A caller could override this by passing TAG=
 # themselves when invoking this script.
-TAG="${TAG:-0.40.18}"
+TAG="${TAG:-server-vulkan-v1.1.0}"
+
+CONTAINER_ENTRYPOINT="/app/llama-server"
 
 _prep_network() {
   _log 'Setup your network specifics in the runconfig.env'
@@ -22,27 +24,14 @@ _prep_network() {
 }
 
 _prep_mounts() {
-  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/data" "/root/.ollama" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/models" "/models" || return 1
   _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/cache" "/root/.cache" || return 1
+  _mount_bind "${CONTAINER_RUNTIME_DIR}/${NAME}/presets" "/presets" || return 1
 
   return 0
 }
 
 _prep_env() {
-  # Tweaks
-  #
-  # Enable vulkan
-  # Warning level logs and up
-  # Use int q8 instead of float for kv cache
-  # Bump context length
-  # Never shutdown a model
-  _add_env -e OLLAMA_VULKAN=1
-  _add_env -e OLLAMA_DEBUG=0
-  _add_env -e OLLAMA_LOG_LEVEL=warn
-  _add_env -e OLLAMA_FLASH_ATTENTION=1
-  _add_env -e OLLAMA_KV_CACHE_TYPE=q8_0
-  _add_env -e OLLAMA_KEEP_ALIVE=-1
-
   return 0
 }
 
@@ -53,7 +42,7 @@ _prep_caps() {
 _prep_ports() {
   # Only podman does not care if you do --network AND ports
   if _is_podman; then
-    _add_ports -p "127.0.0.1:11434:11434/tcp"
+    _add_ports -p "127.0.0.1:9931:9931/tcp"
   fi
   return 0
 }
@@ -73,6 +62,8 @@ _finalize() {
 
   # Can run as read-only root
   _add_rc --read-only
+
+  _log "Setup run arguments in runconfig.env"
 
   return 0
 }
