@@ -439,9 +439,9 @@ _create_bridge_network() {
     # We always want strict isolation
     # We always want to disable DNS
     if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-      set -- "$@" --opt isolate=strict --disable-dns --ipv6
+      set -- "$@" --opt isolate=strict --ipv6
     else
-      set -- "$@" --opt isolate=strict --disable-dns
+      set -- "$@" --opt isolate=strict
     fi
 
     # Podman can "ignore" networks with the same name
