@@ -673,9 +673,11 @@ __finalize_container_dns() {
       # Avoid the Google upstream by strictly opting into one DNS
       _local_dns=""
 
-      # Only guaranteed for podman `pasta` ?
+      # Force the DNS to be our local netardvark
+      # instead of relying on the container which could set any random
+      # DNS
       if _is_podman; then
-        _local_dns="169.254.1.1"
+        _local_dns="10.89.0.1"
       fi
 
       if [ -n "${_local_dns}" ]; then
