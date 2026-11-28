@@ -58,6 +58,14 @@ _pyamsoft_path() {
     PATH="/opt/pyamsoft/sbin:${PATH}"
   fi
 
+  if ! __has_path "/opt/pyamsoft/containers/bin"; then
+    PATH="/opt/pyamsoft/containers/bin:${PATH}"
+  fi
+
+  if ! __has_path "/opt/pyamsoft/containers/sbin"; then
+    PATH="/opt/pyamsoft/containers/sbin:${PATH}"
+  fi
+
   export PATH
 
   return 0
@@ -118,4 +126,3 @@ unset __has_path
 [ -r "${HOME}/.bashrc" ] && . "${HOME}/.bashrc"
 
 # vim: set filetype=sh :
-
