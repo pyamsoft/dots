@@ -439,9 +439,17 @@ _create_bridge_network() {
     # We always want strict isolation
     # We always want to disable DNS
     if [ "${CONTAINER_NETWORK_IP6}" -ne 0 ]; then
-      set -- "$@" --opt isolate=strict --ipv6
+      if _is_root; then
+        set -- "$@" --opt isolate=strict --ipv6
+      else
+        set -- "$@" --opt isolate=strict --ipv6 --disable-dns
+      fi
     else
-      set -- "$@" --opt isolate=strict
+      if _is_root; then
+        set -- "$@" --opt isolate=strict
+      else
+        set -- "$@" --opt isolate=strict --disable-dns
+      fi
     fi
 
     # Podman can "ignore" networks with the same name
@@ -646,6 +654,11 @@ __finalize_network_routes() {
 }
 
 __finalize_container_dns() {
+  # Root uses aardvark-dns
+  if _is_root; then
+    return 0
+  fi
+
   # Use our own recursive DNS (point containers to host 127.0.0.1:53)
   if [ -n "${CONTAINER_DNS_RESOLVER}" ] && [ "${CONTAINER_DNS_RESOLVER}" -eq 1 ]; then
     _has_dns=0
@@ -664,24 +677,22 @@ __finalize_container_dns() {
     unset _net_arg
 
     if _has_network host; then
-      _log 'Ignoring local DNS resolver - host networking already set'
+      _log 'Ignoring local pasta DNS resolver - host networking already set'
     elif _has_network 'container:*'; then
-      _log 'Ignoring local DNS resolver - container networking already set'
+      _log 'Ignoring local pasta DNS resolver - container networking already set'
     elif [ "${_has_dns}" -eq 0 ]; then
       # Add the "container local DNS"
       # Many images hardcode Google which is lame.
       # Avoid the Google upstream by strictly opting into one DNS
       _local_dns=""
 
-      # Force the DNS to be our local netardvark
-      # instead of relying on the container which could set any random
-      # DNS
+      # Require Pasta DNS
       if _is_podman; then
-        _local_dns="10.89.0.1"
+        _local_dns="169.254.1.1"
       fi
 
       if [ -n "${_local_dns}" ]; then
-        _log 'Using local DNS resolver at %s' "${_local_dns}"
+        _log 'Using local pasta DNS resolver at %s' "${_local_dns}"
         _add_network --dns "${_local_dns}"
       else
         _elog 'Unable to discover the "container DNS resolver". Using image defaults'
